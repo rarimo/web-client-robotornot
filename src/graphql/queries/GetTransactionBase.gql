@@ -1,0 +1,8 @@
+query GetTransactionBase($limit: Int, $offset: Int) {
+  transaction(order_by: {block: {timestamp: desc}},limit: $limit, offset: $offset) {
+   ...TransactionBase
+  }
+  block(order_by: {timestamp: desc},limit: $limit, offset: $offset) {
+  ...BlockBase
+  }
+}

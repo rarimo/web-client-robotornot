@@ -1,0 +1,13 @@
+fragment ProposalVote on proposal_vote {
+  voter_address
+  option
+  height
+  block {
+    timestamp
+    transactions {
+      hash
+    }
+  }
+}
+
+

@@ -1,0 +1,17 @@
+fragment Block on block {
+  height
+  timestamp
+  total_gas
+  validator {
+    validator_descriptions {
+      avatar_url
+      moniker
+    }
+    validator_info {
+      operator_address
+    }
+  }
+  hash
+  num_txs
+}
+

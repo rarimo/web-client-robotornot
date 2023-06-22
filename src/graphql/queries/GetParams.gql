@@ -1,0 +1,14 @@
+query GetParams {
+  stakingParams: staking_params(limit: 1, order_by: {height: desc}) {
+    ...StakingParams
+  }
+  slashingParams: slashing_params(limit: 1, order_by: {height: desc}) {
+    ...SlashingParams
+  }
+  distributionParams: distribution_params(limit: 1, order_by: {height: desc}) {
+    ...DistributionParams
+  }
+  govParams: gov_params (limit: 1, order_by: {height: desc}) {
+    ...GovParams
+  }
+}

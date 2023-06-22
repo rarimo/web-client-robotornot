@@ -1,0 +1,23 @@
+@mixin clearfix() {
+  &:after {
+    clear: both;
+    content: '';
+    display: block;
+  }
+}
+
+@mixin aspect-ratio($ratio) {
+  @include clearfix;
+
+  display: block;
+  position: relative;
+
+  &:before {
+    content: '';
+    float: left;
+    height: 0;
+    margin-left: to-rem(-1);
+    padding-block-start: calc(100% / #{$ratio});
+    width: to-rem(1);
+  }
+}

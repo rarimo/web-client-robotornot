@@ -1,0 +1,13 @@
+fragment BlockBase on block {
+  height
+  timestamp
+  validator {
+    validator_info {
+      operator_address
+    }
+    validator_descriptions {
+      avatar_url
+      moniker
+    }
+  }
+}

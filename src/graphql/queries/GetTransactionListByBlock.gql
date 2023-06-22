@@ -1,0 +1,5 @@
+query GetTransactionListByBlock($limit: Int, $offset: Int, $blockHeight: bigint) {
+  transaction(order_by: {block: {timestamp: desc}},limit: $limit, offset: $offset, where: { block: {height: {_eq: $blockHeight}}}) {
+    ...TransactionList
+  }
+}

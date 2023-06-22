@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+.eslintcache
+pnpm-lock.yaml
+scripts/*.mjs
+index.html
+*.md

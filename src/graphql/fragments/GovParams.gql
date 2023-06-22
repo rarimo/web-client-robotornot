@@ -1,0 +1,5 @@
+fragment GovParams on gov_params {
+  depositParams: deposit_params
+  tallyParams: tally_params
+  votingParams: voting_params
+}

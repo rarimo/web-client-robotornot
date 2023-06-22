@@ -1,0 +1,7 @@
+query GetValidatorCount($where: validator_bool_exp) {
+  validator_aggregate(where: $where) {
+    aggregate {
+      count(columns: consensus_address)
+    }
+  }
+}

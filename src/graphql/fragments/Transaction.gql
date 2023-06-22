@@ -1,0 +1,22 @@
+fragment Transaction on transaction {
+  hash
+  success
+  fee
+  signer_infos
+  height
+  block {
+    timestamp
+    validator {
+      validator_descriptions {
+        avatar_url
+        moniker
+      }
+      validator_info {
+        operator_address
+      }
+    }
+  }
+  messages
+  gas_used
+  raw_log
+}

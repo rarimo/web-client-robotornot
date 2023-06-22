@@ -1,0 +1,9 @@
+query GetProposalDepositsCountByID($id: Int!) {
+  proposal(where: {id: {_eq: $id}}) {
+    proposal_deposits_aggregate {
+      aggregate {
+        count(columns: depositor_address)
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+@import '@/styles/variables';
+
+/* stylelint-disable property-case */
+/* stylelint-disable property-no-unknown */
+/* stylelint-disable order/properties-order */
+/* stylelint-disable selector-pseudo-class-no-unknown */
+/* stylelint-disable declaration-empty-line-before */
+:export {
+  txtFontFamily: $txt-font-family;
+
+  txtFontWeightLight: $txt-font-weight-light;
+  txtFontWeightRegular: $txt-font-weight-regular;
+  txtFontWeightMedium: $txt-font-weight-medium;
+  txtFontWeightSemiBold: $txt-font-weight-semi-bold;
+  txtFontWeightBold: $txt-font-weight-bold;
+  txtFontWeightExtraBold: $txt-font-weight-extra-bold;
+
+  txtFontSizeRegular: $txt-font-size-regular;
+  txtFontSizeH1: $txt-font-size-h1;
+  txtFontSizeH2: $txt-font-size-h2;
+  txtFontSizeH3: $txt-font-size-h3;
+  txtFontSizeH4: $txt-font-size-h4;
+  txtFontSizeSubtitle1: $txt-font-size-subtitle1;
+  txtFontSizeSubtitle2: $txt-font-size-subtitle2;
+  txtFontSizeBody1: $txt-font-size-body1;
+  txtFontSizeButton: $txt-font-size-button;
+  txtFontSizeCaption: $txt-font-size-caption;
+
+  txtFontLineHeightH1: $txt-font-line-height-h1;
+  txtFontLineHeightH2: $txt-font-line-height-h2;
+  txtFontLineHeightH3: $txt-font-line-height-h3;
+  txtFontLineHeightH4: $txt-font-line-height-h4;
+  txtFontLineHeightSubtitle1: $txt-font-line-height-subtitle1;
+  txtFontLineHeightSubtitle2: $txt-font-line-height-subtitle2;
+  txtFontLineHeightBody1: $txt-font-line-height-body1;
+  txtFontLineHeightButton: $txt-font-line-height-button;
+  txtFontLineHeightCaption: $txt-font-line-height-caption;
+
+  txtFontLetterSpacingH1: $txt-font-letter-spacing-h1;
+  txtFontLetterSpacingH2: $txt-font-letter-spacing-h2;
+  txtFontLetterSpacingH3: $txt-font-letter-spacing-h3;
+  txtFontLetterSpacingH4: $txt-font-letter-spacing-h4;
+  txtFontLetterSpacingSubtitle1: $txt-font-letter-spacing-subtitle1;
+  txtFontLetterSpacingSubtitle2: $txt-font-letter-spacing-subtitle2;
+  txtFontLetterSpacingBody1: $txt-font-letter-spacing-body1;
+  txtFontLetterSpacingButton: $txt-font-letter-spacing-button;
+  txtFontLetterSpacingCaption: $txt-font-letter-spacing-caption;
+
+  txtFontWeightH1: $txt-font-weight-h1;
+  txtFontWeightH2: $txt-font-weight-h2;
+  txtFontWeightH3: $txt-font-weight-h3;
+  txtFontWeightH4: $txt-font-weight-h4;
+  txtFontWeightSubtitle1: $txt-font-weight-subtitle1;
+  txtFontWeightSubtitle2: $txt-font-weight-subtitle2;
+  txtFontWeightBody1: $txt-font-weight-body1;
+  txtFontWeightButton: $txt-font-weight-button;
+  txtFontWeightCaption: $txt-font-weight-caption;
+}
+/* stylelint-enable property-case */
+/* stylelint-enable property-no-unknown */
+/* stylelint-enable order/properties-order */
+/* stylelint-enable selector-pseudo-class-no-unknown */
+/* stylelint-enable declaration-empty-line-before */

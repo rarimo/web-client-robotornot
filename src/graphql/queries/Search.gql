@@ -1,0 +1,11 @@
+query Search($valueStr: String, $valueInt: bigint) {
+  account(where: {address: {_eq: $valueStr}}, limit: 1) {
+    address
+  }
+  block(where: {height: {_eq: $valueInt}}, limit: 1) {
+    height
+  }
+  transaction(where: {hash: {_eq: $valueStr}}, limit: 1) {
+    hash
+  }
+}

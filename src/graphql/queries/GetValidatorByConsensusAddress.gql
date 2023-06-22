@@ -1,0 +1,13 @@
+query GetValidatorByConsensusAddress($address: String!) {
+  validator(where: {validator_info: {consensus_address: {_eq: $address}}}) {
+    validator_descriptions {
+      moniker
+      avatar_url
+    }
+    validator_info {
+      account {
+        address
+      }
+    }
+  }
+}

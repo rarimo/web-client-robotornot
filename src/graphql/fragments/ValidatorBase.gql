@@ -1,0 +1,22 @@
+fragment ValidatorBase on validator {
+  validator_info {
+    operator_address
+  }
+  validator_commissions {
+    commission
+  }
+  validator_signing_infos {
+    missed_blocks_counter
+  }
+  validator_descriptions {
+    moniker
+    avatar_url
+  }
+  validator_statuses {
+    status
+    jailed
+  }
+  validator_voting_powers {
+    voting_power
+  }
+}

@@ -1,0 +1,23 @@
+@import 'dark-theme-colors';
+
+.App__dark {
+  &, *:before, *:after {
+    /* Color variables */
+    --col-dark: #{$col-dark};
+    --col-light: #{$col-light};
+    --col-primary-main: #{$col-primary-main};
+    --col-bg-primary: #{$col-bg-primary};
+    --col-bg-secondary: #{$col-bg-secondary};
+    --col-border-light: #{$col-border-light};
+    --col-txt-primary-light: #{$col-txt-primary-light};
+    --col-bg-tertiary: #{$col-bg-tertiary};
+    --col-btn-txt: #{$col-txt-primary-light};
+
+    /* UI variables */
+
+    --ui-app-background: #{$col-bg-primary};
+    --ui-box-shadow: 0 0 0
+    #{to-rem(1)}
+    #{$col-border-light};
+  }
+}

@@ -1,0 +1,3 @@
+fragment StakingPool on staking_pool {
+  bonded_tokens
+}

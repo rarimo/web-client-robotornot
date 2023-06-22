@@ -1,0 +1,34 @@
+query GetStatistic {
+  block(order_by: {height: desc}, limit: 1) {
+    timestamp
+    height
+  }
+  transaction_aggregate {
+    aggregate {
+      count(columns: height)
+    }
+  }
+  community_pool(order_by: {height: desc}) {
+    coins
+    height
+  }
+  inflation {
+    value
+  }
+  supply {
+    coins
+  }
+  bondedTokens: staking_pool(order_by: {height: desc}, limit: 1) {
+    bonded_tokens
+  }
+  distributionParams: distribution_params {
+    params
+  }
+  average_block_time_from_genesis {
+    average_time
+  }
+
+  averageBlockTime: average_block_time_per_hour(limit: 1, order_by: {height: desc}) {
+    averageTime: average_time
+  }
+}

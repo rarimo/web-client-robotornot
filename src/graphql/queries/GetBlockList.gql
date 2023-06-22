@@ -1,0 +1,5 @@
+query GetBlockList($limit: Int, $offset: Int, $where: block_bool_exp) {
+  block(order_by: {timestamp: desc},limit: $limit, offset: $offset, where: $where) {
+    ...BlockList
+  }
+}

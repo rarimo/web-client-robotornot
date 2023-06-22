@@ -1,0 +1,22 @@
+@import 'light-theme-colors';
+
+.App__light {
+  &, *:before, *:after {
+    /* Color variables */
+    --col-primary-main: #{$col-primary-main};
+    --col-bg-primary: #{$col-bg-primary};
+    --col-bg-secondary: #{$col-bg-secondary};
+    --col-border-light: #{$col-border-light};
+    --col-txt-primary-light: #{$col-txt-primary-light};
+    --col-bg-tertiary: #{$col-bg-tertiary};
+    --col-btn-txt: #{$col-txt-primary-dark};
+
+    /* UI variables */
+    --ui-app-background: #{$col-bg-secondary};
+    --ui-box-shadow: #{to-rem(2)}
+    #{to-rem(4)}
+    #{to-rem(24)}
+    0
+    #{rgba($col-dark, 0.08)};
+  }
+}

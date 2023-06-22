@@ -1,0 +1,6 @@
+query GetValidatorRedelegationList($operator: String!, $limit: Int, $offset: Int) {
+  action_validator_redelegations_from(address: $operator, count_total: true, limit: $limit, offset: $offset) {
+    redelegations
+    pagination
+  }
+}

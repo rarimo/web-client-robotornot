@@ -1,0 +1,3 @@
+fragment SlashingParams on slashing_params {
+  params
+}

@@ -1,0 +1,13 @@
+fragment ProposalDeposit on proposal_deposit {
+  amount
+  depositor_address
+  height
+  block {
+    height
+    timestamp
+    transactions {
+      hash
+    }
+  }
+}
+

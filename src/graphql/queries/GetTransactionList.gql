@@ -1,0 +1,5 @@
+query GetTransactionList($limit: Int, $offset: Int, $where: transaction_bool_exp) {
+  transaction(order_by: { block: { timestamp: desc } }, limit: $limit, offset: $offset, where: $where) {
+    ...TransactionList
+  }
+}

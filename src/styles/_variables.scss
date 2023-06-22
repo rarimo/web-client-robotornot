@@ -1,0 +1,61 @@
+/* stylelint-disable scss/dollar-variable-empty-line-before */
+$media-xs: 430px;
+$media-sm: 600px;
+$media-md: 900px;
+$media-xm: 1200px;
+$media-lg: 1536px;
+$media-xl: 1920px;
+
+$txt-font-family: 'Inter', -apple-system, 'BlinkMacSystemFont',
+'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell',
+'Helvetica Neue', sans-serif;
+
+$txt-font-weight-light: 300;
+$txt-font-weight-regular: 400;
+$txt-font-weight-medium: 500;
+$txt-font-weight-semi-bold: 600;
+$txt-font-weight-bold: 700;
+$txt-font-weight-extra-bold: 800;
+
+$txt-font-size-regular: 14;
+
+$txt-font-size-h1: to-rem(64);
+$txt-font-size-h2: to-rem(48);
+$txt-font-size-h3: to-rem(36);
+$txt-font-size-h4: to-rem(24);
+$txt-font-size-subtitle1: to-rem(20);
+$txt-font-size-subtitle2: to-rem(18);
+$txt-font-size-body1: to-rem(16);
+$txt-font-size-button: to-rem(16);
+$txt-font-size-caption: to-rem(12);
+
+$txt-font-line-height-h1: 1.4;
+$txt-font-line-height-h2: 1.4;
+$txt-font-line-height-h3: 1.2;
+$txt-font-line-height-h4: 1.2;
+$txt-font-line-height-subtitle1: 1.2;
+$txt-font-line-height-subtitle2: 1.2;
+$txt-font-line-height-body1: 1.2;
+$txt-font-line-height-button: 1.2;
+$txt-font-line-height-caption: 1.2;
+
+$txt-font-letter-spacing-h1: to-rem(-1);
+$txt-font-letter-spacing-h2: to-rem(-0.5);
+$txt-font-letter-spacing-h3: 0;
+$txt-font-letter-spacing-h4: 0;
+$txt-font-letter-spacing-subtitle1: 0;
+$txt-font-letter-spacing-subtitle2: 0;
+$txt-font-letter-spacing-body1: 0;
+$txt-font-letter-spacing-button: 0;
+$txt-font-letter-spacing-caption: 0;
+
+$txt-font-weight-h1: $txt-font-weight-extra-bold;
+$txt-font-weight-h2: $txt-font-weight-extra-bold;
+$txt-font-weight-h3: $txt-font-weight-bold;
+$txt-font-weight-h4: $txt-font-weight-bold;
+$txt-font-weight-subtitle1: $txt-font-weight-medium;
+$txt-font-weight-subtitle2: $txt-font-weight-regular;
+$txt-font-weight-body1: $txt-font-weight-regular;
+$txt-font-weight-button: $txt-font-weight-bold;
+$txt-font-weight-caption: $txt-font-weight-regular;
+/* stylelint-enable scss/dollar-variable-empty-line-before */

@@ -1,0 +1,55 @@
+@import '@/styles/dark-theme-colors';
+
+/* stylelint-disable property-case */
+/* stylelint-disable property-no-unknown */
+/* stylelint-disable order/properties-order */
+/* stylelint-disable selector-pseudo-class-no-unknown */
+/* stylelint-disable declaration-empty-line-before */
+:export {
+  colLight: $col-light;
+  colDark: $col-dark;
+
+  colPrimaryLight: $col-primary-light;
+  colPrimaryMain: $col-primary-main;
+  colPrimaryDark: $col-primary-dark;
+
+  colSecondaryLight: $col-secondary-light;
+  colSecondaryMain: $col-secondary-main;
+  colSecondaryDark: $col-secondary-dark;
+
+  colErrorLight: $col-error-light;
+  colErrorMain: $col-error-main;
+  colErrorDark: $col-error-dark;
+
+  colWarningLight: $col-warning-light;
+  colWarningMain: $col-warning-main;
+  colWarningDark: $col-warning-dark;
+
+  colSuccessLight: $col-success-light;
+  colSuccessMain: $col-success-main;
+  colSuccessDark: $col-success-dark;
+
+  colInfoLight: $col-info-light;
+  colInfoMain: $col-info-main;
+  colInfoDark: $col-info-dark;
+
+  colBgPrimary: $col-bg-primary;
+  colBgSecondary: $col-bg-secondary;
+  colBgTertiary: $col-bg-tertiary;
+  colBgDivider: $col-bg-divider;
+  colBgPaper: $col-bg-paper;
+
+  colTxtPrimaryLight: $col-txt-primary-light;
+  colTxtPrimaryDark: $col-txt-primary-dark;
+  colTxtSecondaryLight: $col-txt-secondary-light;
+  colTxtSecondaryDark: $col-txt-secondary-dark;
+  colTxtDisabledLight: $col-txt-disabled-light;
+  colTxtDisabledDark: $col-txt-disabled-dark;
+
+  colBorderLight: $col-border-light;
+}
+/* stylelint-enable property-case */
+/* stylelint-enable property-no-unknown */
+/* stylelint-enable order/properties-order */
+/* stylelint-enable selector-pseudo-class-no-unknown */
+/* stylelint-enable declaration-empty-line-before */

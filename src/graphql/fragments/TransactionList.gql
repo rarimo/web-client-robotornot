@@ -1,0 +1,21 @@
+fragment TransactionList on transaction {
+  messages
+  hash
+  success
+  fee
+  signer_infos
+  block {
+    timestamp
+    height
+    validator {
+      validator_info {
+        operator_address
+      }
+      validator_descriptions {
+        moniker
+        avatar_url
+      }
+    }
+  }
+}
+

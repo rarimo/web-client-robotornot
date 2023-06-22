@@ -1,0 +1,5 @@
+query GetBlockByHeight($height: bigint!) {
+  block( where: {height: {_eq: $height}}) {
+    ...Block
+  }
+}

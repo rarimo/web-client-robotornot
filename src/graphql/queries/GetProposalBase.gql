@@ -1,0 +1,5 @@
+query GetProposalBase($limit: Int, $offset: Int) {
+  proposal(limit: $limit, offset: $offset, order_by: {id: desc}) {
+    ...ProposalBase
+  }
+}

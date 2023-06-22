@@ -1,0 +1,6 @@
+fragment TallyResult on proposal_tally_result {
+  abstain
+  no
+  no_with_veto
+  yes
+}

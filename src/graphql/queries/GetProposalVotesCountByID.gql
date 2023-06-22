@@ -1,0 +1,9 @@
+query GetProposalVotesCountByID($id: Int!) {
+  proposal(where: {id: {_eq: $id}}) {
+    proposal_votes_aggregate {
+      aggregate {
+        count(columns: voter_address)
+      }
+    }
+  }
+}

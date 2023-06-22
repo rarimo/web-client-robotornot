@@ -1,0 +1,11 @@
+query GetValidatorByAddress($address: String!) {
+  validator( where: {validator_info: {operator_address: {_eq: $address}}}) {
+   ...Validator
+  }
+  slashing_params {
+    params
+  }
+  staking_pool {
+    bonded_tokens
+  }
+}

@@ -1,0 +1,29 @@
+fragment Validator on validator {
+  consensus_address
+  consensus_pubkey
+  validator_commissions {
+    commission
+    min_self_delegation
+  }
+  validator_descriptions {
+    avatar_url
+    moniker
+    website
+  }
+  validator_info {
+    operator_address
+    account {
+      address
+    }
+  }
+  validator_signing_infos {
+    missed_blocks_counter
+  }
+  validator_statuses {
+    jailed
+    status
+  }
+  validator_voting_powers {
+    voting_power
+  }
+}

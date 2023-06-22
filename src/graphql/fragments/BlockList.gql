@@ -1,0 +1,19 @@
+fragment BlockList on block {
+  height
+  timestamp
+  total_gas
+  transactions_aggregate {
+    aggregate {
+      count(columns: hash)
+    }
+  }
+  validator {
+    validator_info {
+      operator_address
+    }
+    validator_descriptions {
+      moniker
+      avatar_url
+    }
+  }
+}

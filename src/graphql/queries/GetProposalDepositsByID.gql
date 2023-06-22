@@ -1,0 +1,7 @@
+query GetProposalDepositsByID($id: Int!, $limit: Int, $offset: Int) {
+  proposal(where: {id: {_eq: $id}}) {
+    proposal_deposits(limit: $limit, offset: $offset) {
+      ...ProposalDeposit
+    }
+  }
+}

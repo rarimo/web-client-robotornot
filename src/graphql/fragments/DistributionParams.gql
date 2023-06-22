@@ -1,0 +1,3 @@
+fragment DistributionParams on distribution_params {
+  params
+}
