@@ -1,3 +1,4 @@
+import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense } from 'react'
 import {
   createBrowserRouter,
@@ -6,88 +7,65 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 
-import { Layout, StatusMessage } from '@/components'
-import { RoutePaths } from '@/enums'
-import Dashboard from '@/pages/Dashboard'
+import { AppNavbar } from '@/common'
+import { RoutesPaths } from '@/enums'
 
-const Proposals = lazy(() => import('@/pages/Proposals'))
-const Transactions = lazy(() => import('@/pages/Transactions'))
-const Proposal = lazy(() => import('@/pages/Proposal'))
-const Transaction = lazy(() => import('@/pages/Transaction'))
-const Account = lazy(() => import('@/pages/Account'))
-const Blocks = lazy(() => import('@/pages/Blocks'))
-const Block = lazy(() => import('@/pages/Block'))
-const Validators = lazy(() => import('@/pages/Validators'))
-const Validator = lazy(() => import('@/pages/Validator'))
-const Params = lazy(() => import('@/pages/Params'))
+export const AppRoutes = () => {
+  const StoreOverview = lazy(() => import('@/pages/StoreOverview'))
+  const UiKit = lazy(() => import('@/pages/UiKit'))
+  const ComplexForm = lazy(() => import('@/pages/ComplexForm'))
 
-const router = createBrowserRouter([
-  {
-    path: RoutePaths.Dashboard,
-    element: (
-      <Layout>
-        <Suspense fallback={<> </>}>
-          <Outlet />
-          <StatusMessage />
+  const pageAnimationOpts = {
+    initial: 'hide',
+    animate: 'show',
+    exit: 'hide',
+    variants: {
+      hide: {
+        opacity: 0,
+      },
+      show: {
+        opacity: 1,
+      },
+    },
+    transition: { duration: 0.5 },
+  }
+
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: (
+        <Suspense fallback={<></>}>
+          <AppNavbar className='app__navbar' />
+          <AnimatePresence>
+            <Outlet />
+          </AnimatePresence>
         </Suspense>
-      </Layout>
-    ),
-    children: [
-      {
-        index: true,
-        path: RoutePaths.Dashboard,
-        element: <Dashboard />,
-      },
-      {
-        path: '*',
-        element: <Navigate replace to={RoutePaths.Dashboard} />,
-      },
-      {
-        path: RoutePaths.Proposals,
-        element: <Proposals />,
-      },
-      {
-        path: RoutePaths.Proposal,
-        element: <Proposal />,
-      },
-      {
-        path: RoutePaths.Transactions,
-        element: <Transactions />,
-      },
-      {
-        path: RoutePaths.Transaction,
-        element: <Transaction />,
-      },
-      {
-        path: RoutePaths.Blocks,
-        element: <Blocks />,
-      },
-      {
-        path: RoutePaths.Block,
-        element: <Block />,
-      },
-      {
-        path: RoutePaths.Account,
-        element: <Account />,
-      },
-      {
-        path: RoutePaths.Validators,
-        element: <Validators />,
-      },
-      {
-        path: RoutePaths.Validator,
-        element: <Validator />,
-      },
-      {
-        path: RoutePaths.Params,
-        element: <Params />,
-      },
-    ],
-  },
-])
+      ),
+      children: [
+        {
+          index: true,
+          path: RoutesPaths.uiKit,
+          element: <UiKit {...pageAnimationOpts} />,
+        },
+        {
+          path: RoutesPaths.complexForm,
+          element: <ComplexForm {...pageAnimationOpts} />,
+        },
+        {
+          path: RoutesPaths.storeOverview,
+          element: <StoreOverview {...pageAnimationOpts} />,
+        },
+        {
+          path: '/',
+          element: <Navigate replace to={RoutesPaths.uiKit} />,
+        },
+        {
+          path: '*',
+          element: <Navigate replace to={RoutesPaths.uiKit} />,
+        },
+      ],
+    },
+  ])
 
-const AppRoutes = () => {
   return <RouterProvider router={router} />
 }
-
-export default AppRoutes

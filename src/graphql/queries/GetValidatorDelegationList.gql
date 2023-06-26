@@ -1,6 +1,0 @@
-query GetValidatorDelegationList($operator: String!, $limit: Int, $offset: Int) {
-  action_validator_delegations(address: $operator, count_total: true, limit: $limit, offset: $offset) {
-    delegations
-    pagination
-  }
-}

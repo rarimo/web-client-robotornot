@@ -1,106 +1,76 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.0.0] - 2023-06-25
 #### Added
-- Support of new proposal types to create proposal form
-- Ability to withdraw rewards for delegators
-- Ability to withdraw commission for validators
-
-#### Fixed
-- Proposal type localization
-- Vote message type localization
-- The error showing after search
-- Voting for proposals
-- Validation on proposal form
-- Update List votes, after voting
-- Fixed max deposit on proposal form
-- Search button disabled if input is empty
-- Proposal form validation
-- Proposal form wrapped label
-- Deposit input max value handling
-- Migrate to new versions web-kit
-- "Staking APR" title
-- Filter in account page
-
-#### Removed
-- Tokenomics section
-- Mint params block
-- Part of statistic block
-
-
-## [0.3.0] - 2023-02-14
-#### Added
-- Params page
-#### Fixed
-- Parsing raw log of transaction on transaction overview page
-- Rarimo core vote message type localization
-
-## [0.2.1] - 2023-01-23
-#### Fixed
-- WebSocket config variable name to be overridable
-
-## [0.2.0] - 2023-01-23
-#### Added
-- Network switcher
-- Tokenomics block
-- Consensus block
-#### Changed
-- Wrapped desktop navigation to the dropdown
-- Refactored header
-
-## [0.1.0] - 2023-01-18
-#### Added
-- Proposal create form
-- Apollo-client
-- Proposal list route
-- Latest transactions-list and latest block-list
-- Tally result to proposal details
-- Voting form
-- All transaction List
-- All block List
-- Account page
-- Transaction overview page
-- Dark scheme
-- Block overview page
-- Search bar on dashboard page
-- Eslint unused import plugin
-- Validators page
-- Long pool data
-- Delegation form
+- Fields
+  - Checkbox
+  - Basic Select with icon
+  - Switch
+  - Textarea
 
 #### Changed
-- CI docker image with preinstalled pnpm
-- Refactored loading with useLoading hook
-- Refactored table pagination with useTablePagination hook
-- Refactored app to support dark scheme
-- Refactored StatusMessage component
-- Keplr wallet chain config
-- Statistic board
-- Refactored table lists
-- Updated `iconoir-react` to `6.0.0`
-- Updated `@mui/material` to `5.11.4`
-- Exposed gasPriceStep config for Keplr wallet to the .env
+- Bump Eslint & Stylelint versions and fix deprecations
+- Notification toasts usage
+- Event bus usage
+- Store: `Redux` to `Valtio`
+- `Lodash-es` to `Lodash`
+- Vite config
 
-#### Fixed
-- Links to account page
-- Theme issues
-- Proposal types localization
+## [1.0.0-rc.1] - 2022-09-26
+#### Added
+- Eslint
+- Stylelint
+- prettier
+- Vite bundler
+- react-router-dom
+- store
+- axios api
+- CI/CD
+  - gitlab-ci
+  - werf.yaml
+- Dockerfile
+- nginx.conf
+- static dir as public dir
+  - branding static files
+  - styles and files for init-loader
+  - noscript files
+- sanity-check
+- ErrorHandler
+- Event Bus by mitt
+- i18n localization
+- MathUtil
+- DateUtil
+- Styles structure
+- commons
+  - AppButton
+  - App logo
+  - App navbar
+  - Collapse
+  - ErrorMessage
+  - Icon
+  - Loader
+    - Spinner
+  - Modal
+  - NoDataMessage
+  - Notification
+- Fields
+  - InputField
+  - CheckboxField
+  - SelectField
+- hooks
+  - useForm
+  - useFormValidation
+- Unit tests
 
-## [0.0.1] - 2022-12-14
+## [1.0.0-rc.0] - 2022-06-30
 #### Under the hood changes
-- Initiated project
-- Added basic layout
-- Added Keplr integration
+- Initiated and setup project
 
-[Unreleased]: https://gitlab.com/rarimo/dashboard/compare/0.3.0...main
-[0.3.0]: https://gitlab.com/rarimo/dashboard/compare/0.2.1...0.3.0
-[0.2.1]: https://gitlab.com/rarimo/dashboard/compare/0.2.0...0.2.1
-[0.2.0]: https://gitlab.com/rarimo/dashboard/compare/0.1.0...0.2.0
-[0.1.0]: https://gitlab.com/rarimo/dashboard/compare/0.0.1...0.1.0
-[0.0.1]: https://gitlab.com/rarimo/dashboard/tags/0.0.1
-
-[Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
-[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
+[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0...main
+[1.0.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0-rc.1...1.0.0
+[1.0.0-rc.1]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0-rc.0...1.0.0-rc.1
+[1.0.0-rc.0]: https://gitlab.com/distributed_lab/frontend/react-template/tags/1.0.0-rc.0

@@ -1,0 +1,25 @@
+$z-index-local: 100;
+
+.modal {
+  --max-width: #{toRem(600)};
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: vh(100);
+  background: rgba(var(--black-rgb), 0.5);
+  z-index: $z-index-local;
+}
+
+.modal__pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: auto;
+  max-width: var(--max-width);
+}

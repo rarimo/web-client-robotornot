@@ -1,0 +1,22 @@
+.login-form {
+  display: grid;
+  grid-gap: toRem(24);
+}
+
+.login-form__controls {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+}
+
+.login-form__row {
+  display: flex;
+  align-items: flex-start;
+  gap: toRem(24);
+}
+
+.login-form__col {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+}

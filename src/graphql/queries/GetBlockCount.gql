@@ -1,7 +1,0 @@
-query GetBlockCount($where: block_bool_exp) {
-  block_aggregate(where: $where) {
-    aggregate {
-      count(columns: height)
-    }
-  }
-}

@@ -11,7 +11,6 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
-    'plugin:react-i18n/recommended',
     'prettier',
   ],
   overrides: [
@@ -24,13 +23,7 @@ module.exports = {
       ],
     },
   ],
-  plugins: [
-    'unused-imports',
-    'simple-import-sort',
-    'prettier',
-    '@typescript-eslint',
-    'react-i18n',
-  ],
+  plugins: ['simple-import-sort', 'prettier', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: '.',
@@ -55,6 +48,12 @@ module.exports = {
       version: 'detect',
     },
   },
+  globals: {
+    defineProps: 'readonly',
+    defineEmits: 'readonly',
+    defineExpose: 'readonly',
+    withDefaults: 'readonly',
+  },
   rules: {
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'arrow-parens': 0,
@@ -66,12 +65,6 @@ module.exports = {
         location: 'anywhere',
       },
     ],
-    'no-console': [
-      1,
-      {
-        allow: ['warn', 'error'],
-      },
-    ],
     'no-return-await': 0,
     'object-curly-spacing': ['error', 'always'],
     'simple-import-sort/imports': 'error',
@@ -80,24 +73,23 @@ module.exports = {
     'comma-dangle': [1, 'always-multiline'],
     'linebreak-style': ['error', 'unix'],
     '@typescript-eslint/no-non-null-assertion': 'off',
-    'react-i18n/no-dynamic-translation-keys': 'error',
-    'react-i18n/no-missing-interpolation-keys': 'error',
-    'no-restricted-imports': [
-      'error',
+    'max-len': [
+      1,
       {
-        patterns: ['@mui/*/*/*', '!@mui/material/test-utils/*'],
+        code: 80,
+        comments: 80,
+        ignoreUrls: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+        ignoreRegExpLiterals: true,
       },
     ],
-    '@typescript-eslint/no-unused-vars': 'off',
-    'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'warn',
+    'no-console': [
+      1,
       {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'after-used',
-        argsIgnorePattern: '^_',
+        allow: ['warn', 'error'],
       },
     ],
+    'react/display-name': 'off',
   },
 }

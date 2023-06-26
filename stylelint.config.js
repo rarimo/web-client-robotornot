@@ -1,17 +1,29 @@
 // https://stylelint.io/user-guide/rules/
 
 module.exports = {
-  plugins: [
-    'stylelint-scss',
-    'stylelint-declaration-strict-value',
-    'stylelint-prettier',
-  ],
-  extends: [
-    'stylelint-config-standard-scss',
-    '@comparaonline/stylelint-config-scss-modules',
-    'stylelint-config-prettier',
-  ],
+  plugins: ['stylelint-scss', 'stylelint-declaration-strict-value'],
+  extends: ['stylelint-config-standard-scss'],
   rules: {
+    /* disable unnecessary rules from recommended extends */
+    'function-no-unknown': null,
+    'at-rule-no-unknown': null,
+    'no-empty-first-line': null,
+    'selector-class-pattern': null,
+    'function-name-case': null,
+    'selector-no-vendor-prefix': null,
+    'custom-property-empty-line-before': null,
+    'no-empty-source': null,
+    'scss/at-else-empty-line-before': null,
+    'scss/at-if-closing-brace-space-after': null,
+    'scss/at-if-closing-brace-newline-after': null,
+    'scss/at-else-closing-brace-newline-after': null,
+    'scss/at-else-closing-brace-space-after': null,
+    'declaration-colon-newline-after': null,
+    'scss/at-function-pattern': null,
+    'scss/at-rule-no-unknown': null,
+    'scss/selector-no-redundant-nesting-selector': null,
+    'max-nesting-depth': null,
+
     'color-no-invalid-hex': [true, { severity: 'warning' }],
     'font-family-no-duplicate-names': [true, { severity: 'warning' }],
     'font-family-no-missing-generic-family-keyword': [
@@ -46,15 +58,15 @@ module.exports = {
     'media-feature-name-no-unknown': [true, { severity: 'warning' }],
     'comment-no-empty': [true, { severity: 'warning' }],
     'no-duplicate-at-import-rules': [true, { severity: 'warning' }],
-    'no-extra-semicolons': [true, { severity: 'warning' }],
     'number-max-precision': [6, { severity: 'warning' }],
-    'time-min-milliseconds': [50, { severity: 'warning' }],
+    'time-min-milliseconds': [100, { severity: 'warning' }],
     'unit-disallowed-list': [
       ['px', 'cm', 'mm', 'pt', 'in', 'pc'],
       {
         severity: 'warning',
         /**
-         * it's not working with '["px", "dpi"]' syntax as in example in the docs
+         * it's not working with '["px", "dpi"]' syntax
+         * as in example in the docs
          * so we need to use this hack with regex.
          */
         ignoreMediaFeatureNames: {
@@ -104,184 +116,45 @@ module.exports = {
       1,
       { severity: 'warning' },
     ],
-    'selector-max-empty-lines': [0, { severity: 'warning' }],
     'at-rule-no-vendor-prefix': [true, { severity: 'warning' }],
     'no-unknown-animations': [true, { severity: 'warning' }],
-    'color-hex-case': ['lower', { severity: 'warning' }],
     'color-hex-length': ['long', { severity: 'warning' }],
     'font-family-name-quotes': [
       'always-unless-keyword',
       { severity: 'warning' },
     ],
     'font-weight-notation': ['numeric', { severity: 'warning' }],
-    'function-comma-newline-after': [
-      'always-multi-line',
-      { severity: 'warning' },
-    ],
-    'function-comma-newline-before': [
-      'never-multi-line',
-      { severity: 'warning' },
-    ],
-    'function-comma-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'function-comma-space-before': ['never', { severity: 'warning' }],
-    'function-max-empty-lines': [0, { severity: 'warning' }],
-    'function-parentheses-newline-inside': [
-      'always-multi-line',
-      { severity: 'warning' },
-    ],
-    'function-parentheses-space-inside': [
-      'never-single-line',
-      { severity: 'warning' },
-    ],
     'function-url-quotes': ['always', { severity: 'warning' }],
-    'function-whitespace-after': ['always', { severity: 'warning' }],
-    'number-leading-zero': ['always', { severity: 'warning' }],
-    'number-no-trailing-zeros': [true, { severity: 'warning' }],
-    'string-quotes': ['single', { severity: 'warning' }],
     'length-zero-no-unit': [true, { severity: 'warning' }],
-    'unit-case': ['lower', { severity: 'warning' }],
     'value-keyword-case': ['lower', { severity: 'warning' }],
-    'value-list-comma-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'value-list-comma-space-before': ['never', { severity: 'warning' }],
-    'value-list-max-empty-lines': [0, { severity: 'warning' }],
-    'property-case': ['lower', { severity: 'warning' }],
-    'declaration-bang-space-after': ['never', { severity: 'warning' }],
-    'declaration-bang-space-before': ['always', { severity: 'warning' }],
-    'declaration-colon-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'declaration-colon-space-before': ['never', { severity: 'warning' }],
-    'declaration-block-semicolon-newline-after': [
-      'always-multi-line',
-      { severity: 'warning' },
-    ],
-    'declaration-block-semicolon-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'declaration-block-trailing-semicolon': ['always', { severity: 'warning' }],
-    'block-closing-brace-empty-line-before': ['never', { severity: 'warning' }],
-    'block-closing-brace-newline-after': [
-      'always',
-      { severity: 'warning', ignoreAtRules: ['if', 'else'] },
-    ],
-    'block-closing-brace-space-before': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'block-opening-brace-newline-after': [
-      'always-multi-line',
-      { severity: 'warning' },
-    ],
-    'block-opening-brace-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'block-opening-brace-space-before': ['always', { severity: 'warning' }],
-    'selector-attribute-brackets-space-inside': [
-      'never',
-      { severity: 'warning' },
-    ],
-    'selector-attribute-operator-space-after': [
-      'never',
-      { severity: 'warning' },
-    ],
-    'selector-attribute-operator-space-before': [
-      'never',
-      { severity: 'warning' },
-    ],
     'selector-attribute-quotes': ['always', { severity: 'warning' }],
-    'selector-combinator-space-after': ['always', { severity: 'warning' }],
-    'selector-combinator-space-before': ['always', { severity: 'warning' }],
-    'selector-pseudo-class-case': ['lower', { severity: 'warning' }],
-    'selector-pseudo-class-parentheses-space-inside': [
-      'never',
-      { severity: 'warning' },
-    ],
-    'selector-pseudo-element-case': ['lower', { severity: 'warning' }],
     'selector-pseudo-element-colon-notation': [
       'single',
       { severity: 'warning' },
     ],
     'selector-type-case': ['lower', { severity: 'warning' }],
-    'selector-list-comma-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
-    ],
-    'selector-list-comma-space-before': ['never', { severity: 'warning' }],
-    'media-feature-colon-space-after': ['always', { severity: 'warning' }],
-    'media-feature-colon-space-before': ['never', { severity: 'warning' }],
-    'media-feature-name-case': ['lower', { severity: 'warning' }],
-    'media-feature-parentheses-space-inside': [
-      'never',
-      { severity: 'warning' },
-    ],
-    'media-feature-range-operator-space-after': [
-      'always',
-      { severity: 'warning' },
-    ],
-    'media-feature-range-operator-space-before': [
-      'always',
-      { severity: 'warning' },
-    ],
-    'media-query-list-comma-newline-after': [
+    'rule-empty-line-before': [
       'always-multi-line',
-      { severity: 'warning' },
-    ],
-    'media-query-list-comma-space-after': [
-      'always-single-line',
-      { severity: 'warning' },
+      {
+        severity: 'warning',
+        ignore: ['after-comment', 'first-nested'],
+      },
     ],
     'at-rule-empty-line-before': [
       'always',
       {
         severity: 'warning',
-        except: ['first-nested'],
-        ignore: [
-          'after-comment',
-          'first-nested',
-          'inside-block',
-          'blockless-after-same-name-blockless',
-          'blockless-after-blockless',
-        ],
+        ignore: ['after-comment', 'first-nested'],
       },
     ],
-    'at-rule-name-case': ['lower', { severity: 'warning' }],
-    'at-rule-name-space-after': ['always', { severity: 'warning' }],
-    'at-rule-semicolon-newline-after': ['always', { severity: 'warning' }],
-    'at-rule-semicolon-space-before': ['never', { severity: 'warning' }],
     'comment-whitespace-inside': ['always', { severity: 'warning' }],
-    linebreaks: ['unix', { severity: 'warning' }],
-    'max-empty-lines': [
-      1,
-      {
-        severity: 'warning',
-        ignore: ['comments'],
-      },
-    ],
-    'max-line-length': [
-      80,
-      {
-        severity: 'warning',
-        ignore: ['comments'],
-      },
-    ],
-    'no-eol-whitespace': [true, { severity: 'warning' }],
     /**
      * disallow to use defined properties without variables
      */
     'scale-unlimited/declaration-strict-value': [
       ['/color/', 'z-index', 'fill', 'stroke'],
       {
-        ignoreFunctions: true,
-        ignoreVariables: true,
+        ignoreFunctions: false,
         ignoreKeywords: {
           // '' means default, for all
           '': ['currentColor', 'transparent', 'inherit', 'initial'],
@@ -290,32 +163,16 @@ module.exports = {
         },
       },
     ],
-    'function-name-case': [
-      'lower',
-      {
-        ignoreFunctions: ['/[a-z]+/i'],
-      },
+    'selector-pseudo-class-no-unknown': [true, { severity: 'warning' }],
+    'selector-pseudo-element-no-unknown': [
+      true,
+      { ignorePseudoElements: ['v-deep', 'v-global'], severity: 'warning' },
     ],
-    'color-named': 'never',
-    'at-rule-no-unknown': null,
-    'scss/at-rule-no-unknown': null,
-    'selector-max-id': null,
-    'scss/dollar-variable-empty-line-before': null,
-    'no-empty-first-line': null,
-    'selector-class-pattern': null,
-    'selector-no-vendor-prefix': null,
-    'custom-property-empty-line-before': null,
-    'no-empty-source': null,
-    'scss/at-else-empty-line-before': null,
-    'scss/at-if-closing-brace-space-after': null,
-    'scss/at-if-closing-brace-newline-after': null,
-    'scss/at-else-closing-brace-newline-after': null,
-    'scss/at-else-closing-brace-space-after': null,
-    'declaration-colon-newline-after': null,
-    'scss/at-function-pattern': null,
-    'order/properties-order': null,
-    'scss/selector-no-redundant-nesting-selector': null,
-    'color-function-notation': null,
+    'no-duplicate-selectors': [true, { severity: 'warning' }],
+    'no-descending-specificity': [true, { severity: 'warning' }],
+    'color-function-notation': 'legacy',
+    'scss/at-mixin-parentheses-space-before': 'always',
+    'alpha-value-notation': 'number',
     'selector-not-notation': 'simple',
   },
 }

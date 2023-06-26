@@ -1,0 +1,12 @@
+.skeleton-table {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+}
+
+.skeleton-table__row {
+  display: grid;
+  align-items: center;
+  grid-gap: toRem(16);
+}

@@ -1,0 +1,33 @@
+.app-navbar {
+  display: flex;
+  align-items: center;
+  gap: toRem(24);
+  padding: toRem(24) var(--app-padding-right) toRem(24) var(--app-padding-left);
+  background: var(--background-primary-main);
+  border-bottom: var(--border-primary-main);
+
+  @include respond-to(tablet) {
+    flex-wrap: wrap;
+  }
+}
+
+.app-navbar__logo {
+  margin-right: auto;
+  max-width: toRem(56);
+
+  @include respond-to(xsmall) {
+    width: 100%;
+  }
+}
+
+.app-navbar__link {
+  opacity: 0.25;
+
+  &:first-child {
+    margin-left: auto;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+}

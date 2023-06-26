@@ -1,5 +1,0 @@
-query GetProposalCollection {
-  collection {
-    index
-  }
-}

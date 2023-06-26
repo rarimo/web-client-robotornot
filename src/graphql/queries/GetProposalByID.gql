@@ -1,5 +1,0 @@
-query GetProposalByID($id: Int!) {
-  proposal(where: {id: {_eq: $id}}) {
-    ...Proposal
-  }
-}

@@ -1,7 +1,0 @@
-fragment ProposalBase on proposal {
-  id
-  proposer_address
-  proposal_type
-  title
-  status
-}

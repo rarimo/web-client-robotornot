@@ -1,5 +1,0 @@
-query GetTransactionByHash($hash: String!) {
-  transaction( where: {hash: {_eq: $hash}}) {
-   ...Transaction
-  }
-}

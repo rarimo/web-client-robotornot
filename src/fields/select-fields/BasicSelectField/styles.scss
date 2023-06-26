@@ -1,0 +1,27 @@
+.basic-select-field__header {
+  display: flex;
+  align-items: center;
+  gap: toRem(16);
+}
+
+.basic-select-field__option {
+  display: flex;
+  align-items: center;
+  gap: toRem(16);
+  padding: var(--field-padding);
+
+  &:hover {
+    background: var(--background-primary-main);
+    opacity: 0.75;
+  }
+
+  &--active {
+    background: var(--background-primary-main);
+  }
+}
+
+.basic-select-field__header-icon,
+.basic-select-field__option-icon {
+  width: 1.5em;
+  height: 1.5em;
+}

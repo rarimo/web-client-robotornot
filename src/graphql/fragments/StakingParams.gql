@@ -1,3 +1,0 @@
-fragment StakingParams on staking_params {
-  params
-}

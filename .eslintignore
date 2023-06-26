@@ -6,6 +6,3 @@ playground
 index.html
 *.md
 static/env.js
-.eslintcache
-src/types/graphql.ts
-src/graphql

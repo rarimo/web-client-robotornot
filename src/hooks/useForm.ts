@@ -1,36 +1,9 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
-import {
-  DeepPartial,
-  FieldError,
-  useForm as useFormHook,
-} from 'react-hook-form'
-import * as Yup from 'yup'
 
-export const useForm = <T extends Yup.AnyObjectSchema, R extends object>(
-  defaultValues: R,
-  schemaBuilder: (yup: typeof Yup) => T,
-) => {
+export const useForm = () => {
   const [isFormDisabled, setIsFormDisabled] = useState(false)
-
-  const {
-    control,
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useFormHook({
-    mode: 'onTouched',
-    reValidateMode: 'onChange',
-    criteriaMode: 'firstError',
-    shouldUseNativeValidation: false,
-    defaultValues: defaultValues as DeepPartial<R>,
-    resolver: yupResolver(schemaBuilder(Yup)),
-  })
-
-  const getErrorMessage = (error?: FieldError) => {
-    return error?.message ?? ''
-  }
+  const [isFormPending, setIsFormPending] = useState(false)
+  const [isConfirmationShown, setIsConfirmationShown] = useState(false)
 
   const disableForm = () => {
     setIsFormDisabled(true)
@@ -40,15 +13,31 @@ export const useForm = <T extends Yup.AnyObjectSchema, R extends object>(
     setIsFormDisabled(false)
   }
 
+  const showConfirmation = () => {
+    disableForm()
+    setIsConfirmationShown(true)
+  }
+
+  const hideConfirmation = () => {
+    enableForm()
+    setIsConfirmationShown(false)
+  }
+
+  const hideConfirmationAfterSubmit = async (submitFn: () => void) => {
+    setIsFormPending(true)
+    await submitFn()
+    hideConfirmation()
+    setIsFormPending(false)
+  }
+
   return {
     isFormDisabled,
-    getErrorMessage,
-    enableForm,
+    isFormPending,
+    isConfirmationShown,
     disableForm,
-    formState: watch(),
-    formErrors: errors,
-    register,
-    handleSubmit,
-    control,
+    enableForm,
+    showConfirmation,
+    hideConfirmation,
+    hideConfirmationAfterSubmit,
   }
 }

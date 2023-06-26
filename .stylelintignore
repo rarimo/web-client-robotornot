@@ -1,4 +1,6 @@
-src/styles/reset.scss
+src/styles/_reset.scss
+src/styles/_colors.scss
 static
 dist
 stats.html
+{**/*,*}.{js,ts,jsx,tsx,html}
