@@ -1,16 +1,12 @@
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import react from '@vitejs/plugin-react'
-/**
- * @description Enable import if you need polyfills
- *
- * import { nodePolyfills } from 'vite-plugin-node-polyfills'
- * import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
- * import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
- */
 import * as fs from 'fs'
 import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import { checker } from 'vite-plugin-checker'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -83,34 +79,30 @@ export default defineConfig(({ mode }) => {
         '@static': `${root}/../static`,
       },
     },
-    /**
-     * @description Enable configuration for polyfills
-     *
-     * optimizeDeps: {
-     *       esbuildOptions: {
-     *         define: {
-     *           global: 'globalThis',
-     *         },
-     *       },
-     *       // Enable esbuild polyfill plugins
-     *       plugins: [
-     *         NodeGlobalsPolyfillPlugin({
-     *           process: true,
-     *           buffer: true,
-     *         }),
-     *         NodeModulesPolyfillPlugin(),
-     *       ],
-     *     },
-     *     build: {
-     *       target: 'esnext',
-     *       rollupOptions: {
-     *         plugins: [
-     *           // Enable rollup polyfills plugin
-     *           // used during production bundling
-     *           nodePolyfills(),
-     *         ],
-     *       },
-     *     },
-     */
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: 'globalThis',
+        },
+      },
+      // Enable esbuild polyfill plugins
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          process: true,
+          buffer: true,
+        }),
+        NodeModulesPolyfillPlugin(),
+      ],
+    },
+    build: {
+      target: 'esnext',
+      rollupOptions: {
+        plugins: [
+          // Enable rollup polyfills plugin
+          // used during production bundling
+          nodePolyfills(),
+        ],
+      },
+    },
   }
 })

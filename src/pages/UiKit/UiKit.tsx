@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { PROVIDERS } from '@distributedlab/w3p'
 import { motion, MotionProps } from 'framer-motion'
 import { FC, HTMLAttributes, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,6 +14,7 @@ import {
   Loader,
   NoDataMessage,
 } from '@/common'
+import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import {
   BasicSelectField,
@@ -47,6 +49,8 @@ const BASIC_SELECT_OPTIONS = [
 ]
 
 const UiKit: FC<Props> = ({ ...rest }) => {
+  const { provider, init } = useWeb3Context()
+
   const [input, setInput] = useState('')
   const [select, setSelect] = useState('')
   const [basicSelect, setBasicSelect] = useState('')
@@ -65,8 +69,13 @@ const UiKit: FC<Props> = ({ ...rest }) => {
 
   return (
     <motion.main className='ui-kit' {...rest}>
+      {provider?.address}
       <div className='ui-kit__buttons'>
-        <AppButton size='small' text='button' />
+        <AppButton
+          size='small'
+          text='button'
+          onClick={() => init(PROVIDERS.Metamask)}
+        />
         <AppButton size='small' text='button' scheme='flat' />
         <AppButton size='small' text='button' scheme='none' />
 

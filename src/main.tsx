@@ -7,11 +7,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { App } from '@/App'
+import { Web3ProviderContextProvider } from '@/contexts'
 
 const root = createRoot(document.getElementById('root') as Element)
 
 root.render(
   <StrictMode>
-    <App />
+    <Web3ProviderContextProvider>
+      <App />
+    </Web3ProviderContextProvider>
   </StrictMode>,
 )
