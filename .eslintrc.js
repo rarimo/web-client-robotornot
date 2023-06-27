@@ -55,6 +55,9 @@ module.exports = {
     withDefaults: 'readonly',
   },
   rules: {
+    // disable unnecessary rules from recommendations
+    '@typescript-eslint/no-non-null-assertion': 'off',
+
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'arrow-parens': 0,
     'no-debugger': 1,
@@ -72,7 +75,6 @@ module.exports = {
     'no-var': 'error',
     'comma-dangle': [1, 'always-multiline'],
     'linebreak-style': ['error', 'unix'],
-    '@typescript-eslint/no-non-null-assertion': 'off',
     'max-len': [
       1,
       {

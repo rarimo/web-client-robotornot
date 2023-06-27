@@ -5,16 +5,13 @@ import {
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
-  ProviderUserRejectedRequest,
 } from '@distributedlab/w3p'
-import debounce from 'lodash/debounce'
 import {
   createContext,
   FC,
   HTMLAttributes,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
 } from 'react'
 import { useLocalStorage } from 'react-use'
@@ -77,51 +74,59 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
-  const provider = useProvider(
-    storageState?.providerType
-      ? SUPPORTED_PROVIDERS_MAP[storageState.providerType]
-      : undefined,
-    useMemo(
-      () => ({
-        providerDetector,
-        listeners: {},
-      }),
-      [providerDetector],
-    ),
-  )
+  const provider = useProvider()
 
   const isValidChain = useMemo(() => true, [])
 
   const init = useCallback(
     async (providerType?: SUPPORTED_PROVIDERS) => {
       try {
-        console.log(storageState?.providerType)
         setStorageState({
           providerType: providerType || storageState?.providerType,
         })
+
+        await providerDetector.init()
+
+        // TODO: fill config and set chains details
+        Provider.setChainsDetails({})
+
+        const currentProviderType = providerType || storageState?.providerType
+
+        console.log('currentProviderType', currentProviderType)
+
+        if (!currentProviderType) return
+
+        console.log('here', SUPPORTED_PROVIDERS_MAP[currentProviderType])
+
+        await provider.init(
+          SUPPORTED_PROVIDERS_MAP[
+            currentProviderType
+          ] as ProviderProxyConstructor,
+          {
+            providerDetector,
+            listeners: {},
+          },
+        )
+
+        // TODO: because of setState in useProvider, in this step provider still undefined
+        console.log(provider.rawProvider)
+
+        if (!provider.isConnected) {
+          await provider?.connect?.()
+        }
       } catch (error) {
         removeStorageState()
       }
     },
-    [removeStorageState, setStorageState, storageState?.providerType],
+    [
+      provider,
+      providerDetector,
+      removeStorageState,
+      setStorageState,
+      storageState?.providerType,
+    ],
   )
 
-  const initProvider = useCallback(async () => {
-    try {
-      await providerDetector.init()
-
-      // TODO: fill config and set chains details
-      Provider.setChainsDetails({})
-
-      if (!provider.isConnected) {
-        await provider?.connect?.()
-      }
-    } catch (error) {
-      if (error instanceof ProviderUserRejectedRequest) {
-        removeStorageState()
-      }
-    }
-  }, [provider, providerDetector, removeStorageState])
   const addProvider = (provider: ProviderInstance) => {
     if (providerDetector.providers?.[provider.name]) return
 
@@ -138,15 +143,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
     await init()
   }, [init, provider, removeStorageState])
-
-  useEffect(
-    debounce(() => {
-      if (storageState?.providerType) {
-        initProvider()
-      }
-    }, 100),
-    [initProvider, storageState],
-  )
 
   return (
     <web3ProviderContext.Provider

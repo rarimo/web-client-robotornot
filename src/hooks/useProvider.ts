@@ -11,6 +11,7 @@ import {
   TransactionResponse,
   TxRequestBody,
 } from '@distributedlab/w3p'
+import debounce from 'lodash/debounce'
 import { useCallback, useEffect, useState } from 'react'
 
 const PROVIDER_EVENTS: Array<keyof IProvider> = [
@@ -21,10 +22,7 @@ const PROVIDER_EVENTS: Array<keyof IProvider> = [
   'onDisconnect',
 ]
 
-export function useProvider<T extends keyof Record<string, string>>(
-  providerProxy?: ProviderProxyConstructor,
-  createProviderOpts?: CreateProviderOpts<T>,
-) {
+export function useProvider<T extends keyof Record<string, string>>() {
   const [provider, setProvider] = useState<IProvider>()
   const [rawProvider, setRawProvider] = useState<RawProvider>()
   const [providerReactiveState, setProviderReactiveState] = useState(() => {
@@ -88,44 +86,44 @@ export function useProvider<T extends keyof Record<string, string>>(
     })
   }, [provider])
 
-  useEffect(() => {
-    if (!providerProxy) return
+  const init = async (
+    providerProxy: ProviderProxyConstructor,
+    createProviderOpts?: CreateProviderOpts<T>,
+  ) => {
+    const initializedProvider = await createProvider(
+      providerProxy,
+      createProviderOpts,
+    )
 
-    const initProvider = async () => {
-      const initedProvider = await createProvider(
-        providerProxy,
-        createProviderOpts,
-      )
+    setRawProvider(
+      createProviderOpts?.providerDetector?.getProvider(
+        providerProxy.providerType as PROVIDERS,
+      )?.instance,
+    )
 
-      setRawProvider(
-        createProviderOpts?.providerDetector?.getProvider(
-          providerProxy.providerType as PROVIDERS,
-        )?.instance,
-      )
+    setProvider(initializedProvider)
+  }
 
-      setProvider(initedProvider)
-    }
-
-    initProvider()
-  }, [providerProxy, createProviderOpts])
-
-  useEffect(() => {
-    provider?.clearHandlers?.()
-    setListeners()
-
-    setProviderReactiveState(prev => ({
-      ...prev,
-      address: provider?.address,
-      isConnected: provider?.isConnected,
-      chainId: provider?.chainId,
-      chainType: provider?.chainType,
-      providerType: provider?.providerType,
-    }))
-
-    return () => {
+  useEffect(
+    debounce(() => {
       provider?.clearHandlers?.()
-    }
-  }, [provider, setListeners])
+      setListeners()
+
+      setProviderReactiveState(prev => ({
+        ...prev,
+        address: provider?.address,
+        isConnected: provider?.isConnected,
+        chainId: provider?.chainId,
+        chainType: provider?.chainType,
+        providerType: provider?.providerType,
+      }))
+
+      return () => {
+        provider?.clearHandlers?.()
+      }
+    }, 100),
+    [provider, setListeners],
+  )
 
   return {
     provider,
@@ -133,6 +131,7 @@ export function useProvider<T extends keyof Record<string, string>>(
 
     ...providerReactiveState,
 
+    init,
     connect,
     switchChain,
     addChain,

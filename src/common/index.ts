@@ -1,4 +1,5 @@
 export { default as AppButton } from './AppButton'
+export { default as AppFooter } from './AppFooter'
 export { default as AppLogo } from './AppLogo'
 export { default as AppNavbar } from './AppNavbar'
 export { default as Collapse } from './Collapse'

@@ -7,51 +7,48 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 
-import { AppNavbar } from '@/common'
+import { AppFooter, AppNavbar } from '@/common'
 import { RoutesPaths } from '@/enums'
+import { AuthLayout } from '@/layouts'
 
 export const AppRoutes = () => {
-  const UiKit = lazy(() => import('@/pages/UiKit'))
-
-  const pageAnimationOpts = {
-    initial: 'hide',
-    animate: 'show',
-    exit: 'hide',
-    variants: {
-      hide: {
-        opacity: 0,
-      },
-      show: {
-        opacity: 1,
-      },
-    },
-    transition: { duration: 0.5 },
-  }
+  const AuthProviders = lazy(
+    () => import('@/pages/AuthProviders/AuthProviders'),
+  )
 
   const router = createBrowserRouter([
     {
-      path: '/',
+      path: RoutesPaths.app,
       element: (
         <Suspense fallback={<></>}>
-          <AppNavbar className='app__navbar' />
+          <AppNavbar />
           <AnimatePresence>
-            <Outlet />
+            <div className='app__main'>
+              <Outlet />
+            </div>
           </AnimatePresence>
+          <AppFooter />
         </Suspense>
       ),
       children: [
         {
-          index: true,
-          path: RoutesPaths.uiKit,
-          element: <UiKit {...pageAnimationOpts} />,
+          path: RoutesPaths.auth,
+          element: <AuthLayout />,
+          children: [
+            {
+              index: true,
+              path: RoutesPaths.authProviders,
+              element: <AuthProviders />,
+            },
+          ],
         },
         {
           path: '/',
-          element: <Navigate replace to={RoutesPaths.uiKit} />,
+          element: <Navigate replace to={RoutesPaths.authProviders} />,
         },
         {
           path: '*',
-          element: <Navigate replace to={RoutesPaths.uiKit} />,
+          element: <Navigate replace to={RoutesPaths.authProviders} />,
         },
       ],
     },

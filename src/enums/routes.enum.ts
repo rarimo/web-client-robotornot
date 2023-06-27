@@ -1,5 +1,11 @@
 export enum RoutesPaths {
-  storeOverview = '/store',
+  app = '/',
+
+  auth = '/auth',
+  authProviders = '/auth/providers',
+  authPreview = '/auth/preview',
+  authConfirmation = '/auth/confirmation',
+  authSuccess = '/auth/success',
+
   uiKit = '/ui-kit',
-  complexForm = '/complex-form',
 }
