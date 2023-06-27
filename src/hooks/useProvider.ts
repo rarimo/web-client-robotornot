@@ -11,7 +11,6 @@ import {
   TransactionResponse,
   TxRequestBody,
 } from '@distributedlab/w3p'
-import debounce from 'lodash/debounce'
 import { useCallback, useEffect, useState } from 'react'
 
 const PROVIDER_EVENTS: Array<keyof IProvider> = [
@@ -104,26 +103,23 @@ export function useProvider<T extends keyof Record<string, string>>() {
     setProvider(initializedProvider)
   }
 
-  useEffect(
-    debounce(() => {
+  useEffect(() => {
+    provider?.clearHandlers?.()
+    setListeners()
+
+    setProviderReactiveState(prev => ({
+      ...prev,
+      address: provider?.address,
+      isConnected: provider?.isConnected,
+      chainId: provider?.chainId,
+      chainType: provider?.chainType,
+      providerType: provider?.providerType,
+    }))
+
+    return () => {
       provider?.clearHandlers?.()
-      setListeners()
-
-      setProviderReactiveState(prev => ({
-        ...prev,
-        address: provider?.address,
-        isConnected: provider?.isConnected,
-        chainId: provider?.chainId,
-        chainType: provider?.chainType,
-        providerType: provider?.providerType,
-      }))
-
-      return () => {
-        provider?.clearHandlers?.()
-      }
-    }, 100),
-    [provider, setListeners],
-  )
+    }
+  }, [provider, setListeners])
 
   return {
     provider,

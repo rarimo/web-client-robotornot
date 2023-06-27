@@ -61,8 +61,6 @@ const SUPPORTED_PROVIDERS_MAP: {
 const STORAGE_KEY = 'web3-provider'
 
 const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
-  console.log('render')
-
   const providerDetector = useMemo(
     () => new ProviderDetector<SUPPORTED_PROVIDERS>(),
     [],
@@ -92,11 +90,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         const currentProviderType = providerType || storageState?.providerType
 
-        console.log('currentProviderType', currentProviderType)
-
         if (!currentProviderType) return
-
-        console.log('here', SUPPORTED_PROVIDERS_MAP[currentProviderType])
 
         await provider.init(
           SUPPORTED_PROVIDERS_MAP[
@@ -108,8 +102,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           },
         )
 
-        // TODO: because of setState in useProvider, in this step provider still undefined
-        console.log(provider.rawProvider)
+        // TODO: because of setState in useProvider,
+        //  in this step provider still undefined
 
         if (!provider.isConnected) {
           await provider?.connect?.()
