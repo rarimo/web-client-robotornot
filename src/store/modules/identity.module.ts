@@ -10,6 +10,8 @@ export const identityStore = proxy<{
     Identity.setConfig({
       AUTH_BJJ_CREDENTIAL_HASH: 'cca3371a6cb1b715004407e325bd993c',
     })
-    identityStore.identity = await Identity.create()
+    identityStore.identity = await Identity.create(
+      '5f64909f5df6b502133b5828169feb69612d0a6eb5da97fd4c18d5153249497f',
+    )
   },
 })

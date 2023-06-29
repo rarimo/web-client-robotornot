@@ -1,16 +1,38 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { PROVIDERS } from '@distributedlab/w3p'
+import { FC, HTMLAttributes, useCallback } from 'react'
+import { useEffectOnce } from 'react-use'
 
-import { AppLogo } from '@/common'
+import { AppButton, AppLogo } from '@/common'
+import { useWeb3Context } from '@/contexts'
+import { ErrorHandler } from '@/helpers'
 
 const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   className = '',
   ...rest
 }) => {
+  const { provider, init } = useWeb3Context()
+
+  const connectProvider = useCallback(async () => {
+    try {
+      await init(PROVIDERS.Metamask)
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [init])
+
+  useEffectOnce(() => {
+    init(PROVIDERS.Metamask)
+  })
+
   return (
     <div className={`app-navbar ${className}`} {...rest}>
       <AppLogo className='app-navbar__logo' />
+      <AppButton
+        text={!provider?.isConnected ? `Connect Metamask` : provider?.address}
+        onClick={connectProvider}
+      />
     </div>
   )
 }

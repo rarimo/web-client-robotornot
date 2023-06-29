@@ -1,5 +1,6 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -23,8 +24,6 @@ export default defineConfig(({ mode }) => {
   const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
   const buildVersion = env.VITE_APP_BUILD_VERSION
 
-  console.log('isAnalyze', isAnalyze)
-
   return {
     ...(env.VITE_PORT
       ? {
@@ -35,6 +34,7 @@ export default defineConfig(({ mode }) => {
       : {}),
     publicDir: 'static',
     plugins: [
+      // viteCommonjs(),
       react(),
 
       tsconfigPaths(),
@@ -77,6 +77,33 @@ export default defineConfig(({ mode }) => {
         '@': `${root}/`,
         '@config': `${root}/config.ts`,
         '@static': `${root}/../static`,
+
+        // ethers: path.resolve(
+        //   __dirname,
+        //   'node_modules/ethers/dist/ethers.esm.js',
+        // ),
+        util: path.resolve(__dirname, 'node_modules/util/util.js'),
+        ejc: path.resolve(__dirname, 'node_modules/ejs/ejs.min.js'),
+        snarkjs: path.resolve(
+          __dirname,
+          'node_modules/snarkjs/build/snarkjs.min.js',
+        ),
+        '@iden3/js-iden3-core': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-iden3-core/dist/esm_esbuild/index.js',
+        ),
+        '@iden3/js-jwz': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-jwz/dist/esm_esbuild/index.js',
+        ),
+        '@iden3/js-crypto': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-crypto/dist/esm_esbuild/index.js',
+        ),
+        '@iden3/js-jsonld-merklization': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
+        ),
       },
     },
     optimizeDeps: {
