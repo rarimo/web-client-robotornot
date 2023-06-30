@@ -2,13 +2,15 @@ import './styles.scss'
 
 import { FC, HTMLAttributes, useMemo, useState } from 'react'
 
-import { AppButton, CautionTip, Icon } from '@/common'
+import loaderJson from '@/assets/animations/loader.json'
+import { Animation, AppButton, CautionTip, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
   const [isValidCredentials] = useState(false)
+  const [isPending] = useState(true)
 
   const ValidCredentialsPreview = useMemo(
     () => (
@@ -80,7 +82,18 @@ const AuthPreview: FC<Props> = () => {
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
       </div>
-      {isValidCredentials ? ValidCredentialsPreview : InvalidCredentialsMessage}
+
+      {isPending ? (
+        <>
+          <div className='auth-preview__card'>
+            <Animation source={loaderJson} />
+          </div>
+        </>
+      ) : isValidCredentials ? (
+        ValidCredentialsPreview
+      ) : (
+        InvalidCredentialsMessage
+      )}
     </div>
   )
 }

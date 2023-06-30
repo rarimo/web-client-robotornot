@@ -36,6 +36,7 @@
     "i18next": "^22.4.9",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
+    "lottie-react": "^2.4.0",
     "mitt": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

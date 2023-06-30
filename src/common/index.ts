@@ -1,3 +1,4 @@
+export { default as Animation } from './Animation'
 export { default as AppButton } from './AppButton'
 export { default as AppFooter } from './AppFooter'
 export { default as AppLogo } from './AppLogo'
