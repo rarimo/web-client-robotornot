@@ -1,19 +1,17 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, useMemo, useState } from 'react'
 
-import { AppButton, CautionTip } from '@/common'
+import { AppButton, CautionTip, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
-  return (
-    <div className='auth-preview'>
-      <div className='auth-preview__header'>
-        <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
-      </div>
+  const [isValidCredentials] = useState(false)
 
+  const ValidCredentialsPreview = useMemo(
+    () => (
       <div className='auth-preview__card'>
         <CautionTip
           className='auth-preview__card-caution-tip'
@@ -37,6 +35,52 @@ const AuthPreview: FC<Props> = () => {
           size='large'
         />
       </div>
+    ),
+    [],
+  )
+
+  const InvalidCredentialsMessage = useMemo(
+    () => (
+      <div className='auth-preview__card'>
+        <CautionTip
+          className='auth-preview__card-caution-tip'
+          message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
+        />
+
+        <div className='auth-preview__card-error'>
+          <div className='auth-preview__card-error-icon-wrp'>
+            <Icon
+              className='auth-preview__card-error-icon'
+              name={ICON_NAMES.x}
+            />
+          </div>
+          <span className='auth-preview__card-error-title'>{`Insufficient Credentials`}</span>
+          <span className='auth-preview__card-error-message'>
+            {` Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
+          </span>
+        </div>
+
+        <AppButton
+          className='auth-preview__card-button'
+          text={`COMPLETE NOW`}
+          iconRight={ICON_NAMES.arrowRight}
+          size='large'
+        />
+      </div>
+    ),
+    [],
+  )
+
+  return (
+    <div
+      className={`auth-preview ${
+        isValidCredentials ? '' : `auth-preview--invalid`
+      }`}
+    >
+      <div className='auth-preview__header'>
+        <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
+      </div>
+      {isValidCredentials ? ValidCredentialsPreview : InvalidCredentialsMessage}
     </div>
   )
 }
