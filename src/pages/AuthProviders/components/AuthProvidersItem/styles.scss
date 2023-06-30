@@ -1,0 +1,27 @@
+.auth-providers-item {
+  display: flex;
+  align-items: center;
+  gap: toRem(24);
+  background: var(--background-secondary-main);
+  padding: toRem(24);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.auth-providers-item__icon {
+  @include static-icon-size(48);
+
+  &--decor {
+    margin-left: auto;
+    color: var(--text-secondary-main);
+
+    @include static-icon-size(20);
+  }
+}
+
+.auth-providers-item__name {
+
+}
+
+.auth-providers-item__button {
+
+}

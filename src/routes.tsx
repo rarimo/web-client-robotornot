@@ -7,14 +7,13 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 
-import { AppFooter, AppNavbar } from '@/common'
+import { AppNavbar } from '@/common'
 import { RoutesPaths } from '@/enums'
 import { AuthLayout } from '@/layouts'
 
 export const AppRoutes = () => {
-  const AuthProviders = lazy(
-    () => import('@/pages/AuthProviders/AuthProviders'),
-  )
+  const AuthProviders = lazy(() => import('@/pages/AuthProviders'))
+  const AuthPreview = lazy(() => import('@/pages/AuthPreview'))
 
   const router = createBrowserRouter([
     {
@@ -27,7 +26,6 @@ export const AppRoutes = () => {
               <Outlet />
             </div>
           </AnimatePresence>
-          <AppFooter />
         </Suspense>
       ),
       children: [
@@ -39,6 +37,10 @@ export const AppRoutes = () => {
               index: true,
               path: RoutesPaths.authProviders,
               element: <AuthProviders />,
+            },
+            {
+              path: RoutesPaths.authPreview,
+              element: <AuthPreview />,
             },
           ],
         },

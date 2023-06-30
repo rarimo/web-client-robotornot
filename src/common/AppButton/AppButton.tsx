@@ -26,7 +26,7 @@ type Props<R extends string, H extends string> = {
 const AppButton = <R extends string, H extends string>({
   text,
   scheme = 'filled',
-  modification = 'border-rounded',
+  modification = 'none',
   color = 'primary',
   size = 'medium',
   href,

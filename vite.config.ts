@@ -34,12 +34,14 @@ export default defineConfig(({ mode }) => {
       : {}),
     publicDir: 'static',
     plugins: [
-      // viteCommonjs(),
       react(),
 
       tsconfigPaths(),
       createSvgIconsPlugin({
-        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+        iconDirs: [
+          path.resolve(process.cwd(), 'src/assets/icons'),
+          path.resolve(process.cwd(), 'static/images/providers'),
+        ],
         symbolId: '[name]',
       }),
       checker({
