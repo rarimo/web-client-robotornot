@@ -4,6 +4,7 @@ import { FC, HTMLAttributes } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
+import { BasicSelectField } from '@/fields'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -18,7 +19,9 @@ const AuthConfirmation: FC<Props> = () => {
           />
         </div>
         <h2 className='auth-confirmation__header-title'>{`Proof Generated`}</h2>
-        <span className='auth-confirmation__header-subtitle'>{`Proof is generated using Zero-Knowledge Proof (ZKP) and none of the personal info is shared with any party`}</span>
+        <span className='auth-confirmation__header-subtitle'>
+          {`Proof is generated using Zero-Knowledge Proof (ZKP) and none of the personal info is shared with any party`}
+        </span>
       </div>
 
       <div className='auth-confirmation__card'>
@@ -32,17 +35,45 @@ const AuthConfirmation: FC<Props> = () => {
         </div>
 
         <div className='auth-confirmation__chains'>
-          {Array(1)
+          <div className='auth-confirmation__chain-item'>
+            <Icon
+              className='auth-confirmation__chain-item-icon'
+              name={ICON_NAMES.metamask}
+            />
+            <span className='auth-confirmation__chain-item-name'>
+              {`Polygon chain`}
+            </span>
+          </div>
+
+          {Array(2)
             .fill(0)
             .map((el, idx) => (
-              <div className='auth-confirmation__chain-item' key={idx}>
-                <Icon
-                  className='auth-confirmation__chain-item-icon'
-                  name={ICON_NAMES.metamask}
+              <div
+                key={idx}
+                className='auth-confirmation__chain-item auth-confirmation__chain-item--select-wrp'
+              >
+                <BasicSelectField
+                  label={`Select chain`}
+                  value={el}
+                  updateValue={() => {
+                    //
+                  }}
+                  valueOptions={[
+                    {
+                      title: 'Polygon chain',
+                      value: '1',
+                      iconName: ICON_NAMES.xCircle,
+                    },
+                  ]}
                 />
-                <span className='auth-confirmation__chain-item-name'>
-                  {`Polygon chain`}
-                </span>
+
+                <AppButton
+                  className='auth-confirmation__chain-item-remove-btn'
+                  scheme='none'
+                  color='error'
+                  size='none'
+                  iconLeft={ICON_NAMES.trash}
+                />
               </div>
             ))}
 

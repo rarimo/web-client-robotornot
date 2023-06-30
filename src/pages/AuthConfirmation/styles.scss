@@ -80,6 +80,14 @@
   width: 100%;
   padding: toRem(16);
   border: toRem(1) solid var(--border-primary-main);
+
+  &--select-wrp {
+    padding: 0;
+    border: none;
+  }
+}
+
+.auth-confirmation__chain-item-remove-btn {
 }
 
 .auth-confirmation__chain-item-icon {
