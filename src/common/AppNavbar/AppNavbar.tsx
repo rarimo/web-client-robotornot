@@ -2,7 +2,6 @@ import './styles.scss'
 
 import { PROVIDERS } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useCallback } from 'react'
-import { useEffectOnce } from 'react-use'
 
 import { AppButton, AppLogo } from '@/common'
 import { useWeb3Context } from '@/contexts'
@@ -21,10 +20,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
       ErrorHandler.process(error)
     }
   }, [init])
-
-  useEffectOnce(() => {
-    init(PROVIDERS.Metamask)
-  })
 
   return (
     <div className={`app-navbar ${className}`} {...rest}>

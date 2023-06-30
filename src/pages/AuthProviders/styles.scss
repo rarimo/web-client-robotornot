@@ -1,5 +1,36 @@
-.auth-providers__table {
-  td {
-    padding: toRem(24);
+.auth-providers {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: toRem(24);
+
+  .auth-providers__input {
+    flex: none;
+  }
+}
+
+.auth-providers__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: toRem(24);
+}
+
+.auth-providers__metadata {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(12);
+}
+
+.auth-providers__metadata-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: toRem(36);
+}
+
+.auth-providers__metadata-col {
+  &:first-child {
+    font-weight: 700;
   }
 }

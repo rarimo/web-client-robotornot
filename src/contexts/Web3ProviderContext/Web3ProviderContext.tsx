@@ -10,7 +10,7 @@ import {
   createContext,
   FC,
   HTMLAttributes,
-  ReactNode,
+  memo,
   useCallback,
   useMemo,
 } from 'react'
@@ -46,9 +46,7 @@ export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   },
 })
 
-interface Props extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode
-}
+type Props = HTMLAttributes<HTMLDivElement>
 
 type SUPPORTED_PROVIDERS = PROVIDERS
 
@@ -156,4 +154,4 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
   )
 }
 
-export default Web3ProviderContextProvider
+export default memo(Web3ProviderContextProvider)

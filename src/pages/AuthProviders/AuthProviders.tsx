@@ -5,35 +5,46 @@ import { Identity } from '@rarimo/identity-gen-iden3'
 import { ZKP_OPERATORS, ZkpGen } from '@rarimo/zkp-gen-iden3'
 import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useCallback, useState } from 'react'
-import { useEffectOnce } from 'react-use'
-import { useSnapshot } from 'valtio'
 
 import { AppButton, Loader } from '@/common'
 import { useWeb3Context } from '@/contexts'
+import { InputField } from '@/fields'
 import { ErrorHandler } from '@/helpers'
-import { identityStore } from '@/store'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 type QueryVariableName = { isNatural: number }
 
 const AuthProviders: FC<Props> = () => {
-  const identityStoreSnap = useSnapshot(identityStore)
   const { provider } = useWeb3Context()
 
   const [isPending, setIsPending] = useState(false)
+
+  const [pkInput, setPkInput] = useState<string>('')
+
+  const [identity, setIdentity] = useState<Identity>()
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
-  const [, setAuthZkp] = useState<AuthZkp<QueryVariableName>>()
   const [isNaturalProof, setIsNaturalProof] =
     useState<ZkpGen<QueryVariableName>>()
 
-  const init = useCallback(async () => {
-    await identityStoreSnap.init()
-  }, [identityStoreSnap])
+  const createIdentity = useCallback(async () => {
+    Identity.setConfig({
+      AUTH_BJJ_CREDENTIAL_HASH: 'cca3371a6cb1b715004407e325bd993c',
+    })
+    setIdentity(await Identity.create(pkInput))
+  }, [pkInput])
+
+  const validateIdentity = useCallback(async () => {
+    const newIdentity = await Identity.create(identity?.privateKeyHex)
+
+    alert(newIdentity.identityIdString === identity?.identityIdString)
+  }, [identity?.identityIdString, identity?.privateKeyHex])
 
   // Verifiable credentials
-  const getClaim = useCallback(async () => {
+  const getVerifiableCredentials = useCallback(async () => {
+    if (!identity) return
+
     setIsPending(true)
     try {
       AuthZkp.setConfig({
@@ -41,19 +52,18 @@ const AuthProviders: FC<Props> = () => {
         STATE_V2_ADDRESS: '0x134B1BE34911E39A8397ec6289782989729807a4',
         ISSUER_API_URL: 'http://127.0.0.1:8000/',
       })
-      const authProof = new AuthZkp<QueryVariableName>(
-        identityStoreSnap.identity as Identity,
-      )
-      setAuthZkp(authProof)
+      const authProof = new AuthZkp<QueryVariableName>(identity)
 
       setVerifiableCredentials(await authProof.getVerifiableCredentials())
     } catch (error) {
       ErrorHandler.process(error)
     }
     setIsPending(false)
-  }, [identityStoreSnap.identity])
+  }, [identity])
 
   const proveIsNatural = useCallback(async () => {
+    if (!identity) return
+
     setIsPending(true)
     try {
       ZkpGen.setConfig({
@@ -64,7 +74,7 @@ const AuthProviders: FC<Props> = () => {
 
       const zkProof = new ZkpGen<QueryVariableName>({
         requestId: '1',
-        identity: identityStoreSnap.identity as Identity,
+        identity: identity,
         verifiableCredentials:
           verifiableCredentials as VerifiableCredentials<QueryVariableName>,
 
@@ -84,39 +94,45 @@ const AuthProviders: FC<Props> = () => {
       ErrorHandler.process(error)
     }
     setIsPending(false)
-  }, [identityStoreSnap.identity, provider?.address, verifiableCredentials])
-
-  useEffectOnce(() => {
-    init()
-  })
+  }, [identity, provider?.address, verifiableCredentials])
 
   return (
     <div className='auth-providers'>
-      <table className='auth-providers__table'>
-        <thead>
-          <tr>
-            <th>{`private`}</th>
-            <th>{`body`}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{identityStoreSnap.identity.privateKeyHex}</td>
-            <td>{identityStoreSnap.identity.identityIdString}</td>
-          </tr>
-        </tbody>
-      </table>
+      <InputField
+        className='auth-providers__input'
+        label={`Private key`}
+        value={pkInput}
+        updateValue={setPkInput}
+      />
+      <div className='auth-providers__actions'>
+        <AppButton text={`Create Identity`} onClick={createIdentity} />
+        <AppButton text={`Validate Identity`} onClick={validateIdentity} />
+      </div>
+      <div className='auth-providers__metadata'>
+        <div className='auth-providers__metadata-row'>
+          <span className='auth-providers__metadata-col'>{`private`}</span>
+          <span className='auth-providers__metadata-col'>
+            {identity?.privateKeyHex}
+          </span>
+        </div>
+
+        <div className='auth-providers__metadata-row'>
+          <span className='auth-providers__metadata-col'>{`public`}</span>
+          <span className='auth-providers__metadata-col'>
+            {identity?.identityIdString}
+          </span>
+        </div>
+      </div>
 
       {isPending ? (
         <Loader />
       ) : (
         <>
           <AppButton
-            onClick={getClaim}
+            onClick={getVerifiableCredentials}
             text={`Generate Auth Proof`}
             isDisabled={
-              !identityStoreSnap?.identity?.identityIdString ||
-              !isEmpty(verifiableCredentials)
+              !identity?.identityIdString || !isEmpty(verifiableCredentials)
             }
           />
           <AppButton

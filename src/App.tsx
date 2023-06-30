@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import { useEffectOnce } from 'react-use'
 
@@ -9,7 +9,7 @@ import { useNotification, useViewportSizes } from '@/hooks'
 import { AppRoutes } from '@/routes'
 import { NotificationPayload } from '@/types'
 
-export const App = () => {
+const App = () => {
   useViewportSizes()
 
   const [isAppInitialized, setIsAppInitialized] = useState(false)
@@ -17,7 +17,7 @@ export const App = () => {
   const { showToast } = useNotification()
   const { init: initWeb3 } = useWeb3Context()
 
-  const init = async () => {
+  const init = useCallback(async () => {
     try {
       await initWeb3()
     } catch (error) {
@@ -25,7 +25,7 @@ export const App = () => {
     }
 
     setIsAppInitialized(true)
-  }
+  }, [initWeb3])
 
   useEffectOnce(() => {
     bus.on(BUS_EVENTS.success, payload =>
@@ -51,3 +51,5 @@ export const App = () => {
     </div>
   )
 }
+
+export default memo(App)
