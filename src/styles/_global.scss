@@ -101,7 +101,9 @@ h1 {
 }
 
 h2 {
-  font-size: toRem(24);
+  text-transform: capitalize;
+  font-size: toRem(48);
+  font-weight: 700;
 }
 
 h3 {
@@ -136,10 +138,7 @@ a {
   flex-direction: column;
   align-items: center;
   flex: 1;
-  padding-left: var(--app-padding-left);
-  padding-right: var(--app-padding-right);
-  padding-top: toRem(58);
-  padding-bottom: toRem(145);
+  padding: toRem(58) var(--app-padding-right) toRem(145) var(--app-padding-left);
 
   & > * {
     max-width: toRem(642);

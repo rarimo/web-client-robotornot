@@ -109,3 +109,12 @@ $media-breakpoints: (
   width: toRem($size);
   height: toRem($size);
 }
+
+@mixin card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--background-secondary-main);
+  padding: toRem(24);
+  border: toRem(1) solid var(--border-primary-main);
+}

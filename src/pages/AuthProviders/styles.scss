@@ -17,13 +17,6 @@
   @include static-icon-size(48);
 }
 
-.auth-providers__header-title {
-  text-transform: capitalize;
-  color: var(--text-primary-main);
-  font-size: toRem(48);
-  font-weight: 700;
-}
-
 .auth-providers__header-subtitle {
   text-transform: capitalize;
   text-align: center;
