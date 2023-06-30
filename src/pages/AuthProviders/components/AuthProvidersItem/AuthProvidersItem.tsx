@@ -7,7 +7,7 @@ import { ICON_NAMES } from '@/enums'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const AuthProvidersItem: FC<Props> = ({ ...rest }) => {
+const AuthProvidersItem: FC<Props> = () => {
   return (
     <div className='auth-providers-item'>
       <Icon
@@ -20,7 +20,10 @@ const AuthProvidersItem: FC<Props> = ({ ...rest }) => {
         name={ICON_NAMES.arrowRight}
       />
 
-      <button className='auth-providers-item__button' />
+      <button
+        className='auth-providers-item__button'
+        onClick={() => alert('hello world')}
+      />
     </div>
   )
 }

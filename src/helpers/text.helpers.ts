@@ -1,4 +1,4 @@
-export function abbrCenter(text: string, reduceValue = 8): string {
+export function abbrCenter(text: string, reduceValue = 4): string {
   if (text.length <= 10) {
     return text
   }

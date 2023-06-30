@@ -19,7 +19,6 @@
 
 .auth-providers__header-title {
   text-transform: capitalize;
-  font-family: Inter;
   color: var(--text-primary-main);
   font-size: toRem(48);
   font-weight: 700;
@@ -28,7 +27,6 @@
 .auth-providers__header-subtitle {
   text-transform: capitalize;
   text-align: center;
-  font-family: Inter;
   color: var(--text-tertiary-main);
   font-size: toRem(20);
 }
@@ -41,5 +39,13 @@
 }
 
 .auth-providers__list-item {
+}
+
+.auth-providers__tip {
+  color: var(--text-secondary-main);
+}
+
+.auth-providers__tip-link {
+  color: var(--primary-main);
 }
 

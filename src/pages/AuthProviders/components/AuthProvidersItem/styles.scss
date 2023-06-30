@@ -1,4 +1,5 @@
 .auth-providers-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: toRem(24);
@@ -23,5 +24,9 @@
 }
 
 .auth-providers-item__button {
-
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }

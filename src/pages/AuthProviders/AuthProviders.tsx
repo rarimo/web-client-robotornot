@@ -27,6 +27,11 @@ const AuthProviders: FC<Props> = () => {
         <AuthProvidersItem className='auth-providers__list-item' />
         <AuthProvidersItem className='auth-providers__list-item' />
       </div>
+
+      <div className='auth-providers__tip'>
+        {`Dont have any account? `}
+        <span className='auth-providers__tip-link'>{`Create Now`}</span>
+      </div>
     </div>
   )
 }
