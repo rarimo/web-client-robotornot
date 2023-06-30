@@ -104,6 +104,7 @@ export default defineConfig(({ mode }) => {
           __dirname,
           'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
         ),
+        'near-api-js': 'near-api-js/dist/near-api-js.js',
       },
     },
     optimizeDeps: {
