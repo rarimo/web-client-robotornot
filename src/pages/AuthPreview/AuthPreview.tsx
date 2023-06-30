@@ -7,7 +7,7 @@ import { ICON_NAMES } from '@/enums'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const AuthPreview: FC<Props> = ({ ...rest }) => {
+const AuthPreview: FC<Props> = () => {
   return (
     <div className='auth-preview'>
       <div className='auth-preview__header'>

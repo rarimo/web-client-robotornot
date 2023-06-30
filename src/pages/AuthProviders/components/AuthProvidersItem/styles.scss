@@ -20,7 +20,9 @@
 }
 
 .auth-providers-item__name {
-
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  font-weight: 600;
 }
 
 .auth-providers-item__button {

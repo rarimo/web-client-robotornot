@@ -33,7 +33,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [identity, setIdentity] = useState<Identity>()
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
-  const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
+  const [, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
 
   const createIdentity = useCallback(async (privateKeyHex: string) => {
     Identity.setConfig({
