@@ -1,64 +1,55 @@
-import { CONFIG } from '@config'
-import { ThemeProvider } from '@mui/material'
-import CssBaseline from '@mui/material/CssBaseline'
-import * as jdenticon from 'jdenticon'
-import { useEffect, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import { useEffectOnce } from 'react-use'
 
-import { ColorModeContext } from '@/contexts'
-import { ErrorHandler } from '@/helpers'
-import { useLocalize, useThemeMode, useViewportSizes, useWeb3 } from '@/hooks'
-import AppRoutes from '@/routes'
+import { Loader } from '@/common'
+import { useWeb3Context } from '@/contexts'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import { useNotification, useViewportSizes } from '@/hooks'
+import { AppRoutes } from '@/routes'
+import { NotificationPayload } from '@/types'
 
 const App = () => {
-  const [isAppInitialised, setIsAppInitialised] = useState(false)
-
-  const { init } = useLocalize()
-  const { theme, colorMode } = useThemeMode()
   useViewportSizes()
 
-  const { isConnected, connect } = useWeb3()
+  const [isAppInitialized, setIsAppInitialized] = useState(false)
 
-  useEffect(() => {
-    const initApp = async () => {
-      setIsAppInitialised(false)
-      try {
-        init()
-        if (isConnected) {
-          await connect()
-        }
+  const { showToast } = useNotification()
+  const { init: initWeb3 } = useWeb3Context()
 
-        jdenticon.configure({
-          hues: [207],
-          lightness: {
-            color: [0.84, 0.84],
-            grayscale: [0.84, 0.84],
-          },
-          saturation: {
-            color: 0.48,
-            grayscale: 0.48,
-          },
-          backColor: '#2a4766',
-        })
-
-        document.title = CONFIG.APP_NAME
-      } catch (e) {
-        ErrorHandler.process(e)
-      }
-      setIsAppInitialised(true)
+  const init = useCallback(async () => {
+    try {
+      await initWeb3()
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
     }
 
-    initApp()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    setIsAppInitialized(true)
+  }, [initWeb3])
+
+  useEffectOnce(() => {
+    bus.on(BUS_EVENTS.success, payload =>
+      showToast('success', payload as NotificationPayload),
+    )
+    bus.on(BUS_EVENTS.warning, payload =>
+      showToast('warning', payload as NotificationPayload),
+    )
+    bus.on(BUS_EVENTS.error, payload =>
+      showToast('error', payload as NotificationPayload),
+    )
+    bus.on(BUS_EVENTS.info, payload =>
+      showToast('info', payload as NotificationPayload),
+    )
+
+    init()
+  })
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className='App'>{isAppInitialised && <AppRoutes />}</div>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <div id='app'>
+      {isAppInitialized ? <AppRoutes /> : <Loader />}
+      <ToastContainer />
+    </div>
   )
 }
 
-export default App
+export default memo(App)

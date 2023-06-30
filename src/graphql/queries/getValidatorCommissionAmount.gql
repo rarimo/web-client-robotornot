@@ -1,5 +1,0 @@
-query getValidatorCommissionAmount($address: String!) {
-  action_validator_commission_amount(address: $address ) {
-    coins
-  }
-}

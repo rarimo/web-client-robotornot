@@ -1,0 +1,15 @@
+.no-data-message {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  grid-gap: toRem(12);
+}
+
+.no-data-message__img {
+  width: 100%;
+  height: auto;
+}
+
+.no-data-message__message {
+  font-size: toRem(18);
+}

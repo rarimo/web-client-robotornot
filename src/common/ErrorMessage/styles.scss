@@ -1,0 +1,19 @@
+.error-message {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  grid-gap: toRem(12);
+}
+
+.error-message__img {
+  width: 100%;
+  height: auto;
+}
+
+.error-message__title {
+  font-size: toRem(24);
+}
+
+.error-message__message {
+  font-size: toRem(18);
+}

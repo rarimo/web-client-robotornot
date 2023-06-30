@@ -1,7 +1,0 @@
-query GetAccountValidatorInfos($address: String!) {
-  account(where: {address: {_eq: $address}}) {
-    validator_infos {
-      consensus_address
-    }
-  }
-}

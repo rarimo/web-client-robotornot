@@ -2,7 +2,7 @@ node_modules
 dist
 coverage
 .eslintcache
-pnpm-lock.yaml
-scripts/*.mjs
+yarn.lock
+scripts/*.js
 index.html
 *.md

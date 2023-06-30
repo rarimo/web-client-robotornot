@@ -1,7 +1,0 @@
-query GetProposalCount {
-  proposal_aggregate {
-    aggregate {
-      count(columns: id)
-    }
-  }
-}

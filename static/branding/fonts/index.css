@@ -1,43 +1,34 @@
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter Light'), local('Inter-Light'),
-  url('Inter/Inter-Light.woff2') format('woff2');
+  font-family: 'NunitoSans';
+  src: local('NunitoSans Light'), local('NunitoSans-Light'),
+  url('NunitoSans/NunitoSans-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter Regular'), local('Inter-Regular'),
-  url('Inter/Inter-Regular.woff2') format('woff2');
+  font-family: 'NunitoSans';
+  src: local('NunitoSans Regular'), local('NunitoSans-Regular'),
+  url('NunitoSans/NunitoSans-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter Medium'), local('Inter-Medium'),
-  url('Inter/Inter-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Inter';
-  src: local('Inter SemiBold'), local('Inter-SemiBold'),
-  url('Inter/Inter-SemiBold.woff2') format('woff2');
+  font-family: 'NunitoSans';
+  src: local('NunitoSans Semibold'), local('NunitoSans-Semibold'),
+  url('NunitoSans/NunitoSans-Semibold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter Bold'), local('Inter-Bold'),
-  url('Inter/Inter-Bold.woff2') format('woff2');
+  font-family: 'NunitoSans';
+  src: local('NunitoSans Bold'), local('NunitoSans-Bold'),
+  url('NunitoSans/NunitoSans-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -45,9 +36,9 @@
 
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter ExtraBold'), local('Inter-ExtraBold'),
-  url('Inter/Inter-ExtraBold.woff2') format('woff2');
+  font-family: 'NunitoSans';
+  src: local('NunitoSans ExtraBold'), local('NunitoSans-ExtraBold'),
+  url('NunitoSans/NunitoSans-ExtraBold.woff2') format('woff2');
   font-weight: 800;
   font-style: normal;
   font-display: swap;

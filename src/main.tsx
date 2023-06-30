@@ -1,30 +1,20 @@
 import '@/styles/index.scss'
 import '@/localization'
+// eslint-disable-next-line import/no-unresolved
+import 'virtual:svg-icons-register'
 
-import { ApolloProvider } from '@apollo/client'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { HelmetProvider } from 'react-helmet-async'
-import { Provider } from 'react-redux'
 
 import App from '@/App'
-import { apolloClient } from '@/graphql'
-import { store } from '@/store'
+import { Web3ProviderContextProvider } from '@/contexts'
 
-const rootRef = document.getElementById('root')
+const root = createRoot(document.getElementById('root') as Element)
 
-if (rootRef) {
-  const root = createRoot(rootRef)
-
-  root.render(
-    <StrictMode>
-      <Provider store={store}>
-        <HelmetProvider>
-          <ApolloProvider client={apolloClient}>
-            <App />
-          </ApolloProvider>
-        </HelmetProvider>
-      </Provider>
-    </StrictMode>,
-  )
-}
+root.render(
+  <StrictMode>
+    <Web3ProviderContextProvider>
+      <App />
+    </Web3ProviderContextProvider>
+  </StrictMode>,
+)

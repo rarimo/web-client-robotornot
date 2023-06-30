@@ -1,32 +1,33 @@
 configVersion: 1
 project: "web-client"
 ---
-image: builder # Название собираемого образа.
-from: registry.gitlab.com/tokend/devops/docker-containers:front18-914ecbd7e2465bc9570bf60322f3951eee7989c9 # Базовый образ.
-git: # Секция с директивами для добавления исходных файлов из git-репозитория.
-  - add: / # Исходный путь в репозитории.
-    to: /app # Путь назначения в образе.
-    stageDependencies: # Настройка перевыполнения сборочных инструкций при изменениях определённых файлов в репозитории.
-      install: # Для стадии Install.
+image: builder
+from: registry.gitlab.com/tokend/devops/docker-containers:front16-914ecbd7e2465bc9570bf60322f3951eee7989c9
+git:
+  - add: /
+    to: /app
+    stageDependencies:
+      install:
         - package.json
-        - pnpm-lock.yaml
-      setup: # Для стадии Setup.
+        - yarn.lock
+      setup:
         - "**/*"
-shell: # Shell сборочные инструкции.
-  install: # Для стадии Install.
+shell:
+  install:
     - cd /app
     #- yarn autoclean --init
     #- yarn autoclean --force
-    - pnpm i
-  setup: # Для стадии Setup.
+    - yarn install
+  setup:
     - cd /app
-    - pnpm build
+    - yarn build
+    #- sh -c '[ -d /app/dist/files ] && echo "$FILE exist." || mkdir -p /app/dist/files'
+    #- sh -c '[ -d /app/files ] && echo "$FILE exist." || mkdir -p /app/files'
+    #- sh -c '[ -z "`ls /app/files`" ] && echo "Empty" || cp -r /app/files/* /app/dist/files'
 
 ---
 image: web
-from: nginx:stable-alpine
-docker:
-  WORKDIR: /usr/share/nginx
+from: nginx:alpine
 git:
   - add: /nginx.conf
     to: /etc/nginx/nginx.conf

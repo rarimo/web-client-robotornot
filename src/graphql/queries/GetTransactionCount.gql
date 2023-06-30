@@ -1,7 +1,0 @@
-query GetTransactionCount($where: transaction_bool_exp) {
-  transaction_aggregate(where: $where) {
-    aggregate {
-      count(columns: hash)
-    }
-  }
-}

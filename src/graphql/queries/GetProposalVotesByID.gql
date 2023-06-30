@@ -1,7 +1,0 @@
-query GetProposalVotesByID($id: Int!, $limit: Int, $offset: Int) {
-  proposal(where: {id: {_eq: $id}}) {
-    proposal_votes(limit: $limit, offset: $offset) {
-      ...ProposalVote
-    }
-  }
-}
