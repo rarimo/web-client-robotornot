@@ -14,6 +14,7 @@ import { AuthLayout } from '@/layouts'
 export const AppRoutes = () => {
   const AuthProviders = lazy(() => import('@/pages/AuthProviders'))
   const AuthPreview = lazy(() => import('@/pages/AuthPreview'))
+  const AuthConfirmation = lazy(() => import('@/pages/AuthConfirmation'))
 
   const router = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ export const AppRoutes = () => {
             {
               path: RoutesPaths.authPreview,
               element: <AuthPreview />,
+            },
+            {
+              path: RoutesPaths.authConfirmation,
+              element: <AuthConfirmation />,
             },
           ],
         },
