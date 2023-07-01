@@ -15,6 +15,7 @@ export const AppRoutes = () => {
   const AuthProviders = lazy(() => import('@/pages/AuthProviders'))
   const AuthPreview = lazy(() => import('@/pages/AuthPreview'))
   const AuthConfirmation = lazy(() => import('@/pages/AuthConfirmation'))
+  const AuthSuccess = lazy(() => import('@/pages/AuthSuccess'))
 
   const router = createBrowserRouter([
     {
@@ -46,6 +47,10 @@ export const AppRoutes = () => {
             {
               path: RoutesPaths.authConfirmation,
               element: <AuthConfirmation />,
+            },
+            {
+              path: RoutesPaths.authSuccess,
+              element: <AuthSuccess />,
             },
           ],
         },
