@@ -8,7 +8,7 @@ import { abbrCenter, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const AuthSuccess: FC<Props> = ({ ...rest }) => {
+const AuthSuccess: FC<Props> = () => {
   const [isNftMinted] = useState(true)
 
   return (

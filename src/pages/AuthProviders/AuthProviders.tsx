@@ -3,7 +3,7 @@ import './styles.scss'
 import { FC, HTMLAttributes } from 'react'
 
 import { Icon } from '@/common'
-import { ICON_NAMES } from '@/enums'
+import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 
 import { AuthProvidersItem } from './components'
 
@@ -22,10 +22,22 @@ const AuthProviders: FC<Props> = () => {
       </div>
 
       <div className='auth-providers__list'>
-        <AuthProvidersItem className='auth-providers__list-item' />
-        <AuthProvidersItem className='auth-providers__list-item' />
-        <AuthProvidersItem className='auth-providers__list-item' />
-        <AuthProvidersItem className='auth-providers__list-item' />
+        <AuthProvidersItem
+          className='auth-providers__list-item'
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.WORDLCOIN}
+        />
+        <AuthProvidersItem
+          className='auth-providers__list-item'
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.CIVIC}
+        />
+        <AuthProvidersItem
+          className='auth-providers__list-item'
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.GITCOIN}
+        />
+        <AuthProvidersItem
+          className='auth-providers__list-item'
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}
+        />
       </div>
 
       <div className='auth-providers__tip'>

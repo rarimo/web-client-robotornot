@@ -1,27 +1,70 @@
-import { createContext, FC, HTMLAttributes } from 'react'
+import {
+  createContext,
+  FC,
+  HTMLAttributes,
+  lazy,
+  memo,
+  useCallback,
+  useState,
+} from 'react'
+
+import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
+
+const KycProviderUnstoppableDomains = lazy(
+  () =>
+    import('@/contexts/KycContext/components/KycProviderUnstoppableDomains'),
+)
 
 interface KycContextValue {
-  // FIXME
-  dummy: string
+  login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
 }
 
 export const kycContext = createContext<KycContextValue>({
-  dummy: '',
+  login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
+    throw new TypeError(`login not implemented for ${supportedKycProvider}`)
+  },
 })
 
-type Props = HTMLAttributes<HTMLDivElement>
+const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
+  children,
+  ...rest
+}) => {
+  const [selectedKycProviderName, setSelectedKycProviderName] =
+    useState<SUPPORTED_KYC_PROVIDERS>()
 
-const KycContextProvider: FC<Props> = ({ children, ...rest }) => {
+  const handleKycProviderComponentLogin = useCallback((response: unknown) => {
+    // eslint-disable-next-line no-console
+    console.log('handleKycProviderComponentLogin', response)
+  }, [])
+
+  const login = useCallback(
+    async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
+      setSelectedKycProviderName(supportedKycProvider)
+    },
+    [],
+  )
+
   return (
-    <kycContext.Provider
-      value={{
-        dummy: 'dummy',
-      }}
-      {...rest}
-    >
-      {children}
-    </kycContext.Provider>
+    <>
+      <kycContext.Provider
+        {...rest}
+        value={{
+          login,
+        }}
+      >
+        {children}
+      </kycContext.Provider>
+
+      {selectedKycProviderName ===
+      SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
+        <KycProviderUnstoppableDomains
+          loginCb={handleKycProviderComponentLogin}
+        />
+      ) : (
+        <></>
+      )}
+    </>
   )
 }
 
-export default KycContextProvider
+export default memo(KycContextProvider)

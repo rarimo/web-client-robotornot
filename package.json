@@ -29,6 +29,7 @@
     "@rarimo/auth-zkp-iden3": "*",
     "@rarimo/identity-gen-iden3": "*",
     "@rarimo/zkp-gen-iden3": "*",
+    "@uauth/js": "^2.8.0",
     "downshift": "^7.1.2",
     "ejc": "^1.0.4",
     "ethers": "^6.6.2",
