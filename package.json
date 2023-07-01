@@ -30,6 +30,7 @@
     "@rarimo/identity-gen-iden3": "*",
     "@rarimo/zkp-gen-iden3": "*",
     "@uauth/js": "^2.8.0",
+    "@worldcoin/idkit": "^0.5.1",
     "downshift": "^7.1.2",
     "ejc": "^1.0.4",
     "ethers": "^6.6.2",

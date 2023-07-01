@@ -15,6 +15,10 @@ const KycProviderUnstoppableDomains = lazy(
     import('@/contexts/KycContext/components/KycProviderUnstoppableDomains'),
 )
 
+const KycProviderWorldCoin = lazy(
+  () => import('@/contexts/KycContext/components/KycProviderWorldCoin'),
+)
+
 interface KycContextValue {
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
 }
@@ -60,6 +64,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         <KycProviderUnstoppableDomains
           loginCb={handleKycProviderComponentLogin}
         />
+      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
+        <KycProviderWorldCoin loginCb={handleKycProviderComponentLogin} />
       ) : (
         <></>
       )}
