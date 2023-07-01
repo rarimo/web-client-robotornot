@@ -1,0 +1,97 @@
+$card-padding-side: #{toRem(24)};
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(48);
+}
+
+.profile__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: toRem(16);
+}
+
+.profile__header-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--white);
+
+  @include static-icon-size(64);
+}
+
+.profile__header-icon {
+  color: var(--white);
+
+  @include static-icon-size(28);
+}
+
+.profile__header-subtitle {
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--text-tertiary-main);
+  font-size: toRem(20);
+}
+
+.profile__card {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+
+  @include card;
+
+  padding: $card-padding-side 0 $card-padding-side 0;
+}
+
+.profile__card-title {
+  align-self: flex-start;
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.4;
+  font-weight: 500;
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+  max-width: 80%;
+}
+
+.profile__copy-field-wrp {
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+  width: 100%;
+}
+
+.profile__copy-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: toRem(16);
+  background: rgba(0, 0, 0, 0.05);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.profile__copy-field-btn {
+  --button-icon-size: 1.3em;
+
+  background: var(--background-secondary-main);
+  color: var(--primary-main);
+  font-size: toRem(14);
+  font-weight: 700;
+  letter-spacing: toRem(0.56);
+}
+
+.profile__tip {
+  color: var(--text-secondary-main);
+}
+
+.profile__tip-link {
+  text-decoration: underline;
+  color: var(--primary-main);
+}
