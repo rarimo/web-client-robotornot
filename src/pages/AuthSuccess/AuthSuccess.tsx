@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
@@ -9,6 +9,8 @@ import { abbrCenter, copyToClipboard } from '@/helpers'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthSuccess: FC<Props> = ({ ...rest }) => {
+  const [isNftMinted] = useState(true)
+
   return (
     <div className='auth-success'>
       <div className='auth-success__header'>
@@ -58,19 +60,49 @@ const AuthSuccess: FC<Props> = ({ ...rest }) => {
           </div>
         </div>
 
-        <div className='auth-success__card-divider' />
+        {isNftMinted ? (
+          <>
+            <div className='auth-success__minted-nft'>
+              <span className='auth-success__minted-nft-title'>{`You’ve received an SBT / NFT `}</span>
+
+              <div className='auth-success__minted-nft-card'>
+                <div className='auth-success__minted-nft-card-img-wrp'>
+                  <img
+                    src='/images/minted-nft-stub.png'
+                    alt=''
+                    className='auth-success__minted-nft-card-img'
+                  />
+                </div>
+
+                <div className='auth-success__minted-nft-card-details'>
+                  <span className='auth-success__minted-nft-card-title'>
+                    {`POH Early Adopter`}
+                  </span>
+
+                  <span className='auth-success__minted-nft-card-subtitle'>
+                    {abbrCenter('0X989023123412347b41')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className='auth-success__card-divider' />
+        )}
 
         <span className='auth-success__card-title'>{`Share manually`}</span>
 
-        <div className='auth-success__copy-field'>
-          {abbrCenter('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21', 10)}
-          <AppButton
-            scheme='none'
-            modification='none'
-            size='none'
-            iconLeft={ICON_NAMES.duplicate}
-            onClick={() => copyToClipboard('')}
-          />
+        <div className='auth-success__copy-field-wrp'>
+          <div className='auth-success__copy-field'>
+            {abbrCenter('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21', 10)}
+            <AppButton
+              scheme='none'
+              modification='none'
+              size='none'
+              iconLeft={ICON_NAMES.duplicate}
+              onClick={() => copyToClipboard('')}
+            />
+          </div>
         </div>
       </div>
 
