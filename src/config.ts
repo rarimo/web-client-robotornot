@@ -9,6 +9,12 @@ export const config = {
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
+
+  DEMO_VERIFIER_CONTRACT_ADDRESS: import.meta.env
+    .VITE_DEMO_VERIFIER_CONTRACT_ADDRESS,
+  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS: import.meta.env
+    .VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS,
+  STATE_V2_CONTRACT_ADDRESS: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))
