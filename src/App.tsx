@@ -3,7 +3,7 @@ import { ToastContainer } from 'react-toastify'
 import { useEffectOnce } from 'react-use'
 
 import { Loader } from '@/common'
-import { useWeb3Context } from '@/contexts'
+import { useWeb3Context, ZkpContextProvider } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
 import { AppRoutes } from '@/routes'
@@ -46,7 +46,9 @@ const App = () => {
 
   return (
     <div id='app'>
-      {isAppInitialized ? <AppRoutes /> : <Loader />}
+      <ZkpContextProvider>
+        {isAppInitialized ? <AppRoutes /> : <Loader />}
+      </ZkpContextProvider>
       <ToastContainer />
     </div>
   )

@@ -2,7 +2,7 @@ import { IDKitWidget } from '@worldcoin/idkit'
 import { FC, HTMLAttributes } from 'react'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  loginCb: (response: unknown) => void
+  loginCb: (response: unknown) => Promise<void>
 }
 
 const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {

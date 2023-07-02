@@ -7,8 +7,11 @@ import {
   useCallback,
   useState,
 } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { api } from '@/api'
+import { useZkpContext } from '@/contexts'
+import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 
 const KycProviderUnstoppableDomains = lazy(
   () =>
@@ -33,13 +36,59 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const navigate = useNavigate()
+
+  const { identity, createIdentity } = useZkpContext()
+
   const [selectedKycProviderName, setSelectedKycProviderName] =
     useState<SUPPORTED_KYC_PROVIDERS>()
 
-  const handleKycProviderComponentLogin = useCallback((response: unknown) => {
-    // eslint-disable-next-line no-console
-    console.log('handleKycProviderComponentLogin', response)
-  }, [])
+  const handleKycProviderComponentLogin = useCallback(
+    async (response: unknown) => {
+      if (!selectedKycProviderName) return
+
+      let currentIdentity = identity
+
+      if (!currentIdentity?.identityIdString) {
+        currentIdentity = await createIdentity()
+      }
+
+      if (!currentIdentity?.identityIdString) return
+
+      const VERIFY_KYC_DATA_MAP = {
+        [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.CIVIC]: {},
+        [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          access_token: response.accessToken,
+        },
+      }
+
+      await api.post(
+        `/integrations/kyc-service/v1/public/verify/${selectedKycProviderName}`,
+        {
+          body: {
+            data: {
+              type: 'verify',
+              attributes: {
+                identity_id: currentIdentity.identityIdString,
+                provider_data: {
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  ...VERIFY_KYC_DATA_MAP[selectedKycProviderName],
+                },
+              },
+            },
+          },
+        },
+      )
+
+      navigate(RoutesPaths.authPreview)
+    },
+    [createIdentity, identity, navigate, selectedKycProviderName],
+  )
 
   const login = useCallback(
     async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {

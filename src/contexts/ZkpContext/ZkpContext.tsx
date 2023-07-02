@@ -8,20 +8,22 @@ import { useWeb3Context } from '@/contexts'
 type QueryVariableName = { isNatural: number }
 
 interface ZkpContextValue {
-  createIdentity: (privateKeyHex: string) => Promise<void>
+  identity: Identity | undefined
+  createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: () => Promise<void>
-  proveIsNatural: () => Promise<void>
+  getZkProof: () => Promise<void>
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
+  identity: new Identity(),
   createIdentity: async () => {
     throw new Error(`createIdentity() not implemented`)
   },
   getVerifiableCredentials: async () => {
     throw new Error(`getVerifiableCredentials() not implemented`)
   },
-  proveIsNatural: async () => {
-    throw new Error(`proveIsNatural() not implemented`)
+  getZkProof: async () => {
+    throw new Error(`getZkProof() not implemented`)
   },
 })
 
@@ -35,12 +37,17 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     useState<VerifiableCredentials<QueryVariableName>>()
   const [, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
 
-  const createIdentity = useCallback(async (privateKeyHex: string) => {
+  const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
       // TODO: move to .env
       AUTH_BJJ_CREDENTIAL_HASH: 'cca3371a6cb1b715004407e325bd993c',
     })
-    setIdentity(await Identity.create(privateKeyHex))
+
+    const newIdentity = await Identity.create(privateKeyHex)
+
+    setIdentity(newIdentity)
+
+    return newIdentity
   }, [])
 
   const getVerifiableCredentials = useCallback(async () => {
@@ -88,9 +95,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   return (
     <zkpContext.Provider
       value={{
+        identity,
         createIdentity,
         getVerifiableCredentials,
-        proveIsNatural: getZkProof,
+        getZkProof,
       }}
       {...rest}
     >
