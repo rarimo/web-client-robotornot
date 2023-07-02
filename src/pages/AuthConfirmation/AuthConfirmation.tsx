@@ -1,6 +1,7 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { SUPPORTED_CHAINS } from '@config'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
@@ -8,7 +9,93 @@ import { BasicSelectField } from '@/fields'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
+type ChainToPublish = {
+  title: string
+  value: string
+  iconName: ICON_NAMES
+}
+
 const AuthConfirmation: FC<Props> = () => {
+  const defaultChainIdToPublish = useMemo<SUPPORTED_CHAINS>(
+    () => SUPPORTED_CHAINS.POLYGON,
+    [],
+  )
+
+  const CHAINS_DETAILS_MAP = useMemo(
+    () => ({
+      [SUPPORTED_CHAINS.POLYGON]: {
+        title: 'Polygon chain',
+        value: '1',
+        iconName: ICON_NAMES.map,
+      },
+      [SUPPORTED_CHAINS.SEPOLIA]: {
+        title: 'Sepolia chain',
+        value: '5',
+        iconName: ICON_NAMES.xCircle,
+      },
+      [SUPPORTED_CHAINS.GOERLI]: {
+        title: 'Goerli chain',
+        value: '4',
+        iconName: ICON_NAMES.arrowRight,
+      },
+    }),
+    [],
+  )
+
+  const defaultChainToPublish = useMemo<ChainToPublish>(() => {
+    return {
+      title: CHAINS_DETAILS_MAP[defaultChainIdToPublish].title,
+      value: CHAINS_DETAILS_MAP[defaultChainIdToPublish].value,
+      iconName: CHAINS_DETAILS_MAP[defaultChainIdToPublish].iconName,
+    }
+  }, [CHAINS_DETAILS_MAP, defaultChainIdToPublish])
+
+  const [additionalChainsIdToPublish, setAdditionalChainsIdToPublish] =
+    useState<SUPPORTED_CHAINS[]>([])
+
+  const additionalChainsToPublish = useMemo<ChainToPublish[]>(() => {
+    return additionalChainsIdToPublish.map(el => ({
+      title: CHAINS_DETAILS_MAP[el].title,
+      value: CHAINS_DETAILS_MAP[el].value,
+      iconName: CHAINS_DETAILS_MAP[el].iconName,
+    }))
+  }, [CHAINS_DETAILS_MAP, additionalChainsIdToPublish])
+
+  const availableChainsIdsToSet = useMemo<SUPPORTED_CHAINS[]>(() => {
+    return Object.values(SUPPORTED_CHAINS).filter(el => {
+      return el !== defaultChainIdToPublish
+    })
+  }, [defaultChainIdToPublish])
+
+  const addChainToPublish = useCallback(() => {
+    setAdditionalChainsIdToPublish(prev => [
+      ...prev,
+      ...(availableChainsIdsToSet?.[0]
+        ? [availableChainsIdsToSet[0] as SUPPORTED_CHAINS]
+        : []),
+    ])
+  }, [availableChainsIdsToSet])
+
+  const updateSelectedChainToPublish = useCallback(
+    (value: string | number, idx: number) => {
+      setAdditionalChainsIdToPublish(prev => {
+        const newChains = [...prev]
+
+        newChains[idx] =
+          (availableChainsIdsToSet?.find?.(availableChain => {
+            return Object.entries(CHAINS_DETAILS_MAP).find(
+              ([chain, details]) => {
+                return details.value === value && availableChain === chain
+              },
+            )
+          }) as SUPPORTED_CHAINS) ?? prev[idx]
+
+        return newChains
+      })
+    },
+    [CHAINS_DETAILS_MAP, availableChainsIdsToSet],
+  )
+
   return (
     <div className='auth-confirmation'>
       <div className='auth-confirmation__header'>
@@ -38,51 +125,57 @@ const AuthConfirmation: FC<Props> = () => {
           <div className='auth-confirmation__chain-item'>
             <Icon
               className='auth-confirmation__chain-item-icon'
-              name={ICON_NAMES.metamask}
+              name={defaultChainToPublish.iconName}
             />
             <span className='auth-confirmation__chain-item-name'>
-              {`Polygon chain`}
+              {defaultChainToPublish.title}
             </span>
           </div>
 
-          {Array(2)
-            .fill(0)
-            .map((el, idx) => (
-              <div
-                key={idx}
-                className='auth-confirmation__chain-item auth-confirmation__chain-item--select-wrp'
-              >
-                <BasicSelectField
-                  label={`Select chain`}
-                  value={el}
-                  updateValue={() => {
-                    //
-                  }}
-                  valueOptions={[
-                    {
-                      title: 'Polygon chain',
-                      value: '1',
-                      iconName: ICON_NAMES.xCircle,
-                    },
-                  ]}
-                />
+          {additionalChainsToPublish?.map?.((el, idx) => (
+            <div
+              className='auth-confirmation__chain-item auth-confirmation__chain-item--select-wrp'
+              key={idx}
+            >
+              <BasicSelectField
+                label={`Select chain`}
+                value={el.value}
+                updateValue={value => updateSelectedChainToPublish(value, idx)}
+                valueOptions={
+                  availableChainsIdsToSet?.map?.(availableChain => ({
+                    title: CHAINS_DETAILS_MAP[availableChain].title,
+                    value: CHAINS_DETAILS_MAP[availableChain].value,
+                    iconName: CHAINS_DETAILS_MAP[availableChain].iconName,
+                  })) ?? []
+                }
+              />
 
-                <AppButton
-                  className='auth-confirmation__chain-item-remove-btn'
-                  scheme='none'
-                  color='error'
-                  size='none'
-                  iconLeft={ICON_NAMES.trash}
-                />
-              </div>
-            ))}
+              <AppButton
+                className='auth-confirmation__chain-item-remove-btn'
+                scheme='none'
+                color='error'
+                size='none'
+                iconLeft={ICON_NAMES.trash}
+                onClick={() => {
+                  setAdditionalChainsIdToPublish(prev => {
+                    return [...prev.filter((_, index) => index !== idx)]
+                  })
+                }}
+              />
+            </div>
+          ))}
 
-          <AppButton
-            className='auth-confirmation__chain-add-btn'
-            scheme='none'
-            text={`Add other chain`}
-            iconLeft={ICON_NAMES.plus}
-          />
+          {availableChainsIdsToSet?.length ? (
+            <AppButton
+              className='auth-confirmation__chain-add-btn'
+              scheme='none'
+              text={`Add other chain`}
+              iconLeft={ICON_NAMES.plus}
+              onClick={addChainToPublish}
+            />
+          ) : (
+            <></>
+          )}
         </div>
 
         <div className='auth-confirmation__divider' />

@@ -4,17 +4,26 @@ import { LogLevelDesc } from 'loglevel'
 
 import packageJson from '../package.json'
 
+export enum SUPPORTED_CHAINS {
+  POLYGON = 'POLYGON',
+  SEPOLIA = 'SEPOLIA',
+  GOERLI = 'GOERLI',
+}
+
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
 
-  DEMO_VERIFIER_CONTRACT_ADDRESS: import.meta.env
-    .VITE_DEMO_VERIFIER_CONTRACT_ADDRESS,
-  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS: import.meta.env
-    .VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS,
-  STATE_V2_CONTRACT_ADDRESS: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS,
+  /* eslint-disable max-len */
+  /* prettier-ignore */
+  DEMO_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_SEPOLIA,
+  /* prettier-ignore */
+  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_SEPOLIA,
+  /* prettier-ignore */
+  STATE_V2_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS_SEPOLIA,
+  /* eslint-enable */
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

@@ -1,4 +1,3 @@
-import { config } from '@config'
 import { type TransactionResponse } from '@distributedlab/w3p'
 import { Provider } from '@ethersproject/providers'
 import { BigNumberish } from 'ethers'
@@ -8,7 +7,7 @@ import { useWeb3Context } from '@/contexts'
 import { DemoVerifier__factory } from '@/types'
 import { IDemoVerifier } from '@/types/contracts/DemoVerifier'
 
-export const useDemoVerifierContract = () => {
+export const useDemoVerifierContract = (address: string) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
@@ -19,11 +18,11 @@ export const useDemoVerifierContract = () => {
   const contractInstance = useMemo(() => {
     return provider?.rawProvider
       ? DemoVerifier__factory.connect(
-          config.DEMO_VERIFIER_CONTRACT_ADDRESS,
+          address,
           provider.rawProvider as unknown as Provider,
         )
       : undefined
-  }, [provider])
+  }, [address, provider])
 
   const getIdentityProofInfo = useCallback(
     async (
@@ -60,13 +59,13 @@ export const useDemoVerifierContract = () => {
       ])
 
       const txBody = {
-        to: config.DEMO_VERIFIER_CONTRACT_ADDRESS,
+        to: address,
         data,
       }
 
       return provider?.signAndSendTx(txBody)
     },
-    [contractInterface, provider],
+    [address, contractInterface, provider],
   )
 
   const setZKPQueriesStorage = useCallback(
@@ -79,13 +78,13 @@ export const useDemoVerifierContract = () => {
       )
 
       const txBody = {
-        to: config.DEMO_VERIFIER_CONTRACT_ADDRESS,
+        to: address,
         data,
       }
 
       return provider?.signAndSendTx(txBody)
     },
-    [contractInterface, provider],
+    [address, contractInterface, provider],
   )
 
   const zkpQueriesStorage = useCallback(async (): Promise<

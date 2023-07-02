@@ -1,4 +1,3 @@
-import { config } from '@config'
 import { TransactionResponse } from '@distributedlab/w3p'
 import { Provider } from '@ethersproject/providers'
 import { BigNumber, BigNumberish } from 'ethers'
@@ -11,7 +10,7 @@ import {
   IZKPQueriesStorage,
 } from '@/types/contracts/ZKPQueriesStorage'
 
-export const useZkpQueriesStorageContract = () => {
+export const useZkpQueriesStorageContract = (address: string) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
@@ -22,11 +21,11 @@ export const useZkpQueriesStorageContract = () => {
   const contractInstance = useMemo(() => {
     return provider?.rawProvider
       ? ZKPQueriesStorage__factory.connect(
-          config.ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS,
+          address,
           provider.rawProvider as unknown as Provider,
         )
       : undefined
-  }, [provider])
+  }, [address, provider])
 
   const getQueryHash = useCallback(
     async (
@@ -117,13 +116,13 @@ export const useZkpQueriesStorageContract = () => {
       ])
 
       const txBody = {
-        to: config.ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS,
+        to: address,
         data,
       }
 
       return provider?.signAndSendTx(txBody)
     },
-    [contractInterface, provider],
+    [address, contractInterface, provider],
   )
 
   const setZKPQuery = useCallback(
@@ -137,13 +136,13 @@ export const useZkpQueriesStorageContract = () => {
       ])
 
       const txBody = {
-        to: config.ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS,
+        to: address,
         data,
       }
 
       return provider?.signAndSendTx(txBody)
     },
-    [contractInterface, provider],
+    [address, contractInterface, provider],
   )
   return {
     getQueryHash,
