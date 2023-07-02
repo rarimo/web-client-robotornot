@@ -24,11 +24,15 @@ const KycProviderWorldCoin = lazy(
 
 interface KycContextValue {
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
+  retryKyc: () => void
 }
 
 export const kycContext = createContext<KycContextValue>({
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
     throw new TypeError(`login not implemented for ${supportedKycProvider}`)
+  },
+  retryKyc: () => {
+    throw new TypeError(`retryKyc not implemented`)
   },
 })
 
@@ -36,9 +40,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const [refreshKey, setRefreshKey] = useState(0)
+
   const navigate = useNavigate()
 
-  const { identity, createIdentity } = useZkpContext()
+  const { identity, createIdentity, isClaimOfferExists } = useZkpContext()
 
   const [selectedKycProviderName, setSelectedKycProviderName] =
     useState<SUPPORTED_KYC_PROVIDERS>()
@@ -54,6 +60,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       }
 
       if (!currentIdentity?.identityIdString) return
+
+      if (await isClaimOfferExists(currentIdentity)) {
+        navigate(RoutesPaths.authPreview)
+        return
+      }
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
@@ -87,7 +98,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       navigate(RoutesPaths.authPreview)
     },
-    [createIdentity, identity, navigate, selectedKycProviderName],
+    [
+      createIdentity,
+      identity,
+      isClaimOfferExists,
+      navigate,
+      selectedKycProviderName,
+    ],
   )
 
   const login = useCallback(
@@ -97,12 +114,17 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [],
   )
 
+  const retryKyc = useCallback(() => {
+    setRefreshKey(prev => prev + 1)
+  }, [])
+
   return (
     <>
       <kycContext.Provider
         {...rest}
         value={{
           login,
+          retryKyc,
         }}
       >
         {children}
@@ -111,10 +133,14 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       {selectedKycProviderName ===
       SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
         <KycProviderUnstoppableDomains
+          key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
-        <KycProviderWorldCoin loginCb={handleKycProviderComponentLogin} />
+        <KycProviderWorldCoin
+          key={refreshKey}
+          loginCb={handleKycProviderComponentLogin}
+        />
       ) : (
         <></>
       )}
