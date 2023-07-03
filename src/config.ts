@@ -12,6 +12,7 @@ export enum SUPPORTED_CHAINS {
 }
 
 export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
+  // FIXME: use the correct chain details for polygon
   [SUPPORTED_CHAINS.POLYGON]: {
     id: '80001',
     name: 'Mumbai',
@@ -26,26 +27,26 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
     icon: '',
   },
   [SUPPORTED_CHAINS.SEPOLIA]: {
-    id: '80001',
-    name: 'Mumbai',
-    rpcUrl: 'https://endpoints.omniatech.io/v1/matic/mumbai/public',
-    explorerUrl: 'https://mumbai.polygonscan.com/',
+    id: '11155111',
+    name: 'Sepolia',
+    rpcUrl: 'https://endpoints.omniatech.io/v1/eth/sepolia/public',
+    explorerUrl: 'https://sepolia.etherscan.io',
     token: {
-      name: 'Matic',
-      symbol: 'Matic',
+      name: 'Sepolia',
+      symbol: 'Sep',
       decimals: 18,
     },
     type: CHAIN_TYPES.EVM,
     icon: '',
   },
   [SUPPORTED_CHAINS.GOERLI]: {
-    id: '80001',
-    name: 'Mumbai',
-    rpcUrl: 'https://endpoints.omniatech.io/v1/matic/mumbai/public',
-    explorerUrl: 'https://mumbai.polygonscan.com/',
+    id: '5',
+    name: 'Goerli',
+    rpcUrl: 'https://ethereum-goerli.publicnode.com',
+    explorerUrl: 'https://goerli.etherscan.io',
     token: {
-      name: 'Matic',
-      symbol: 'Matic',
+      name: 'Goerli',
+      symbol: 'Goerli',
       decimals: 18,
     },
     type: CHAIN_TYPES.EVM,
@@ -53,7 +54,7 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
   },
 }
 
-export const DEFAULT_CHAIN = SUPPORTED_CHAINS.POLYGON
+export const DEFAULT_CHAIN = SUPPORTED_CHAINS.SEPOLIA
 
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,

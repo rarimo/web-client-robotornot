@@ -7,7 +7,7 @@ import { useWeb3Context } from '@/contexts'
 import { DemoVerifier__factory } from '@/types'
 import { IDemoVerifier } from '@/types/contracts/DemoVerifier'
 
-export const useDemoVerifierContract = (address: string) => {
+export const useDemoVerifierContract = (address?: string) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
@@ -16,6 +16,8 @@ export const useDemoVerifierContract = (address: string) => {
   )
 
   const contractInstance = useMemo(() => {
+    if (!address || !provider) return undefined
+
     return provider?.rawProvider
       ? DemoVerifier__factory.connect(
           address,
@@ -51,6 +53,9 @@ export const useDemoVerifierContract = (address: string) => {
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c_: [BigNumberish, BigNumberish],
     ): Promise<TransactionResponse | undefined> => {
+      if (!address || !provider)
+        throw new TypeError('Invalid address or provider')
+
       const data = contractInterface.encodeFunctionData('proveIdentity', [
         inputs_,
         a_,
@@ -66,6 +71,27 @@ export const useDemoVerifierContract = (address: string) => {
       return provider?.signAndSendTx(txBody)
     },
     [address, contractInterface, provider],
+  )
+
+  const getProveIdentityTxBody = useCallback(
+    (
+      inputs_: BigNumberish[],
+      a_: [BigNumberish, BigNumberish],
+      b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
+      c_: [BigNumberish, BigNumberish],
+    ) => {
+      const data = contractInterface.encodeFunctionData('proveIdentity', [
+        inputs_,
+        a_,
+        b_,
+        c_,
+      ])
+
+      return {
+        data,
+      }
+    },
+    [contractInterface],
   )
 
   const setZKPQueriesStorage = useCallback(
@@ -97,7 +123,10 @@ export const useDemoVerifierContract = (address: string) => {
     getIdentityProofInfo,
     isIdentityProved,
     owner,
+
     proveIdentity,
+    getProveIdentityTxBody,
+
     setZKPQueriesStorage,
     zkpQueriesStorage,
   }

@@ -2,6 +2,8 @@ import {
   MetamaskProvider,
   Provider,
   ProviderDetector,
+  ProviderEventCallback,
+  ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -13,10 +15,11 @@ import {
   memo,
   useCallback,
   useMemo,
+  useState,
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
-import { useProvider } from '@/hooks'
+import { useNotification, useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
   provider?: ReturnType<typeof useProvider>
@@ -70,6 +73,9 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
+  const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
+  const { showToast, removeToast } = useNotification()
+
   const provider = useProvider()
 
   const isValidChain = useMemo(() => true, [])
@@ -96,7 +102,22 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           ] as ProviderProxyConstructor,
           {
             providerDetector,
-            listeners: {},
+            listeners: {
+              onTxSent: (e?: ProviderEventPayload) => {
+                setCurrentTxToastId(
+                  showToast('info', {
+                    title: 'Transaction sent',
+                    message: 'Waiting for confirmation...',
+                  }),
+                )
+              },
+              onTxConfirmed: (e?: ProviderEventPayload) => {
+                showToast('success', {
+                  title: `Success`,
+                  message: 'Transaction confirmed',
+                })
+              },
+            },
           },
         )
 

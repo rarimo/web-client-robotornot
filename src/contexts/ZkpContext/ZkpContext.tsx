@@ -16,8 +16,10 @@ type QueryVariableName = { isNatural: number }
 
 interface ZkpContextValue {
   identity: Identity | undefined
-  getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
+  isNaturalZkp: ZkpGen<QueryVariableName> | undefined
+
   isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
+  getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
     chain: SUPPORTED_CHAINS,
@@ -30,6 +32,8 @@ interface ZkpContextValue {
 
 export const zkpContext = createContext<ZkpContextValue>({
   identity: new Identity(),
+  isNaturalZkp: undefined,
+
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
       `getClaimOffer() not implemented for ${_identity?.identityIdString}`,
@@ -67,7 +71,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [identity, setIdentity] = useState<Identity>()
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
-  const [, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
+  const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
 
   const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
@@ -187,6 +191,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     <zkpContext.Provider
       value={{
         identity,
+        isNaturalZkp,
+
         getClaimOffer,
         isClaimOfferExists,
         createIdentity,

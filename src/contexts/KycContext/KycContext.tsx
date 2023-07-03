@@ -134,7 +134,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       let currentIdentity = identity
 
       if (!currentIdentity?.identityIdString) {
-        currentIdentity = await createIdentity()
+        currentIdentity = await createIdentity(
+          '2aa98b861c4a5188dd78b20ab32c7f3b19516a68c744fce429dcb96d98e1d17d',
+        )
       }
 
       if (!currentIdentity?.identityIdString) return

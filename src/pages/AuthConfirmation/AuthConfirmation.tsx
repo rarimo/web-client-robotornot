@@ -1,12 +1,15 @@
 import './styles.scss'
 
-import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
+import { config, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
+import { identity } from 'lodash'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
+import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { BasicSelectField } from '@/fields'
 import { ErrorHandler } from '@/helpers'
+import { useDemoVerifierContract } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -17,6 +20,11 @@ type ChainToPublish = {
 }
 
 const AuthConfirmation: FC<Props> = () => {
+  const { getProveIdentityTxBody } = useDemoVerifierContract()
+
+  const { isNaturalZkp } = useZkpContext()
+  const { provider } = useWeb3Context()
+
   const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
     () => ({
       [SUPPORTED_CHAINS.POLYGON]: {
@@ -94,11 +102,38 @@ const AuthConfirmation: FC<Props> = () => {
 
   const submitZkp = useCallback(async () => {
     try {
-      /* empty */
+      if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
+
+      const txBody = getProveIdentityTxBody(
+        isNaturalZkp?.subjectProof.pub_signals.map(el => BigInt(el)),
+        [
+          isNaturalZkp?.subjectProof.proof.pi_a[0],
+          isNaturalZkp?.subjectProof.proof.pi_a[1],
+        ],
+        [
+          [
+            isNaturalZkp?.subjectProof.proof.pi_b[0][1],
+            isNaturalZkp?.subjectProof.proof.pi_b[0][0],
+          ],
+          [
+            isNaturalZkp?.subjectProof.proof.pi_b[1][1],
+            isNaturalZkp?.subjectProof.proof.pi_b[1][0],
+          ],
+        ],
+        [
+          isNaturalZkp?.subjectProof.proof.pi_c[0],
+          isNaturalZkp?.subjectProof.proof.pi_c[1],
+        ],
+      )
+
+      await provider?.signAndSendTx({
+        to: config?.[`DEMO_VERIFIER_CONTRACT_ADDRESS_${DEFAULT_CHAIN}`],
+        ...txBody,
+      })
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [])
+  }, [getProveIdentityTxBody, isNaturalZkp, provider])
 
   return (
     <div className='auth-confirmation'>
