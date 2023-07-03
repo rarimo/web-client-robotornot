@@ -1,7 +1,7 @@
 import isObject from 'lodash/isObject'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast, TypeOptions } from 'react-toastify'
+import { type Id, toast, TypeOptions } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DefaultToast } from '@/common'
@@ -105,7 +105,7 @@ export const useNotification = () => {
     [defaultIconNames, defaultMessages, defaultTitles],
   )
 
-  const removeToast = useCallback((toastId: string) => {
+  const removeToast = useCallback((toastId: Id) => {
     toast.dismiss(toastId)
   }, [])
 

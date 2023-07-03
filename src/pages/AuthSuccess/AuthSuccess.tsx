@@ -9,7 +9,7 @@ import { abbrCenter, copyToClipboard } from '@/helpers'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthSuccess: FC<Props> = () => {
-  const [isNftMinted] = useState(true)
+  const [isNftMinted] = useState(false)
 
   return (
     <div className='auth-success'>
@@ -63,7 +63,9 @@ const AuthSuccess: FC<Props> = () => {
         {isNftMinted ? (
           <>
             <div className='auth-success__minted-nft'>
-              <span className='auth-success__minted-nft-title'>{`You’ve received an SBT / NFT `}</span>
+              <span className='auth-success__minted-nft-title'>
+                {`You’ve received an SBT / NFT `}
+              </span>
 
               <div className='auth-success__minted-nft-card'>
                 <div className='auth-success__minted-nft-card-img-wrp'>
@@ -100,7 +102,9 @@ const AuthSuccess: FC<Props> = () => {
               modification='none'
               size='none'
               iconLeft={ICON_NAMES.duplicate}
-              onClick={() => copyToClipboard('')}
+              onClick={() =>
+                copyToClipboard('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21')
+              }
             />
           </div>
         </div>

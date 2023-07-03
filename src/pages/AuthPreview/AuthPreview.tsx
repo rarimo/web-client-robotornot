@@ -19,11 +19,9 @@ const AuthPreview: FC<Props> = () => {
 
   const { provider } = useWeb3Context()
 
-  const { identity, getVerifiableCredentials, getZkProof } = useZkpContext()
+  const { getVerifiableCredentials, getZkProof } = useZkpContext()
 
   const { isLoaded, isValidCredentials, retryKyc } = useKycContext()
-
-  console.log(identity?.privateKeyHex)
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)

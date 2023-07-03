@@ -6,12 +6,25 @@ import { LogLevelDesc } from 'loglevel'
 import packageJson from '../package.json'
 
 export enum SUPPORTED_CHAINS {
-  POLYGON = 'POLYGON',
   SEPOLIA = 'SEPOLIA',
+  POLYGON = 'POLYGON',
   GOERLI = 'GOERLI',
 }
 
 export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
+  [SUPPORTED_CHAINS.SEPOLIA]: {
+    id: '11155111',
+    name: 'Sepolia',
+    rpcUrl: 'https://endpoints.omniatech.io/v1/eth/sepolia/public',
+    explorerUrl: 'https://sepolia.etherscan.io',
+    token: {
+      name: 'Sepolia',
+      symbol: 'Sep',
+      decimals: 18,
+    },
+    type: CHAIN_TYPES.EVM,
+    icon: '',
+  },
   // FIXME: use the correct chain details for polygon
   [SUPPORTED_CHAINS.POLYGON]: {
     id: '80001',
@@ -21,19 +34,6 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
     token: {
       name: 'Matic',
       symbol: 'Matic',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  [SUPPORTED_CHAINS.SEPOLIA]: {
-    id: '11155111',
-    name: 'Sepolia',
-    rpcUrl: 'https://endpoints.omniatech.io/v1/eth/sepolia/public',
-    explorerUrl: 'https://sepolia.etherscan.io',
-    token: {
-      name: 'Sepolia',
-      symbol: 'Sep',
       decimals: 18,
     },
     type: CHAIN_TYPES.EVM,

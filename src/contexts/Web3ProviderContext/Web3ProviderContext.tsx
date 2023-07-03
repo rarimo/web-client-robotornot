@@ -2,8 +2,6 @@ import {
   MetamaskProvider,
   Provider,
   ProviderDetector,
-  ProviderEventCallback,
-  ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -103,7 +101,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           {
             providerDetector,
             listeners: {
-              onTxSent: (e?: ProviderEventPayload) => {
+              onTxSent: () => {
                 setCurrentTxToastId(
                   showToast('info', {
                     title: 'Transaction sent',
@@ -111,7 +109,11 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
                   }),
                 )
               },
-              onTxConfirmed: (e?: ProviderEventPayload) => {
+              onTxConfirmed: () => {
+                if (currentTxToastId) {
+                  removeToast(currentTxToastId)
+                }
+
                 showToast('success', {
                   title: `Success`,
                   message: 'Transaction confirmed',
@@ -132,10 +134,13 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       }
     },
     [
+      currentTxToastId,
       provider,
       providerDetector,
       removeStorageState,
+      removeToast,
       setStorageState,
+      showToast,
       storageState?.providerType,
     ],
   )
