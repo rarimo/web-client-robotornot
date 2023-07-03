@@ -1,12 +1,12 @@
 import './styles.scss'
 
 import { config, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
-import { identity } from 'lodash'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { AppButton, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
-import { ICON_NAMES } from '@/enums'
+import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { BasicSelectField } from '@/fields'
 import { ErrorHandler } from '@/helpers'
 import { useDemoVerifierContract } from '@/hooks/contracts'
@@ -20,6 +20,7 @@ type ChainToPublish = {
 }
 
 const AuthConfirmation: FC<Props> = () => {
+  const navigate = useNavigate()
   const { getProveIdentityTxBody } = useDemoVerifierContract()
 
   const { isNaturalZkp } = useZkpContext()
@@ -130,10 +131,12 @@ const AuthConfirmation: FC<Props> = () => {
         to: config?.[`DEMO_VERIFIER_CONTRACT_ADDRESS_${DEFAULT_CHAIN}`],
         ...txBody,
       })
+
+      navigate(RoutesPaths.authSuccess)
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [getProveIdentityTxBody, isNaturalZkp, provider])
+  }, [getProveIdentityTxBody, isNaturalZkp, navigate, provider])
 
   return (
     <div className='auth-confirmation'>

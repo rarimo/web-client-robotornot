@@ -17,7 +17,7 @@ const AuthSuccess: FC<Props> = () => {
         <div className='auth-success__header-icon-wrp'>
           <Icon className='auth-success__header-icon' name={ICON_NAMES.check} />
         </div>
-        <h2 className='auth-success__header-title'>{`Proof Submited`}</h2>
+        <h2 className='auth-success__header-title'>{`Proof Submitted`}</h2>
       </div>
 
       <div className='auth-success__card'>
@@ -45,7 +45,7 @@ const AuthSuccess: FC<Props> = () => {
             <div className='auth-success__metadata-item-value'>
               <Icon
                 className='auth-success__metadata-item-value-icon'
-                name={ICON_NAMES.metamask}
+                name={ICON_NAMES.polygon}
               />
               {`Polygon`}
             </div>
