@@ -23,13 +23,31 @@ const KycProviderWorldCoin = lazy(
 )
 
 interface KycContextValue {
+  selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
+  authorizedKycResponse: unknown | undefined
+
+  isLoaded: boolean
+
+  isValidCredentials: boolean
+
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
+  verifyKyc: (identityIdString: string) => Promise<void>
   retryKyc: () => void
 }
 
 export const kycContext = createContext<KycContextValue>({
+  selectedKycProviderName: undefined,
+  authorizedKycResponse: undefined,
+
+  isLoaded: false,
+
+  isValidCredentials: false,
+
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
     throw new TypeError(`login not implemented for ${supportedKycProvider}`)
+  },
+  verifyKyc: (identityIdString: string) => {
+    throw new TypeError(`verifyKyc not implemented for ${identityIdString}`)
   },
   retryKyc: () => {
     throw new TypeError(`retryKyc not implemented`)
@@ -40,31 +58,33 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const [selectedKycProviderName, setSelectedKycProviderName] =
+    useState<SUPPORTED_KYC_PROVIDERS>()
+  const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
+
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  const [isValidCredentials, setIsValidCredentials] = useState(false)
+
   const [refreshKey, setRefreshKey] = useState(0)
 
   const navigate = useNavigate()
 
   const { identity, createIdentity, isClaimOfferExists } = useZkpContext()
 
-  const [selectedKycProviderName, setSelectedKycProviderName] =
-    useState<SUPPORTED_KYC_PROVIDERS>()
+  const login = useCallback(
+    async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
+      setSelectedKycProviderName(supportedKycProvider)
+    },
+    [],
+  )
 
-  const handleKycProviderComponentLogin = useCallback(
-    async (response: unknown) => {
-      if (!selectedKycProviderName) return
+  const verifyKyc = useCallback(
+    async (identityIdString: string, _authKycResponse?: unknown) => {
+      const currentAuthKycResponse = _authKycResponse ?? authorizedKycResponse
 
-      let currentIdentity = identity
-
-      if (!currentIdentity?.identityIdString) {
-        currentIdentity = await createIdentity()
-      }
-
-      if (!currentIdentity?.identityIdString) return
-
-      if (await isClaimOfferExists(currentIdentity)) {
-        navigate(RoutesPaths.authPreview)
-        return
-      }
+      if (!currentAuthKycResponse)
+        throw new TypeError('authKycResponse is undefined')
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
@@ -73,7 +93,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          access_token: response.accessToken,
+          access_token: currentAuthKycResponse.accessToken,
         },
       }
 
@@ -84,7 +104,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
             data: {
               type: 'verify',
               attributes: {
-                identity_id: currentIdentity.identityIdString,
+                identity_id: identityIdString,
                 provider_data: {
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore
@@ -95,8 +115,47 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           },
         },
       )
+    },
+    [authorizedKycResponse, selectedKycProviderName],
+  )
+
+  const retryKyc = useCallback(() => {
+    setRefreshKey(prev => prev + 1)
+  }, [])
+
+  const handleKycProviderComponentLogin = useCallback(
+    async (response: unknown) => {
+      setAuthorizedKycResponse(response)
 
       navigate(RoutesPaths.authPreview)
+
+      if (!selectedKycProviderName) return
+
+      let currentIdentity = identity
+
+      if (!currentIdentity?.identityIdString) {
+        currentIdentity = await createIdentity()
+      }
+
+      if (!currentIdentity?.identityIdString) return
+
+      if (!(await isClaimOfferExists(currentIdentity))) {
+        try {
+          await verifyKyc(currentIdentity.identityIdString, response)
+        } catch (error) {
+          setIsValidCredentials(false)
+
+          setIsLoaded(true)
+
+          return
+        }
+      }
+
+      setIsValidCredentials(await isClaimOfferExists(currentIdentity))
+
+      setIsLoaded(true)
+
+      return
     },
     [
       createIdentity,
@@ -104,26 +163,23 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       isClaimOfferExists,
       navigate,
       selectedKycProviderName,
+      verifyKyc,
     ],
   )
-
-  const login = useCallback(
-    async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
-      setSelectedKycProviderName(supportedKycProvider)
-    },
-    [],
-  )
-
-  const retryKyc = useCallback(() => {
-    setRefreshKey(prev => prev + 1)
-  }, [])
 
   return (
     <>
       <kycContext.Provider
         {...rest}
         value={{
+          selectedKycProviderName,
+          authorizedKycResponse,
+
+          isLoaded,
+          isValidCredentials,
+
           login,
+          verifyKyc,
           retryKyc,
         }}
       >

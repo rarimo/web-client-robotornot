@@ -238,4 +238,7 @@ export enum ICON_NAMES {
   providerWorldCoin = 'worldcoin',
 
   metamask = 'metamask',
+
+  polygon = 'polygon',
+  ethereum = 'ethereum',
 }

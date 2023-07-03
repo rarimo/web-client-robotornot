@@ -1,11 +1,12 @@
 import './styles.scss'
 
-import { SUPPORTED_CHAINS } from '@config'
+import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
 import { BasicSelectField } from '@/fields'
+import { ErrorHandler } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -16,27 +17,22 @@ type ChainToPublish = {
 }
 
 const AuthConfirmation: FC<Props> = () => {
-  const defaultChainIdToPublish = useMemo<SUPPORTED_CHAINS>(
-    () => SUPPORTED_CHAINS.POLYGON,
-    [],
-  )
-
-  const CHAINS_DETAILS_MAP = useMemo(
+  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
     () => ({
       [SUPPORTED_CHAINS.POLYGON]: {
         title: 'Polygon chain',
         value: '1',
-        iconName: ICON_NAMES.map,
+        iconName: ICON_NAMES.polygon,
       },
       [SUPPORTED_CHAINS.SEPOLIA]: {
         title: 'Sepolia chain',
         value: '5',
-        iconName: ICON_NAMES.xCircle,
+        iconName: ICON_NAMES.ethereum,
       },
       [SUPPORTED_CHAINS.GOERLI]: {
         title: 'Goerli chain',
         value: '4',
-        iconName: ICON_NAMES.arrowRight,
+        iconName: ICON_NAMES.ethereum,
       },
     }),
     [],
@@ -44,11 +40,11 @@ const AuthConfirmation: FC<Props> = () => {
 
   const defaultChainToPublish = useMemo<ChainToPublish>(() => {
     return {
-      title: CHAINS_DETAILS_MAP[defaultChainIdToPublish].title,
-      value: CHAINS_DETAILS_MAP[defaultChainIdToPublish].value,
-      iconName: CHAINS_DETAILS_MAP[defaultChainIdToPublish].iconName,
+      title: CHAINS_DETAILS_MAP[DEFAULT_CHAIN].title,
+      value: CHAINS_DETAILS_MAP[DEFAULT_CHAIN].value,
+      iconName: CHAINS_DETAILS_MAP[DEFAULT_CHAIN].iconName,
     }
-  }, [CHAINS_DETAILS_MAP, defaultChainIdToPublish])
+  }, [CHAINS_DETAILS_MAP])
 
   const [additionalChainsIdToPublish, setAdditionalChainsIdToPublish] =
     useState<SUPPORTED_CHAINS[]>([])
@@ -63,9 +59,9 @@ const AuthConfirmation: FC<Props> = () => {
 
   const availableChainsIdsToSet = useMemo<SUPPORTED_CHAINS[]>(() => {
     return Object.values(SUPPORTED_CHAINS).filter(el => {
-      return el !== defaultChainIdToPublish
+      return el !== DEFAULT_CHAIN
     })
-  }, [defaultChainIdToPublish])
+  }, [])
 
   const addChainToPublish = useCallback(() => {
     setAdditionalChainsIdToPublish(prev => [
@@ -95,6 +91,14 @@ const AuthConfirmation: FC<Props> = () => {
     },
     [CHAINS_DETAILS_MAP, availableChainsIdsToSet],
   )
+
+  const submitZkp = useCallback(async () => {
+    try {
+      /* empty */
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [])
 
   return (
     <div className='auth-confirmation'>
@@ -185,6 +189,7 @@ const AuthConfirmation: FC<Props> = () => {
           text={`SUBMIT PROOF`}
           iconRight={ICON_NAMES.arrowRight}
           size='large'
+          onClick={submitZkp}
         />
       </div>
     </div>

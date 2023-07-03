@@ -1,3 +1,4 @@
+import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
 import {
   AuthZkp,
   ClaimOffer,
@@ -18,10 +19,11 @@ interface ZkpContextValue {
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
-  getVerifiableCredentials: () => Promise<
-    VerifiableCredentials<QueryVariableName>
-  >
+  getVerifiableCredentials: (
+    chain: SUPPORTED_CHAINS,
+  ) => Promise<VerifiableCredentials<QueryVariableName>>
   getZkProof: (
+    chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
   ) => Promise<ZkpGen<QueryVariableName>>
 }
@@ -40,14 +42,19 @@ export const zkpContext = createContext<ZkpContextValue>({
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
-  getVerifiableCredentials: async () => {
-    throw new TypeError(`getVerifiableCredentials() not implemented`)
+  getVerifiableCredentials: async (chain: SUPPORTED_CHAINS) => {
+    throw new TypeError(
+      `getVerifiableCredentials() not implemented for ${chain}`,
+    )
   },
   getZkProof: async (
+    chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
   ) => {
     throw new TypeError(
-      `getZkProof() not implemented for ${_verifiableCredentials?.id}`,
+      `getZkProof() not implemented for ${chain} ${
+        `and ${_verifiableCredentials}?.id` ?? ''
+      }`,
     )
   },
 })
@@ -65,7 +72,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
       // TODO: move to .env
-      AUTH_BJJ_CREDENTIAL_HASH: 'cca3371a6cb1b715004407e325bd993c',
+      AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
     })
 
     const newIdentity = await Identity.create(privateKeyHex)
@@ -111,27 +118,32 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [getClaimOffer],
   )
 
-  const getVerifiableCredentials = useCallback(async (): Promise<
-    VerifiableCredentials<QueryVariableName>
-  > => {
-    if (!identity) throw new TypeError('Identity is not defined')
+  const getVerifiableCredentials = useCallback(
+    async (
+      chain: SUPPORTED_CHAINS,
+    ): Promise<VerifiableCredentials<QueryVariableName>> => {
+      if (!identity) throw new TypeError('Identity is not defined')
 
-    AuthZkp.setConfig({
-      RPC_URL: 'https://matic-mumbai.chainstacklabs.com',
-      STATE_V2_ADDRESS: '0x134B1BE34911E39A8397ec6289782989729807a4',
-      ISSUER_API_URL: 'http://127.0.0.1:8000/',
-    })
-    const authProof = new AuthZkp<QueryVariableName>(identity)
+      AuthZkp.setConfig({
+        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        ISSUER_API_URL: config.API_URL,
+      })
 
-    const verifiableCredentials = await authProof.getVerifiableCredentials()
+      const authProof = new AuthZkp<QueryVariableName>(identity)
 
-    setVerifiableCredentials(verifiableCredentials)
+      const verifiableCredentials = await authProof.getVerifiableCredentials()
 
-    return verifiableCredentials
-  }, [identity])
+      setVerifiableCredentials(verifiableCredentials)
+
+      return verifiableCredentials
+    },
+    [identity],
+  )
 
   const getZkProof = useCallback(
     async (
+      chain: SUPPORTED_CHAINS,
       _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
     ): Promise<ZkpGen<QueryVariableName>> => {
       const currentVerifiableCredentials =
@@ -143,9 +155,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         throw new TypeError('VerifiableCredentials is not defined')
 
       ZkpGen.setConfig({
-        RPC_URL: 'https://matic-mumbai.chainstacklabs.com',
-        STATE_V2_ADDRESS: '0x134B1BE34911E39A8397ec6289782989729807a4',
-        ISSUER_API_URL: 'http://127.0.0.1:8000/',
+        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        ISSUER_API_URL: config.API_URL,
       })
 
       const zkProof = new ZkpGen<QueryVariableName>({

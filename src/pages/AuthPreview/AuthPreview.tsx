@@ -1,18 +1,11 @@
 import './styles.scss'
 
+import { DEFAULT_CHAIN } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useEffectOnce } from 'react-use'
 
 import loaderJson from '@/assets/animations/loader.json'
-import {
-  Animation,
-  AppButton,
-  CautionTip,
-  ErrorMessage,
-  Icon,
-  Loader,
-} from '@/common'
+import { Animation, AppButton, CautionTip, Icon, Loader } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler } from '@/helpers'
@@ -20,44 +13,25 @@ import { ErrorHandler } from '@/helpers'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
-  const navigate = useNavigate()
-
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isLoadFailed, setIsLoadFailed] = useState(false)
-
-  const [isValidCredentials, setIsValidCredentials] = useState(false)
   const [isPending, setIsPending] = useState(false)
+
+  const navigate = useNavigate()
 
   const { provider } = useWeb3Context()
 
-  const { isClaimOfferExists, getVerifiableCredentials, getZkProof } =
-    useZkpContext()
+  const { getVerifiableCredentials, getZkProof } = useZkpContext()
 
-  const { retryKyc } = useKycContext()
-
-  const init = useCallback(async () => {
-    try {
-      if (!(await isClaimOfferExists())) {
-        setIsValidCredentials(false)
-      } else {
-        // TODO: get credentials
-        setIsValidCredentials(true)
-      }
-    } catch (error) {
-      ErrorHandler.process(error)
-      setIsLoadFailed(true)
-    }
-
-    setIsLoaded(true)
-  }, [isClaimOfferExists])
+  const { isLoaded, isValidCredentials, retryKyc } = useKycContext()
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
 
     try {
-      const verifiableCredentials = await getVerifiableCredentials()
+      const verifiableCredentials = await getVerifiableCredentials(
+        DEFAULT_CHAIN,
+      )
 
-      await getZkProof(verifiableCredentials)
+      await getZkProof(DEFAULT_CHAIN, verifiableCredentials)
 
       navigate(RoutesPaths.authConfirmation)
     } catch (error) {
@@ -135,10 +109,6 @@ const AuthPreview: FC<Props> = () => {
     [completeKyc],
   )
 
-  useEffectOnce(() => {
-    init()
-  })
-
   return (
     <div
       className={`auth-preview ${
@@ -150,9 +120,7 @@ const AuthPreview: FC<Props> = () => {
       </div>
 
       {isLoaded ? (
-        isLoadFailed ? (
-          <ErrorMessage message={`Something bad happen, please reload page`} />
-        ) : isPending ? (
+        isPending ? (
           <>
             <div className='auth-preview__card'>
               <Animation source={loaderJson} />
