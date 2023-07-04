@@ -5,7 +5,7 @@ import {
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
-import { ZKP_OPERATORS, ZkpGen } from '@rarimo/zkp-gen-iden3'
+import { ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
 import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { api } from '@/api'
@@ -36,7 +36,7 @@ export const zkpContext = createContext<ZkpContextValue>({
 
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
-      `getClaimOffer() not implemented for ${_identity?.identityIdString}`,
+      `getClaimOffer() not implemented for ${_identity?.idString}`,
     )
   },
 
@@ -90,13 +90,13 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     async (_identity?: Identity) => {
       const { data } = await api.get<ClaimOffer>(
         `/integrations/issuer/v1/public/claims/offers/${
-          _identity?.identityIdString ?? identity?.identityIdString
+          _identity?.idString ?? identity?.idString
         }/NaturalPerson`,
       )
 
       return data
     },
-    [identity?.identityIdString],
+    [identity?.idString],
   )
 
   const isClaimOfferExists = useCallback(
@@ -132,6 +132,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
         STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
+
+        CIRCUIT_FINAL_KEY_URL: AuthZkp.config.CIRCUIT_FINAL_KEY_URL,
+        CIRCUIT_WASM_URL: AuthZkp.config.CIRCUIT_WASM_URL,
       })
 
       const authProof = new AuthZkp<QueryVariableName>(identity)
@@ -162,6 +165,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
         STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
+
+        CIRCUIT_FINAL_KEY_URL: ZkpGen.config.CIRCUIT_FINAL_KEY_URL,
+        CIRCUIT_WASM_URL: ZkpGen.config.CIRCUIT_WASM_URL,
+        CLAIM_PROOF_SIBLINGS_COUNT: ZkpGen.config.CLAIM_PROOF_SIBLINGS_COUNT,
       })
 
       const zkProof = new ZkpGen<QueryVariableName>({
@@ -173,7 +180,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
         query: {
           variableName: 'isNatural',
-          operator: ZKP_OPERATORS.EQUALS,
+          operator: ZkpOperators.Equals,
           value: ['1'],
         },
       })

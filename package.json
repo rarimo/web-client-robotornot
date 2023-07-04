@@ -111,6 +111,7 @@
     "@rarimo/shared": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared",
     "@rarimo/swap": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/swap",
     "@rarimo/auth-zkp-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3",
-    "@rarimo/zkp-gen-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3"
+    "@rarimo/zkp-gen-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3",
+    "@rarimo/shared-zkp-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3"
   }
 }

@@ -1819,7 +1819,8 @@ __metadata:
   dependencies:
     "@distributedlab/fetcher": ^0.2.0-rc.20
     "@rarimo/identity-gen-iden3": "workspace:^"
-    "@rarimo/shared": "workspace:^"
+    "@rarimo/provider": "workspace:^"
+    "@rarimo/shared-zkp-iden3": "workspace:^"
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1841,6 +1842,24 @@ __metadata:
   languageName: node
   linkType: soft
 
+"@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A."
+  dependencies:
+    "@distributedlab/tools": ^0.2.0-rc.19
+    "@rarimo/shared": "workspace:^"
+  languageName: node
+  linkType: soft
+
+"@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A."
+  dependencies:
+    "@distributedlab/fetcher": ^0.2.0-rc.20
+    tslib: ^2.5.0
+  languageName: node
+  linkType: soft
+
 "@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A.":
   version: 0.0.0-use.local
   resolution: "@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A."
@@ -1857,7 +1876,7 @@ __metadata:
     "@distributedlab/fetcher": ^0.2.0-rc.20
     "@rarimo/auth-zkp-iden3": "workspace:^"
     "@rarimo/identity-gen-iden3": "workspace:^"
-    "@rarimo/shared": "workspace:^"
+    "@rarimo/shared-zkp-iden3": "workspace:^"
     lodash: ^4.17.21
     tslib: ^2.5.0
   peerDependencies:

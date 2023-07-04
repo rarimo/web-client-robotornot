@@ -133,15 +133,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       let currentIdentity = identity
 
-      if (!currentIdentity?.identityIdString) {
+      if (!currentIdentity?.idString) {
         currentIdentity = await createIdentity()
       }
 
-      if (!currentIdentity?.identityIdString) return
+      if (!currentIdentity?.idString) return
 
       if (!(await isClaimOfferExists(currentIdentity))) {
         try {
-          await verifyKyc(currentIdentity.identityIdString, response)
+          await verifyKyc(currentIdentity.idString, response)
         } catch (error) {
           setIsValidCredentials(false)
 
