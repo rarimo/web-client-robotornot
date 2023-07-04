@@ -27,9 +27,9 @@
     "@iden3/js-iden3-core": "^1.0.0-beta.2",
     "@iden3/js-jsonld-merklization": "^1.0.0-beta.15",
     "@iden3/js-jwz": "^1.0.0-beta.2",
-    "@rarimo/auth-zkp-iden3": "*",
-    "@rarimo/identity-gen-iden3": "*",
-    "@rarimo/zkp-gen-iden3": "*",
+    "@rarimo/auth-zkp-iden3": "^2.0.0-rc.3",
+    "@rarimo/identity-gen-iden3": "^2.0.0-rc.3",
+    "@rarimo/zkp-gen-iden3": "^2.0.0-rc.3",
     "@uauth/js": "^2.8.0",
     "@worldcoin/idkit": "^0.5.1",
     "downshift": "^7.1.2",
@@ -96,22 +96,5 @@
     "vite-tsconfig-paths": "^4.0.3",
     "yorkie": "^2.0.0"
   },
-  "packageManager": "yarn@3.6.0",
-  "resolutions": {
-    "rarimo-js-sdk-monorepo-root": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk",
-    "@rarimo/bridge": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/bridge",
-    "@rarimo/identity-gen-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/identity-gen-iden3",
-    "@rarimo/nft-checkout": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/nft-checkout",
-    "@rarimo/provider": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider",
-    "@rarimo/providers-evm": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/providers-evm",
-    "@rarimo/providers-near": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/providers-near",
-    "@rarimo/providers-solana": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/providers-solana",
-    "@rarimo/react-nft-checkout": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/react-nft-checkout",
-    "@rarimo/react-provider": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/react-provider",
-    "@rarimo/shared": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared",
-    "@rarimo/swap": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/swap",
-    "@rarimo/auth-zkp-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3",
-    "@rarimo/zkp-gen-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3",
-    "@rarimo/shared-zkp-iden3": "portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3"
-  }
+  "packageManager": "yarn@3.6.0"
 }
