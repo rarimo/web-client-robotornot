@@ -4,6 +4,7 @@ import {
   createProvider,
   CreateProviderOpts,
   IProvider,
+  Provider,
   ProviderEventPayload,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -34,32 +35,52 @@ export function useProvider<T extends keyof Record<string, string>>() {
     }
   })
 
-  const connect = async (): Promise<void> => provider?.connect?.()
+  const connect = useCallback(
+    async (): Promise<void> => provider?.connect?.(),
+    [provider],
+  )
 
-  const addChain = async (chain: Chain): Promise<void> =>
-    provider?.addChain?.(chain)
+  const addChain = useCallback(
+    async (chain: Chain): Promise<void> => provider?.addChain?.(chain),
+    [provider],
+  )
 
-  const switchChain = async (chainId: ChainId): Promise<void> =>
-    provider?.switchChain?.(chainId)
+  const switchChain = useCallback(
+    async (chainId: ChainId): Promise<void> => provider?.switchChain?.(chainId),
+    [provider],
+  )
 
-  const signAndSendTx = async (
-    txRequestBody: TxRequestBody,
-  ): Promise<TransactionResponse> =>
-    provider?.signAndSendTx?.(txRequestBody) ?? ''
+  const signAndSendTx = useCallback(
+    async (txRequestBody: TxRequestBody): Promise<TransactionResponse> =>
+      provider?.signAndSendTx?.(txRequestBody) ?? '',
+    [provider],
+  )
 
-  const signMessage = async (message: string): Promise<string> =>
-    provider?.signMessage?.(message) ?? ''
+  const signMessage = useCallback(
+    async (message: string): Promise<string> =>
+      provider?.signMessage?.(message) ?? '',
+    [provider],
+  )
 
-  const getHashFromTx = (txResponse: TransactionResponse): string =>
-    provider?.getHashFromTx?.(txResponse) ?? ''
+  const getHashFromTx = useCallback(
+    (txResponse: TransactionResponse): string =>
+      provider?.getHashFromTx?.(txResponse) ?? '',
+    [provider],
+  )
 
-  const getTxUrl = (chain: Chain, txHash: string): string =>
-    provider?.getTxUrl?.(chain, txHash) ?? ''
+  const getTxUrl = useCallback(
+    (chain: Chain, txHash: string): string =>
+      provider?.getTxUrl?.(chain, txHash) ?? '',
+    [provider],
+  )
 
-  const getAddressUrl = (chain: Chain, address: string): string =>
-    provider?.getAddressUrl?.(chain, address) ?? ''
+  const getAddressUrl = useCallback(
+    (chain: Chain, address: string): string =>
+      provider?.getAddressUrl?.(chain, address) ?? '',
+    [provider],
+  )
 
-  const disconnect = async (): Promise<void> => {
+  const disconnect = useCallback(async (): Promise<void> => {
     if (provider?.disconnect) {
       await provider.disconnect()
 
@@ -67,59 +88,70 @@ export function useProvider<T extends keyof Record<string, string>>() {
     }
 
     setProvider(undefined)
-  }
-
-  const setListeners = useCallback(() => {
-    if (!provider) return
-    PROVIDER_EVENTS.forEach(event => {
-      const providerEvent = provider[event] as (
-        cb: (payload: ProviderEventPayload) => void,
-      ) => void
-
-      providerEvent?.call(provider, payload => {
-        setProviderReactiveState(prev => ({
-          ...prev,
-          ...payload,
-        }))
-      })
-    })
   }, [provider])
 
-  const init = async (
-    providerProxy: ProviderProxyConstructor,
-    createProviderOpts?: CreateProviderOpts<T>,
-  ) => {
-    const initializedProvider = await createProvider(
-      providerProxy,
-      createProviderOpts,
-    )
+  const setListeners = useCallback(
+    (_provider?: Provider) => {
+      const currentProvider = _provider ?? provider
 
-    setRawProvider(
-      createProviderOpts?.providerDetector?.getProvider(
-        providerProxy.providerType as PROVIDERS,
-      )?.instance,
-    )
+      if (!currentProvider) return
 
-    setProvider(initializedProvider)
-  }
+      PROVIDER_EVENTS.forEach(event => {
+        const providerEvent = currentProvider[event] as (
+          cb: (payload: ProviderEventPayload) => void,
+        ) => void
+
+        providerEvent?.call(currentProvider, payload => {
+          setProviderReactiveState(prev => ({
+            ...prev,
+            ...payload,
+          }))
+        })
+      })
+    },
+    [provider],
+  )
+
+  const init = useCallback(
+    async (
+      providerProxy: ProviderProxyConstructor,
+      createProviderOpts?: CreateProviderOpts<T>,
+    ) => {
+      const initializedProvider = await createProvider(
+        providerProxy,
+        createProviderOpts,
+      )
+
+      setRawProvider(
+        createProviderOpts?.providerDetector?.getProvider(
+          providerProxy.providerType as PROVIDERS,
+        )?.instance,
+      )
+
+      setProvider(initializedProvider)
+
+      setListeners(initializedProvider)
+
+      setProviderReactiveState(prev => ({
+        ...prev,
+        address: initializedProvider?.address,
+        isConnected: initializedProvider?.isConnected,
+        chainId: initializedProvider?.chainId,
+        chainType: initializedProvider?.chainType,
+        providerType: initializedProvider?.providerType,
+      }))
+
+      return initializedProvider
+    },
+    [setListeners],
+  )
 
   useEffect(() => {
-    provider?.clearHandlers?.()
-    setListeners()
-
-    setProviderReactiveState(prev => ({
-      ...prev,
-      address: provider?.address,
-      isConnected: provider?.isConnected,
-      chainId: provider?.chainId,
-      chainType: provider?.chainType,
-      providerType: provider?.providerType,
-    }))
-
     return () => {
       provider?.clearHandlers?.()
     }
-  }, [provider, setListeners])
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [])
 
   return {
     provider,
