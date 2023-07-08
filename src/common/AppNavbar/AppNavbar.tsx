@@ -5,7 +5,6 @@ import { FC, HTMLAttributes, useCallback } from 'react'
 
 import { AppButton, AppLogo } from '@/common'
 import { useWeb3Context } from '@/contexts'
-import { EXTERNAL_PROVIDERS } from '@/contexts/Web3ProviderContext/enums'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { abbrCenter, ErrorHandler } from '@/helpers'
 
@@ -18,14 +17,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const connectProvider = useCallback(async () => {
     try {
       await init(PROVIDERS.Metamask)
-    } catch (error) {
-      ErrorHandler.process(error)
-    }
-  }, [init])
-
-  const connectWalletConnect = useCallback(async () => {
-    try {
-      await init(EXTERNAL_PROVIDERS.WalletConnect)
     } catch (error) {
       ErrorHandler.process(error)
     }
@@ -48,26 +39,12 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
       />
 
       <AppButton
-        className='navbar__connection-btn'
-        scheme='flat'
-        text={
-          !provider?.isConnected
-            ? `CONNECT WALLET CONNECT`
-            : abbrCenter(provider?.address ?? '')
-        }
-        iconLeft={ICON_NAMES.qrcode}
-        onClick={connectWalletConnect}
-      />
-
-      <AppButton
         className='navbar__account-link'
         iconLeft={ICON_NAMES.user}
         scheme='flat'
         size='large'
         routePath={RoutesPaths.profile}
       />
-
-      {provider?.chainId}
     </div>
   )
 }
