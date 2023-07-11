@@ -32,9 +32,18 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 
   const getSignedNonce = useCallback(async () => {
     try {
-      const { data } = await api.get<{
+      const { data } = await api.post<{
         message: string
-      }>('integrations/kyc-service/v1/public/nonce')
+      }>('integrations/kyc-service/v1/public/nonce', {
+        body: {
+          data: {
+            type: 'nonce_request',
+            attributes: {
+              address: provider?.address,
+            },
+          },
+        },
+      })
 
       const signedMessage = await provider?.signMessage?.(data.message)
       await loginCb({
@@ -51,7 +60,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
     if (gatewayToken && gatewayToken.state === State.ACTIVE) {
       getSignedNonce()
     }
-  }, [gatewayToken, loginCb, getSignedNonce])
+  }, [gatewayToken, getSignedNonce])
 
   return <IdentityButton />
 }
