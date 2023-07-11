@@ -13,7 +13,7 @@ import { Web3ProviderContextProvider } from '@/contexts'
 
 const root = createRoot(document.getElementById('root') as Element)
 
-initApi(config.API_URL)
+// initApi(config.API_URL)
 
 root.render(
   <StrictMode>
