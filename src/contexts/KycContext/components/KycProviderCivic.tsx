@@ -46,7 +46,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [gatewayToken?.gatekeeperNetworkAddress, loginCb, provider])
+  }, [loginCb, provider])
 
   useEffect(() => {
     if (gatewayToken && gatewayToken.state === State.ACTIVE) {
