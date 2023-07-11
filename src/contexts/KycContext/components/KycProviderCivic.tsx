@@ -1,19 +1,6 @@
-import { State } from '@civic/common-gateway-react/dist/esm/types'
-import {
-  GatewayProvider,
-  GatewayStatus,
-  IdentityButton,
-  useGateway,
-} from '@civic/ethereum-gateway-react'
-import { providers, Wallet } from 'ethers'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { GatewayProvider, IdentityButton } from '@civic/ethereum-gateway-react'
+import { PopulatedTransaction, providers, Wallet } from 'ethers'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { api } from '@/api'
 import { BasicModal } from '@/common'
@@ -25,37 +12,6 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 const UNIQUENESS_PASS = 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6'
-
-const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
-  const { gatewayToken } = useGateway()
-
-  const { provider } = useWeb3Context()
-
-  const getSignedNonce = useCallback(async () => {
-    try {
-      const { data } = await api.get<{
-        message: string
-      }>('integrations/kyc-service/v1/public/nonce')
-
-      const signedMessage = await provider?.signMessage?.(data.message)
-      await loginCb({
-        chain_name: 'ethereum',
-        address: provider?.address,
-        signature: signedMessage,
-      })
-    } catch (error) {
-      ErrorHandler.process(error)
-    }
-  }, [loginCb, provider])
-
-  useEffect(() => {
-    if (gatewayToken && gatewayToken.state === State.ACTIVE) {
-      getSignedNonce()
-    }
-  }, [gatewayToken, loginCb, getSignedNonce])
-
-  return <IdentityButton />
-}
 
 const KycProviderCivic: FC<Props> = ({ loginCb }) => {
   const [isModalShown, setIsModalShown] = useState(true)
@@ -70,10 +26,42 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
     [provider?.rawProvider],
   )
 
+  const getSignedNonce = useCallback(async () => {
+    const { data } = await api.get<{
+      message: string
+    }>('integrations/kyc-service/v1/public/nonce')
+
+    return provider?.signMessage?.(data.message)
+  }, [provider])
+
+  const handleSuccessKyc = useCallback(
+    async (populatedTransaction: PopulatedTransaction) => {
+      try {
+        await provider?.signAndSendTx(populatedTransaction)
+
+        await loginCb({
+          chain_name: 'ethereum',
+          address: provider?.address,
+          signature: await getSignedNonce(),
+        })
+      } catch (error) {
+        ErrorHandler.process(error)
+      }
+    },
+    [getSignedNonce, loginCb, provider],
+  )
+
   return (
     <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
-      <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
-        <KycProviderCivicContent loginCb={loginCb} />
+      <GatewayProvider
+        wallet={wallet}
+        gatekeeperNetwork={UNIQUENESS_PASS}
+        gatekeeperSendsTransaction={false}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        handleTransaction={handleSuccessKyc}
+      >
+        <IdentityButton />
       </GatewayProvider>
     </BasicModal>
   )
