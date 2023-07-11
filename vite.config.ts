@@ -32,6 +32,9 @@ export default defineConfig(({ mode }) => {
           },
         }
       : {}),
+    define: {
+      'process.env': {},
+    },
     publicDir: 'static',
     plugins: [
       // viteCommonjs(),

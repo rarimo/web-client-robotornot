@@ -20,7 +20,7 @@
     "generate-ether-types": "typechain --target=ethers-v5 './abi/**/*.json' --out-dir src/types/contracts"
   },
   "dependencies": {
-    "@civic/ethereum-gateway-react": "0.11.0",
+    "@civic/ethereum-gateway-react": "^0.11.0",
     "@distributedlab/jac": "^0.2.0-rc.25",
     "@distributedlab/tools": "^0.2.0-rc.25",
     "@distributedlab/w3p": "^0.2.0-rc.25",
@@ -46,7 +46,6 @@
     "loglevel": "^1.8.0",
     "lottie-react": "^2.4.0",
     "mitt": "^3.0.0",
-    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.1.4",

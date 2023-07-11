@@ -330,7 +330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civic/ethereum-gateway-react@npm:0.11.0":
+"@civic/ethereum-gateway-react@npm:^0.11.0":
   version: 0.11.0
   resolution: "@civic/ethereum-gateway-react@npm:0.11.0"
   dependencies:
@@ -10526,7 +10526,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-template@workspace:."
   dependencies:
-    "@civic/ethereum-gateway-react": 0.11.0
+    "@civic/ethereum-gateway-react": ^0.11.0
     "@distributedlab/jac": ^0.2.0-rc.25
     "@distributedlab/tools": ^0.2.0-rc.25
     "@distributedlab/w3p": ^0.2.0-rc.25
@@ -10579,7 +10579,6 @@ __metadata:
     mitt: ^3.0.0
     postcss: ^8.4.24
     prettier: ^2.7.1
-    process: ^0.11.10
     react: ^18.2.0
     react-dom: ^18.2.0
     react-i18next: ^12.1.4

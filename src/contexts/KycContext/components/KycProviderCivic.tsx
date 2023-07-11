@@ -2,8 +2,6 @@ import { GatewayProvider, IdentityButton } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
 import { FC, HTMLAttributes, useMemo, useState } from 'react'
 
-// import { useEffectOnce } from 'react-use'
-// import { api } from '@/api'
 import { BasicModal, ErrorMessage } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
@@ -12,7 +10,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
 }
 
-const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
+const UNIQUENESS_PASS = 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6'
 
 // const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 //   const [isModalShown, setIsModalShown] = useState(true)
