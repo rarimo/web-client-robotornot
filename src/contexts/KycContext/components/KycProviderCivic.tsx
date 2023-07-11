@@ -5,14 +5,7 @@ import {
   useGateway,
 } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { api } from '@/api'
 import { BasicModal } from '@/common'
@@ -56,13 +49,17 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
     }
   }, [loginCb, provider])
 
-  useEffect(() => {
-    if (gatewayToken && gatewayToken.state === State.ACTIVE) {
-      getSignedNonce()
-    }
-  }, [gatewayToken, getSignedNonce])
-
-  return <IdentityButton />
+  return (
+    <div>
+      <IdentityButton />
+      <button
+        disabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
+        onClick={getSignedNonce}
+      >
+        click
+      </button>
+    </div>
+  )
 }
 
 const KycProviderCivic: FC<Props> = ({ loginCb }) => {
