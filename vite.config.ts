@@ -108,47 +108,9 @@ export default defineConfig(({ mode }) => {
           'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
         ),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
-
-        // '@civic/ethereum-gateway-react': path.resolve(
-        //   __dirname,
-        //   'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
-        // ),
-        //
-        // '@civic/common-gateway-react': path.resolve(
-        //   __dirname,
-        //   'node_modules/@civic/common-gateway-react/dist/esm/index.js',
-        // ),
-        //
-        // '@ethersproject/abstract-signer': path.resolve(
-        //   __dirname,
-        //   'node_modules/@ethersproject/abstract-signer/lib.esm/index.js',
-        // ),
-        // '@ethersproject/providers': path.resolve(
-        //   __dirname,
-        //   'node_modules/@ethersproject/providers/lib.esm/index.js',
-        // ),
-        // '@identity.com/gateway-eth-ts': path.resolve(
-        //   __dirname,
-        //   'node_modules/@identity.com/gateway-eth-ts/dist/index.js',
-        // ),
-        // '@identity.com/prove-ethereum-wallet': path.resolve(
-        //   __dirname,
-        //   'node_modules/@identity.com/prove-ethereum-wallet/dist/prove-ethereum-wallet.esm.js',
-        // ),
-        // ramda: path.resolve(__dirname, 'node_modules/ramda/es/index.js'),
       },
     },
     optimizeDeps: {
-      // include: [
-      //   '@civic/ethereum-gateway-react',
-      //   '@civic/common-gateway-react',
-      //   '@ethersproject/abstract-signer',
-      //   '@ethersproject/providers',
-      //   '@identity.com/gateway-eth-ts',
-      //   '@identity.com/prove-ethereum-wallet',
-      //   'ethers',
-      //   'ramda',
-      // ],
       esbuildOptions: {
         define: {
           global: 'globalThis',

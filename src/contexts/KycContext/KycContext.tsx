@@ -95,9 +95,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {},
         [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {},
         [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          access_token: currentAuthKycResponse.accessToken,
+          access_token: (currentAuthKycResponse as { accessToken: string })
+            .accessToken,
         },
       }
 

@@ -11231,6 +11231,7 @@ __metadata:
     mitt: ^3.0.0
     postcss: ^8.4.24
     prettier: ^2.7.1
+    process: ^0.11.10
     react: ^18.2.0
     react-dom: ^18.2.0
     react-i18next: ^12.1.4

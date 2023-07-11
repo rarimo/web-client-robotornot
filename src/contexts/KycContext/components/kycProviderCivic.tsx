@@ -1,14 +1,9 @@
-import { GatewayStatus } from '@civic/common-gateway-react/dist/esm/types'
-import {
-  GatewayProvider,
-  IdentityButton,
-  useGateway,
-} from '@civic/ethereum-gateway-react'
-import { CivicProfile, Profile } from '@civic/profile'
+import { GatewayProvider, IdentityButton } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
-import { FC, HTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { useEffectOnce } from 'react-use'
+import { FC, HTMLAttributes, useMemo, useState } from 'react'
 
+// import { useEffectOnce } from 'react-use'
+// import { api } from '@/api'
 import { BasicModal, ErrorMessage } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
@@ -19,29 +14,46 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
-const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
-  const [isModalShown, setIsModalShown] = useState(true)
-
-  const { gatewayStatus, gatewayToken } = useGateway()
-
-  useEffect(() => {
-    if (
-      gatewayToken &&
-      gatewayStatus &&
-      gatewayStatus === GatewayStatus.USER_INFORMATION_VALIDATED
-    ) {
-      loginCb(gatewayToken)
-    }
-  }, [gatewayToken, gatewayStatus, loginCb])
-
-  return (
-    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
-      <IdentityButton />
-    </BasicModal>
-  )
-}
+// const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
+//   const [isModalShown, setIsModalShown] = useState(true)
+//
+//   const { gatewayStatus, gatewayToken } = useGateway()
+//
+//   const { provider } = useWeb3Context()
+//
+//   const getSignedNonce = useCallback(async () => {
+//     try {
+//       const { data } = await api.get<{
+//         message: string
+//       }>('integrations/kyc-service/v1/public/nonce')
+//
+//       const signedMessage = await provider?.signMessage?.(data.message)
+//       await loginCb(signedMessage)
+//     } catch (error) {
+//       ErrorHandler.process(error)
+//     }
+//   }, [loginCb, provider])
+//
+//   useEffect(() => {
+//     if (
+//       gatewayToken &&
+//       gatewayStatus &&
+//       gatewayStatus === GatewayStatus.USER_INFORMATION_VALIDATED
+//     ) {
+//       getSignedNonce()
+//     }
+//   }, [gatewayToken, gatewayStatus, loginCb, getSignedNonce])
+//
+//   return (
+//     <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
+//       <IdentityButton />
+//     </BasicModal>
+//   )
+// }
 
 const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+  const [isModalShown, setIsModalShown] = useState(true)
+
   const { provider } = useWeb3Context()
 
   const wallet = useMemo(
@@ -52,28 +64,13 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
     [provider?.rawProvider],
   )
 
-  const init = async () => {
-    try {
-      const profile: Profile = await CivicProfile.get(provider?.address ?? '')
-
-      // eslint-disable-next-line no-console
-      console.log(profile)
-      // eslint-disable-next-line no-console
-      console.log(await profile.getPasses())
-    } catch (error) {
-      ErrorHandler.process(error)
-    }
-  }
-
-  useEffectOnce(() => {
-    init()
-  })
-
   try {
     return (
-      <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
-        <KycProviderCivicContent loginCb={loginCb} />
-      </GatewayProvider>
+      <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
+        <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
+          <IdentityButton />
+        </GatewayProvider>
+      </BasicModal>
     )
   } catch (error) {
     ErrorHandler.process(error)
