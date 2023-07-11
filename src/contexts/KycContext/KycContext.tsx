@@ -92,12 +92,21 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
-        [SUPPORTED_KYC_PROVIDERS.CIVIC]: {},
-        [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {},
-        [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
+        [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          access_token: currentAuthKycResponse.accessToken,
+          chain_name: currentAuthKycResponse.chainName,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          address: currentAuthKycResponse.address,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          signature: currentAuthKycResponse.signature,
+        },
+        [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
+          access_token: (currentAuthKycResponse as { accessToken: string })
+            .accessToken,
         },
       }
 

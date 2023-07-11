@@ -6,6 +6,7 @@ import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import { checker } from 'vite-plugin-checker'
+import viteCommonjs from 'vite-plugin-commonjs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -31,8 +32,12 @@ export default defineConfig(({ mode }) => {
           },
         }
       : {}),
+    define: {
+      'process.env': {},
+    },
     publicDir: 'static',
     plugins: [
+      ...(isDevelopment ? [viteCommonjs()] : []),
       react(),
 
       tsconfigPaths(),

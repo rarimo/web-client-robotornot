@@ -1,32 +1,64 @@
+import { State } from '@civic/common-gateway-react/dist/esm/types'
 import {
   GatewayProvider,
   IdentityButton,
   useGateway,
 } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
-import { debounce } from 'lodash'
-import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
-import { useEffectOnce } from 'react-use'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
-import { Modal } from '@/common'
-import { useWeb3Context } from '@/contexts/Web3ProviderContext'
+import { api } from '@/api'
+import { BasicModal } from '@/common'
+import { useWeb3Context } from '@/contexts'
+import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  loginCb: (response: unknown) => void
-  updateIsShown: (isShown: boolean) => void
+  loginCb: (response: unknown) => Promise<void>
 }
 
 const UNIQUENESS_PASS = 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6'
 
-const CivicProviderContent = () => {
+const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   const { gatewayToken } = useGateway()
-  const token = useMemo(() => gatewayToken, [gatewayToken])
-  console.log(token)
 
-  return <></>
+  const { provider } = useWeb3Context()
+
+  const getSignedNonce = useCallback(async () => {
+    try {
+      const { data } = await api.get<{
+        message: string
+      }>('integrations/kyc-service/v1/public/nonce')
+
+      const signedMessage = await provider?.signMessage?.(data.message)
+      await loginCb({
+        chain_name: 'ethereum',
+        address: provider?.address,
+        signature: signedMessage,
+      })
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [loginCb, provider])
+
+  useEffect(() => {
+    if (gatewayToken && gatewayToken.state === State.ACTIVE) {
+      getSignedNonce()
+    }
+  }, [gatewayToken, loginCb, getSignedNonce])
+
+  return <IdentityButton />
 }
 
-const KycProviderCivic: FC<Props> = ({ loginCb, updateIsShown }) => {
+const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+  const [isModalShown, setIsModalShown] = useState(true)
+
   const { provider } = useWeb3Context()
 
   const wallet = useMemo(
@@ -37,23 +69,12 @@ const KycProviderCivic: FC<Props> = ({ loginCb, updateIsShown }) => {
     [provider?.rawProvider],
   )
 
-  // const login = useCallback(async () => {
-  //   const response = loginCb(response)
-  // }, [loginCb])
-
-  // useEffectOnce(
-  //   debounce(() => {
-  //     login()
-  //   }, 100),
-  // )
-
   return (
-    <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
-      <Modal isShown={true} updateIsShown={updateIsShown}>
-        <CivicProviderContent />
-        <IdentityButton />
-      </Modal>
-    </GatewayProvider>
+    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
+      <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
+        <KycProviderCivicContent loginCb={loginCb} />
+      </GatewayProvider>
+    </BasicModal>
   )
 }
 

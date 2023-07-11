@@ -1,15 +1,14 @@
-import { memo, useCallback, useState } from 'react'
+import { FC, HTMLAttributes, memo, useCallback, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import { useEffectOnce } from 'react-use'
 
-import { Loader } from '@/common'
+import { AppNavbar, Loader } from '@/common'
 import { useWeb3Context, ZkpContextProvider } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
-import { AppRoutes } from '@/routes'
 import { NotificationPayload } from '@/types'
 
-const App = () => {
+const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   useViewportSizes()
 
   const [isAppInitialized, setIsAppInitialized] = useState(false)
@@ -45,12 +44,17 @@ const App = () => {
   })
 
   return (
-    <div id='app'>
-      <ZkpContextProvider>
-        {isAppInitialized ? <AppRoutes /> : <Loader />}
-      </ZkpContextProvider>
+    <ZkpContextProvider>
+      <div id='app'>
+        <AppNavbar />
+
+        <div className='app__main'>
+          {isAppInitialized ? children : <Loader />}
+        </div>
+      </div>
+
       <ToastContainer />
-    </div>
+    </ZkpContextProvider>
   )
 }
 

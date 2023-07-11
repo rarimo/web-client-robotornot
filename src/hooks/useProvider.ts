@@ -7,7 +7,6 @@ import {
   Provider,
   ProviderEventPayload,
   ProviderProxyConstructor,
-  PROVIDERS,
   RawProvider,
   TransactionResponse,
   TxRequestBody,
@@ -122,11 +121,7 @@ export function useProvider<T extends keyof Record<string, string>>() {
         createProviderOpts,
       )
 
-      setRawProvider(
-        createProviderOpts?.providerDetector?.getProvider(
-          providerProxy.providerType as PROVIDERS,
-        )?.instance,
-      )
+      setRawProvider(initializedProvider.rawProvider)
 
       setProvider(initializedProvider)
 
