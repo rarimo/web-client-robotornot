@@ -13,6 +13,8 @@ import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 
+import { KycProviderCivic } from './components'
+
 const KycProviderUnstoppableDomains = lazy(
   () =>
     import('@/contexts/KycContext/components/KycProviderUnstoppableDomains'),
@@ -20,10 +22,6 @@ const KycProviderUnstoppableDomains = lazy(
 
 const KycProviderWorldCoin = lazy(
   () => import('@/contexts/KycContext/components/KycProviderWorldCoin'),
-)
-
-const KycProviderCivic = lazy(
-  () => import('@/contexts/KycContext/components/kycProviderCivic'),
 )
 
 interface KycContextValue {

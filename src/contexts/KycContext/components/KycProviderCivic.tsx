@@ -51,7 +51,7 @@ const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 //   )
 // }
 
-const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+const KycProviderCivic: FC<Props> = () => {
   const [isModalShown, setIsModalShown] = useState(true)
 
   const { provider } = useWeb3Context()
@@ -76,12 +76,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
     ErrorHandler.process(error)
 
     return (
-      <BasicModal
-        isShown={true}
-        updateIsShown={() => {
-          /* empty */
-        }}
-      >
+      <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
         <ErrorMessage message={`Ooops... Something went wrong`} />
       </BasicModal>
     )

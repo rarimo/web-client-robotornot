@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom'
 
 import App from '@/App'
-import { AppNavbar } from '@/common'
 import { Web3ProviderContextProvider } from '@/contexts'
 import { RoutesPaths } from '@/enums'
 import { AuthLayout } from '@/layouts'

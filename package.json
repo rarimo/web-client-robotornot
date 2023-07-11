@@ -20,9 +20,7 @@
     "generate-ether-types": "typechain --target=ethers-v5 './abi/**/*.json' --out-dir src/types/contracts"
   },
   "dependencies": {
-    "@civic/common-gateway-react": "^0.9.0",
-    "@civic/ethereum-gateway-react": "^0.11.0",
-    "@civic/profile": "^0.2.3",
+    "@civic/ethereum-gateway-react": "0.11.0",
     "@distributedlab/jac": "^0.2.0-rc.25",
     "@distributedlab/tools": "^0.2.0-rc.25",
     "@distributedlab/w3p": "^0.2.0-rc.25",
@@ -105,5 +103,5 @@
     "vite-tsconfig-paths": "^4.0.3",
     "yorkie": "^2.0.0"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@3.6.1"
 }
