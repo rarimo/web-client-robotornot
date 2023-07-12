@@ -1,3 +1,5 @@
+import './style.scss'
+
 import { State } from '@civic/common-gateway-react/dist/esm/types'
 import {
   GatewayProvider,
@@ -8,7 +10,7 @@ import { providers, Wallet } from 'ethers'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 
 import { api } from '@/api'
-import { BasicModal } from '@/common'
+import { AppButton, BasicModal } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
 
@@ -16,7 +18,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
 }
 
-const UNIQUENESS_PASS = 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6'
+const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
 const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   const { gatewayToken } = useGateway()
@@ -52,12 +54,12 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   return (
     <div>
       <IdentityButton />
-      <button
-        disabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
+      <AppButton
+        className='kyc-provider-civic__login-btn'
+        isDisabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
+        text={'Login'}
         onClick={getSignedNonce}
-      >
-        click
-      </button>
+      />
     </div>
   )
 }
