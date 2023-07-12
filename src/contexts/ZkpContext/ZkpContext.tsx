@@ -75,7 +75,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
-      // TODO: move to .env
       AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
     })
 

@@ -111,6 +111,10 @@ export default defineConfig(({ mode }) => {
           'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
         ),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
+        '@iden3/js-merkletree': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js',
+        ),
       },
     },
     optimizeDeps: {

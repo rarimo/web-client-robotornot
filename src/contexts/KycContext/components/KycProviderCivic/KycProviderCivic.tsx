@@ -42,7 +42,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 
       const signedMessage = await provider?.signMessage?.(data.message)
       await loginCb({
-        chain_name: 'ethereum',
+        chainName: 'ethereum',
         address: provider?.address,
         signature: signedMessage,
       })
