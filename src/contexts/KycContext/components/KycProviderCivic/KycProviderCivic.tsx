@@ -53,13 +53,16 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 
   return (
     <div>
-      <IdentityButton />
-      <AppButton
-        className='kyc-provider-civic__login-btn'
-        isDisabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
-        text={'Login'}
-        onClick={getSignedNonce}
-      />
+      {!gatewayToken || gatewayToken.state !== State.ACTIVE ? (
+        <IdentityButton />
+      ) : (
+        <AppButton
+          className='kyc-provider-civic__login-btn'
+          isDisabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
+          text={'Login'}
+          onClick={getSignedNonce}
+        />
+      )}
     </div>
   )
 }
