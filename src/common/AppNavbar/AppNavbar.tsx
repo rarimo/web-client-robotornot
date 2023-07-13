@@ -7,6 +7,7 @@ import { AppButton, AppLogo } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { abbrCenter, ErrorHandler } from '@/helpers'
+import { useMetamaskZkpSnap } from '@/hooks/use-metamask-zkp-snap'
 
 const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   className = '',
@@ -14,13 +15,16 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   const { provider, init } = useWeb3Context()
 
+  const { connectSnap } = useMetamaskZkpSnap()
+
   const connectProvider = useCallback(async () => {
     try {
       await init(PROVIDERS.Metamask)
+      await connectSnap()
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [init])
+  }, [connectSnap, init])
 
   return (
     <div className={`app-navbar ${className}`} {...rest}>

@@ -19,7 +19,8 @@ const AuthPreview: FC<Props> = () => {
 
   const { provider } = useWeb3Context()
 
-  const { getVerifiableCredentials, getZkProof } = useZkpContext()
+  const { getVerifiableCredentials, getZkProof, verifiableCredentials } =
+    useZkpContext()
 
   const { isLoaded, isValidCredentials, retryKyc } = useKycContext()
 
@@ -109,12 +110,21 @@ const AuthPreview: FC<Props> = () => {
     [completeKyc],
   )
 
+  const manualZkProof = useCallback(async () => {
+    try {
+      await getZkProof(DEFAULT_CHAIN, verifiableCredentials)
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
+    }
+  }, [getZkProof, verifiableCredentials])
+
   return (
     <div
       className={`auth-preview ${
         isValidCredentials ? '' : `auth-preview--invalid`
       }`}
     >
+      <AppButton text={`call ZK Proof`} onClick={manualZkProof} />
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
       </div>

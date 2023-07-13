@@ -74,7 +74,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const navigate = useNavigate()
 
-  const { identity, createIdentity, isClaimOfferExists } = useZkpContext()
+  const { identityIdString, createIdentity, isClaimOfferExists } =
+    useZkpContext()
 
   const login = useCallback(
     async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
@@ -144,17 +145,17 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!selectedKycProviderName) return
 
-      let currentIdentity = identity
+      let currentIdentityIdString = identityIdString
 
-      if (!currentIdentity?.idString) {
-        currentIdentity = await createIdentity()
+      if (!currentIdentityIdString) {
+        currentIdentityIdString = await createIdentity()
       }
 
-      if (!currentIdentity?.idString) return
+      if (!currentIdentityIdString) return
 
-      if (!(await isClaimOfferExists(currentIdentity))) {
+      if (!(await isClaimOfferExists(currentIdentityIdString))) {
         try {
-          await verifyKyc(currentIdentity.idString, response)
+          await verifyKyc(currentIdentityIdString, response)
         } catch (error) {
           setIsValidCredentials(false)
 
@@ -164,7 +165,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
       }
 
-      setIsValidCredentials(await isClaimOfferExists(currentIdentity))
+      setIsValidCredentials(await isClaimOfferExists(currentIdentityIdString))
 
       setIsLoaded(true)
 
@@ -172,7 +173,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     },
     [
       createIdentity,
-      identity,
+      identityIdString,
       isClaimOfferExists,
       navigate,
       selectedKycProviderName,

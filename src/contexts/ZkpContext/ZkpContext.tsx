@@ -1,47 +1,46 @@
-import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
-import {
-  AuthZkp,
-  ClaimOffer,
-  VerifiableCredentials,
-} from '@rarimo/auth-zkp-iden3'
-import { Identity } from '@rarimo/identity-gen-iden3'
-import { ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import { SUPPORTED_CHAINS } from '@config'
+import { type ZKProof } from '@iden3/js-jwz'
+import { ClaimOffer, VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
 import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { api } from '@/api'
-import { useWeb3Context } from '@/contexts'
 import { sleep } from '@/helpers'
+import { useMetamaskZkpSnap } from '@/hooks'
 
 type QueryVariableName = { isNatural: number }
 
 interface ZkpContextValue {
-  identity: Identity | undefined
-  isNaturalZkp: ZkpGen<QueryVariableName> | undefined
+  identityIdString: string
+  isNaturalZkp: ZKProof | undefined
+  verifiableCredentials: VerifiableCredentials<QueryVariableName> | undefined
 
-  isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
-  getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
-  createIdentity: (privateKeyHex?: string) => Promise<Identity>
+  isClaimOfferExists: (identityIdString?: string) => Promise<boolean>
+  getClaimOffer: (identityIdString?: string) => Promise<ClaimOffer>
+  createIdentity: () => Promise<string>
   getVerifiableCredentials: (
     chain: SUPPORTED_CHAINS,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
   getZkProof: (
     chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
-  ) => Promise<ZkpGen<QueryVariableName>>
+  ) => Promise<unknown>
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
-  identity: new Identity(),
+  identityIdString: '',
   isNaturalZkp: undefined,
+  verifiableCredentials: undefined,
 
-  getClaimOffer: async (_identity?: Identity) => {
+  getClaimOffer: async (identityIdString?: string) => {
     throw new TypeError(
-      `getClaimOffer() not implemented for ${_identity?.idString}`,
+      `getClaimOffer() not implemented for ${identityIdString}`,
     )
   },
 
-  isClaimOfferExists: async (_identity?: Identity) => {
-    throw new TypeError(`isClaimOfferExists() not implemented for ${_identity}`)
+  isClaimOfferExists: async (identityIdString?: string) => {
+    throw new TypeError(
+      `isClaimOfferExists() not implemented for ${identityIdString}`,
+    )
   },
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
@@ -66,53 +65,52 @@ export const zkpContext = createContext<ZkpContextValue>({
 type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
-  const { provider } = useWeb3Context()
+  const {
+    createIdentity: _createIdentity,
+    getVerifiableCredentials: _getVerifiableCredentials,
+    createNaturalPersonProof,
+  } = useMetamaskZkpSnap()
 
-  const [identity, setIdentity] = useState<Identity>()
+  const [identityIdString, setIdentityIdString] = useState('')
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
-  const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
+  const [isNaturalZkp, setIsNaturalZkp] = useState<ZKProof>()
 
-  const createIdentity = useCallback(async (privateKeyHex?: string) => {
-    Identity.setConfig({
-      AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
-    })
+  const createIdentity = useCallback(async () => {
+    const identityIdString = (await _createIdentity()).split(':')[2]
+    setIdentityIdString(identityIdString)
 
-    const newIdentity = await Identity.create(privateKeyHex)
-
-    setIdentity(newIdentity)
-
-    return newIdentity
-  }, [])
+    return identityIdString
+  }, [_createIdentity])
 
   const getClaimOffer = useCallback(
-    async (_identity?: Identity) => {
+    async (_identityIdString?: string) => {
       const { data } = await api.get<ClaimOffer>(
         `/integrations/issuer/v1/public/claims/offers/${
-          _identity?.idString ?? identity?.idString
+          _identityIdString ?? identityIdString
         }/NaturalPerson`,
       )
 
       return data
     },
-    [identity?.idString],
+    [identityIdString],
   )
 
   const isClaimOfferExists = useCallback(
-    async (_identity?: Identity) => {
+    async (identityIdString?: string) => {
       const MAX_TRIES_COUNT = 10
       let tryCounter = 0
 
       while (tryCounter < MAX_TRIES_COUNT) {
         try {
-          await getClaimOffer(_identity)
+          await getClaimOffer(identityIdString)
 
           return true
         } catch (error) {
           /* empty */
         }
 
-        await sleep(1000)
+        await sleep(3000)
         tryCounter++
       }
 
@@ -121,83 +119,48 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [getClaimOffer],
   )
 
-  const getVerifiableCredentials = useCallback(
-    async (
-      chain: SUPPORTED_CHAINS,
-    ): Promise<VerifiableCredentials<QueryVariableName>> => {
-      if (!identity) throw new TypeError('Identity is not defined')
+  const getVerifiableCredentials = useCallback(async (): Promise<
+    VerifiableCredentials<QueryVariableName>
+  > => {
+    if (!identityIdString) throw new TypeError('Identity is not defined')
 
-      AuthZkp.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
-        ISSUER_API_URL: config.API_URL,
+    const verifiableCredentials = (await _getVerifiableCredentials(
+      await getClaimOffer(),
+    )) as VerifiableCredentials<QueryVariableName>
 
-        CIRCUIT_FINAL_KEY_URL: AuthZkp.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: AuthZkp.config.CIRCUIT_WASM_URL,
-      })
+    setVerifiableCredentials(verifiableCredentials)
 
-      const authProof = new AuthZkp<QueryVariableName>(identity)
-
-      const verifiableCredentials = await authProof.getVerifiableCredentials()
-
-      setVerifiableCredentials(verifiableCredentials)
-
-      return verifiableCredentials
-    },
-    [identity],
-  )
+    return verifiableCredentials
+  }, [_getVerifiableCredentials, getClaimOffer, identityIdString])
 
   const getZkProof = useCallback(
     async (
       chain: SUPPORTED_CHAINS,
       _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
-    ): Promise<ZkpGen<QueryVariableName>> => {
+    ) => {
       const currentVerifiableCredentials =
         _verifiableCredentials ?? verifiableCredentials
 
-      if (!identity) throw new TypeError('Identity is not defined')
+      if (!identityIdString) throw new TypeError('Identity is not defined')
 
       if (!currentVerifiableCredentials)
         throw new TypeError('VerifiableCredentials is not defined')
 
-      ZkpGen.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
-        ISSUER_API_URL: config.API_URL,
-
-        CIRCUIT_FINAL_KEY_URL: ZkpGen.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: ZkpGen.config.CIRCUIT_WASM_URL,
-        CLAIM_PROOF_SIBLINGS_COUNT: ZkpGen.config.CLAIM_PROOF_SIBLINGS_COUNT,
-      })
-
-      const zkProof = new ZkpGen<QueryVariableName>({
-        requestId: '1',
-        identity: identity,
-        verifiableCredentials: currentVerifiableCredentials,
-
-        challenge: String(provider?.address).substring(2),
-
-        query: {
-          variableName: 'isNatural',
-          operator: ZkpOperators.Equals,
-          value: ['1'],
-        },
-      })
-
-      await zkProof.generateProof()
+      const zkProof = await createNaturalPersonProof()
 
       setIsNaturalZkp(zkProof)
 
       return zkProof
     },
-    [identity, provider?.address, verifiableCredentials],
+    [createNaturalPersonProof, identityIdString, verifiableCredentials],
   )
 
   return (
     <zkpContext.Provider
       value={{
-        identity,
+        identityIdString,
         isNaturalZkp,
+        verifiableCredentials,
 
         getClaimOffer,
         isClaimOfferExists,

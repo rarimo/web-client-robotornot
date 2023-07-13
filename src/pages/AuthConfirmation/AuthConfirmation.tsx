@@ -51,29 +51,17 @@ const AuthConfirmation: FC<Props> = () => {
     useState<SUPPORTED_CHAINS>(DEFAULT_CHAIN)
 
   const submitZkp = useCallback(async () => {
-    try {
-      if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
+    if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
 
+    try {
       const txBody = getProveIdentityTxBody(
-        isNaturalZkp?.subjectProof.pub_signals.map(el => BigInt(el)),
+        isNaturalZkp.pub_signals.map(el => BigInt(el)),
+        [isNaturalZkp.proof.pi_a[0], isNaturalZkp.proof.pi_a[1]],
         [
-          isNaturalZkp?.subjectProof.proof.pi_a[0],
-          isNaturalZkp?.subjectProof.proof.pi_a[1],
+          [isNaturalZkp.proof.pi_b[0][1], isNaturalZkp.proof.pi_b[0][0]],
+          [isNaturalZkp.proof.pi_b[1][1], isNaturalZkp.proof.pi_b[1][0]],
         ],
-        [
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[0][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[0][0],
-          ],
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[1][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[1][0],
-          ],
-        ],
-        [
-          isNaturalZkp?.subjectProof.proof.pi_c[0],
-          isNaturalZkp?.subjectProof.proof.pi_c[1],
-        ],
+        [isNaturalZkp.proof.pi_c[0], isNaturalZkp.proof.pi_c[1]],
       )
 
       await provider?.signAndSendTx({
