@@ -1,4 +1,4 @@
-.Toastify__toast.default-toast {
+.Toastify__toast.transaction-toast {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,15 +17,15 @@
   }
 }
 
-.default-toast__body {
+.transaction-toast__body {
   display: flex;
   position: relative;
   gap: toRem(12);
   width: 100%;
-  padding-right: toRem(12);
+  padding-right: toRem(24);
 }
 
-.default-toast__icon-wrp {
+.transaction-toast__icon-wrp {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,18 +54,18 @@
   }
 }
 
-.default-toast .default-toast__icon {
+.transaction-toast .transaction-toast__icon {
   @include static-icon-size(24);
 }
 
-.default-toast__details {
+.transaction-toast__details {
   display: flex;
   flex-direction: column;
   padding: toRem(8) 0;
   flex: 1;
 }
 
-.default-toast__title {
+.transaction-toast__title {
   font-size: toRem(14);
   line-height: 1.5;
   font-weight: 500;
@@ -73,7 +73,7 @@
   color: var(--text-primary-main);
 }
 
-.default-toast__message {
+.transaction-toast__message {
   font-size: toRem(14);
   line-height: 1.5;
   letter-spacing: toRem(0.25);
@@ -83,6 +83,15 @@
 
   @include respond-to(xsmall) {
     width: toRem(180);
+  }
+
+  .transaction-toast__message-icon {
+    display: inline;
+    vertical-align: baseline;
+    width: 0.9em;
+    height: 0.9em;
+    transform: translateY(toRem(2));
+    margin-left: toRem(4);
   }
 }
 

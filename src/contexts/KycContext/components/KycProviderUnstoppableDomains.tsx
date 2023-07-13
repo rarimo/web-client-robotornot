@@ -12,7 +12,7 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
     () =>
       new UAuth({
         clientID: '6411ad0a-4502-4cae-84ae-f810634f25b8',
-        redirectUri: 'http://localhost:8095',
+        redirectUri: new URL(window.location.href).origin,
         scope: 'openid wallet messaging:notifications:optional',
       }),
     [],

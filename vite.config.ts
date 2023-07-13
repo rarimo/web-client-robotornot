@@ -6,7 +6,6 @@ import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import { checker } from 'vite-plugin-checker'
-import viteCommonjs from 'vite-plugin-commonjs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -19,10 +18,10 @@ const root = path.resolve(__dirname, resolveApp('src'))
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  const isProduction = env.VITE_ENVIRONMENT === 'production'
-  const isDevelopment = env.VITE_ENVIRONMENT === 'development'
+  // const isProduction = env.VITE_ENVIRONMENT === 'production'
+  // const isDevelopment = env.VITE_ENVIRONMENT === 'development'
   const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
-  const buildVersion = env.VITE_APP_BUILD_VERSION
+  // const buildVersion = env.VITE_APP_BUILD_VERSION
 
   return {
     ...(env.VITE_PORT
@@ -37,7 +36,6 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
-      ...(isDevelopment ? [viteCommonjs()] : []),
       react(),
 
       tsconfigPaths(),
@@ -111,6 +109,14 @@ export default defineConfig(({ mode }) => {
           'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
         ),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
+        '@iden3/js-merkletree': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js',
+        ),
+        '@civic/ethereum-gateway-react': path.resolve(
+          __dirname,
+          'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
+        ),
       },
     },
     optimizeDeps: {
@@ -130,6 +136,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
+      sourcemap: true,
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin
