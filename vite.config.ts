@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
-      ...(isDevelopment ? [viteCommonjs()] : []),
+      // viteCommonjs(),
       react(),
 
       tsconfigPaths(),
