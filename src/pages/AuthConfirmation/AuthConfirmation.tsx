@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { config, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
+import { config, SUPPORTED_CHAINS } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -33,14 +33,14 @@ const AuthConfirmation: FC<Props> = () => {
         value: SUPPORTED_CHAINS.POLYGON,
         iconName: ICON_NAMES.polygon,
       },
+      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+        title: 'Polygon chain',
+        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+        iconName: ICON_NAMES.polygon,
+      },
       [SUPPORTED_CHAINS.SEPOLIA]: {
         title: 'Sepolia chain',
         value: SUPPORTED_CHAINS.SEPOLIA,
-        iconName: ICON_NAMES.ethereum,
-      },
-      [SUPPORTED_CHAINS.GOERLI]: {
-        title: 'Goerli chain',
-        value: SUPPORTED_CHAINS.GOERLI,
         iconName: ICON_NAMES.ethereum,
       },
     }),
@@ -48,7 +48,7 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
-    useState<SUPPORTED_CHAINS>(DEFAULT_CHAIN)
+    useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
   const submitZkp = useCallback(async () => {
     if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
@@ -65,6 +65,8 @@ const AuthConfirmation: FC<Props> = () => {
       )
 
       await provider?.signAndSendTx({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         to: config?.[
           `DEMO_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],

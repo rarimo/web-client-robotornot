@@ -8,7 +8,7 @@ import packageJson from '../package.json'
 export enum SUPPORTED_CHAINS {
   SEPOLIA = 'SEPOLIA',
   POLYGON = 'POLYGON',
-  GOERLI = 'GOERLI',
+  POLYGON_TESTNET = 'POLYGON_TESTNET',
 }
 
 export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
@@ -19,7 +19,7 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
     explorerUrl: 'https://sepolia.etherscan.io',
     token: {
       name: 'Sepolia',
-      symbol: 'Sep',
+      symbol: 'Sepolia',
       decimals: 18,
     },
     type: CHAIN_TYPES.EVM,
@@ -27,6 +27,19 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
   },
   // FIXME: use the correct chain details for polygon
   [SUPPORTED_CHAINS.POLYGON]: {
+    id: '137',
+    name: 'Polygon',
+    rpcUrl: 'https://polygon-rpc.com/',
+    explorerUrl: 'https://polygonscan.com/',
+    token: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    type: CHAIN_TYPES.EVM,
+    icon: '',
+  },
+  [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
     id: '80001',
     name: 'Mumbai',
     rpcUrl: 'https://endpoints.omniatech.io/v1/matic/mumbai/public',
@@ -39,22 +52,7 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
     type: CHAIN_TYPES.EVM,
     icon: '',
   },
-  [SUPPORTED_CHAINS.GOERLI]: {
-    id: '5',
-    name: 'Goerli',
-    rpcUrl: 'https://ethereum-goerli.publicnode.com',
-    explorerUrl: 'https://goerli.etherscan.io',
-    token: {
-      name: 'Goerli',
-      symbol: 'Goerli',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
 }
-
-export const DEFAULT_CHAIN = SUPPORTED_CHAINS.SEPOLIA
 
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,
@@ -64,28 +62,19 @@ export const config = {
 
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
 
-  /* eslint-disable max-len */
-  /* prettier-ignore */
-  DEMO_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_SEPOLIA,
-  /* prettier-ignore */
-  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_SEPOLIA,
-  /* prettier-ignore */
-  STATE_V2_CONTRACT_ADDRESS_SEPOLIA: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS_SEPOLIA,
+  ...Object.values(SUPPORTED_CHAINS).reduce(
+    (acc, curr) => ({
+      ...acc,
+      /* eslint-disable max-len */
+      /* prettier-ignore */
+      [`DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
+      /* prettier-ignore */
+      [`DEMO_SBT_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_SBT_CONTRACT_ADDRESS_${curr}`] || '',
+    }),
+    {},
+  ),
 
-  /* prettier-ignore */
-  DEMO_VERIFIER_CONTRACT_ADDRESS_POLYGON: import.meta.env.VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_POLYGON,
-  /* prettier-ignore */
-  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_POLYGON: import.meta.env.VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_POLYGON,
-  /* prettier-ignore */
-  STATE_V2_CONTRACT_ADDRESS_POLYGON: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS_POLYGON,
-
-  /* prettier-ignore */
-  DEMO_VERIFIER_CONTRACT_ADDRESS_GOERLI: import.meta.env.VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_GOERLI,
-  /* prettier-ignore */
-  ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_GOERLI: import.meta.env.VITE_ZKP_QUERIES_STORAGE_CONTRACT_ADDRESS_GOERLI,
-  /* prettier-ignore */
-  STATE_V2_CONTRACT_ADDRESS_GOERLI: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS_GOERLI,
-  /* eslint-enable */
+  DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

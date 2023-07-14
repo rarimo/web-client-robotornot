@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { DEFAULT_CHAIN } from '@config'
+import { config } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -36,10 +36,10 @@ const AuthPreview: FC<Props> = () => {
 
     try {
       const verifiableCredentials = await getVerifiableCredentials(
-        DEFAULT_CHAIN,
+        config.DEFAULT_CHAIN,
       )
 
-      await getZkProof(DEFAULT_CHAIN, verifiableCredentials)
+      await getZkProof(config.DEFAULT_CHAIN, verifiableCredentials)
 
       navigate(RoutesPaths.authConfirmation)
     } catch (error) {
