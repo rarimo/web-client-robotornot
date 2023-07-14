@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { type Id, toast, TypeOptions } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DefaultToast } from '@/common'
+import { DefaultToast, TransactionToast } from '@/common'
 import { ICON_NAMES } from '@/enums'
-import { NotificationObjectPayload } from '@/types'
+import { NotificationObjectPayload, NotificationTxType } from '@/types'
 
 const NOTIFICATION_TYPE = {
   success: 'success',
@@ -105,12 +105,29 @@ export const useNotification = () => {
     [defaultIconNames, defaultMessages, defaultTitles],
   )
 
+  const showTxToast = (type: NotificationTxType, link: string) => {
+    return toast(() => <TransactionToast type={type} link={link} />, {
+      toastId: `${type}-${uuidv4()}`,
+      icon: false,
+      type: {
+        success: NOTIFICATION_TYPE.success,
+        error: NOTIFICATION_TYPE.error,
+        pending: NOTIFICATION_TYPE.info,
+      }[type] as TypeOptions,
+      className: 'transaction-toast',
+      autoClose: MINUTE / 2,
+      closeOnClick: false,
+    })
+  }
+
   const removeToast = useCallback((toastId: Id) => {
     toast.dismiss(toastId)
   }, [])
 
   return {
     showToast,
+    showTxToast,
+
     removeToast,
   }
 }

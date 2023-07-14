@@ -21,6 +21,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
 const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
+  const [isModalShown, setIsModalShown] = useState(true)
+
   const { gatewayToken } = useGateway()
 
   const { provider } = useWeb3Context()
@@ -46,13 +48,14 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
         address: provider?.address,
         signature: signedMessage,
       })
+      setIsModalShown(false)
     } catch (error) {
       ErrorHandler.process(error)
     }
   }, [loginCb, provider])
 
   return (
-    <div>
+    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
       {!gatewayToken || gatewayToken.state !== State.ACTIVE ? (
         <IdentityButton />
       ) : (
@@ -63,13 +66,11 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
           onClick={getSignedNonce}
         />
       )}
-    </div>
+    </BasicModal>
   )
 }
 
 const KycProviderCivic: FC<Props> = ({ loginCb }) => {
-  const [isModalShown, setIsModalShown] = useState(true)
-
   const { provider } = useWeb3Context()
 
   const wallet = useMemo(
@@ -81,11 +82,9 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
   )
 
   return (
-    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
-      <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
-        <KycProviderCivicContent loginCb={loginCb} />
-      </GatewayProvider>
-    </BasicModal>
+    <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
+      <KycProviderCivicContent loginCb={loginCb} />
+    </GatewayProvider>
   )
 }
 
