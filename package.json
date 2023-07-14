@@ -54,6 +54,7 @@
     "react-toastify": "^9.0.5",
     "react-use": "^17.4.0",
     "snarkjs": "^0.7.0",
+    "use-file-picker": "^1.7.0",
     "util": "^0.12.5",
     "uuid": "^9.0.0",
     "valtio": "^1.10.6",

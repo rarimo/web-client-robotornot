@@ -80,6 +80,7 @@ $card-padding-side: #{toRem(24)};
 .profile__copy-field-btn {
   --button-icon-size: 1.3em;
 
+  margin-left: auto;
   background: var(--background-secondary-main);
   color: var(--primary-main);
   font-size: toRem(14);

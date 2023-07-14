@@ -26,6 +26,10 @@ const KycProviderCivic = lazy(
   () => import('@/contexts/KycContext/components/KycProviderCivic'),
 )
 
+const KycProviderGitCoin = lazy(
+  () => import('@/contexts/KycContext/components/KycProviderGitCoin'),
+)
+
 interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
@@ -104,7 +108,14 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           // @ts-ignore
           signature: currentAuthKycResponse.signature,
         },
-        [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          address: currentAuthKycResponse.address,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          signature: currentAuthKycResponse.signature,
+        },
         [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
           access_token: (currentAuthKycResponse as { accessToken: string })
             .accessToken,
@@ -213,6 +224,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
         <KycProviderCivic
+          key={refreshKey}
+          loginCb={handleKycProviderComponentLogin}
+        />
+      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
+        <KycProviderGitCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
         />
