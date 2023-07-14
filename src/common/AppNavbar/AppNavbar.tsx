@@ -4,27 +4,41 @@ import { PROVIDERS } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useCallback } from 'react'
 
 import { AppButton, AppLogo } from '@/common'
-import { useWeb3Context } from '@/contexts'
-import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { abbrCenter, ErrorHandler } from '@/helpers'
-import { useMetamaskZkpSnap } from '@/hooks/use-metamask-zkp-snap'
+import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
+import { abbrCenter, bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   className = '',
   ...rest
 }) => {
-  const { provider, init } = useWeb3Context()
+  const { provider, init: initProvider } = useWeb3Context()
 
-  const { connectSnap } = useMetamaskZkpSnap()
+  const {
+    isSnapConnected,
+    connectSnap,
+    init: initZkpSnap,
+  } = useMetamaskZkpSnapContext()
 
   const connectProvider = useCallback(async () => {
     try {
-      await init(PROVIDERS.Metamask)
-      await connectSnap()
+      await initProvider(PROVIDERS.Metamask)
+
+      const { isSnapConnected, isFlaskDetected } = await initZkpSnap()
+
+      if (!isFlaskDetected) {
+        bus.emit(BUS_EVENTS.error, `Please install Metamask flask first`)
+      }
+
+      if (isFlaskDetected && !isSnapConnected) {
+        await connectSnap()
+
+        await initZkpSnap()
+      }
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [connectSnap, init])
+  }, [connectSnap, initProvider, initZkpSnap])
 
   return (
     <div className={`app-navbar ${className}`} {...rest}>
@@ -34,20 +48,13 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
         className='navbar__connection-btn'
         scheme='flat'
         text={
-          !provider?.isConnected
-            ? `CONNECT METAMASK`
+          !provider?.isConnected || !isSnapConnected
+            ? `CONNECT`
             : abbrCenter(provider?.address ?? '')
         }
         iconLeft={ICON_NAMES.metamask}
         onClick={connectProvider}
-      />
-
-      <AppButton
-        className='navbar__account-link'
-        iconLeft={ICON_NAMES.user}
-        scheme='flat'
-        size='large'
-        routePath={RoutesPaths.profile}
+        isDisabled={provider?.isConnected && isSnapConnected}
       />
     </div>
   )

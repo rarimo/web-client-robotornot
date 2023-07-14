@@ -3,7 +3,11 @@ import { ToastContainer } from 'react-toastify'
 import { useEffectOnce } from 'react-use'
 
 import { AppNavbar, Loader } from '@/common'
-import { useWeb3Context, ZkpContextProvider } from '@/contexts'
+import {
+  useMetamaskZkpSnapContext,
+  useWeb3Context,
+  ZkpContextProvider,
+} from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
 import { NotificationPayload } from '@/types'
@@ -15,16 +19,18 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
   const { showToast } = useNotification()
   const { init: initWeb3 } = useWeb3Context()
+  const { init: initZkpSnap } = useMetamaskZkpSnapContext()
 
   const init = useCallback(async () => {
     try {
       await initWeb3()
+      await initZkpSnap()
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3])
+  }, [initWeb3, initZkpSnap])
 
   useEffectOnce(() => {
     bus.on(BUS_EVENTS.success, payload =>

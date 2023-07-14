@@ -1,11 +1,19 @@
-import { type EthereumProvider } from '@distributedlab/w3p'
+import { EthereumProvider } from '@distributedlab/w3p'
 import { Hex } from '@iden3/js-crypto'
 import { fromLittleEndian } from '@iden3/js-iden3-core'
 import { ZKProof } from '@iden3/js-jwz'
-import { type ClaimOffer } from '@rarimo/auth-zkp-iden3'
-import { useCallback, useMemo } from 'react'
+import { ClaimOffer } from '@rarimo/auth-zkp-iden3'
+import {
+  createContext,
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
 import { useWeb3Context } from '@/contexts'
+import { sleep } from '@/helpers'
 
 /**
  * The snap origin to use.
@@ -14,7 +22,7 @@ import { useWeb3Context } from '@/contexts'
 export const defaultSnapOrigin =
   process.env.SNAP_ORIGIN ?? `local:http://localhost:8080`
 
-export type GetSnapsResponse = Record<string, Snap>
+export type SnapsList = Record<string, Snap>
 
 export type Snap = {
   permissionName: string
@@ -23,7 +31,63 @@ export type Snap = {
   initialPermissions: Record<string, unknown>
 }
 
-export const useMetamaskZkpSnap = () => {
+interface MetamaskZkpSnapContextValue {
+  isFlaskInstalled: boolean
+  isSnapConnected: boolean
+
+  isLocalSnap: (snapId: string) => boolean
+  isFlask: () => Promise<boolean>
+
+  getSnaps: () => Promise<SnapsList>
+  connectSnap: (
+    snapId?: string,
+    params?: Record<'version' | string, unknown>,
+  ) => Promise<void>
+  getSnap: (version?: string) => Promise<Snap | undefined>
+  createIdentity: () => Promise<string>
+  getVerifiableCredentials: (claimOffer: ClaimOffer) => Promise<unknown>
+  createNaturalPersonProof: () => Promise<ZKProof>
+
+  init: () => Promise<{
+    isFlaskDetected: boolean
+    isSnapConnected: boolean
+  }>
+}
+
+export const MetamaskZkpSnapContext =
+  createContext<MetamaskZkpSnapContextValue>({
+    isFlaskInstalled: false,
+    isSnapConnected: false,
+    isLocalSnap: () => false,
+    isFlask: () => Promise.resolve(false),
+
+    getSnaps: () => {
+      throw new TypeError(`getSnaps is not defined`)
+    },
+    connectSnap: () => {
+      throw new TypeError(`connectSnap is not defined`)
+    },
+    getSnap: () => {
+      throw new TypeError(`getSnap is not defined`)
+    },
+    createIdentity: () => {
+      throw new TypeError(`createIdentity is not defined`)
+    },
+    getVerifiableCredentials: () => {
+      throw new TypeError(`getVerifiableCredentials is not defined`)
+    },
+    createNaturalPersonProof: () => {
+      throw new TypeError(`createNaturalPersonProof is not defined`)
+    },
+
+    init: () => {
+      throw new TypeError(`init is not defined`)
+    },
+  })
+
+const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
+  children,
+}) => {
   const { provider } = useWeb3Context()
 
   const rawProvider = useMemo(
@@ -34,15 +98,44 @@ export const useMetamaskZkpSnap = () => {
     [provider],
   )
 
+  const [isFlaskInstalled, setIsFlaskInstalled] = useState(false)
+  const [isSnapConnected, setIsSnapConnected] = useState(false)
+
+  const isLocalSnap = useCallback(
+    (snapId: string) => snapId.startsWith('local:'),
+    [],
+  )
+
+  /**
+   * Detect if the wallet injecting the ethereum object is Flask.
+   *
+   * @returns True if the MetaMask version is Flask, false otherwise.
+   */
+  const isFlask = useCallback(async () => {
+    const provider = window.ethereum
+
+    try {
+      const clientVersion = await provider?.request?.({
+        method: 'web3_clientVersion',
+      })
+
+      const isFlaskDetected = (clientVersion as string[])?.includes('flask')
+
+      return Boolean(provider && isFlaskDetected)
+    } catch {
+      return false
+    }
+  }, [])
+
   /**
    * Get the installed snaps in MetaMask.
    *
    * @returns The snaps installed in MetaMask.
    */
-  const getSnaps = useCallback(async (): Promise<GetSnapsResponse> => {
+  const getSnaps = useCallback(async (): Promise<SnapsList> => {
     return (await rawProvider?.request?.({
       method: 'wallet_getSnaps',
-    })) as unknown as GetSnapsResponse
+    })) as unknown as SnapsList
   }, [rawProvider])
 
   /**
@@ -152,40 +245,47 @@ export const useMetamaskZkpSnap = () => {
     })
   }, [provider?.address, rawProvider])
 
-  const isLocalSnap = useCallback(
-    (snapId: string) => snapId.startsWith('local:'),
-    [],
-  )
+  const init = useCallback(async () => {
+    const _isFlaskDetected = await isFlask()
+    setIsFlaskInstalled(_isFlaskDetected)
 
-  /**
-   * Detect if the wallet injecting the ethereum object is Flask.
-   *
-   * @returns True if the MetaMask version is Flask, false otherwise.
-   */
-  const isFlask = useCallback(async () => {
-    const provider = window.ethereum
+    if (!_isFlaskDetected) throw new TypeError(`The wallet is not Flask`)
 
-    try {
-      const clientVersion = await provider?.request?.({
-        method: 'web3_clientVersion',
-      })
+    await sleep(1000)
 
-      const isFlaskDetected = (clientVersion as string[])?.includes('flask')
+    const snaps = await getSnaps()
 
-      return Boolean(provider && isFlaskDetected)
-    } catch {
-      return false
+    const _isSnapConnected = Boolean(snaps?.[defaultSnapOrigin])
+    setIsSnapConnected(_isSnapConnected)
+
+    return {
+      isFlaskDetected: _isFlaskDetected,
+      isSnapConnected: _isSnapConnected,
     }
-  }, [])
+  }, [getSnaps, isFlask])
 
-  return {
-    getSnaps,
-    connectSnap,
-    getSnap,
-    createIdentity,
-    getVerifiableCredentials,
-    createNaturalPersonProof,
-    isLocalSnap,
-    isFlask,
-  }
+  return (
+    <MetamaskZkpSnapContext.Provider
+      value={{
+        isFlaskInstalled,
+        isSnapConnected,
+
+        isLocalSnap,
+        isFlask,
+
+        getSnaps,
+        connectSnap,
+        getSnap,
+        createIdentity,
+        getVerifiableCredentials,
+        createNaturalPersonProof,
+
+        init,
+      }}
+    >
+      {children}
+    </MetamaskZkpSnapContext.Provider>
+  )
 }
+
+export default MetamaskZkpSnapContextProvider

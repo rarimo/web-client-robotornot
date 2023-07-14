@@ -9,6 +9,7 @@ import {
 
 import App from '@/App'
 import { Web3ProviderContextProvider } from '@/contexts'
+import MetamaskZkpSnapContextProvider from '@/contexts/MetamaskZkpSnapContext'
 import { RoutesPaths } from '@/enums'
 import { AuthLayout } from '@/layouts'
 
@@ -25,11 +26,13 @@ export const AppRoutes = () => {
       element: (
         <Suspense fallback={<></>}>
           <Web3ProviderContextProvider>
-            <App>
-              <AnimatePresence>
-                <Outlet />
-              </AnimatePresence>
-            </App>
+            <MetamaskZkpSnapContextProvider>
+              <App>
+                <AnimatePresence>
+                  <Outlet />
+                </AnimatePresence>
+              </App>
+            </MetamaskZkpSnapContextProvider>
           </Web3ProviderContextProvider>
         </Suspense>
       ),

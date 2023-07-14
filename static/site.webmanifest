@@ -1,6 +1,6 @@
 {
-  "name": "web-client-react-template",
-  "short_name": "web-client-react-template",
+  "name": "web-client-identity",
+  "short_name": "web-client-identity",
   "icons": [
     {
       "src": "/branding/android-chrome-192x192.png",
@@ -8,8 +8,8 @@
       "type": "image/png"
     },
     {
-      "src": "/branding/android-chrome-256x256.png",
-      "sizes": "256x256",
+      "src": "/branding/android-chrome-512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ],

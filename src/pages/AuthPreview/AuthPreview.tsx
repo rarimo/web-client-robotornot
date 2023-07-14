@@ -5,8 +5,13 @@ import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, CautionTip, Icon, Loader } from '@/common'
-import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
+import { Animation, AppButton, CautionTip, Icon } from '@/common'
+import {
+  useKycContext,
+  useMetamaskZkpSnapContext,
+  useWeb3Context,
+  useZkpContext,
+} from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 
@@ -18,6 +23,8 @@ const AuthPreview: FC<Props> = () => {
   const navigate = useNavigate()
 
   const { provider } = useWeb3Context()
+
+  const { isSnapConnected } = useMetamaskZkpSnapContext()
 
   const { getVerifiableCredentials, getZkProof, verifiableCredentials } =
     useZkpContext()
@@ -70,11 +77,11 @@ const AuthPreview: FC<Props> = () => {
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={handleGenerateProof}
-          isDisabled={!provider?.address}
+          isDisabled={!provider?.address || !isSnapConnected}
         />
       </div>
     ),
-    [handleGenerateProof, provider?.address],
+    [handleGenerateProof, isSnapConnected, provider?.address],
   )
 
   const InvalidCredentialsMessage = useMemo(
@@ -110,21 +117,12 @@ const AuthPreview: FC<Props> = () => {
     [completeKyc],
   )
 
-  const manualZkProof = useCallback(async () => {
-    try {
-      await getZkProof(DEFAULT_CHAIN, verifiableCredentials)
-    } catch (error) {
-      ErrorHandler.processWithoutFeedback(error)
-    }
-  }, [getZkProof, verifiableCredentials])
-
   return (
     <div
       className={`auth-preview ${
         isValidCredentials ? '' : `auth-preview--invalid`
       }`}
     >
-      <AppButton text={`call ZK Proof`} onClick={manualZkProof} />
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
       </div>
@@ -134,6 +132,11 @@ const AuthPreview: FC<Props> = () => {
           <>
             <div className='auth-preview__card'>
               <Animation source={loaderJson} />
+              <span className='auth-preview__card-pending-text'>
+                {verifiableCredentials
+                  ? `Generating Proof...`
+                  : `Loading Credentials...`}
+              </span>
             </div>
           </>
         ) : isValidCredentials ? (
@@ -142,7 +145,13 @@ const AuthPreview: FC<Props> = () => {
           InvalidCredentialsMessage
         )
       ) : (
-        <Loader />
+        <div className='auth-preview__card'>
+          <Animation source={loaderJson} />
+
+          <span className='auth-preview__card-pending-text'>
+            {`Verifying Your KYC...`}
+          </span>
+        </div>
       )}
     </div>
   )

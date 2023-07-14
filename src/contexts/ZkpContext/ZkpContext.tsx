@@ -4,8 +4,8 @@ import { ClaimOffer, VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
 import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { api } from '@/api'
+import { useMetamaskZkpSnapContext } from '@/contexts'
 import { sleep } from '@/helpers'
-import { useMetamaskZkpSnap } from '@/hooks'
 
 type QueryVariableName = { isNatural: number }
 
@@ -69,7 +69,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     createIdentity: _createIdentity,
     getVerifiableCredentials: _getVerifiableCredentials,
     createNaturalPersonProof,
-  } = useMetamaskZkpSnap()
+  } = useMetamaskZkpSnapContext()
 
   const [identityIdString, setIdentityIdString] = useState('')
   const [verifiableCredentials, setVerifiableCredentials] =
