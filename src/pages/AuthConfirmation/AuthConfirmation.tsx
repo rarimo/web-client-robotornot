@@ -80,7 +80,7 @@ const AuthConfirmation: FC<Props> = () => {
         ],
       )
 
-      await provider?.signAndSendTx({
+      await provider?.signAndSendTx?.({
         to: config?.[
           `DEMO_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],

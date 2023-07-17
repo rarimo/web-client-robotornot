@@ -1,19 +1,25 @@
 import 'react-toastify/dist/ReactToastify.css'
 import './styles.scss'
 
+import { config, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { type TransactionResponse } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Icon } from '@/common'
+import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   type: 'pending' | 'error' | 'success'
-  link: string
+  link?: string
+  txHash?: string
+  txResponse?: TransactionResponse
 }
 
-const TransactionToast: FC<Props> = ({ type, link }) => {
+const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
   const { t } = useTranslation()
+  const { provider } = useWeb3Context()
 
   const iconName = useMemo(() => {
     switch (type) {
@@ -54,6 +60,28 @@ const TransactionToast: FC<Props> = ({ type, link }) => {
     }
   }, [t, type])
 
+  const targetLink = useMemo(() => {
+    if (link) return link
+
+    if (txHash) {
+      return provider?.getTxUrl?.(
+        SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+        txHash,
+      )
+    }
+
+    if (txResponse) {
+      const txHash = provider?.getHashFromTx?.(txResponse)
+
+      if (!txHash) return ''
+
+      return provider?.getTxUrl?.(
+        SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+        txHash,
+      )
+    }
+  }, [link, provider, txHash, txResponse])
+
   return (
     <div className='transaction-toast__body'>
       <div className='transaction-toast__icon-wrp'>
@@ -62,7 +90,7 @@ const TransactionToast: FC<Props> = ({ type, link }) => {
       <div className='transaction-toast__details'>
         <h4 className='transaction-toast__title'>{toastTitle}</h4>
         <a
-          href={link}
+          href={targetLink}
           target='_blank'
           rel='noreferrer noopener'
           className='transaction-toast__message'
