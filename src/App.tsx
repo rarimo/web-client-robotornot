@@ -23,10 +23,10 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const { provider, init: initWeb3 } = useWeb3Context()
 
   const init = useCallback(async () => {
+    if (provider?.address) return
+
     try {
-      if (!provider?.address) {
-        await initWeb3()
-      }
+      // await initWeb3()
 
       document.title = config.APP_NAME
     } catch (error) {
@@ -42,20 +42,29 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     const showErrorToast = (payload: unknown) => showToast('error', payload)
     const showInfoToast = (payload: unknown) => showToast('info', payload)
 
-    bus.on(BUS_EVENTS.success, showSuccessToast)
-    bus.on(BUS_EVENTS.warning, showWarningToast)
-    bus.on(BUS_EVENTS.error, showErrorToast)
-    bus.on(BUS_EVENTS.info, showInfoToast)
+    let mountingInit = async () => {
+      bus.on(BUS_EVENTS.success, showSuccessToast)
+      bus.on(BUS_EVENTS.warning, showWarningToast)
+      bus.on(BUS_EVENTS.error, showErrorToast)
+      bus.on(BUS_EVENTS.info, showInfoToast)
 
-    init()
+      await init()
+    }
+
+    mountingInit()
 
     return () => {
       bus.off(BUS_EVENTS.success, showSuccessToast)
       bus.off(BUS_EVENTS.warning, showWarningToast)
       bus.off(BUS_EVENTS.error, showErrorToast)
       bus.off(BUS_EVENTS.info, showInfoToast)
+
+      mountingInit = async () => {
+        /* empty */
+      }
     }
-  }, [init, showToast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <ZkpContextProvider>
