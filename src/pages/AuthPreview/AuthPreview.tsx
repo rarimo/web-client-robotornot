@@ -1,11 +1,11 @@
 import './styles.scss'
 
-import { DEFAULT_CHAIN } from '@config'
+import { config } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, CautionTip, Icon, Loader } from '@/common'
+import { Animation, AppButton, CautionTip, Icon } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler } from '@/helpers'
@@ -28,10 +28,10 @@ const AuthPreview: FC<Props> = () => {
 
     try {
       const verifiableCredentials = await getVerifiableCredentials(
-        DEFAULT_CHAIN,
+        config.DEFAULT_CHAIN,
       )
 
-      await getZkProof(DEFAULT_CHAIN, verifiableCredentials)
+      await getZkProof(config.DEFAULT_CHAIN, verifiableCredentials)
 
       navigate(RoutesPaths.authConfirmation)
     } catch (error) {
@@ -42,8 +42,9 @@ const AuthPreview: FC<Props> = () => {
   }, [getVerifiableCredentials, getZkProof, navigate])
 
   const completeKyc = useCallback(async () => {
+    navigate(RoutesPaths.authProviders)
     retryKyc()
-  }, [retryKyc])
+  }, [navigate, retryKyc])
 
   const ValidCredentialsPreview = useMemo(
     () => (
@@ -132,7 +133,9 @@ const AuthPreview: FC<Props> = () => {
           InvalidCredentialsMessage
         )
       ) : (
-        <Loader />
+        <div className='auth-preview__card'>
+          <Animation source={loaderJson} />
+        </div>
       )}
     </div>
   )

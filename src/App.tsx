@@ -1,12 +1,18 @@
-import { FC, HTMLAttributes, memo, useCallback, useState } from 'react'
+import { config } from '@config'
+import {
+  FC,
+  HTMLAttributes,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { ToastContainer } from 'react-toastify'
-import { useEffectOnce } from 'react-use'
 
 import { AppNavbar, Loader } from '@/common'
 import { useWeb3Context, ZkpContextProvider } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
-import { NotificationPayload } from '@/types'
 
 const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   useViewportSizes()
@@ -14,34 +20,51 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const [isAppInitialized, setIsAppInitialized] = useState(false)
 
   const { showToast } = useNotification()
-  const { init: initWeb3 } = useWeb3Context()
+  const { provider, init: initWeb3 } = useWeb3Context()
 
   const init = useCallback(async () => {
+    if (provider?.address) return
+
     try {
       await initWeb3()
+
+      document.title = config.APP_NAME
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3])
+  }, [initWeb3, provider?.address])
 
-  useEffectOnce(() => {
-    bus.on(BUS_EVENTS.success, payload =>
-      showToast('success', payload as NotificationPayload),
-    )
-    bus.on(BUS_EVENTS.warning, payload =>
-      showToast('warning', payload as NotificationPayload),
-    )
-    bus.on(BUS_EVENTS.error, payload =>
-      showToast('error', payload as NotificationPayload),
-    )
-    bus.on(BUS_EVENTS.info, payload =>
-      showToast('info', payload as NotificationPayload),
-    )
+  useEffect(() => {
+    const showSuccessToast = (payload: unknown) => showToast('success', payload)
+    const showWarningToast = (payload: unknown) => showToast('warning', payload)
+    const showErrorToast = (payload: unknown) => showToast('error', payload)
+    const showInfoToast = (payload: unknown) => showToast('info', payload)
 
-    init()
-  })
+    let mountingInit = async () => {
+      bus.on(BUS_EVENTS.success, showSuccessToast)
+      bus.on(BUS_EVENTS.warning, showWarningToast)
+      bus.on(BUS_EVENTS.error, showErrorToast)
+      bus.on(BUS_EVENTS.info, showInfoToast)
+
+      await init()
+    }
+
+    mountingInit()
+
+    return () => {
+      bus.off(BUS_EVENTS.success, showSuccessToast)
+      bus.off(BUS_EVENTS.warning, showWarningToast)
+      bus.off(BUS_EVENTS.error, showErrorToast)
+      bus.off(BUS_EVENTS.info, showInfoToast)
+
+      mountingInit = async () => {
+        /* empty */
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <ZkpContextProvider>

@@ -36,6 +36,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
         iconLeft={ICON_NAMES.metamask}
         onClick={connectProvider}
+        isDisabled={provider?.isConnected}
       />
 
       <AppButton

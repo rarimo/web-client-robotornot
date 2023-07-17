@@ -1,14 +1,45 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { useFilePicker } from 'use-file-picker'
 
 import { AppButton, Icon } from '@/common'
+import { useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
-import { abbrCenter, copyToClipboard } from '@/helpers'
+import { abbrCenter, ErrorHandler } from '@/helpers'
 
-type Props = HTMLAttributes<HTMLDivElement>
+const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
+  const { identity, createIdentity } = useZkpContext()
+  const [openFileSelector, { filesContent, clear }] = useFilePicker({
+    accept: '.json',
+  })
 
-const Profile: FC<Props> = () => {
+  const exportLink = useMemo(() => {
+    if (!identity?.privateKeyHex) return
+
+    const blob = new Blob([identity.privateKeyHex], {
+      type: 'application/json',
+    })
+
+    return URL.createObjectURL(blob)
+  }, [identity?.privateKeyHex])
+
+  useEffect(() => {
+    if (identity?.privateKeyHex || !filesContent?.[0]?.content) return
+
+    const setIdentity = async () => {
+      await createIdentity(filesContent[0].content)
+
+      clear()
+    }
+
+    try {
+      setIdentity()
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [clear, createIdentity, filesContent, identity?.privateKeyHex])
+
   return (
     <div className='profile'>
       <div className='profile__header'>
@@ -16,7 +47,7 @@ const Profile: FC<Props> = () => {
           <Icon className='profile__header-icon' name={ICON_NAMES.user} />
         </div>
         <h2 className='profile__header-title'>
-          {abbrCenter('#8211374652873645sb2914')}
+          {`DID:Rarimo:${abbrCenter(identity?.idString ?? '', 4)}`}
         </h2>
         <span className='profile__header-subtitle'>
           {`Show your private key`}
@@ -30,12 +61,14 @@ const Profile: FC<Props> = () => {
 
         <div className='profile__copy-field-wrp'>
           <div className='profile__copy-field'>
-            {abbrCenter('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21', 10)}
+            {abbrCenter(identity?.idString ?? '', 10)}
             <AppButton
               className='profile__copy-field-btn'
               modification='none'
               iconLeft={ICON_NAMES.download}
-              onClick={() => copyToClipboard('')}
+              href={exportLink}
+              target='_blank'
+              download={`pk.json`}
               text={`EXPORT`}
               size='small'
             />
@@ -45,7 +78,9 @@ const Profile: FC<Props> = () => {
 
       <div className='profile__tip'>
         {`Would you like to restore some other account? `}
-        <span className='profile__tip-link'>{`Import Key`}</span>
+        <button className='profile__tip-link' onClick={openFileSelector}>
+          {`Import Key`}
+        </button>
       </div>
     </div>
   )

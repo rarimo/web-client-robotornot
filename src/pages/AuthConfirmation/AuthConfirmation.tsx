@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { config, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@config'
+import { config, SUPPORTED_CHAINS } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,6 +20,8 @@ type ChainToPublish = {
 }
 
 const AuthConfirmation: FC<Props> = () => {
+  const [isPending, setIsPending] = useState(false)
+
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useDemoVerifierContract()
 
@@ -33,14 +35,14 @@ const AuthConfirmation: FC<Props> = () => {
         value: SUPPORTED_CHAINS.POLYGON,
         iconName: ICON_NAMES.polygon,
       },
+      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+        title: 'Polygon chain',
+        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+        iconName: ICON_NAMES.polygon,
+      },
       [SUPPORTED_CHAINS.SEPOLIA]: {
         title: 'Sepolia chain',
         value: SUPPORTED_CHAINS.SEPOLIA,
-        iconName: ICON_NAMES.ethereum,
-      },
-      [SUPPORTED_CHAINS.GOERLI]: {
-        title: 'Goerli chain',
-        value: SUPPORTED_CHAINS.GOERLI,
         iconName: ICON_NAMES.ethereum,
       },
     }),
@@ -48,9 +50,11 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
-    useState<SUPPORTED_CHAINS>(DEFAULT_CHAIN)
+    useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
   const submitZkp = useCallback(async () => {
+    setIsPending(true)
+
     try {
       if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
 
@@ -87,6 +91,8 @@ const AuthConfirmation: FC<Props> = () => {
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    setIsPending(false)
   }, [
     getProveIdentityTxBody,
     isNaturalZkp,
@@ -147,6 +153,7 @@ const AuthConfirmation: FC<Props> = () => {
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={submitZkp}
+          isDisabled={isPending}
         />
       </div>
     </div>
