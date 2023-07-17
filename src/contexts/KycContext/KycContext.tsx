@@ -30,6 +30,10 @@ const KycProviderGitCoin = lazy(
   () => import('@/contexts/KycContext/components/KycProviderGitCoin'),
 )
 
+const KycProviderWordCoin = lazy(
+  () => import('@/contexts/KycContext/components/KycProviderWorldCoin'),
+)
+
 interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
@@ -228,6 +232,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
         <KycProviderGitCoin
+          key={refreshKey}
+          loginCb={handleKycProviderComponentLogin}
+        />
+      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
+        <KycProviderWordCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
         />
