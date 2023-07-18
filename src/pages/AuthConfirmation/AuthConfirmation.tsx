@@ -1,6 +1,7 @@
 import './styles.scss'
 
-import { config, SUPPORTED_CHAINS } from '@config'
+import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { errors, PROVIDERS } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -26,7 +27,7 @@ const AuthConfirmation: FC<Props> = () => {
   const { getProveIdentityTxBody } = useDemoVerifierContract()
 
   const { isNaturalZkp } = useZkpContext()
-  const { provider } = useWeb3Context()
+  const { provider, init } = useWeb3Context()
 
   const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
     () => ({
@@ -36,7 +37,7 @@ const AuthConfirmation: FC<Props> = () => {
         iconName: ICON_NAMES.polygon,
       },
       [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-        title: 'Polygon chain',
+        title: 'Polygon Testnet chain',
         value: SUPPORTED_CHAINS.POLYGON_TESTNET,
         iconName: ICON_NAMES.polygon,
       },
@@ -51,6 +52,10 @@ const AuthConfirmation: FC<Props> = () => {
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
+
+  const selectedChainToPublishDetails = useMemo(() => {
+    return SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
+  }, [selectedChainToPublish])
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
@@ -101,6 +106,42 @@ const AuthConfirmation: FC<Props> = () => {
     selectedChainToPublish,
   ])
 
+  const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
+
+  const isProviderValidChain = useMemo(() => {
+    if (!providerChainId) return false
+
+    return +providerChainId === +selectedChainToPublishDetails.id
+  }, [providerChainId, selectedChainToPublishDetails?.id])
+
+  const connectWallet = useCallback(async () => {
+    try {
+      await init(PROVIDERS.Metamask)
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [init])
+
+  const tryAddChain = useCallback(async () => {
+    try {
+      await provider?.addChain?.(selectedChainToPublishDetails)
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
+    }
+  }, [provider, selectedChainToPublishDetails])
+
+  const trySwitchChain = useCallback(async () => {
+    try {
+      await provider?.switchChain?.(Number(selectedChainToPublishDetails.id))
+    } catch (error) {
+      if (error instanceof errors.ProviderChainNotFoundError) {
+        await tryAddChain()
+      } else {
+        ErrorHandler.process(error)
+      }
+    }
+  }, [provider, selectedChainToPublishDetails.id, tryAddChain])
+
   return (
     <div className='auth-confirmation'>
       <div className='auth-confirmation__header'>
@@ -147,14 +188,34 @@ const AuthConfirmation: FC<Props> = () => {
 
         <div className='auth-confirmation__divider' />
 
-        <AppButton
-          className='auth-confirmation__submit-btn'
-          text={`SUBMIT PROOF`}
-          iconRight={ICON_NAMES.arrowRight}
-          size='large'
-          onClick={submitZkp}
-          isDisabled={isPending}
-        />
+        {provider?.isConnected ? (
+          isProviderValidChain ? (
+            <AppButton
+              className='auth-confirmation__submit-btn'
+              text={`SUBMIT PROOF`}
+              iconRight={ICON_NAMES.arrowRight}
+              size='large'
+              onClick={submitZkp}
+              isDisabled={isPending}
+            />
+          ) : (
+            <AppButton
+              className='auth-confirmation__submit-btn'
+              text={`SWITCH NETWORK`}
+              iconRight={ICON_NAMES.switchHorizontal}
+              size='large'
+              onClick={trySwitchChain}
+            />
+          )
+        ) : (
+          <AppButton
+            className='auth-confirmation__submit-btn'
+            text={`CONNECT WALLET`}
+            iconRight={ICON_NAMES.metamask}
+            size='large'
+            onClick={connectWallet}
+          />
+        )}
       </div>
     </div>
   )
