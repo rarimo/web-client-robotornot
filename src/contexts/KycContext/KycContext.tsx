@@ -99,7 +99,22 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         throw new TypeError('authKycResponse is undefined')
 
       const VERIFY_KYC_DATA_MAP = {
-        [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
+          action: '',
+          signal: '',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          nullifier_hash: currentAuthKycResponse.nullifier_hash,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          proof: currentAuthKycResponse.proof,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          merkle_root: currentAuthKycResponse.merkle_root,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          credential_type: currentAuthKycResponse.credential_type,
+        },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -233,11 +248,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
         <KycProviderGitCoin
-          key={refreshKey}
-          loginCb={handleKycProviderComponentLogin}
-        />
-      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
-        <KycProviderWordCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
         />

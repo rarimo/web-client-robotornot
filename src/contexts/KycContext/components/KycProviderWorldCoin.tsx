@@ -1,5 +1,5 @@
 import { IDKitWidget, ISuccessResult, useIDKit } from '@worldcoin/idkit'
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, useEffect } from 'react'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
@@ -7,7 +7,10 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   const { setOpen } = useIDKit()
-  setOpen(true)
+
+  useEffect(() => {
+    setOpen(true)
+  }, [setOpen])
 
   return (
     <IDKitWidget
