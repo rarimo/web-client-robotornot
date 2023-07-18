@@ -1,5 +1,3 @@
-import './style.scss'
-
 import { State } from '@civic/common-gateway-react/dist/esm/types'
 import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
