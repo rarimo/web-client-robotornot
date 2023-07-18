@@ -144,6 +144,9 @@ export default defineConfig(({ mode }) => {
           nodePolyfills(),
         ],
       },
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
   }
 })
