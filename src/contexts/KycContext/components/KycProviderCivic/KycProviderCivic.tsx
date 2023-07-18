@@ -1,16 +1,19 @@
 import './style.scss'
 
 import { State } from '@civic/common-gateway-react/dist/esm/types'
-import {
-  GatewayProvider,
-  IdentityButton,
-  useGateway,
-} from '@civic/ethereum-gateway-react'
+import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { api } from '@/api'
-import { AppButton, BasicModal } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
 
@@ -21,9 +24,9 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
 const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
-  const [isModalShown, setIsModalShown] = useState(true)
-
-  const { gatewayToken } = useGateway()
+  const { gatewayToken, requestGatewayToken } = useGateway()
+  const [signedNonce, setSignedNonce] = useState<string>()
+  const btnRef = useRef<HTMLButtonElement>()
 
   const { provider } = useWeb3Context()
 
@@ -43,31 +46,33 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
       })
 
       const signedMessage = await provider?.signMessage?.(data.message)
+
+      setSignedNonce(signedMessage)
       await loginCb({
         chainName: 'ethereum',
         address: provider?.address,
         signature: signedMessage,
       })
-      setIsModalShown(false)
     } catch (error) {
       ErrorHandler.process(error)
     }
   }, [loginCb, provider])
 
-  return (
-    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
-      {!gatewayToken || gatewayToken.state !== State.ACTIVE ? (
-        <IdentityButton />
-      ) : (
-        <AppButton
-          className='kyc-provider-civic__login-btn'
-          isDisabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
-          text={'Login'}
-          onClick={getSignedNonce}
-        />
-      )}
-    </BasicModal>
-  )
+  useEffect(() => {
+    if (gatewayToken?.state === State.ACTIVE || signedNonce) return
+
+    setTimeout(async () => {
+      await requestGatewayToken()
+    }, 500)
+  }, [btnRef, gatewayToken?.state, requestGatewayToken, signedNonce])
+
+  useEffect(() => {
+    if (gatewayToken?.state !== State.ACTIVE || signedNonce) return
+
+    getSignedNonce()
+  }, [gatewayToken?.state, getSignedNonce, signedNonce])
+
+  return <></>
 }
 
 const KycProviderCivic: FC<Props> = ({ loginCb }) => {
@@ -82,7 +87,13 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
   )
 
   return (
-    <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
+    <GatewayProvider
+      wallet={wallet}
+      gatekeeperNetwork={UNIQUENESS_PASS}
+      options={{
+        autoShowModal: true,
+      }}
+    >
       <KycProviderCivicContent loginCb={loginCb} />
     </GatewayProvider>
   )

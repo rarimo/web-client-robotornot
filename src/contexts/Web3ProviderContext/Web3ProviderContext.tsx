@@ -1,5 +1,6 @@
 import { SUPPORTED_CHAINS_DETAILS } from '@config'
 import {
+  errors,
   IProvider,
   MetamaskProvider,
   Provider,
@@ -15,7 +16,6 @@ import {
   HTMLAttributes,
   memo,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -100,12 +100,23 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     [currentTxToastId, removeToast, showTxToast],
   )
 
+  const disconnect = useCallback(async () => {
+    try {
+      await provider?.disconnect?.()
+    } catch (error) {
+      // empty
+    }
+
+    removeStorageState()
+  }, [provider, removeStorageState])
+
   const listeners = useMemo(
     () => ({
       onTxSent: handleTxSent,
       onTxConfirmed: handleTxConfirmed,
+      onDisconnect: disconnect,
     }),
-    [handleTxConfirmed, handleTxSent],
+    [disconnect, handleTxConfirmed, handleTxSent],
   )
 
   const init = useCallback(
@@ -130,41 +141,35 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         const currentProviderType = providerType || storageState?.providerType
 
         if (!currentProviderType) return
+
+        const initializedProvider = await initProvider(
+          SUPPORTED_PROVIDERS_MAP[
+            currentProviderType
+          ] as ProviderProxyConstructor,
+          {
+            providerDetector,
+            listeners,
+          },
+        )
+
+        if (!initializedProvider.isConnected) {
+          await initializedProvider?.connect?.()
+        }
       } catch (error) {
-        removeStorageState()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (error.error instanceof errors.ProviderUserRejectedRequest) {
+          await disconnect()
+        }
       }
     },
     [
-      providerDetector,
-      removeStorageState,
-      setStorageState,
-      storageState?.providerType,
-    ],
-  )
-
-  const updateProviderState = useCallback(
-    async (providerType: SUPPORTED_PROVIDERS) => {
-      if (provider?.isConnected && provider?.providerType === providerType)
-        return
-
-      const initializedProvider = await initProvider(
-        SUPPORTED_PROVIDERS_MAP[providerType] as ProviderProxyConstructor,
-        {
-          providerDetector,
-          listeners,
-        },
-      )
-
-      if (!initializedProvider.isConnected) {
-        await initializedProvider?.connect?.()
-      }
-    },
-    [
+      disconnect,
       initProvider,
       listeners,
-      provider?.isConnected,
-      provider?.providerType,
       providerDetector,
+      setStorageState,
+      storageState?.providerType,
     ],
   )
 
@@ -173,27 +178,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
     providerDetector.addProvider(provider)
   }
-
-  const handleDisconnect = useCallback(() => {
-    removeStorageState()
-
-    init()
-  }, [init, removeStorageState])
-
-  const disconnect = useCallback(async () => {
-    try {
-      await provider?.disconnect?.()
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
-
-    handleDisconnect()
-  }, [handleDisconnect, provider])
-
-  useEffect(() => {
-    if (!storageState?.providerType) return
-
-    updateProviderState(storageState.providerType)
-  }, [storageState?.providerType, updateProviderState])
 
   return (
     <web3ProviderContext.Provider

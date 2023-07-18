@@ -10,7 +10,7 @@ import {
 import { ToastContainer } from 'react-toastify'
 
 import { AppNavbar, Loader } from '@/common'
-import { ZkpContextProvider } from '@/contexts'
+import { useWeb3Context, ZkpContextProvider } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
 
@@ -20,16 +20,21 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const [isAppInitialized, setIsAppInitialized] = useState(false)
 
   const { showToast } = useNotification()
+  const { provider, init: initWeb3 } = useWeb3Context()
 
   const init = useCallback(async () => {
+    if (provider?.address) return
+
     try {
+      await initWeb3()
+
       document.title = config.APP_NAME
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [])
+  }, [initWeb3, provider?.address])
 
   useEffect(() => {
     const showSuccessToast = (payload: unknown) => showToast('success', payload)
@@ -58,7 +63,8 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
         /* empty */
       }
     }
-  }, [init, showToast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <ZkpContextProvider>
