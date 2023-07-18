@@ -1,19 +1,24 @@
-import { IDKitWidget } from '@worldcoin/idkit'
+import { IDKitWidget, ISuccessResult, useIDKit } from '@worldcoin/idkit'
 import { FC, HTMLAttributes } from 'react'
+import { useEffectOnce } from 'react-use'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
 }
 
 const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
+  const { setOpen } = useIDKit()
+
+  useEffectOnce(() => {
+    setOpen(true)
+  })
+
   return (
     <IDKitWidget
       app_id='app_staging_9fb8292c0c09024ffa05c070d86ef7d3'
       action=''
       enableTelemetry
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      onSuccess={result => loginCb(result)}
+      onSuccess={(result: ISuccessResult) => loginCb(result)}
     />
   )
 }
