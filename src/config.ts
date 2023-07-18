@@ -60,6 +60,10 @@ export const config = {
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
 
+  UNSTOPPABLE_DOMAINS_CLIENT_ID: import.meta.env
+    .VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID,
+  WORLDCOIN_APP_ID: import.meta.env.VITE_WORLDCOIN_APP_ID,
+
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
 
   ...(Object.values(SUPPORTED_CHAINS).reduce(

@@ -1,5 +1,5 @@
+import { config } from '@config'
 import UAuth from '@uauth/js'
-import debounce from 'lodash/debounce'
 import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
 import { useEffectOnce } from 'react-use'
 
@@ -11,7 +11,7 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   const uauth = useMemo(
     () =>
       new UAuth({
-        clientID: '6411ad0a-4502-4cae-84ae-f810634f25b8',
+        clientID: config.UNSTOPPABLE_DOMAINS_CLIENT_ID,
         redirectUri: new URL(window.location.href).origin,
         scope: 'openid wallet messaging:notifications:optional',
       }),
@@ -23,11 +23,9 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
     loginCb(response)
   }, [loginCb, uauth])
 
-  useEffectOnce(
-    debounce(() => {
-      login()
-    }, 100),
-  )
+  useEffectOnce(() => {
+    login()
+  })
 
   return <></>
 }

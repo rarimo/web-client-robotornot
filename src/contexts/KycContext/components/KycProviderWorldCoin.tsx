@@ -1,3 +1,4 @@
+import { config } from '@config'
 import { IDKitWidget, ISuccessResult, useIDKit } from '@worldcoin/idkit'
 import { FC, HTMLAttributes } from 'react'
 import { useEffectOnce } from 'react-use'
@@ -15,7 +16,7 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
 
   return (
     <IDKitWidget
-      app_id='app_staging_9fb8292c0c09024ffa05c070d86ef7d3'
+      app_id={config.WORLDCOIN_APP_ID}
       action=''
       enableTelemetry
       onSuccess={(result: ISuccessResult) => loginCb(result)}

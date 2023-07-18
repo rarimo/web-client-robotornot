@@ -19,6 +19,9 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
 }
 
+/**
+ * unique pass for the gateway to work with biometrics identity verification
+ */
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
 const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
