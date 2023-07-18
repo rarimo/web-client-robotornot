@@ -1,3 +1,4 @@
+import { TransactionResponse } from '@distributedlab/w3p'
 import isObject from 'lodash/isObject'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -105,19 +106,40 @@ export const useNotification = () => {
     [defaultIconNames, defaultMessages, defaultTitles],
   )
 
-  const showTxToast = (type: NotificationTxType, link: string) => {
-    return toast(() => <TransactionToast type={type} link={link} />, {
-      toastId: `${type}-${uuidv4()}`,
-      icon: false,
-      type: {
-        success: NOTIFICATION_TYPE.success,
-        error: NOTIFICATION_TYPE.error,
-        pending: NOTIFICATION_TYPE.info,
-      }[type] as TypeOptions,
-      className: 'transaction-toast',
-      autoClose: MINUTE / 2,
-      closeOnClick: false,
-    })
+  const showTxToast = (
+    type: NotificationTxType,
+    {
+      link,
+      txHash,
+      txResponse,
+    }: {
+      link?: string
+      txHash?: string
+      txResponse?: TransactionResponse
+    },
+  ) => {
+    return toast(
+      () => (
+        <TransactionToast
+          type={type}
+          link={link}
+          txHash={txHash}
+          txResponse={txResponse}
+        />
+      ),
+      {
+        toastId: `${type}-${uuidv4()}`,
+        icon: false,
+        type: {
+          success: NOTIFICATION_TYPE.success,
+          error: NOTIFICATION_TYPE.error,
+          pending: NOTIFICATION_TYPE.info,
+        }[type] as TypeOptions,
+        className: 'transaction-toast',
+        autoClose: MINUTE / 2,
+        closeOnClick: false,
+      },
+    )
   }
 
   const removeToast = useCallback((toastId: Id) => {

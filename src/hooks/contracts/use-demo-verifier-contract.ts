@@ -68,7 +68,7 @@ export const useDemoVerifierContract = (address?: string) => {
         data,
       }
 
-      return provider?.signAndSendTx(txBody)
+      return provider?.signAndSendTx?.(txBody)
     },
     [address, contractInterface, provider],
   )
@@ -108,7 +108,7 @@ export const useDemoVerifierContract = (address?: string) => {
         data,
       }
 
-      return provider?.signAndSendTx(txBody)
+      return provider?.signAndSendTx?.(txBody)
     },
     [address, contractInterface, provider],
   )
