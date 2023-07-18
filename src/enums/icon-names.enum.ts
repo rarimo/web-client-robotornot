@@ -229,4 +229,16 @@ export enum ICON_NAMES {
   x = 'x',
   zoomIn = 'zoom-in',
   zoomOut = 'zoom-out',
+
+  reCaptcha = 'recaptcha',
+
+  providerCivic = 'civic',
+  providerGitCoin = 'gitcoin',
+  providerUnstoppable = 'unstoppable',
+  providerWorldCoin = 'worldcoin',
+
+  metamask = 'metamask',
+
+  polygon = 'polygon',
+  ethereum = 'ethereum',
 }

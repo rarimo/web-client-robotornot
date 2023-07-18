@@ -1,36 +1,42 @@
 .auth-providers {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: toRem(24);
-
-  .auth-providers__input {
-    flex: none;
-  }
-}
-
-.auth-providers__actions {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: toRem(24);
+  gap: toRem(48);
 }
 
-.auth-providers__metadata {
+.auth-providers__header {
   display: flex;
   flex-direction: column;
-  gap: toRem(12);
-}
-
-.auth-providers__metadata-row {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: toRem(36);
+  text-align: center;
+  gap: toRem(16);
 }
 
-.auth-providers__metadata-col {
-  &:first-child {
-    font-weight: 700;
-  }
+.auth-providers__header-icon {
+  @include static-icon-size(48);
 }
+
+.auth-providers__header-subtitle {
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--text-tertiary-main);
+  font-size: toRem(20);
+}
+
+.auth-providers__list {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(16);
+  width: 100%;
+}
+
+.auth-providers__tip {
+  color: var(--text-secondary-main);
+}
+
+.auth-providers__tip-link {
+  text-decoration: underline;
+  color: var(--primary-main);
+}
+

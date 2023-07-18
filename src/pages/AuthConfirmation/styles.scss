@@ -1,0 +1,113 @@
+.auth-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(48);
+}
+
+.auth-confirmation__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: toRem(16);
+}
+
+.auth-confirmation__header-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--success-main);
+
+  @include static-icon-size(64);
+}
+
+.auth-confirmation__header-icon {
+  color: var(--white);
+
+  @include static-icon-size(28);
+}
+
+.auth-confirmation__header-subtitle {
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--text-tertiary-main);
+  font-size: toRem(20);
+}
+
+.auth-confirmation__card {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+
+  @include card;
+}
+
+.auth-confirmation__card-header {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(8);
+  width: 100%;
+}
+
+.auth-confirmation__card-title {
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.auth-confirmation__card-subtitle {
+  color: var(--text-secondary-main);
+  font-size: toRem(14);
+  line-height: 1.4;
+}
+
+.auth-confirmation__chains {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(16);
+  width: 100%;
+}
+
+.auth-confirmation__chain-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: toRem(16);
+  width: 100%;
+  padding: 0;
+  border: none;
+}
+
+.auth-confirmation__chain-item-icon {
+  @include static-icon-size(24);
+}
+
+.auth-confirmation__chain-item-name {
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.auth-confirmation__chain-add-btn {
+  align-self: flex-start;
+  color: var(--primary-main);
+  padding-left: 0;
+  font-size: toRem(14);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.auth-confirmation__divider {
+  background: var(--border-primary-main);
+  width: 100%;
+  height: toRem(1);
+}
+
+.auth-confirmation__submit-btn {
+  width: 100%;
+}

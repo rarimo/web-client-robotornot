@@ -1,0 +1,125 @@
+.Toastify__toast.transaction-toast {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--white);
+  padding: toRem(12);
+}
+
+.Toastify__toast-body {
+  position: relative;
+  width: 100%;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.transaction-toast__body {
+  display: flex;
+  position: relative;
+  gap: toRem(12);
+  width: 100%;
+  padding-right: toRem(24);
+}
+
+.transaction-toast__icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: toRem(8);
+
+  @include static-icon-size(56);
+
+  .Toastify__toast--success & {
+    background: var(--success-light);
+    color: var(--success-main);
+  }
+
+  .Toastify__toast--error & {
+    background: var(--error-light);
+    color: var(--error-main);
+  }
+
+  .Toastify__toast--warning & {
+    background: var(--warning-light);
+    color: var(--warning-main);
+  }
+
+  .Toastify__toast--info & {
+    background: var(--info-dark);
+    color: var(--background-secondary-main);
+  }
+}
+
+.transaction-toast .transaction-toast__icon {
+  @include static-icon-size(24);
+}
+
+.transaction-toast__details {
+  display: flex;
+  flex-direction: column;
+  padding: toRem(8) 0;
+  flex: 1;
+}
+
+.transaction-toast__title {
+  font-size: toRem(14);
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: toRem(0.1);
+  color: var(--text-primary-main);
+}
+
+.transaction-toast__message {
+  font-size: toRem(14);
+  line-height: 1.5;
+  letter-spacing: toRem(0.25);
+  color: var(--text-secondary-main);
+  max-width: toRem(230);
+  width: 100%;
+
+  @include respond-to(xsmall) {
+    width: toRem(180);
+  }
+
+  .transaction-toast__message-icon {
+    display: inline;
+    vertical-align: baseline;
+    width: 0.9em;
+    height: 0.9em;
+    transform: translateY(toRem(2));
+    margin-left: toRem(4);
+  }
+}
+
+.Toastify__close-button {
+  position: absolute;
+  top: 45%;
+  right: toRem(12);
+  transform: translateY(-50%);
+  color: var(--text-secondary-main);
+  padding: 0;
+  font-size: toRem(28);
+  line-height: 1;
+}
+
+.Toastify__progress-bar {
+  .Toastify__toast--success & {
+    background: var(--success-main);
+  }
+
+  .Toastify__toast--error & {
+    background: var(--error-main);
+  }
+
+  .Toastify__toast--warning & {
+    background: var(--warning-main);
+  }
+
+  .Toastify__toast--info & {
+    background: var(--info-dark);
+  }
+}

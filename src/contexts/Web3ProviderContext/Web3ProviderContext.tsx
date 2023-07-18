@@ -1,7 +1,11 @@
+import { SUPPORTED_CHAINS_DETAILS } from '@config'
 import {
+  errors,
+  IProvider,
   MetamaskProvider,
   Provider,
   ProviderDetector,
+  type ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -13,16 +17,15 @@ import {
   memo,
   useCallback,
   useMemo,
+  useState,
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
-import { useProvider } from '@/hooks'
+import { useNotification, useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
-  provider?: ReturnType<typeof useProvider>
+  provider?: IProvider
   providerDetector: ProviderDetector<SUPPORTED_PROVIDERS>
-
-  isValidChain: boolean
 
   init: (providerType?: SUPPORTED_PROVIDERS) => Promise<void>
   addProvider: (provider: ProviderInstance) => void
@@ -32,8 +35,6 @@ interface Web3ProviderContextValue {
 export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   provider: undefined,
   providerDetector: new ProviderDetector<SUPPORTED_PROVIDERS>(),
-
-  isValidChain: false,
 
   init: async (providerType?: SUPPORTED_PROVIDERS) => {
     throw new TypeError(`init() not implemented for ${providerType}`)
@@ -48,7 +49,7 @@ export const web3ProviderContext = createContext<Web3ProviderContextValue>({
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-type SUPPORTED_PROVIDERS = PROVIDERS
+export type SUPPORTED_PROVIDERS = PROVIDERS
 
 const SUPPORTED_PROVIDERS_MAP: {
   [key in SUPPORTED_PROVIDERS]?: ProviderProxyConstructor
@@ -70,9 +71,53 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
-  const provider = useProvider()
+  const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
+  const { showTxToast, removeToast } = useNotification()
 
-  const isValidChain = useMemo(() => true, [])
+  const { provider, init: initProvider } = useProvider()
+
+  const handleTxSent = useMemo(
+    () => (e?: ProviderEventPayload) => {
+      setCurrentTxToastId(
+        showTxToast('pending', {
+          txHash: e?.txHash,
+        }),
+      )
+    },
+    [showTxToast],
+  )
+
+  const handleTxConfirmed = useMemo(
+    () => (e?: ProviderEventPayload) => {
+      if (currentTxToastId) {
+        removeToast(currentTxToastId)
+      }
+
+      showTxToast('success', {
+        txResponse: e?.txResponse,
+      })
+    },
+    [currentTxToastId, removeToast, showTxToast],
+  )
+
+  const disconnect = useCallback(async () => {
+    try {
+      await provider?.disconnect?.()
+    } catch (error) {
+      // empty
+    }
+
+    removeStorageState()
+  }, [provider, removeStorageState])
+
+  const listeners = useMemo(
+    () => ({
+      onTxSent: handleTxSent,
+      onTxConfirmed: handleTxConfirmed,
+      onDisconnect: disconnect,
+    }),
+    [disconnect, handleTxConfirmed, handleTxSent],
+  )
 
   const init = useCallback(
     async (providerType?: SUPPORTED_PROVIDERS) => {
@@ -83,37 +128,46 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         await providerDetector.init()
 
-        // TODO: fill config and set chains details
-        Provider.setChainsDetails({})
+        Provider.setChainsDetails(
+          Object.entries(SUPPORTED_CHAINS_DETAILS).reduce(
+            (acc, [, chainDetails]) => ({
+              ...acc,
+              [chainDetails.id]: chainDetails,
+            }),
+            {},
+          ),
+        )
 
         const currentProviderType = providerType || storageState?.providerType
 
         if (!currentProviderType) return
 
-        await provider.init(
+        const initializedProvider = await initProvider(
           SUPPORTED_PROVIDERS_MAP[
             currentProviderType
           ] as ProviderProxyConstructor,
           {
             providerDetector,
-            listeners: {},
+            listeners,
           },
         )
 
-        // TODO: because of setState in useProvider,
-        //  in this step provider still undefined
-
-        if (!provider.isConnected) {
-          await provider?.connect?.()
+        if (!initializedProvider.isConnected) {
+          await initializedProvider?.connect?.()
         }
       } catch (error) {
-        removeStorageState()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (error.error instanceof errors.ProviderUserRejectedRequest) {
+          await disconnect()
+        }
       }
     },
     [
-      provider,
+      disconnect,
+      initProvider,
+      listeners,
       providerDetector,
-      removeStorageState,
       setStorageState,
       storageState?.providerType,
     ],
@@ -125,24 +179,11 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerDetector.addProvider(provider)
   }
 
-  const disconnect = useCallback(async () => {
-    try {
-      await provider?.disconnect?.()
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
-
-    removeStorageState()
-
-    await init()
-  }, [init, provider, removeStorageState])
-
   return (
     <web3ProviderContext.Provider
       value={{
         provider,
         providerDetector,
-
-        isValidChain,
 
         init,
         addProvider,

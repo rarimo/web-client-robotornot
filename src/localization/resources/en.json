@@ -17,7 +17,16 @@
     "default-message-error": "Something went wrong",
     "default-message-warning": "Something you are doing is not recommended",
     "default-message-info": "Something is happening. Just want you to know that",
-    "default-message-default": "Just a message"
+    "default-message-default": "Just a message",
+
+    "tx-pending-title": "Transaction pending",
+    "tx-pending-message": "Your transaction in progress, please wait until it will be mined",
+
+    "tx-success-title": "Transaction success",
+    "tx-success-message": "Your transaction was successfully mined",
+
+    "tx-error-title": "Transaction error",
+    "tx-error-message": "Your transaction was failed"
   },
   "store-overview": {
     "loading-error-msg": "Oops... Something went wrong",

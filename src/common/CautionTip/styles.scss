@@ -1,0 +1,39 @@
+.caution-tip {
+  display: flex;
+  align-items: center;
+  gap: toRem(12);
+  padding: toRem(12);
+
+  &--color-success {
+    background: var(--success-light);
+    color: var(--success-dark);
+  }
+
+  &--color-error {
+    background: var(--error-light);
+    color: var(--error-dark);
+  }
+
+  &--color-warning {
+    background: var(--warning-light);
+    color: var(--text-secondary-main);
+  }
+
+  &--color-info {
+    background: var(--info-light);
+    color: var(--info-dark);
+  }
+}
+
+.caution-tip__icon {
+  color: inherit;
+
+  @include static-icon-size(24);
+}
+
+.caution-tip__message {
+  color: inherit;
+  font-size: toRem(14);
+  line-height: 1.4;
+  font-weight: 500;
+}

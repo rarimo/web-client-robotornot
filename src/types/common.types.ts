@@ -7,3 +7,5 @@ export type NotificationObjectPayload = {
 }
 
 export type NotificationPayload = string | NotificationObjectPayload
+
+export type NotificationTxType = 'pending' | 'success' | 'error'

@@ -1,6 +1,5 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
-import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -19,10 +18,10 @@ const root = path.resolve(__dirname, resolveApp('src'))
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  const isProduction = env.VITE_ENVIRONMENT === 'production'
-  const isDevelopment = env.VITE_ENVIRONMENT === 'development'
+  // const isProduction = env.VITE_ENVIRONMENT === 'production'
+  // const isDevelopment = env.VITE_ENVIRONMENT === 'development'
   const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
-  const buildVersion = env.VITE_APP_BUILD_VERSION
+  // const buildVersion = env.VITE_APP_BUILD_VERSION
 
   return {
     ...(env.VITE_PORT
@@ -32,14 +31,19 @@ export default defineConfig(({ mode }) => {
           },
         }
       : {}),
+    define: {
+      'process.env': {},
+    },
     publicDir: 'static',
     plugins: [
-      // viteCommonjs(),
       react(),
 
       tsconfigPaths(),
       createSvgIconsPlugin({
-        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+        iconDirs: [
+          path.resolve(process.cwd(), 'src/assets/icons'),
+          path.resolve(process.cwd(), 'static/images/providers'),
+        ],
         symbolId: '[name]',
       }),
       checker({
@@ -105,6 +109,14 @@ export default defineConfig(({ mode }) => {
           'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
         ),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
+        '@iden3/js-merkletree': path.resolve(
+          __dirname,
+          'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js',
+        ),
+        '@civic/ethereum-gateway-react': path.resolve(
+          __dirname,
+          'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
+        ),
       },
     },
     optimizeDeps: {
@@ -124,12 +136,16 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
+      sourcemap: true,
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin
           // used during production bundling
           nodePolyfills(),
         ],
+      },
+      commonjsOptions: {
+        transformMixedEsModules: true,
       },
     },
   }

@@ -53,7 +53,6 @@ $media-breakpoints: (
 
 @mixin field-border {
   border: toRem(1) solid var(--field-border);
-  border-radius: toRem(14);
 }
 
 @mixin field-placeholder {
@@ -99,4 +98,22 @@ $media-breakpoints: (
   max-width: toRem(420);
   width: 100%;
   margin: auto;
+}
+
+@mixin static-icon-size ($size) {
+  min-width: toRem($size);
+  min-height: toRem($size);
+  max-width: toRem($size);
+  max-height: toRem($size);
+  width: toRem($size);
+  height: toRem($size);
+}
+
+@mixin card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--background-secondary-main);
+  padding: toRem(24);
+  border: toRem(1) solid var(--border-primary-main);
 }

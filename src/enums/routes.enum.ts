@@ -7,5 +7,7 @@ export enum RoutesPaths {
   authConfirmation = '/auth/confirmation',
   authSuccess = '/auth/success',
 
+  profile = '/profile',
+
   uiKit = '/ui-kit',
 }

@@ -1,0 +1,34 @@
+.auth-providers-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: toRem(24);
+  background: var(--background-secondary-main);
+  padding: toRem(24);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.auth-providers-item__icon {
+  @include static-icon-size(48);
+
+  &--decor {
+    margin-left: auto;
+    color: var(--text-secondary-main);
+
+    @include static-icon-size(20);
+  }
+}
+
+.auth-providers-item__name {
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  font-weight: 600;
+}
+
+.auth-providers-item__button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

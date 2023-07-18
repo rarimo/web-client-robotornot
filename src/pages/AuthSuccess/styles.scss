@@ -1,0 +1,187 @@
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(48);
+}
+
+.auth-success__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: toRem(16);
+}
+
+.auth-success__header-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--success-main);
+
+  @include static-icon-size(64);
+}
+
+.auth-success__header-icon {
+  color: var(--white);
+
+  @include static-icon-size(28);
+}
+
+.auth-success__header-subtitle {
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--text-tertiary-main);
+  font-size: toRem(20);
+}
+
+$card-padding-side: #{toRem(24)};
+
+.auth-success__card {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+
+  @include card;
+
+  padding: $card-padding-side 0 $card-padding-side 0;
+}
+
+.auth-success__card-title {
+  align-self: flex-start;
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.4;
+  font-weight: 500;
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+}
+
+.auth-success__metadata {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+}
+
+.auth-success__metadata-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-success__metadata-item-label {
+  font-size: toRem(16);
+  line-height: 1.4;
+  color: var(--text-secondary-main);
+}
+
+.auth-success__metadata-item-value {
+  display: flex;
+  align-items: center;
+  gap: toRem(8);
+  font-size: toRem(16);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary-main);
+}
+
+.auth-success__metadata-item-value-icon {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.auth-success__card-divider {
+  background: var(--border-primary-main);
+  width: 100%;
+  height: toRem(1);
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+}
+
+.auth-success__copy-field-wrp {
+  padding-left: $card-padding-side;
+  padding-right: $card-padding-side;
+  width: 100%;
+}
+
+.auth-success__copy-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: toRem(16);
+  background: rgba(0, 0, 0, 0.05);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.auth-success__tip {
+  color: var(--text-secondary-main);
+}
+
+.auth-success__tip-link {
+  color: var(--primary-main);
+}
+
+.auth-success__minted-nft {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+  width: 100%;
+  background: var(--success-light);
+  padding: $card-padding-side;
+  border-top: toRem(1) solid var(--border-primary-main);
+  border-bottom: toRem(1) solid var(--border-primary-main);
+}
+
+.auth-success__minted-nft-title {
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.auth-success__minted-nft-card {
+  display: flex;
+  align-items: center;
+  gap: toRem(24);
+  background: var(--background-secondary-main);
+  padding: toRem(16);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.auth-success__minted-nft-card-img-wrp {
+  border-radius: 50%;
+
+  @include static-icon-size(120);
+}
+
+.auth-success__minted-nft-card-img {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-success__minted-nft-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(16);
+}
+
+.auth-success__minted-nft-card-title {
+  color: var(--text-primary-main);
+  font-size: toRem(24);
+  font-weight: 700;
+}
+
+.auth-success__minted-nft-card-subtitle {
+  color: var(--text-secondary-main);
+  font-size: toRem(14);
+  line-height: 1.3;
+  font-weight: 700;
+}

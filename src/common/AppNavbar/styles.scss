@@ -3,8 +3,6 @@
   align-items: center;
   gap: toRem(24);
   padding: toRem(24) var(--app-padding-right) toRem(24) var(--app-padding-left);
-  background: var(--background-primary-main);
-  border-bottom: var(--border-primary-main);
 
   @include respond-to(tablet) {
     flex-wrap: wrap;
@@ -13,21 +11,19 @@
 
 .app-navbar__logo {
   margin-right: auto;
-  max-width: toRem(56);
-
-  @include respond-to(xsmall) {
-    width: 100%;
-  }
+  max-width: toRem(102);
+  width: 100%;
 }
 
-.app-navbar__link {
-  opacity: 0.25;
+.navbar__connection-btn {
+  font-weight: 600;
+  font-size: toRem(14);
+  line-height: 1.4;
+  color: var(--text-primary-main);
+}
 
-  &:first-child {
-    margin-left: auto;
-  }
-
-  &.active {
-    opacity: 1;
-  }
+.app-navbar .navbar__account-link {
+  line-height: 1.4;
+  color: var(--text-primary-main);
+  padding: 0;
 }
