@@ -25,7 +25,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
  */
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
-const KycProviderCivicContent: FC<Props> = ({ loginCb, setKycDetails }) => {
+const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   const { gatewayToken, requestGatewayToken } = useGateway()
   const [signedNonce, setSignedNonce] = useState<string>()
   const btnRef = useRef<HTMLButtonElement>()
