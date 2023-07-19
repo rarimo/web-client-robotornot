@@ -1,5 +1,4 @@
 import { config } from '@config'
-import { fetcher } from '@distributedlab/fetcher'
 import UAuth from '@uauth/js'
 import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
 import { useEffectOnce } from 'react-use'
@@ -23,21 +22,15 @@ const KycProviderUnstoppableDomains: FC<Props> = ({
     [],
   )
 
-  const getProfileDetails = useCallback(async () => {
-    try {
-      const { data } = await fetcher.get(
-        `https://profile.unstoppabledomains.com/api/public/dlkharkiv.blockchain/badges`,
-      )
-    } catch (error) {}
-  }, [])
-
   const login = useCallback(async () => {
-    const response = await uauth.loginWithPopup()
+    const authorization = await uauth.loginWithPopup()
 
-    console.log(response)
+    const user = await uauth.user()
 
-    loginCb(response)
-  }, [loginCb, uauth])
+    setKycDetails(user)
+
+    loginCb(authorization)
+  }, [loginCb, setKycDetails, uauth])
 
   useEffectOnce(() => {
     login()
