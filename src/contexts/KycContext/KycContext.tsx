@@ -69,6 +69,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [selectedKycProviderName, setSelectedKycProviderName] =
     useState<SUPPORTED_KYC_PROVIDERS>()
   const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
+  const [kycDetails, setKycDetails] = useState<unknown>()
 
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -231,21 +232,25 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         <KycProviderUnstoppableDomains
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
+          setKycDetails={setKycDetails}
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
         <KycProviderWorldCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
+          setKycDetails={setKycDetails}
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
         <KycProviderCivic
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
+          setKycDetails={setKycDetails}
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
         <KycProviderGitCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
+          setKycDetails={setKycDetails}
         />
       ) : (
         <></>

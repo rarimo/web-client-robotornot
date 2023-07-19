@@ -5,9 +5,13 @@ import { useEffectOnce } from 'react-use'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  setKycDetails: (details: unknown) => void
 }
 
-const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
+const KycProviderUnstoppableDomains: FC<Props> = ({
+  loginCb,
+  setKycDetails,
+}) => {
   const { setOpen } = useIDKit()
 
   useEffectOnce(() => {

@@ -17,6 +17,7 @@ import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  setKycDetails: (details: unknown) => void
 }
 
 /**
@@ -24,7 +25,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
  */
 const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
 
-const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
+const KycProviderCivicContent: FC<Props> = ({ loginCb, setKycDetails }) => {
   const { gatewayToken, requestGatewayToken } = useGateway()
   const [signedNonce, setSignedNonce] = useState<string>()
   const btnRef = useRef<HTMLButtonElement>()
@@ -76,7 +77,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   return <></>
 }
 
-const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
   const { provider } = useWeb3Context()
 
   const wallet = useMemo(
@@ -95,7 +96,10 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
         autoShowModal: true,
       }}
     >
-      <KycProviderCivicContent loginCb={loginCb} />
+      <KycProviderCivicContent
+        loginCb={loginCb}
+        setKycDetails={setKycDetails}
+      />
     </GatewayProvider>
   )
 }
