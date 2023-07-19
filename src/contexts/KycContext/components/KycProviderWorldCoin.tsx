@@ -1,6 +1,6 @@
 import { config } from '@config'
-import { IDKitWidget, ISuccessResult, useIDKit } from '@worldcoin/idkit'
 import { FC, HTMLAttributes } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -12,20 +12,24 @@ const KycProviderUnstoppableDomains: FC<Props> = ({
   loginCb,
   setKycDetails,
 }) => {
-  const { setOpen } = useIDKit()
+  const [searchParams] = useSearchParams()
+
+  const redirectUrl = 'https://identity.146.190.48.227.sslip.io/auth/providers'
+  const responseType = 'id_token'
+  const state = 'session_102030405060708091'
+  const nonce = 'z-dkEmoy_ujfk7B8uTiQph'
 
   useEffectOnce(() => {
-    setOpen(true)
+    searchParams.get('id_token')
+      ? loginCb(searchParams.get('id_token'))
+      : window.open(
+          `https://id.worldcoin.org/authorize?client_id=${config.WORLDCOIN_APP_ID}&response_type=${responseType}&redirect_uri=${redirectUrl}&state=${state}&nonce=${nonce}`,
+          '_blank',
+          'noopener, noreferrer',
+        )
   })
 
-  return (
-    <IDKitWidget
-      app_id={config.WORLDCOIN_APP_ID}
-      action=''
-      enableTelemetry
-      onSuccess={(result: ISuccessResult) => loginCb(result)}
-    />
-  )
+  return <></>
 }
 
 export default KycProviderUnstoppableDomains
