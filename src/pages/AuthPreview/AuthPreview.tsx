@@ -21,7 +21,8 @@ const AuthPreview: FC<Props> = () => {
 
   const { getVerifiableCredentials, getZkProof } = useZkpContext()
 
-  const { isLoaded, isValidCredentials, retryKyc } = useKycContext()
+  const { isLoaded, isValidCredentials, selectedKycDetails, retryKyc } =
+    useKycContext()
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
@@ -54,14 +55,12 @@ const AuthPreview: FC<Props> = () => {
           message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
         />
         <div className='auth-preview__metadata'>
-          {Array(5)
-            .fill(0)
-            .map((el, idx) => (
-              <div className='auth-preview__metadata-item' key={idx}>
-                <span className='auth-preview__metadata-item-label'>{`Name`}</span>
-                <span className='auth-preview__metadata-item-value'>{`Maren Philips`}</span>
-              </div>
-            ))}
+          {selectedKycDetails?.map(([label, value], idx) => (
+            <div className='auth-preview__metadata-item' key={idx}>
+              <span className='auth-preview__metadata-item-label'>{label}</span>
+              <span className='auth-preview__metadata-item-value'>{value}</span>
+            </div>
+          ))}
         </div>
         <div className='auth-preview__card-divider' />
         <AppButton
@@ -74,7 +73,7 @@ const AuthPreview: FC<Props> = () => {
         />
       </div>
     ),
-    [handleGenerateProof, provider?.address],
+    [handleGenerateProof, provider?.address, selectedKycDetails],
   )
 
   const InvalidCredentialsMessage = useMemo(

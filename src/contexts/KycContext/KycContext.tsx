@@ -1,3 +1,4 @@
+import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
   FC,
@@ -5,8 +6,10 @@ import {
   lazy,
   memo,
   useCallback,
+  useMemo,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from '@/api'
@@ -33,6 +36,7 @@ const KycProviderGitCoin = lazy(
 interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
+  selectedKycDetails: [string, string][]
 
   isLoaded: boolean
 
@@ -46,6 +50,7 @@ interface KycContextValue {
 export const kycContext = createContext<KycContextValue>({
   selectedKycProviderName: undefined,
   authorizedKycResponse: undefined,
+  selectedKycDetails: [],
 
   isLoaded: false,
 
@@ -66,10 +71,34 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const { t } = useTranslation()
+
   const [selectedKycProviderName, setSelectedKycProviderName] =
     useState<SUPPORTED_KYC_PROVIDERS>()
   const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
   const [kycDetails, setKycDetails] = useState<unknown>()
+
+  const selectedKycDetails = useMemo((): [string, string][] => {
+    if (!selectedKycProviderName) return []
+
+    const unstoppablePartialDetails = kycDetails as UserInfo
+
+    const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
+      [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.domain-lbl`,
+          ),
+          unstoppablePartialDetails?.sub,
+        ],
+      ],
+      [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [],
+      [SUPPORTED_KYC_PROVIDERS.CIVIC]: [],
+      [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [],
+    }
+
+    return kycDetailsMap[selectedKycProviderName]
+  }, [kycDetails, selectedKycProviderName, t])
 
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -81,11 +110,20 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const { identity, createIdentity, isClaimOfferExists } = useZkpContext()
 
+  const retryKyc = useCallback(() => {
+    setIsLoaded(false)
+    setRefreshKey(prev => prev + 1)
+  }, [])
+
   const login = useCallback(
     async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
-      setSelectedKycProviderName(supportedKycProvider)
+      if (supportedKycProvider === selectedKycProviderName) {
+        retryKyc()
+      } else {
+        setSelectedKycProviderName(supportedKycProvider)
+      }
     },
-    [],
+    [retryKyc, selectedKycProviderName],
   )
 
   const verifyKyc = useCallback(
@@ -159,11 +197,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [authorizedKycResponse, selectedKycProviderName],
   )
 
-  const retryKyc = useCallback(() => {
-    setIsLoaded(false)
-    setRefreshKey(prev => prev + 1)
-  }, [])
-
   const handleKycProviderComponentLogin = useCallback(
     async (response: unknown) => {
       setAuthorizedKycResponse(response)
@@ -215,6 +248,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         value={{
           selectedKycProviderName,
           authorizedKycResponse,
+          selectedKycDetails,
 
           isLoaded,
           isValidCredentials,
