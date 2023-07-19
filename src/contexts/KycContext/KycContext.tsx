@@ -135,7 +135,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
-          access_token: currentAuthKycResponse,
+          id_token: currentAuthKycResponse,
         },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

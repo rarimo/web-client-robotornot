@@ -1,7 +1,8 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes, useEffect } from 'react'
+import { FC, HTMLAttributes } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useEffectOnce } from 'react-use'
 
 import { Icon } from '@/common'
 import { useKycContext } from '@/contexts'
@@ -15,11 +16,11 @@ const AuthProviders: FC<Props> = () => {
   const { login } = useKycContext()
   const [searchParams] = useSearchParams()
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (searchParams.get('id_token')) {
       login(SUPPORTED_KYC_PROVIDERS.WORDLCOIN)
     }
-  }, [login, searchParams])
+  })
 
   return (
     <div className='auth-providers'>
