@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
+import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
@@ -20,23 +21,28 @@ const KycProviderUnstoppableDomains: FC<Props> = ({
   const state = 'session_102030405060708091'
   const nonce = 'z-dkEmoy_ujfk7B8uTiQph'
 
-  const fetchUserData = useCallback(async (token: string) => {
-    return await api.fetcher
-      .withBaseUrl('https://id.worldcoin.org/userinfo')
-      .post('', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-  }, [])
+  const setUserData = useCallback(
+    async (token: string) => {
+      try {
+        const { data } = await api.fetcher
+          .withBaseUrl('https://id.worldcoin.org/userinfo')
+          .post('', {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+        setKycDetails(data)
+      } catch (error) {
+        ErrorHandler.process(error)
+      }
+    },
+    [setKycDetails],
+  )
 
   useEffectOnce(() => {
     const token = searchParams.get('id_token')
     if (token) {
-      const user = fetchUserData(token)
-      // eslint-disable-next-line no-console
-      console.log(user)
-      setKycDetails(user)
+      setUserData(token)
       loginCb(token)
     } else {
       window.open(
