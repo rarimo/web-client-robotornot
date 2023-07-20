@@ -31,6 +31,10 @@
   "kyc-providers-metadata": {
     "unstoppable_domains": {
       "domain-lbl": "Domain"
+    },
+    "gitcoin_passport": {
+      "address-lbl": "Address",
+      "score-lbl": "Score"
     }
   }
 }
