@@ -45,7 +45,7 @@ const AuthSuccess: FC<Props> = () => {
   useEffect(() => {
     if (count > 0) return
 
-    window.location.href = config.EXTERNAL_PLATFORM_REDIRECT_URL
+    window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
   }, [count])
 
   return (
