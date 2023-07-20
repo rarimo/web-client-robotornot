@@ -52,7 +52,7 @@ const AuthPreview: FC<Props> = () => {
       <div className='auth-preview__card'>
         <CautionTip
           className='auth-preview__card-caution-tip'
-          message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
+          message={`The credential will be used to generate a zero-knowledge proof. No sensitive data will be shared with any party.`}
         />
         <div className='auth-preview__metadata'>
           {selectedKycDetails?.map(([label, value], idx) => (

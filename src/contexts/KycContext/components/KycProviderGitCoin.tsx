@@ -10,7 +10,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   setKycDetails: (details: unknown) => void
 }
 
-const KycProviderGitCoin: FC<Props> = ({ loginCb, setKycDetails }) => {
+const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {
   const { provider } = useWeb3Context()
 
   useEffectOnce(() => {
