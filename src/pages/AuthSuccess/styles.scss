@@ -72,6 +72,7 @@ $card-padding-side: #{toRem(24)};
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: toRem(12);
 }
 
 .auth-success__metadata-item-label {
@@ -83,6 +84,7 @@ $card-padding-side: #{toRem(24)};
 .auth-success__metadata-item-value {
   display: flex;
   align-items: center;
+  text-align: right;
   gap: toRem(8);
   font-size: toRem(16);
   font-weight: 500;

@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { abbrCenter, sleep } from '@/helpers'
 
 const KycProviderUnstoppableDomains = lazy(
   () =>
@@ -45,6 +46,27 @@ interface KycContextValue {
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
   verifyKyc: (identityIdString: string) => Promise<void>
   retryKyc: () => void
+}
+
+type GitCoinPassportUserInfo = {
+  address: string
+  score: string
+  stamps: {
+    version: string
+    metadata: {
+      group: string
+      platform: {
+        id: string
+        icon: string
+        name: string
+        description: string
+        connectMessage: string
+      }
+      name: string
+      description: string
+      hash: string
+    }
+  }[]
 }
 
 export const kycContext = createContext<KycContextValue>({
@@ -82,6 +104,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     if (!selectedKycProviderName) return []
 
     const unstoppablePartialDetails = kycDetails as UserInfo
+    const gitCoinPassportPartialDetails = kycDetails as GitCoinPassportUserInfo
 
     const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
       [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
@@ -94,7 +117,30 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       ],
       [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [],
       [SUPPORTED_KYC_PROVIDERS.CIVIC]: [],
-      [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [],
+      [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.address-lbl`,
+          ),
+          gitCoinPassportPartialDetails?.address
+            ? abbrCenter(gitCoinPassportPartialDetails?.address)
+            : '',
+        ],
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.score-lbl`,
+          ),
+          gitCoinPassportPartialDetails?.score,
+        ],
+        ...(gitCoinPassportPartialDetails?.stamps?.map<[string, string]>(
+          ({ metadata }) => [
+            metadata.platform.id,
+            ['Encrypted', metadata.platform.id].includes(metadata.description)
+              ? 'Confirmed'
+              : metadata.description,
+          ],
+        ) ?? []),
+      ],
     }
 
     return kycDetailsMap[selectedKycProviderName]
@@ -124,6 +170,34 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       }
     },
     [retryKyc, selectedKycProviderName],
+  )
+
+  const handleVerificationChecking = useCallback(
+    async (verificationId: string) => {
+      let isPending = true
+
+      do {
+        const { data } = await api.get<{
+          type: 'verify_status'
+          id: 'string'
+          status: 'verified' | 'unverified' | 'pending'
+          user_data: unknown
+        }>(`/integrations/kyc-service/v1/public/status/${verificationId}`)
+
+        switch (data.status) {
+          case 'verified':
+            setAuthorizedKycResponse(data.user_data)
+            isPending = false
+            break
+          case 'unverified':
+            isPending = false
+            break
+          default:
+            await sleep(3000)
+        }
+      } while (isPending)
+    },
+    [],
   )
 
   const verifyKyc = useCallback(
@@ -162,7 +236,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         },
       }
 
-      await api.post(
+      const { data } = await api.post<
+        | {
+            type: 'user_data'
+            user_data: unknown
+          }
+        | {
+            type: 'verification_id'
+            id: 'string'
+          }
+      >(
         `/integrations/kyc-service/v1/public/verify/${selectedKycProviderName}`,
         {
           body: {
@@ -180,8 +263,24 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           },
         },
       )
+
+      if (!data) return
+
+      if (data.type === 'user_data') {
+        setKycDetails(data.user_data)
+
+        return
+      }
+
+      if (data.type === 'verification_id') {
+        await handleVerificationChecking(data.id)
+      }
     },
-    [authorizedKycResponse, selectedKycProviderName],
+    [
+      authorizedKycResponse,
+      handleVerificationChecking,
+      selectedKycProviderName,
+    ],
   )
 
   const handleKycProviderComponentLogin = useCallback(
