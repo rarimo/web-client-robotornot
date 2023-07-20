@@ -86,6 +86,9 @@ export const config = {
   }),
 
   DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
+
+  EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
+    .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

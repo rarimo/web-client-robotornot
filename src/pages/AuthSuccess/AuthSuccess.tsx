@@ -1,6 +1,9 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { config } from '@config'
+import { FC, HTMLAttributes, useEffect } from 'react'
+import { useEffectOnce } from 'react-use'
+import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, Icon } from '@/common'
 import { useKycContext } from '@/contexts'
@@ -9,8 +12,27 @@ import { abbrCenter, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
+const SECOND = 1000
+
+const REDIRECT_TIMEOUT = 30
+
 const AuthSuccess: FC<Props> = () => {
   const { selectedKycDetails } = useKycContext()
+
+  const [count, { startCountdown }] = useCountdown({
+    countStart: REDIRECT_TIMEOUT,
+    intervalMs: SECOND,
+  })
+
+  useEffectOnce(() => {
+    startCountdown()
+  })
+
+  useEffect(() => {
+    if (count > 0) return
+
+    window.location.href = config.EXTERNAL_PLATFORM_REDIRECT_URL
+  }, [count])
 
   return (
     <div className='auth-success'>
@@ -53,7 +75,7 @@ const AuthSuccess: FC<Props> = () => {
 
       <div className='auth-success__tip'>
         {`Automatically redirected in `}
-        <span className='auth-success__tip-link'>{`(10sec)`}</span>
+        <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
       </div>
     </div>
   )
