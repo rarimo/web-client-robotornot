@@ -1,56 +1,29 @@
 import { config } from '@config'
-import { FC, HTMLAttributes, useCallback } from 'react'
+import { FC, HTMLAttributes } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
-
-import { api } from '@/api'
-import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
   setKycDetails: (details: unknown) => void
 }
-const KycProviderUnstoppableDomains: FC<Props> = ({
-  loginCb,
-  setKycDetails,
-}) => {
+
+const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   const [searchParams] = useSearchParams()
 
-  const redirectUrl = 'https://identity.146.190.48.227.sslip.io/auth/providers'
-  const responseType = 'id_token'
-  const state = 'session_102030405060708091'
-  const nonce = 'z-dkEmoy_ujfk7B8uTiQph'
-
-  const setUserData = useCallback(
-    async (token: string) => {
-      try {
-        const { data } = await api.fetcher
-          .withBaseUrl('https://id.worldcoin.org/userinfo')
-          .post('', {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          })
-        setKycDetails(data)
-      } catch (error) {
-        ErrorHandler.process(error)
-      }
-    },
-    [setKycDetails],
-  )
+  const REDIRECT_URL = 'https://identity.146.190.48.227.sslip.io/auth/providers'
+  const RESPONSE_TYPE = 'id_token'
+  const STATE = 'session_102030405060708091'
+  const NONCE = 'z-dkEmoy_ujfk7B8uTiQph'
 
   useEffectOnce(() => {
-    const token = searchParams.get('id_token')
-    if (token) {
-      setUserData(token)
-      loginCb(token)
-    } else {
-      window.open(
-        `https://id.worldcoin.org/authorize?client_id=${config.WORLDCOIN_APP_ID}&response_type=${responseType}&redirect_uri=${redirectUrl}&state=${state}&nonce=${nonce}`,
-        '_blank',
-        'noopener, noreferrer',
-      )
-    }
+    searchParams.get('id_token')
+      ? loginCb(searchParams.get('id_token'))
+      : window.open(
+          `https://id.worldcoin.org/authorize?client_id=${config.WORLDCOIN_APP_ID}&response_type=${RESPONSE_TYPE}&redirect_uri=${REDIRECT_URL}&state=${STATE}&nonce=${NONCE}`,
+          '_blank',
+          'noopener, noreferrer',
+        )
   })
 
   return <></>
