@@ -1,3 +1,4 @@
+import { config } from '@config'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -14,6 +15,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
+import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import { abbrCenter, sleep } from '@/helpers'
 
@@ -98,13 +100,29 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [selectedKycProviderName, setSelectedKycProviderName] =
     useState<SUPPORTED_KYC_PROVIDERS>()
   const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
-  const [kycDetails, setKycDetails] = useState<unknown>()
+  const [kycDetails, setKycDetails] = useState<
+    Partial<
+      | {
+          address: string
+          civicGatekeeperNetworkId: number
+          gitcoinPassportScore: string
+          id: string
+          kycAdditionalData: string
+          provider: string
+          type: string
+          unstoppableDomain: string
+          worldcoinScore: string
+        } & QueryVariableName
+    >
+  >()
 
   const selectedKycDetails = useMemo((): [string, string][] => {
     if (!selectedKycProviderName) return []
 
-    const unstoppablePartialDetails = kycDetails as UserInfo
-    const gitCoinPassportPartialDetails = kycDetails as GitCoinPassportUserInfo
+    const unstoppablePartialDetails = kycDetails as unknown as UserInfo
+    const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData
+      ? JSON.parse(kycDetails?.kycAdditionalData as string)
+      : {}) as unknown as GitCoinPassportUserInfo
 
     const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
       [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
@@ -112,7 +130,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           t(
             `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.domain-lbl`,
           ),
-          unstoppablePartialDetails?.sub,
+          kycDetails?.unstoppableDomain || unstoppablePartialDetails?.sub,
         ],
       ],
       [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [],
@@ -154,7 +172,12 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const navigate = useNavigate()
 
-  const { identity, createIdentity, isClaimOfferExists } = useZkpContext()
+  const {
+    identity,
+    createIdentity,
+    isClaimOfferExists,
+    getVerifiableCredentials,
+  } = useZkpContext()
 
   const retryKyc = useCallback(() => {
     setIsLoaded(false)
@@ -206,6 +229,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!currentAuthKycResponse)
         throw new TypeError('authKycResponse is undefined')
+
+      if (!selectedKycProviderName)
+        throw new TypeError('selectedKycProviderName is undefined')
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
@@ -267,8 +293,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
               attributes: {
                 identity_id: identityIdString,
                 provider_data: {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
                   ...VERIFY_KYC_DATA_MAP[selectedKycProviderName],
                 },
               },
@@ -278,12 +302,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       )
 
       if (!data) return
-
-      if (data.type === 'user_data') {
-        setKycDetails(data.user_data)
-
-        return
-      }
 
       if (data.type === 'verification_id') {
         await handleVerificationChecking(data.id)
@@ -326,12 +344,22 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       setIsValidCredentials(await isClaimOfferExists(currentIdentity))
 
+      const verifiableCredentials = await getVerifiableCredentials(
+        config.DEFAULT_CHAIN,
+      )
+
+      setKycDetails((prev: unknown) => ({
+        ...(typeof prev === 'object' ? prev : {}),
+        ...verifiableCredentials.body.credential.credentialSubject,
+      }))
+
       setIsLoaded(true)
 
       return
     },
     [
       createIdentity,
+      getVerifiableCredentials,
       identity,
       isClaimOfferExists,
       navigate,
@@ -365,25 +393,33 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         <KycProviderUnstoppableDomains
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
-          setKycDetails={setKycDetails}
+          setKycDetails={(details: unknown) =>
+            setKycDetails(details as unknown as { [k: string]: unknown })
+          }
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
         <KycProviderWorldCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
-          setKycDetails={setKycDetails}
+          setKycDetails={(details: unknown) =>
+            setKycDetails(details as unknown as { [k: string]: unknown })
+          }
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
         <KycProviderCivic
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
-          setKycDetails={setKycDetails}
+          setKycDetails={(details: unknown) =>
+            setKycDetails(details as unknown as { [k: string]: unknown })
+          }
         />
       ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
         <KycProviderGitCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}
-          setKycDetails={setKycDetails}
+          setKycDetails={(details: unknown) =>
+            setKycDetails(details as unknown as { [k: string]: unknown })
+          }
         />
       ) : (
         <></>
