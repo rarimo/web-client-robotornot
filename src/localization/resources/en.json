@@ -35,6 +35,9 @@
     "gitcoin_passport": {
       "address-lbl": "Address",
       "score-lbl": "Score"
+    },
+    "civic": {
+      "address-lbl": "Address"
     }
   }
 }
