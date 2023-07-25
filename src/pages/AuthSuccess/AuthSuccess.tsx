@@ -23,7 +23,7 @@ function bytesToBase64(bytes: Uint8Array) {
 
 const AuthSuccess: FC<Props> = () => {
   const { selectedKycDetails } = useKycContext()
-  const { isNaturalZkp } = useZkpContext()
+  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -58,18 +58,25 @@ const AuthSuccess: FC<Props> = () => {
       </div>
 
       <div className='auth-success__card'>
-        <div className='auth-success__metadata'>
-          {selectedKycDetails?.map(([label, value], idx) => (
-            <div className='auth-success__metadata-item' key={idx}>
-              <span className='auth-success__metadata-item-label'>{label}</span>
-              <span className='auth-success__metadata-item-value'>{value}</span>
+        {publishedChains.get?.map?.((el, idx) => (
+          <div className='auth-success__card-published-item' key={idx}>
+            <div className='auth-success__card-published-item-icon-wrp'>
+              <Icon
+                className='auth-success__card-published-item-chain-icon'
+                name={CHAINS_DETAILS_MAP[el].iconName}
+              />
+              <div className='auth-success__card-published-item-success-icon-wrp'>
+                <Icon
+                  className='auth-success__card-published-item-success-icon'
+                  name={ICON_NAMES.check}
+                />
+              </div>
             </div>
-          ))}
-        </div>
-
-        <div className='auth-success__card-divider' />
-
-        <span className='auth-success__card-title'>{`Share manually`}</span>
+            <span className='auth-success__card-published-item-title'>
+              {`Your proof has been published on ${CHAINS_DETAILS_MAP[el].title}`}
+            </span>
+          </div>
+        ))}
 
         <div className='auth-success__copy-field-wrp'>
           <div className='auth-success__copy-field'>
@@ -82,6 +89,23 @@ const AuthSuccess: FC<Props> = () => {
               onClick={() => copyToClipboard(encodedProof)}
             />
           </div>
+        </div>
+
+        <div className='auth-success__card-divider-wrp'>
+          <div className='auth-success__card-divider' />
+        </div>
+
+        {/*TODO: publish to another chains button*/}
+      </div>
+
+      <div className='auth-success__card'>
+        <div className='auth-success__metadata'>
+          {selectedKycDetails?.map(([label, value], idx) => (
+            <div className='auth-success__metadata-item' key={idx}>
+              <span className='auth-success__metadata-item-label'>{label}</span>
+              <span className='auth-success__metadata-item-value'>{value}</span>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -65,11 +65,49 @@
   line-height: 1.4;
 }
 
+.auth-confirmation__chain-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(24);
+}
+
+.auth-confirmation__chain-preview-icon-wrp {
+  @include static-icon-size(64);
+}
+
+.auth-confirmation__chain-preview-icon {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-confirmation__chain-preview-title {
+  text-align: center;
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.auth-confirmation__chains-switch-btn {
+  color: var(--primary-main);
+}
+
 .auth-confirmation__chains {
   display: flex;
   flex-direction: column;
   gap: toRem(16);
   width: 100%;
+  background: var(--background-secondary-main);
+  border: toRem(1) solid var(--border-primary-main);
+}
+
+.dropdown__body {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .auth-confirmation__chain-item {
@@ -78,15 +116,20 @@
   justify-content: flex-start;
   gap: toRem(16);
   width: 100%;
-  padding: 0;
   border: none;
+  padding: toRem(12) toRem(20);
+
+  &:hover {
+    background: var(--background-primary-main);
+  }
 }
 
 .auth-confirmation__chain-item-icon {
   @include static-icon-size(24);
 }
 
-.auth-confirmation__chain-item-name {
+.auth-confirmation__chain-item-title {
+  white-space: nowrap;
   color: var(--text-primary-main);
   font-size: toRem(16);
   line-height: 1.4;

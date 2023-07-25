@@ -1,54 +1,27 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
-import { errors, PROVIDERS } from '@distributedlab/w3p'
+import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { AppButton, Icon } from '@/common'
+import { AppButton, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { BasicSelectField } from '@/fields'
 import { ErrorHandler } from '@/helpers'
 import { useDemoVerifierContract } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-type ChainToPublish = {
-  title: string
-  value: string
-  iconName: ICON_NAMES
-}
-
 const AuthConfirmation: FC<Props> = () => {
   const [isPending, setIsPending] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useDemoVerifierContract()
 
-  const { isNaturalZkp } = useZkpContext()
+  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
   const { provider, init } = useWeb3Context()
-
-  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
-    () => ({
-      [SUPPORTED_CHAINS.POLYGON]: {
-        title: 'Polygon chain',
-        value: SUPPORTED_CHAINS.POLYGON,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-        title: 'Polygon Testnet chain',
-        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.SEPOLIA]: {
-        title: 'Sepolia chain',
-        value: SUPPORTED_CHAINS.SEPOLIA,
-        iconName: ICON_NAMES.ethereum,
-      },
-    }),
-    [],
-  )
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
@@ -92,6 +65,8 @@ const AuthConfirmation: FC<Props> = () => {
         ...txBody,
       })
 
+      publishedChains.set(prev => [...prev, selectedChainToPublish])
+
       navigate(RoutesPaths.authSuccess)
     } catch (error) {
       ErrorHandler.process(error)
@@ -103,6 +78,7 @@ const AuthConfirmation: FC<Props> = () => {
     isNaturalZkp,
     navigate,
     provider,
+    publishedChains,
     selectedChainToPublish,
   ])
 
@@ -130,17 +106,34 @@ const AuthConfirmation: FC<Props> = () => {
     }
   }, [provider, selectedChainToPublishDetails])
 
-  const trySwitchChain = useCallback(async () => {
-    try {
-      await provider?.switchChain?.(Number(selectedChainToPublishDetails.id))
-    } catch (error) {
-      if (error instanceof errors.ProviderChainNotFoundError) {
-        await tryAddChain()
-      } else {
-        ErrorHandler.process(error)
+  const trySwitchChain = useCallback(
+    async (chain?: Chain) => {
+      try {
+        const chainToSwitch = chain || selectedChainToPublishDetails
+        await provider?.switchChain?.(Number(chainToSwitch.id))
+      } catch (error) {
+        if (error instanceof errors.ProviderChainNotFoundError) {
+          await tryAddChain()
+        } else {
+          throw error
+        }
       }
-    }
-  }, [provider, selectedChainToPublishDetails.id, tryAddChain])
+    },
+    [provider, selectedChainToPublishDetails, tryAddChain],
+  )
+
+  const handleSelectChain = useCallback(
+    async (el: SUPPORTED_CHAINS) => {
+      try {
+        setIsDropdownOpen(false)
+        await trySwitchChain(SUPPORTED_CHAINS_DETAILS[el])
+        setSelectedChainToPublish(el)
+      } catch (error) {
+        ErrorHandler.processWithoutFeedback(error)
+      }
+    },
+    [trySwitchChain],
+  )
 
   return (
     <div className='auth-confirmation'>
@@ -158,33 +151,51 @@ const AuthConfirmation: FC<Props> = () => {
       </div>
 
       <div className='auth-confirmation__card'>
-        <div className='auth-confirmation__card-header'>
-          <h5 className='auth-confirmation__card-title'>
-            {`Make it available on any chain`}
-          </h5>
-          <span className='auth-confirmation__card-subtitle'>
-            {`Your proof has been published on Polygon as default`}
+        <div className='auth-confirmation__chain-preview'>
+          <div className='auth-confirmation__chain-preview-icon-wrp'>
+            <Icon
+              className='auth-confirmation__chain-preview-icon'
+              name={CHAINS_DETAILS_MAP[selectedChainToPublish].iconName}
+            />
+          </div>
+
+          <span className='auth-confirmation__chain-preview-title'>
+            {`Your proof will be submitted on ${CHAINS_DETAILS_MAP[selectedChainToPublish].title}`}
           </span>
         </div>
 
-        <div className='auth-confirmation__chains'>
-          <div className='auth-confirmation__chain-item '>
-            <BasicSelectField
-              label={`Select chain`}
-              value={String(selectedChainToPublish)}
-              updateValue={value =>
-                setSelectedChainToPublish(value as SUPPORTED_CHAINS)
-              }
-              valueOptions={
-                Object.values(SUPPORTED_CHAINS)?.map?.(el => ({
-                  title: CHAINS_DETAILS_MAP[el].title,
-                  value: el,
-                  iconName: CHAINS_DETAILS_MAP[el].iconName,
-                })) ?? []
-              }
+        <Dropdown
+          isOpen={isDropdownOpen}
+          setIsOpen={setIsDropdownOpen}
+          head={
+            <AppButton
+              className='auth-confirmation__chains-switch-btn'
+              scheme='none'
+              modification='none'
+              iconLeft={ICON_NAMES.plus}
+              text={`Switch chain`}
+              onClick={() => setIsDropdownOpen(prev => !prev)}
             />
+          }
+        >
+          <div className='auth-confirmation__chains'>
+            {Object.values(SUPPORTED_CHAINS)?.map?.((el, idx) => (
+              <button
+                key={idx}
+                className='auth-confirmation__chain-item'
+                onClick={() => handleSelectChain(el)}
+              >
+                <Icon
+                  className='auth-confirmation__chain-item-icon'
+                  name={CHAINS_DETAILS_MAP[el].iconName}
+                />
+                <span className='auth-confirmation__chain-item-title'>
+                  {CHAINS_DETAILS_MAP[el].title}
+                </span>
+              </button>
+            ))}
           </div>
-        </div>
+        </Dropdown>
 
         <div className='auth-confirmation__divider' />
 
@@ -204,7 +215,7 @@ const AuthConfirmation: FC<Props> = () => {
               text={`SWITCH NETWORK`}
               iconRight={ICON_NAMES.switchHorizontal}
               size='large'
-              onClick={trySwitchChain}
+              onClick={() => trySwitchChain()}
             />
           )
         ) : (

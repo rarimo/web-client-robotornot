@@ -6,10 +6,19 @@ import {
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
 import { ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
-import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
+import {
+  createContext,
+  FC,
+  HTMLAttributes,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
 import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import { sleep } from '@/helpers'
 
 export type QueryVariableName = { isNatural: number }
@@ -17,6 +26,11 @@ export type QueryVariableName = { isNatural: number }
 interface ZkpContextValue {
   identity: Identity | undefined
   isNaturalZkp: ZkpGen<QueryVariableName> | undefined
+  publishedChains: {
+    get: SUPPORTED_CHAINS[]
+    set: (value: SetStateAction<SUPPORTED_CHAINS[]>) => void
+  }
+  CHAINS_DETAILS_MAP: Record<SUPPORTED_CHAINS, ChainToPublish>
 
   isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
@@ -34,6 +48,29 @@ interface ZkpContextValue {
 export const zkpContext = createContext<ZkpContextValue>({
   identity: new Identity(),
   isNaturalZkp: undefined,
+  publishedChains: {
+    get: [],
+    set: () => {
+      throw new TypeError(`publishedChains.set() not implemented`)
+    },
+  },
+  CHAINS_DETAILS_MAP: {
+    [SUPPORTED_CHAINS.POLYGON]: {
+      title: 'Polygon chain',
+      value: SUPPORTED_CHAINS.POLYGON,
+      iconName: ICON_NAMES.polygon,
+    },
+    [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+      title: 'Polygon Testnet chain',
+      value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+      iconName: ICON_NAMES.polygon,
+    },
+    [SUPPORTED_CHAINS.SEPOLIA]: {
+      title: 'Sepolia chain',
+      value: SUPPORTED_CHAINS.SEPOLIA,
+      iconName: ICON_NAMES.ethereum,
+    },
+  },
 
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
@@ -69,6 +106,12 @@ export const zkpContext = createContext<ZkpContextValue>({
   },
 })
 
+type ChainToPublish = {
+  title: string
+  value: string
+  iconName: ICON_NAMES
+}
+
 type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
@@ -78,6 +121,28 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
   const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
+
+  const [publishedChains, setPublishedChains] = useState<SUPPORTED_CHAINS[]>([])
+  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
+    () => ({
+      [SUPPORTED_CHAINS.POLYGON]: {
+        title: 'Polygon chain',
+        value: SUPPORTED_CHAINS.POLYGON,
+        iconName: ICON_NAMES.polygon,
+      },
+      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+        title: 'Polygon Testnet chain',
+        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+        iconName: ICON_NAMES.polygon,
+      },
+      [SUPPORTED_CHAINS.SEPOLIA]: {
+        title: 'Sepolia chain',
+        value: SUPPORTED_CHAINS.SEPOLIA,
+        iconName: ICON_NAMES.ethereum,
+      },
+    }),
+    [],
+  )
 
   const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
@@ -208,6 +273,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       value={{
         identity,
         isNaturalZkp,
+        publishedChains: {
+          get: publishedChains,
+          set: setPublishedChains,
+        },
+        CHAINS_DETAILS_MAP,
 
         getClaimOffer,
         isClaimOfferExists,
