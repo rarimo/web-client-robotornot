@@ -1,16 +1,52 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { config } from '@config'
+import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { useEffectOnce } from 'react-use'
+import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, Icon } from '@/common'
-import { useKycContext } from '@/contexts'
+import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { abbrCenter, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
+const SECOND = 1000
+
+const REDIRECT_TIMEOUT = 30
+
+function bytesToBase64(bytes: Uint8Array) {
+  const binString = Array.from(bytes, x => String.fromCodePoint(x)).join('')
+  return btoa(binString)
+}
+
 const AuthSuccess: FC<Props> = () => {
   const { selectedKycDetails } = useKycContext()
+  const { isNaturalZkp } = useZkpContext()
+
+  const [count, { startCountdown }] = useCountdown({
+    countStart: REDIRECT_TIMEOUT,
+    intervalMs: SECOND,
+  })
+
+  const encodedProof = useMemo(() => {
+    return isNaturalZkp?.subjectProof
+      ? bytesToBase64(
+          new TextEncoder().encode(JSON.stringify(isNaturalZkp?.subjectProof)),
+        )
+      : ''
+  }, [isNaturalZkp?.subjectProof])
+
+  useEffectOnce(() => {
+    startCountdown()
+  })
+
+  useEffect(() => {
+    if (count > 0) return
+
+    window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
+  }, [count])
 
   return (
     <div className='auth-success'>
@@ -37,15 +73,13 @@ const AuthSuccess: FC<Props> = () => {
 
         <div className='auth-success__copy-field-wrp'>
           <div className='auth-success__copy-field'>
-            {abbrCenter('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21', 10)}
+            {abbrCenter(encodedProof, 10)}
             <AppButton
               scheme='none'
               modification='none'
               size='none'
               iconLeft={ICON_NAMES.duplicate}
-              onClick={() =>
-                copyToClipboard('66eus7EDFSFV3djAp9otX75w284vs8SODot27XHn21')
-              }
+              onClick={() => copyToClipboard(encodedProof)}
             />
           </div>
         </div>
@@ -53,7 +87,7 @@ const AuthSuccess: FC<Props> = () => {
 
       <div className='auth-success__tip'>
         {`Automatically redirected in `}
-        <span className='auth-success__tip-link'>{`(10sec)`}</span>
+        <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
       </div>
     </div>
   )

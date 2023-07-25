@@ -12,7 +12,7 @@ import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
 import { sleep } from '@/helpers'
 
-type QueryVariableName = { isNatural: number }
+export type QueryVariableName = { isNatural: number }
 
 interface ZkpContextValue {
   identity: Identity | undefined
@@ -90,7 +90,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       const { data } = await api.get<ClaimOffer>(
         `/integrations/issuer/v1/public/claims/offers/${
           _identity?.idString ?? identity?.idString
-        }/NaturalPerson`,
+        }/IdentityProviders`,
       )
 
       return data
@@ -112,7 +112,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           /* empty */
         }
 
-        await sleep(1000)
+        await sleep(config.CLAIM_OFFER_DELAY)
         tryCounter++
       }
 
@@ -138,7 +138,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       const authProof = new AuthZkp<QueryVariableName>(identity)
 
-      const verifiableCredentials = await authProof.getVerifiableCredentials()
+      const verifiableCredentials = await authProof.getVerifiableCredentials(
+        'IdentityProviders',
+      )
 
       setVerifiableCredentials(verifiableCredentials)
 

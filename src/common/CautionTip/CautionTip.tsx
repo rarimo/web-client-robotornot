@@ -1,12 +1,12 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, ReactNode } from 'react'
 
 import { Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  message: string
+  message: string | ReactNode
   iconName?: ICON_NAMES
   color?: 'success' | 'error' | 'warning' | 'info'
 }

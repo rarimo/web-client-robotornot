@@ -2,7 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, CautionTip, Icon } from '@/common'
@@ -21,8 +21,13 @@ const AuthPreview: FC<Props> = () => {
 
   const { getVerifiableCredentials, getZkProof } = useZkpContext()
 
-  const { isLoaded, isValidCredentials, selectedKycDetails, retryKyc } =
-    useKycContext()
+  const {
+    isLoaded,
+    isValidCredentials,
+    selectedKycDetails,
+    retryKyc,
+    verificationErrorMessages,
+  } = useKycContext()
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
@@ -50,9 +55,16 @@ const AuthPreview: FC<Props> = () => {
   const ValidCredentialsPreview = useMemo(
     () => (
       <div className='auth-preview__card'>
+        {`The credential will be used to generate a zero-knowledge proof. No sensitive data will be shared with any party.`}
         <CautionTip
           className='auth-preview__card-caution-tip'
-          message={`The credential will be used to generate a zero-knowledge proof. No sensitive data will be shared with any party.`}
+          message={
+            <>
+              You should back up your credentials{' '}
+              <NavLink to={RoutesPaths.profile}>here</NavLink>. Otherwise, you
+              may lose your identity.
+            </>
+          }
         />
         <div className='auth-preview__metadata'>
           {selectedKycDetails?.map(([label, value], idx) => (
@@ -79,11 +91,6 @@ const AuthPreview: FC<Props> = () => {
   const InvalidCredentialsMessage = useMemo(
     () => (
       <div className='auth-preview__card'>
-        <CautionTip
-          className='auth-preview__card-caution-tip'
-          message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
-        />
-
         <div className='auth-preview__card-error'>
           <div className='auth-preview__card-error-icon-wrp'>
             <Icon
@@ -93,7 +100,7 @@ const AuthPreview: FC<Props> = () => {
           </div>
           <span className='auth-preview__card-error-title'>{`Insufficient Credentials`}</span>
           <span className='auth-preview__card-error-message'>
-            {` Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
+            {` Unable to Generate Proof of Human Identity. ${verificationErrorMessages}`}
           </span>
         </div>
 
@@ -106,7 +113,7 @@ const AuthPreview: FC<Props> = () => {
         />
       </div>
     ),
-    [completeKyc],
+    [completeKyc, verificationErrorMessages],
   )
 
   return (

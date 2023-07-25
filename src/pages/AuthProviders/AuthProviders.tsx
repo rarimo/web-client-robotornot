@@ -51,11 +51,6 @@ const AuthProviders: FC<Props> = () => {
           supportedKycProvider={SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}
         />
       </div>
-
-      <div className='auth-providers__tip'>
-        {`Dont have any account? `}
-        <span className='auth-providers__tip-link'>{`Create Now`}</span>
-      </div>
     </div>
   )
 }

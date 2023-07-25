@@ -94,7 +94,7 @@ export default defineConfig(({ mode }) => {
         ),
         '@iden3/js-iden3-core': path.resolve(
           __dirname,
-          'node_modules/@iden3/js-iden3-core/dist/esm_esbuild/index.js',
+          'node_modules/@iden3/js-iden3-core/dist/esm/index.js',
         ),
         '@iden3/js-jwz': path.resolve(
           __dirname,

@@ -86,6 +86,12 @@ export const config = {
   }),
 
   DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
+
+  EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
+    .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
+
+  CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
+  KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))
