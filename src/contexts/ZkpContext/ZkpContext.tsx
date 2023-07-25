@@ -100,10 +100,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const isClaimOfferExists = useCallback(
     async (_identity?: Identity) => {
-      const MAX_TRIES_COUNT = 10
       let tryCounter = 0
 
-      while (tryCounter < MAX_TRIES_COUNT) {
+      while (tryCounter < config.CLAIM_OFFER_MAX_TRIES_COUNT) {
         try {
           await getClaimOffer(_identity)
 
