@@ -8,10 +8,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   setKycDetails: (details: unknown) => void
 }
 
-const KycProviderUnstoppableDomains: FC<Props> = ({
-  loginCb,
-  setKycDetails,
-}) => {
+const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   const { setOpen } = useIDKit()
 
   useEffectOnce(() => {

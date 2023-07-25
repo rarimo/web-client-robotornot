@@ -71,6 +71,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
               download={`pk.json`}
               text={`EXPORT`}
               size='small'
+              isDisabled={!identity?.privateKeyHex}
             />
           </div>
         </div>

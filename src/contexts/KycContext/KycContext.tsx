@@ -17,6 +17,7 @@ import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { errors } from '@/errors'
 import { abbrCenter, sleep } from '@/helpers'
 
 const KycProviderUnstoppableDomains = lazy(
@@ -40,6 +41,7 @@ interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
   selectedKycDetails: [string, string][]
+  verificationErrorMessages: string
 
   isLoaded: boolean
 
@@ -75,6 +77,7 @@ export const kycContext = createContext<KycContextValue>({
   selectedKycProviderName: undefined,
   authorizedKycResponse: undefined,
   selectedKycDetails: [],
+  verificationErrorMessages: '',
 
   isLoaded: false,
 
@@ -120,7 +123,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     if (!selectedKycProviderName) return []
 
     const unstoppablePartialDetails = kycDetails as unknown as UserInfo
-    const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData
+    const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData &&
+    kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
       : {}) as unknown as GitCoinPassportUserInfo
 
@@ -169,6 +173,21 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isValidCredentials, setIsValidCredentials] = useState(false)
 
   const [refreshKey, setRefreshKey] = useState(0)
+
+  const [errorMessageCode, setErrorMessageCode] = useState(0)
+
+  const verificationErrorMessages = useMemo(
+    () =>
+      errorMessageCode
+        ? {
+            401: t('provider is already used by another identity'),
+            409: t(
+              'This KYC provider / Address was already claimed by another identity',
+            ),
+          }[errorMessageCode] || ''
+        : '',
+    [errorMessageCode, t],
+  )
 
   const navigate = useNavigate()
 
@@ -334,6 +353,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         try {
           await verifyKyc(currentIdentity.idString, response)
         } catch (error) {
+          if (error instanceof errors.ConflictError && error.httpStatus) {
+            setErrorMessageCode(error.httpStatus)
+          } else if (
+            error instanceof errors.UnauthorizedError &&
+            error.httpStatus
+          ) {
+            setErrorMessageCode(error.httpStatus)
+          }
+
           setIsValidCredentials(false)
 
           setIsLoaded(true)
@@ -376,6 +404,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycProviderName,
           authorizedKycResponse,
           selectedKycDetails,
+          verificationErrorMessages,
 
           isLoaded,
           isValidCredentials,

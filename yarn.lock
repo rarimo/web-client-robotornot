@@ -1206,7 +1206,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iden3/js-iden3-core@npm:1.0.0, @iden3/js-iden3-core@npm:^1.0.0-beta.2":
+"@iden3/js-crypto@npm:1.0.0-beta.1":
+  version: 1.0.0-beta.1
+  resolution: "@iden3/js-crypto@npm:1.0.0-beta.1"
+  dependencies:
+    blake-hash: ^2.0.0
+    ffjavascript: ^0.2.57
+  checksum: cffaefb8284396cb73cbd903544e4cc91d35aa8a1b0b15da35d8df5d7a05c91ea5ec451492cf8150badb818382bd8f2abd7d9e4852136f0124b9ff5fabd0dadf
+  languageName: node
+  linkType: hard
+
+"@iden3/js-iden3-core@npm:1.0.0":
   version: 1.0.0
   resolution: "@iden3/js-iden3-core@npm:1.0.0"
   dependencies:
@@ -1214,6 +1224,17 @@ __metadata:
     base58-js: ^1.0.4
     cross-sha256: ^1.2.0
   checksum: 6cb1297464b034fa0b87e372d4f6abd5185204b77ddf2027b2cc9629dc1288b3b860e9e323e52ff9301c99d3561a521a5222e89bdc98905d40ed09a7b6147519
+  languageName: node
+  linkType: hard
+
+"@iden3/js-iden3-core@npm:1.0.0-beta.2":
+  version: 1.0.0-beta.2
+  resolution: "@iden3/js-iden3-core@npm:1.0.0-beta.2"
+  dependencies:
+    "@iden3/js-crypto": 1.0.0-beta.1
+    base58-js: ^1.0.4
+    cross-sha256: ^1.2.0
+  checksum: 7f2631dc5c8b4e88b759815aee976245e4c16b09dc40849a23cc9fef9b973b08a98c3ea934042c23b29c557a5a4b91b4b0e037938e5a2b634b2946dd0b2671ee
   languageName: node
   linkType: hard
 
@@ -1955,7 +1976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.8":
+"@rarimo/auth-zkp-iden3@npm:2.0.0-rc.8, @rarimo/auth-zkp-iden3@npm:^2.0.0-rc.8":
   version: 2.0.0-rc.8
   resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.8"
   dependencies:
@@ -1973,7 +1994,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.8":
+"@rarimo/identity-gen-iden3@npm:2.0.0-rc.8, @rarimo/identity-gen-iden3@npm:^2.0.0-rc.8":
   version: 2.0.0-rc.8
   resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.8"
   dependencies:
@@ -2016,7 +2037,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.8":
+"@rarimo/zkp-gen-iden3@npm:2.0.0-rc.8":
   version: 2.0.0-rc.8
   resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.8"
   dependencies:
@@ -2996,7 +3017,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/universal-provider@npm:2.9.1, @walletconnect/universal-provider@npm:^2.8.6":
+"@walletconnect/universal-provider@npm:2.9.1":
   version: 2.9.1
   resolution: "@walletconnect/universal-provider@npm:2.9.1"
   dependencies:
@@ -10305,13 +10326,13 @@ __metadata:
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@esbuild-plugins/node-modules-polyfill": ^0.2.2
     "@iden3/js-crypto": ^1.0.0-beta.1
-    "@iden3/js-iden3-core": ^1.0.0-beta.2
+    "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.15
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.8
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.8
-    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.8
+    "@rarimo/auth-zkp-iden3": 2.0.0-rc.8
+    "@rarimo/identity-gen-iden3": 2.0.0-rc.8
+    "@rarimo/zkp-gen-iden3": 2.0.0-rc.8
     "@typechain/ethers-v5": ^11.0.0
     "@types/lodash": ^4.14.195
     "@types/node": ^20.3.1
@@ -10325,7 +10346,6 @@ __metadata:
     "@vitejs/plugin-react": ^4.0.1
     "@walletconnect/ethereum-provider": ^2.8.6
     "@walletconnect/modal": ^2.5.9
-    "@walletconnect/universal-provider": ^2.8.6
     "@worldcoin/idkit": ^0.5.1
     caip-api: ^2.0.0-beta.1
     chalk: ^5.0.1
