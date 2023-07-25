@@ -192,7 +192,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     () =>
       errorMessageCode
         ? {
-            401: t('provider is already used by another identity'),
+            401: t('Complete Your Profile with an Identity Provider'),
             409: t(
               'This KYC provider / Address was already claimed by another identity',
             ),
@@ -386,6 +386,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const verifiableCredentials = await getVerifiableCredentials(
         config.DEFAULT_CHAIN,
+        currentIdentity,
       )
 
       setKycDetails((prev: unknown) => ({

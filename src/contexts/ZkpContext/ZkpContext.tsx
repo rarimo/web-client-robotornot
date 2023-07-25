@@ -23,6 +23,7 @@ interface ZkpContextValue {
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
     chain: SUPPORTED_CHAINS,
+    currentIdentity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
   getZkProof: (
     chain: SUPPORTED_CHAINS,
@@ -46,9 +47,14 @@ export const zkpContext = createContext<ZkpContextValue>({
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
-  getVerifiableCredentials: async (chain: SUPPORTED_CHAINS) => {
+  getVerifiableCredentials: async (
+    chain: SUPPORTED_CHAINS,
+    currentIdentity?: Identity,
+  ) => {
     throw new TypeError(
-      `getVerifiableCredentials() not implemented for ${chain}`,
+      `getVerifiableCredentials() not implemented for ${chain} ${
+        currentIdentity?.idString ? `and ${currentIdentity?.idString}` : ''
+      }`,
     )
   },
   getZkProof: async (
@@ -123,8 +129,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getVerifiableCredentials = useCallback(
     async (
       chain: SUPPORTED_CHAINS,
+      _identity?: Identity,
     ): Promise<VerifiableCredentials<QueryVariableName>> => {
-      if (!identity) throw new TypeError('Identity is not defined')
+      const currentIdentity = _identity ?? identity
+
+      if (!currentIdentity) throw new TypeError('Identity is not defined')
 
       AuthZkp.setConfig({
         RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
@@ -135,7 +144,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         CIRCUIT_WASM_URL: AuthZkp.config.CIRCUIT_WASM_URL,
       })
 
-      const authProof = new AuthZkp<QueryVariableName>(identity)
+      const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
 
       const verifiableCredentials = await authProof.getVerifiableCredentials(
         'IdentityProviders',
