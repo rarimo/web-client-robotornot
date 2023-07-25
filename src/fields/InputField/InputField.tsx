@@ -106,16 +106,12 @@ function InputField<V extends string>({
 
       if (
         String(min) &&
-        BN.fromRaw(value, DECIMALS.WEI).isLessThan(
-          BN.fromRaw(min ?? 0, DECIMALS.WEI),
-        )
+        BN.fromRaw(value, DECIMALS.WEI).lt(BN.fromRaw(min ?? 0, DECIMALS.WEI))
       ) {
         result = Number(min)
       } else if (
         String(max) &&
-        BN.fromRaw(value, DECIMALS.WEI).isGreaterThan(
-          BN.fromRaw(max ?? 0, DECIMALS.WEI),
-        )
+        BN.fromRaw(value, DECIMALS.WEI).gt(BN.fromRaw(max ?? 0, DECIMALS.WEI))
       ) {
         result = Number(max)
       }

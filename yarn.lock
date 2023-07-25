@@ -10280,9 +10280,9 @@ __metadata:
   resolution: "react-template@workspace:."
   dependencies:
     "@civic/ethereum-gateway-react": 0.11.0
-    "@distributedlab/jac": ^0.2.0-rc.25
-    "@distributedlab/tools": ^0.2.0-rc.25
-    "@distributedlab/w3p": ^0.2.0-rc.25
+    "@distributedlab/jac": "*"
+    "@distributedlab/tools": "*"
+    "@distributedlab/w3p": "*"
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@esbuild-plugins/node-modules-polyfill": ^0.2.2
     "@iden3/js-crypto": ^1.0.0-beta.1
