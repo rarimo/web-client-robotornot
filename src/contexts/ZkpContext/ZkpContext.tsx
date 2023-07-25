@@ -112,7 +112,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           /* empty */
         }
 
-        await sleep(1000)
+        await sleep(config.CLAIM_OFFER_DELAY)
         tryCounter++
       }
 

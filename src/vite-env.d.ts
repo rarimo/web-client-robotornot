@@ -13,6 +13,9 @@ interface ImportMetaEnv {
   VITE_CALLBACK_URL: string
 
   VITE_EXTERNAL_PLATFORM_REDIRECT_URL: string
+
+  VITE_CLAIM_OFFER_DELAY: number
+  VITE_KYC_VERIFICATION_DELAY: number
 }
 
 interface Document {

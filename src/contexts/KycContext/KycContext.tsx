@@ -216,7 +216,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
             isPending = false
             break
           default:
-            await sleep(3000)
+            await sleep(config.KYC_VERIFICATION_DELAY)
         }
       } while (isPending)
     },
