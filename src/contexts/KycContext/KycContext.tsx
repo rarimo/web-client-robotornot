@@ -127,6 +127,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
       : {}) as unknown as GitCoinPassportUserInfo
+    const civicPartialDetails = kycDetails as unknown as {
+      address: string
+    }
 
     const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
       [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
@@ -138,7 +141,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         ],
       ],
       [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [],
-      [SUPPORTED_KYC_PROVIDERS.CIVIC]: [],
+      [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
+          ),
+          civicPartialDetails?.address
+            ? abbrCenter(civicPartialDetails?.address)
+            : '',
+        ],
+      ],
       [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
         [
           t(
@@ -180,7 +192,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     () =>
       errorMessageCode
         ? {
-            401: t('provider is already used by another identity'),
+            401: t('Complete Your Profile with an Identity Provider'),
             409: t(
               'This KYC provider / Address was already claimed by another identity',
             ),
@@ -361,6 +373,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const verifiableCredentials = await getVerifiableCredentials(
         config.DEFAULT_CHAIN,
+        currentIdentity,
       )
 
       setKycDetails((prev: unknown) => ({
