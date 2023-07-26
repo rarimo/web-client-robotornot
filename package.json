@@ -35,7 +35,6 @@
     "@uauth/js": "^2.8.0",
     "@walletconnect/ethereum-provider": "^2.8.6",
     "@walletconnect/modal": "^2.5.9",
-    "@worldcoin/idkit": "^0.5.1",
     "caip-api": "^2.0.0-beta.1",
     "downshift": "^7.1.2",
     "ejc": "^1.0.4",

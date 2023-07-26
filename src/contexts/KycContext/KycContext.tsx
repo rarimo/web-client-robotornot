@@ -11,7 +11,8 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
@@ -98,6 +99,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const [searchParams] = useSearchParams()
   const { t } = useTranslation()
 
   const [selectedKycProviderName, setSelectedKycProviderName] =
@@ -130,6 +132,10 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     const civicPartialDetails = kycDetails as unknown as {
       address: string
     }
+    const worldcoinPartialDetails = (kycDetails?.kycAdditionalData &&
+    kycDetails?.kycAdditionalData !== 'none'
+      ? JSON.parse(kycDetails?.kycAdditionalData as string)
+      : {}) as unknown as { sub: string }
 
     const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
       [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
@@ -140,7 +146,20 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           kycDetails?.unstoppableDomain || unstoppablePartialDetails?.sub,
         ],
       ],
-      [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [],
+      [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.worldcoin-score-lbl`,
+          ),
+          kycDetails?.worldcoinScore ?? '',
+        ],
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.worldcoin-sub-lbl`,
+          ),
+          worldcoinPartialDetails?.sub,
+        ],
+      ],
       [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
         [
           t(
@@ -266,20 +285,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
-          action: '',
-          signal: '',
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          nullifier_hash: currentAuthKycResponse.nullifier_hash,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          proof: currentAuthKycResponse.proof,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          merkle_root: currentAuthKycResponse.merkle_root,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          credential_type: currentAuthKycResponse.credential_type,
+          id_token: currentAuthKycResponse,
         },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -408,6 +414,12 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       verifyKyc,
     ],
   )
+
+  useEffectOnce(() => {
+    if (searchParams.get('id_token')) {
+      login(SUPPORTED_KYC_PROVIDERS.WORDLCOIN)
+    }
+  })
 
   return (
     <>
