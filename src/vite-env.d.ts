@@ -10,6 +10,9 @@ interface ImportMetaEnv {
 
   VITE_DEFAULT_CHAIN: string
 
+  WORLDCOIN_APP_ID: string
+  VITE_WORLDCOIN_REDIRECT_URL: string
+
   VITE_CALLBACK_URL: string
 
   VITE_EXTERNAL_PLATFORM_REDIRECT_URL: string
