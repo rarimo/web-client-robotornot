@@ -1,11 +1,8 @@
 import './styles.scss'
 
 import { FC, HTMLAttributes } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { useEffectOnce } from 'react-use'
 
 import { Icon } from '@/common'
-import { useKycContext } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 
 import { AuthProvidersItem } from './components'
@@ -13,15 +10,6 @@ import { AuthProvidersItem } from './components'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthProviders: FC<Props> = () => {
-  const { login } = useKycContext()
-  const [searchParams] = useSearchParams()
-
-  useEffectOnce(() => {
-    if (searchParams.get('id_token')) {
-      login(SUPPORTED_KYC_PROVIDERS.WORDLCOIN)
-    }
-  })
-
   return (
     <div className='auth-providers'>
       <div className='auth-providers__header'>
