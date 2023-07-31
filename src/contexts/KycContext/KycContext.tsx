@@ -149,13 +149,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [
         [
           t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.worldcoin-score-lbl`,
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.score-lbl`,
           ),
           kycDetails?.worldcoinScore ?? '',
         ],
         [
           t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.worldcoin-sub-lbl`,
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.sub-lbl`,
           ),
           worldcoinPartialDetails?.sub,
         ],

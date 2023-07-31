@@ -38,6 +38,10 @@
     },
     "civic": {
       "address-lbl": "Address"
+    },
+    "worldcoin": {
+      "score-lbl": "Score",
+      "sub-lbl": "domain"
     }
   }
 }
