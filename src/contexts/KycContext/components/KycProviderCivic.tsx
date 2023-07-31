@@ -10,10 +10,11 @@ import {
   useRef,
   useState,
 } from 'react'
+import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
-import { ErrorHandler } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
@@ -80,13 +81,21 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
   const { provider } = useWeb3Context()
 
-  const wallet = useMemo(
-    () =>
-      new providers.Web3Provider(
+  const wallet = useMemo(() => {
+    try {
+      return new providers.Web3Provider(
         provider?.rawProvider as providers.ExternalProvider,
-      ).getSigner() as unknown as Wallet,
-    [provider?.rawProvider],
-  )
+      ).getSigner() as unknown as Wallet
+    } catch (error) {
+      /* empty */
+    }
+  }, [provider?.rawProvider])
+
+  useEffectOnce(() => {
+    if (!provider?.isConnected) {
+      bus.emit(BUS_EVENTS.warning, `Please connect your wallet.`)
+    }
+  })
 
   return (
     <GatewayProvider
