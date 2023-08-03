@@ -1,0 +1,10 @@
+.kyc-provider-civic__modal-body {
+  display: flex;
+  gap: toRem(24);
+  width: 100%;
+  padding: toRem(24) 0 0 0;
+
+  & > * {
+    flex: 1;
+  }
+}

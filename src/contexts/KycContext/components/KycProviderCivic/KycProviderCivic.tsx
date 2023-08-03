@@ -1,3 +1,5 @@
+import './styles.scss'
+
 import { State } from '@civic/common-gateway-react/dist/esm/types'
 import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
@@ -13,7 +15,9 @@ import {
 import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
+import { AppButton, BasicModal } from '@/common'
 import { useWeb3Context } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -24,7 +28,10 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 /**
  * unique pass for the gateway to work with biometrics identity verification
  */
-const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
+const GATEKEEPER_NETWORK_MAP = {
+  uniqness: 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv',
+  captcha: 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6',
+}
 
 const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
   const { gatewayToken, requestGatewayToken } = useGateway()
@@ -79,6 +86,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
 }
 
 const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
+  const [isModalShown, setIsModalShown] = useState(true)
   const { provider } = useWeb3Context()
 
   const wallet = useMemo(() => {
@@ -91,6 +99,8 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
     }
   }, [provider?.rawProvider])
 
+  const [gatekeeperNetwork, setGatekeeperNetwork] = useState<string>()
+
   useEffectOnce(() => {
     if (!provider?.isConnected) {
       bus.emit(BUS_EVENTS.warning, `Please connect your wallet.`)
@@ -98,18 +108,41 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
   })
 
   return (
-    <GatewayProvider
-      wallet={wallet}
-      gatekeeperNetwork={UNIQUENESS_PASS}
-      options={{
-        autoShowModal: true,
-      }}
+    <BasicModal
+      title={`Civic Pass verified users get permissioned access to dAPPs.`}
+      isShown={isModalShown}
+      updateIsShown={setIsModalShown}
     >
-      <KycProviderCivicContent
-        loginCb={loginCb}
-        setKycDetails={setKycDetails}
-      />
-    </GatewayProvider>
+      <div className='kyc-provider-civic__modal-body'>
+        <AppButton
+          text={`Uniqness`}
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)}
+          iconLeft={ICON_NAMES.users}
+        />
+        <AppButton
+          text={`Captcha`}
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
+          iconLeft={ICON_NAMES.reCaptcha}
+        />
+      </div>
+
+      {gatekeeperNetwork ? (
+        <GatewayProvider
+          wallet={wallet}
+          gatekeeperNetwork={gatekeeperNetwork}
+          options={{
+            autoShowModal: true,
+          }}
+        >
+          <KycProviderCivicContent
+            loginCb={loginCb}
+            setKycDetails={setKycDetails}
+          />
+        </GatewayProvider>
+      ) : (
+        <></>
+      )}
+    </BasicModal>
   )
 }
 

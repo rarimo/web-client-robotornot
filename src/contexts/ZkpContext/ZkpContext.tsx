@@ -5,7 +5,7 @@ import {
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
-import { ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
 import {
   createContext,
   FC,
@@ -256,6 +256,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           variableName: 'isNatural',
           operator: ZkpOperators.Equals,
           value: ['1'],
+          circuitId: CircuitId.AtomicQuerySigV2OnChain,
         },
       })
 

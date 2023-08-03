@@ -1542,76 +1542,71 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.9"
+"@rarimo/auth-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/auth-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3::locator=react-template%40workspace%3A."
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.1
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.9
-    "@rarimo/provider": ^2.0.0-rc.9
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.9
+    "@rarimo/identity-gen-iden3": "workspace:^"
+    "@rarimo/provider": "workspace:^"
+    "@rarimo/shared-zkp-iden3": "workspace:^"
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": ^1.0.0-beta.2
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 9e0ccf41fd9c24afce567afd824ec4b9b222995b70304b266fd481e69b04fa445ee044b5c5ccbc35f09b4367dcac0222696eb81ba585035e243ee9fd9350605d
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.9"
+"@rarimo/identity-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/identity-gen-iden3::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/identity-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/identity-gen-iden3::locator=react-template%40workspace%3A."
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: fe02ae62bf755096bc7bfe87c0f76587a6940320da6f17a5c8c1286e259460c4c3442b2f4cbebce4504b5a1437b4e2c572f33de17cd5118d56ec8e3a2e9bba22
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@rarimo/provider@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/provider@npm:2.0.0-rc.9"
+"@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A."
   dependencies:
     "@distributedlab/tools": ^1.0.0-rc.1
-    "@rarimo/shared": ^2.0.0-rc.9
-  checksum: c6020d3dfc855d4625edf5366b6426cb51b539d2bca30879b0b19a78ed63ecb5d30efc62f5b3f935a359afc3e8ad5e950db6e59c50df9b99c36ee238d44c0649
+    "@rarimo/shared": "workspace:^"
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.9"
+"@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A."
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.1
     tslib: ^2.5.0
-  checksum: d9331c795a40bf923f1911dcf9e1dd115aec5139a912660c954c83d63eed5336e566437211e4bb28c37f53ae0549ad8109d7a7a70383abcbbe037642cb9d853a
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@rarimo/shared@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/shared@npm:2.0.0-rc.9"
+"@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A."
   dependencies:
     "@distributedlab/jac": ^1.0.0-rc.1
     "@distributedlab/tools": ^1.0.0-rc.1
-  checksum: 5c80a134b48baaa8143f5773c2c30eedea4f00eea783e429514d20f912d57605f39f40c925d45fb1fef29ff2572db07324be1525e86a7eb237299b477ce268d6
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.9":
-  version: 2.0.0-rc.9
-  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.9"
+"@rarimo/zkp-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3::locator=react-template%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rarimo/zkp-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3::locator=react-template%40workspace%3A."
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.1
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.9
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.9
-    "@rarimo/shared": ^2.0.0-rc.9
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.9
+    "@rarimo/auth-zkp-iden3": "workspace:^"
+    "@rarimo/identity-gen-iden3": "workspace:^"
+    "@rarimo/shared": "workspace:^"
+    "@rarimo/shared-zkp-iden3": "workspace:^"
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1619,9 +1614,8 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.14
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 6f98754cff2a31de8161dab9b3d607c7580aa51a4ecff7663b026a7a6cb96fb50185eb8077b34a0d47c0538db723577f2003f8756f694eb8e66981f79fe7c474
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@remix-run/router@npm:1.7.2":
   version: 1.7.2
@@ -9566,9 +9560,9 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.15
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.9
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.9
-    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.9
+    "@rarimo/auth-zkp-iden3": "*"
+    "@rarimo/identity-gen-iden3": "*"
+    "@rarimo/zkp-gen-iden3": "*"
     "@typechain/ethers-v5": ^11.0.0
     "@types/lodash": ^4.14.195
     "@types/node": ^20.3.1
