@@ -70,7 +70,9 @@ const AuthPreview: FC<Props> = () => {
           {selectedKycDetails?.map(([label, value], idx) => (
             <div className='auth-preview__metadata-item' key={idx}>
               <span className='auth-preview__metadata-item-label'>{label}</span>
-              <span className='auth-preview__metadata-item-value'>{value}</span>
+              <span className='auth-preview__metadata-item-value' title={value}>
+                {value}
+              </span>
             </div>
           ))}
         </div>

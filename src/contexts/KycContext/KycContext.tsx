@@ -157,7 +157,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           t(
             `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.sub-lbl`,
           ),
-          worldcoinPartialDetails?.sub,
+          abbrCenter(worldcoinPartialDetails?.sub),
         ],
       ],
       [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
