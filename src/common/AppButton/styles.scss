@@ -285,7 +285,7 @@
     &.app-button--icon-only {
       --button-icon-size: #{toRem(20)};
 
-      padding: toRem(12);
+      padding: toRem(24);
       width: calc(var(--button-icon-size) + #{toRem(12)});
       height: calc(var(--button-icon-size) + #{toRem(12)});
     }

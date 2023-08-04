@@ -26,4 +26,6 @@
   line-height: 1.4;
   color: var(--text-primary-main);
   padding: 0;
+
+  --button-icon-size: #{toRem(26)};
 }

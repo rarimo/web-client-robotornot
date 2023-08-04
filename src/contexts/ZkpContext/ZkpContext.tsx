@@ -239,10 +239,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
         STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
-
-        CIRCUIT_FINAL_KEY_URL: ZkpGen.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: ZkpGen.config.CIRCUIT_WASM_URL,
-        CLAIM_PROOF_SIBLINGS_COUNT: ZkpGen.config.CLAIM_PROOF_SIBLINGS_COUNT,
       })
 
       const zkProof = new ZkpGen<QueryVariableName>({
@@ -256,7 +252,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           variableName: 'isNatural',
           operator: ZkpOperators.Equals,
           value: ['1'],
-          circuitId: CircuitId.AtomicQuerySigV2OnChain,
+          circuitId: CircuitId.AtomicQueryMTPV2OnChain,
         },
       })
 
