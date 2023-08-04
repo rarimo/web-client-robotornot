@@ -2,6 +2,7 @@
   --basic-modal-max-width: #{toRem(500)};
 
   width: clamp(toRem(100), 100%, var(--basic-modal-max-width));
+  padding: 0;
 }
 
 .kyc-provider-civic__modal-body {
@@ -9,7 +10,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: toRem(24) 0 0 0;
+  padding: toRem(8);
 
   & > * {
     flex: 1;
@@ -45,7 +46,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: toRem(12);
+  gap: toRem(18);
   margin-top: toRem(32);
 }
 
