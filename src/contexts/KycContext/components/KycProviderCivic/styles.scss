@@ -1,5 +1,13 @@
+.kyc-provider-civic__modal {
+  --basic-modal-max-width: #{toRem(500)};
+
+  width: clamp(toRem(100), 100%, var(--basic-modal-max-width));
+}
+
 .kyc-provider-civic__modal-body {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: toRem(24);
   width: 100%;
   padding: toRem(24) 0 0 0;
@@ -7,4 +15,66 @@
   & > * {
     flex: 1;
   }
+}
+
+.kyc-provider-civic__modal-body-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--success-light);
+  border-radius: 50%;
+
+  @include static-icon-size(64);
+}
+
+.kyc-provider-civic__modal-body-icon {
+  width: 50%;
+  height: 50%;
+  color: var(--success-main);
+}
+
+.kyc-provider-civic__modal-body-title {
+  text-align: center;
+  color: var(--text-primary-main);
+  font-size: toRem(24);
+  line-height: 1.3;
+  font-weight: 400;
+}
+
+.kyc-provider-civic__modal-body-actions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: toRem(12);
+}
+
+.kyc-provider-civic__modal-body-actions-divider-wrp {
+  position: relative;
+  width: 100%;
+}
+
+.kyc-provider-civic__modal-body-actions-divider {
+  width: 100%;
+  height: toRem(1);
+  background: var(--text-primary-main);
+  opacity: 0.1;
+}
+
+.kyc-provider-civic__modal-body-actions-divider-text {
+  display: block;
+  text-transform: capitalize;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--background-primary-main);
+  color: var(--text-tertiary-main);
+  font-size: toRem(10);
+  letter-spacing: toRem(0.4);
+  font-weight: 700;
+  padding: toRem(4) toRem(16);
+}
+
+.kyc-provider-civic__modal-body-actions-btn {
+  width: 100%;
 }

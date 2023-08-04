@@ -15,7 +15,7 @@ import {
 import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
-import { AppButton, BasicModal } from '@/common'
+import { AppButton, BasicModal, Icon } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
@@ -109,21 +109,40 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
 
   return (
     <BasicModal
-      title={`Civic Pass verified users get permissioned access to dAPPs.`}
+      className='kyc-provider-civic__modal'
+      title={`Verification`}
       isShown={isModalShown}
       updateIsShown={setIsModalShown}
     >
       <div className='kyc-provider-civic__modal-body'>
-        <AppButton
-          text={`Uniqness`}
-          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)}
-          iconLeft={ICON_NAMES.users}
-        />
-        <AppButton
-          text={`Captcha`}
-          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
-          iconLeft={ICON_NAMES.reCaptcha}
-        />
+        <div className='kyc-provider-civic__modal-body-icon-wrp'>
+          <Icon
+            className='kyc-provider-civic__modal-body-icon'
+            name={ICON_NAMES.exclamationCircle}
+          />
+        </div>
+        <h3 className='kyc-provider-civic__modal-body-title'>{`Civic pass verifed users get mernissioned access to dAPPs`}</h3>
+        <div className='kyc-provider-civic__modal-body-actions'>
+          <AppButton
+            className='kyc-provider-civic__modal-body-actions-btn'
+            text={`Uniqness`}
+            onClick={() =>
+              setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)
+            }
+            iconLeft={ICON_NAMES.users}
+          />
+          <div className='kyc-provider-civic__modal-body-actions-divider-wrp'>
+            <div className='kyc-provider-civic__modal-body-actions-divider' />
+            <span className='kyc-provider-civic__modal-body-actions-divider-text'>{`OR`}</span>
+          </div>
+          <AppButton
+            className='kyc-provider-civic__modal-body-actions-btn'
+            text={`Captcha`}
+            scheme='flat'
+            onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
+            iconLeft={ICON_NAMES.reCaptcha}
+          />
+        </div>
       </div>
 
       {gatekeeperNetwork ? (
