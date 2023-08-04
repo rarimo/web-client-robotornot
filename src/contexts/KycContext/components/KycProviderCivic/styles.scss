@@ -8,7 +8,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: toRem(24);
   width: 100%;
   padding: toRem(24) 0 0 0;
 
@@ -23,6 +22,7 @@
   align-items: center;
   background: var(--success-light);
   border-radius: 50%;
+  margin-bottom: toRem(16);
 
   @include static-icon-size(64);
 }
@@ -46,6 +46,7 @@
   flex-direction: column;
   width: 100%;
   gap: toRem(12);
+  margin-top: toRem(32);
 }
 
 .kyc-provider-civic__modal-body-actions-divider-wrp {
