@@ -28,8 +28,8 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
             // new URL(window.location.href).href
             `https://identity.146.190.48.227.sslip.io/auth/providers` // FIXME: remove
           }&state=${state}&nonce=${nonce}`,
-          '_blank',
-          'width=1200,height=800,noreferrer',
+          '_self',
+          'noopener,noreferrer',
         )
   })
 
