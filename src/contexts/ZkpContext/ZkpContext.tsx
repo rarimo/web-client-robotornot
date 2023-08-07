@@ -252,7 +252,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           variableName: 'isNatural',
           operator: ZkpOperators.Equals,
           value: ['1'],
-          circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+          circuitId: CircuitId.AtomicQuerySigV2OnChain,
         },
       })
 
