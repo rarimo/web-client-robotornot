@@ -146,16 +146,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           kycDetails?.unstoppableDomain || unstoppablePartialDetails?.sub,
         ],
       ],
-      [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: [
+      [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: [
         [
           t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.score-lbl`,
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.score-lbl`,
           ),
           kycDetails?.worldcoinScore ?? '',
         ],
         [
           t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORDLCOIN}.sub-lbl`,
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.sub-lbl`,
           ),
           worldcoinPartialDetails?.sub
             ? abbrCenter(worldcoinPartialDetails?.sub)
@@ -286,7 +286,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         throw new TypeError('selectedKycProviderName is undefined')
 
       const VERIFY_KYC_DATA_MAP = {
-        [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
+        [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
           id_token: currentAuthKycResponse,
         },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
@@ -419,7 +419,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   useEffectOnce(() => {
     if (searchParams.get('id_token')) {
-      login(SUPPORTED_KYC_PROVIDERS.WORDLCOIN)
+      login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
     }
   })
 
@@ -453,7 +453,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
             setKycDetails(details as unknown as { [k: string]: unknown })
           }
         />
-      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
+      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
         <KycProviderWorldCoin
           key={refreshKey}
           loginCb={handleKycProviderComponentLogin}

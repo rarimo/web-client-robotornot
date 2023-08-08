@@ -124,6 +124,10 @@ $card-padding-side: #{toRem(24)};
   border: toRem(1) solid var(--border-primary-main);
 }
 
+.auth-success__return-btn {
+  width: 100%;
+}
+
 .auth-success__tip {
   color: var(--text-secondary-main);
 }

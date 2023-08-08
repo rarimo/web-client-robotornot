@@ -23,7 +23,7 @@ VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID=
 VITE_WORLDCOIN_APP_ID=
 
 # https://0xpolygonid.github.io/tutorials/issuer/cred-issue-methods/#verifiable-presentations-leveraging-zk-proofs
-# Get this hash by ...
+# Get this hash by generate Keccak256(<JSON-LD schema_url>) last 16 bytes
 VITE_AUTH_BJJ_CREDENTIAL_HASH=cca3371a6cb1b715004407e325bd993c
 
 # redirect link for success page

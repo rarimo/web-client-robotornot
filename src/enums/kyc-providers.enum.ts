@@ -1,5 +1,5 @@
 export enum SUPPORTED_KYC_PROVIDERS {
-  WORDLCOIN = 'worldcoin',
+  WORLDCOIN = 'worldcoin',
   CIVIC = 'civic',
   GITCOIN = 'gitcoin_passport',
   UNSTOPPABLEDOMAINS = 'unstoppable_domains',

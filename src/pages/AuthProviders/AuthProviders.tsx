@@ -24,7 +24,7 @@ const AuthProviders: FC<Props> = () => {
       <div className='auth-providers__list'>
         <AuthProvidersItem
           className='auth-providers__list-item'
-          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.WORDLCOIN}
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.WORLDCOIN}
         />
         <AuthProvidersItem
           className='auth-providers__list-item'

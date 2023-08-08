@@ -108,7 +108,7 @@ const AuthPreview: FC<Props> = () => {
 
         <AppButton
           className='auth-preview__card-button'
-          text={`COMPLETE NOW`}
+          text={`RETURN TO PROVIDER LIST`}
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={completeKyc}

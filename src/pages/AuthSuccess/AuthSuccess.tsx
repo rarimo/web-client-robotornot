@@ -7,7 +7,7 @@ import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, Icon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
-import { ICON_NAMES } from '@/enums'
+import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { abbrCenter, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -108,6 +108,12 @@ const AuthSuccess: FC<Props> = () => {
           ))}
         </div>
       </div>
+
+      <AppButton
+        className='auth-success__return-btn'
+        text={`RETURN HOME`}
+        routePath={RoutesPaths.authProviders}
+      />
 
       <div className='auth-success__tip'>
         {`Automatically redirected in `}

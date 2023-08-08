@@ -10,9 +10,19 @@
 }
 
 .app-navbar__logo {
-  margin-right: auto;
   max-width: toRem(102);
   width: 100%;
+}
+
+.app-navbar__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: toRem(24);
+
+  @include respond-to(xsmall) {
+    width: 100%;
+  }
 }
 
 .navbar__connection-btn {
@@ -20,6 +30,10 @@
   font-size: toRem(14);
   line-height: 1.4;
   color: var(--text-primary-main);
+
+  @include respond-to(xsmall) {
+    flex: 1;
+  }
 }
 
 .app-navbar .navbar__account-link {

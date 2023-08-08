@@ -26,26 +26,28 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     <div className={`app-navbar ${className}`} {...rest}>
       <AppLogo className='app-navbar__logo' />
 
-      <AppButton
-        className='navbar__connection-btn'
-        scheme='flat'
-        text={
-          !provider?.isConnected
-            ? `CONNECT METAMASK`
-            : abbrCenter(provider?.address ?? '')
-        }
-        iconLeft={ICON_NAMES.metamask}
-        onClick={connectProvider}
-        isDisabled={provider?.isConnected}
-      />
+      <div className='app-navbar__actions'>
+        <AppButton
+          className='navbar__connection-btn'
+          scheme='flat'
+          text={
+            !provider?.isConnected
+              ? `CONNECT METAMASK`
+              : abbrCenter(provider?.address ?? '')
+          }
+          iconLeft={ICON_NAMES.metamask}
+          onClick={connectProvider}
+          isDisabled={provider?.isConnected}
+        />
 
-      <AppButton
-        className='navbar__account-link'
-        iconLeft={ICON_NAMES.user}
-        scheme='flat'
-        size='large'
-        routePath={RoutesPaths.profile}
-      />
+        <AppButton
+          className='navbar__account-link'
+          iconLeft={ICON_NAMES.user}
+          scheme='flat'
+          size='large'
+          routePath={RoutesPaths.profile}
+        />
+      </div>
     </div>
   )
 }

@@ -13,8 +13,8 @@ const KYC_PROVIDERS_MAP: Record<
     iconName: ICON_NAMES
   }
 > = {
-  [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
-    name: 'Wordlcoin',
+  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+    name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
   },
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
