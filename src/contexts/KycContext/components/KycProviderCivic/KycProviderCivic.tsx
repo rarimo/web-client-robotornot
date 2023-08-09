@@ -121,7 +121,9 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
             name={ICON_NAMES.exclamationCircle}
           />
         </div>
-        <h3 className='kyc-provider-civic__modal-body-title'>{`Civic pass verifed users get mernissioned access to dAPPs`}</h3>
+        <h3 className='kyc-provider-civic__modal-body-title'>
+          {`Civic pass verified users get permissioned access to dAPPs`}
+        </h3>
         <div className='kyc-provider-civic__modal-body-actions'>
           <AppButton
             className='kyc-provider-civic__modal-body-actions-btn'

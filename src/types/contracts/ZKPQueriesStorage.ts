@@ -226,7 +226,7 @@ export interface ZKPQueriesStorageInterface extends utils.Interface {
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "ZKPQueryRemoved(string)": EventFragment;
-    "ZKPQuerySet(string,address,tuple)": EventFragment;
+    "ZKPQuerySet(string,address,(uint256,uint256,uint256,uint256[],uint256,string))": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
@@ -527,7 +527,7 @@ export interface ZKPQueriesStorage extends BaseContract {
     ): ZKPQueryRemovedEventFilter;
     ZKPQueryRemoved(queryId?: string | null): ZKPQueryRemovedEventFilter;
 
-    "ZKPQuerySet(string,address,tuple)"(
+    "ZKPQuerySet(string,address,(uint256,uint256,uint256,uint256[],uint256,string))"(
       queryId?: string | null,
       queryValidator?: null,
       newCircuitQuery?: null

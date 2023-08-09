@@ -14,6 +14,24 @@
   width: 100%;
 }
 
+.app-navbar .app-navbar__menu-btn {
+  display: none;
+  margin-left: auto;
+  padding: 0;
+
+  @include respond-to(xsmall) {
+    display: flex;
+  }
+}
+
+.app-navbar__drawer-body {
+  display: flex;
+  gap: toRem(24);
+  padding: toRem(24);
+  background: var(--background-secondary-main);
+  box-shadow: toRem(1) toRem(1) toRem(4) rgba(0, 0, 0, 0.1);
+}
+
 .app-navbar__actions {
   margin-left: auto;
   display: flex;
@@ -21,7 +39,7 @@
   gap: toRem(24);
 
   @include respond-to(xsmall) {
-    width: 100%;
+    display: none;
   }
 }
 

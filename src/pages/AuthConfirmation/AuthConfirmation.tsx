@@ -2,9 +2,12 @@ import './styles.scss'
 
 import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
+import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
+import { utils } from 'ethers'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { querier } from '@/api'
 import { AppButton, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
@@ -20,7 +23,12 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useDemoVerifierContract()
 
-  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
+  const {
+    isNaturalZkp,
+    publishedChains,
+    CHAINS_DETAILS_MAP,
+    loadStatesDetails,
+  } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -30,13 +38,33 @@ const AuthConfirmation: FC<Props> = () => {
     return SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
   }, [selectedChainToPublish])
 
+  const isStatesActual = useMemo(
+    () => isNaturalZkp?.isStatesActual(),
+    [isNaturalZkp],
+  )
+
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
-      if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
+      if (
+        !isNaturalZkp ||
+        !isNaturalZkp.coreStateDetails ||
+        !isNaturalZkp.merkleProof
+      )
+        throw new TypeError('ZKP is not defined')
 
       const txBody = getProveIdentityTxBody(
+        {
+          issuerId: config.ISSUER_ID,
+          // StateInfo.hash
+          issuerState: isNaturalZkp.coreStateDetails.hash,
+          // StateInfo.createdAtTimestamp
+          createdAtTimestamp: isNaturalZkp.coreStateDetails.createdAtTimestamp,
+          merkleProof: isNaturalZkp.merkleProof.proof.map(el =>
+            utils.arrayify(el),
+          ),
+        },
         isNaturalZkp?.subjectProof.pub_signals.map(el => BigInt(el)),
         [
           isNaturalZkp?.subjectProof.proof.pi_a[0],
@@ -81,6 +109,33 @@ const AuthConfirmation: FC<Props> = () => {
     publishedChains,
     selectedChainToPublish,
   ])
+
+  const transitState = useCallback(async () => {
+    setIsPending(true)
+    try {
+      const transitParams = await isNaturalZkp?.loadParamsForTransitState(
+        querier,
+      )
+
+      if (!transitParams) throw new TypeError('Transit params is not defined')
+
+      await provider?.signAndSendTx?.(
+        getTransitStateTxBody(
+          config?.[
+            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+          ],
+          transitParams.newIdentitiesStatesRoot,
+          transitParams.gistData,
+          transitParams.proof,
+        ),
+      )
+
+      await loadStatesDetails()
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+    setIsPending(false)
+  }, [isNaturalZkp, loadStatesDetails, provider, selectedChainToPublish])
 
   const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
 
@@ -201,14 +256,27 @@ const AuthConfirmation: FC<Props> = () => {
 
         {provider?.isConnected ? (
           isProviderValidChain ? (
-            <AppButton
-              className='auth-confirmation__submit-btn'
-              text={`SUBMIT PROOF`}
-              iconRight={ICON_NAMES.arrowRight}
-              size='large'
-              onClick={submitZkp}
-              isDisabled={isPending}
-            />
+            <>
+              {isStatesActual ? (
+                <AppButton
+                  className='auth-confirmation__submit-btn'
+                  text={`SUBMIT PROOF`}
+                  iconRight={ICON_NAMES.arrowRight}
+                  size='large'
+                  onClick={submitZkp}
+                  isDisabled={isPending}
+                />
+              ) : (
+                <AppButton
+                  className='auth-confirmation__submit-btn'
+                  text={`TRANSIT STATE`}
+                  iconRight={ICON_NAMES.arrowRight}
+                  size='large'
+                  onClick={transitState}
+                  isDisabled={isPending}
+                />
+              )}
+            </>
           ) : (
             <AppButton
               className='auth-confirmation__submit-btn'

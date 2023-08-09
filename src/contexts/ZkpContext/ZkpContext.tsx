@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react'
 
-import { api } from '@/api'
+import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { sleep } from '@/helpers'
@@ -39,6 +39,7 @@ interface ZkpContextValue {
     chain: SUPPORTED_CHAINS,
     currentIdentity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
+  loadStatesDetails: () => Promise<void>
   getZkProof: (
     chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
@@ -93,6 +94,9 @@ export const zkpContext = createContext<ZkpContextValue>({
         currentIdentity?.idString ? `and ${currentIdentity?.idString}` : ''
       }`,
     )
+  },
+  loadStatesDetails: async () => {
+    throw new TypeError(`loadStatesDetails() not implemented`)
   },
   getZkProof: async (
     chain: SUPPORTED_CHAINS,
@@ -222,6 +226,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [identity],
   )
 
+  const loadStatesDetails = useCallback(async () => {
+    await isNaturalZkp?.loadStatesDetails(querier)
+    await isNaturalZkp?.loadMerkleProof(querier, config.ISSUER_ID)
+  }, [isNaturalZkp])
+
   const getZkProof = useCallback(
     async (
       chain: SUPPORTED_CHAINS,
@@ -236,7 +245,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         throw new TypeError('VerifiableCredentials is not defined')
 
       ZkpGen.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        CORE_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        TARGET_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
         STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
       })
@@ -253,16 +263,19 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           operator: ZkpOperators.Equals,
           value: ['1'],
           circuitId: CircuitId.AtomicQuerySigV2OnChain,
+          issuerId: config.ISSUER_ID,
         },
       })
 
       await zkProof.generateProof()
 
+      await loadStatesDetails()
+
       setIsNaturalZkp(zkProof)
 
       return zkProof
     },
-    [identity, provider?.address, verifiableCredentials],
+    [identity, loadStatesDetails, provider?.address, verifiableCredentials],
   )
 
   return (
@@ -280,6 +293,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         isClaimOfferExists,
         createIdentity,
         getVerifiableCredentials,
+        loadStatesDetails,
         getZkProof,
       }}
       {...rest}

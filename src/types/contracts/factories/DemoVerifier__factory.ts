@@ -74,6 +74,44 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "addressToIdentityId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+    ],
+    name: "getAllowedIssuers",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "identityId_",
         type: "uint256",
@@ -97,6 +135,49 @@ const _abi = [
         internalType: "struct IDemoVerifier.IdentityProofInfo",
         name: "",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "issuerId_",
+        type: "uint256",
+      },
+    ],
+    name: "isAllowedIssuer",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "userAddr_",
+        type: "address",
+      },
+    ],
+    name: "isIdentityProved",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -136,6 +217,33 @@ const _abi = [
   },
   {
     inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "issuerId",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "issuerState",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "createdAtTimestamp",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "merkleProof",
+            type: "bytes32[]",
+          },
+        ],
+        internalType: "struct ILightweightState.StatesMerkleData",
+        name: "statesMerkleData_",
+        type: "tuple",
+      },
       {
         internalType: "uint256[]",
         name: "inputs_",
@@ -191,6 +299,29 @@ const _abi = [
       },
     ],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "issuerIds_",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bool",
+        name: "isAdding_",
+        type: "bool",
+      },
+    ],
+    name: "updateAllowedIssuers",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
