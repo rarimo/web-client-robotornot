@@ -2,7 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, CautionTip, Icon } from '@/common'
@@ -21,7 +21,13 @@ const AuthPreview: FC<Props> = () => {
 
   const { getVerifiableCredentials, getZkProof } = useZkpContext()
 
-  const { isLoaded, isValidCredentials, retryKyc } = useKycContext()
+  const {
+    isLoaded,
+    isValidCredentials,
+    selectedKycDetails,
+    retryKyc,
+    verificationErrorMessages,
+  } = useKycContext()
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
@@ -49,19 +55,26 @@ const AuthPreview: FC<Props> = () => {
   const ValidCredentialsPreview = useMemo(
     () => (
       <div className='auth-preview__card'>
+        {`The credential will be used to generate a zero-knowledge proof. No sensitive data will be shared with any party.`}
         <CautionTip
           className='auth-preview__card-caution-tip'
-          message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
+          message={
+            <>
+              You should back up your credentials{' '}
+              <NavLink to={RoutesPaths.profile}>here</NavLink>. Otherwise, you
+              may lose your identity.
+            </>
+          }
         />
         <div className='auth-preview__metadata'>
-          {Array(5)
-            .fill(0)
-            .map((el, idx) => (
-              <div className='auth-preview__metadata-item' key={idx}>
-                <span className='auth-preview__metadata-item-label'>{`Name`}</span>
-                <span className='auth-preview__metadata-item-value'>{`Maren Philips`}</span>
-              </div>
-            ))}
+          {selectedKycDetails?.map(([label, value], idx) => (
+            <div className='auth-preview__metadata-item' key={idx}>
+              <span className='auth-preview__metadata-item-label'>{label}</span>
+              <span className='auth-preview__metadata-item-value' title={value}>
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
         <div className='auth-preview__card-divider' />
         <AppButton
@@ -74,17 +87,12 @@ const AuthPreview: FC<Props> = () => {
         />
       </div>
     ),
-    [handleGenerateProof, provider?.address],
+    [handleGenerateProof, provider?.address, selectedKycDetails],
   )
 
   const InvalidCredentialsMessage = useMemo(
     () => (
       <div className='auth-preview__card'>
-        <CautionTip
-          className='auth-preview__card-caution-tip'
-          message={`Proof is generated using Zero-Knowledge Proof (ZKP) using these credentials and is not shared with any party`}
-        />
-
         <div className='auth-preview__card-error'>
           <div className='auth-preview__card-error-icon-wrp'>
             <Icon
@@ -94,20 +102,20 @@ const AuthPreview: FC<Props> = () => {
           </div>
           <span className='auth-preview__card-error-title'>{`Insufficient Credentials`}</span>
           <span className='auth-preview__card-error-message'>
-            {` Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
+            {` Unable to Generate Proof of Human Identity. ${verificationErrorMessages}`}
           </span>
         </div>
 
         <AppButton
           className='auth-preview__card-button'
-          text={`COMPLETE NOW`}
+          text={`RETURN TO PROVIDER LIST`}
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={completeKyc}
         />
       </div>
     ),
-    [completeKyc],
+    [completeKyc, verificationErrorMessages],
   )
 
   return (

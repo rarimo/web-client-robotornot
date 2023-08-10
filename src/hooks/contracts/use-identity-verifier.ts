@@ -4,14 +4,17 @@ import { BigNumberish } from 'ethers'
 import { useCallback, useMemo } from 'react'
 
 import { useWeb3Context } from '@/contexts'
-import { DemoVerifier__factory } from '@/types'
-import { IDemoVerifier } from '@/types/contracts/DemoVerifier'
+import { IdentityVerifier__factory } from '@/types'
+import {
+  IIdentityVerifier,
+  ILightweightState,
+} from '@/types/contracts/IdentityVerifier'
 
-export const useDemoVerifierContract = (address?: string) => {
+export const useIdentityVerifier = (address?: string) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
-    () => DemoVerifier__factory.createInterface(),
+    () => IdentityVerifier__factory.createInterface(),
     [],
   )
 
@@ -19,7 +22,7 @@ export const useDemoVerifierContract = (address?: string) => {
     if (!address || !provider) return undefined
 
     return provider?.rawProvider
-      ? DemoVerifier__factory.connect(
+      ? IdentityVerifier__factory.connect(
           address,
           provider.rawProvider as unknown as Provider,
         )
@@ -29,15 +32,19 @@ export const useDemoVerifierContract = (address?: string) => {
   const getIdentityProofInfo = useCallback(
     async (
       identityId_: BigNumberish,
-    ): Promise<IDemoVerifier.IdentityProofInfoStructOutput | undefined> => {
+    ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput | undefined> => {
       return contractInstance?.getIdentityProofInfo?.(identityId_)
     },
     [contractInstance],
   )
 
   const isIdentityProved = useCallback(
-    async (identityId_: BigNumberish): Promise<boolean | undefined> => {
-      return contractInstance?.isIdentityProved?.(identityId_)
+    async (
+      didOrAddress: BigNumberish | string,
+    ): Promise<boolean | undefined> => {
+      return typeof didOrAddress === 'string'
+        ? contractInstance?.['isIdentityProved(address)']?.(didOrAddress)
+        : contractInstance?.['isIdentityProved(uint256)']?.(didOrAddress)
     },
     [contractInstance],
   )
@@ -48,6 +55,7 @@ export const useDemoVerifierContract = (address?: string) => {
 
   const proveIdentity = useCallback(
     async (
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -57,6 +65,7 @@ export const useDemoVerifierContract = (address?: string) => {
         throw new TypeError('Invalid address or provider')
 
       const data = contractInterface.encodeFunctionData('proveIdentity', [
+        statesMerkleData_,
         inputs_,
         a_,
         b_,
@@ -75,12 +84,14 @@ export const useDemoVerifierContract = (address?: string) => {
 
   const getProveIdentityTxBody = useCallback(
     (
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c_: [BigNumberish, BigNumberish],
     ) => {
       const data = contractInterface.encodeFunctionData('proveIdentity', [
+        statesMerkleData_,
         inputs_,
         a_,
         b_,

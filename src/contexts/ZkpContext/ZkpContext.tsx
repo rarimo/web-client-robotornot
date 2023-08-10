@@ -1,29 +1,46 @@
 import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { FetcherError, HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import {
   AuthZkp,
   ClaimOffer,
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
-import { ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
-import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
+import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import {
+  createContext,
+  FC,
+  HTMLAttributes,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
-import { api } from '@/api'
+import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import { sleep } from '@/helpers'
 
-type QueryVariableName = { isNatural: number }
+export type QueryVariableName = { isNatural: number }
 
 interface ZkpContextValue {
   identity: Identity | undefined
   isNaturalZkp: ZkpGen<QueryVariableName> | undefined
+  publishedChains: {
+    get: SUPPORTED_CHAINS[]
+    set: (value: SetStateAction<SUPPORTED_CHAINS[]>) => void
+  }
+  CHAINS_DETAILS_MAP: Record<SUPPORTED_CHAINS, ChainToPublish>
 
   isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
     chain: SUPPORTED_CHAINS,
+    currentIdentity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
+  loadStatesDetails: (zkProof?: ZkpGen<QueryVariableName>) => Promise<void>
   getZkProof: (
     chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
@@ -33,6 +50,29 @@ interface ZkpContextValue {
 export const zkpContext = createContext<ZkpContextValue>({
   identity: new Identity(),
   isNaturalZkp: undefined,
+  publishedChains: {
+    get: [],
+    set: () => {
+      throw new TypeError(`publishedChains.set() not implemented`)
+    },
+  },
+  CHAINS_DETAILS_MAP: {
+    [SUPPORTED_CHAINS.POLYGON]: {
+      title: 'Polygon chain',
+      value: SUPPORTED_CHAINS.POLYGON,
+      iconName: ICON_NAMES.polygon,
+    },
+    [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+      title: 'Polygon Testnet chain',
+      value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+      iconName: ICON_NAMES.polygon,
+    },
+    [SUPPORTED_CHAINS.SEPOLIA]: {
+      title: 'Sepolia chain',
+      value: SUPPORTED_CHAINS.SEPOLIA,
+      iconName: ICON_NAMES.ethereum,
+    },
+  },
 
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
@@ -46,10 +86,18 @@ export const zkpContext = createContext<ZkpContextValue>({
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
-  getVerifiableCredentials: async (chain: SUPPORTED_CHAINS) => {
+  getVerifiableCredentials: async (
+    chain: SUPPORTED_CHAINS,
+    currentIdentity?: Identity,
+  ) => {
     throw new TypeError(
-      `getVerifiableCredentials() not implemented for ${chain}`,
+      `getVerifiableCredentials() not implemented for ${chain} ${
+        currentIdentity?.idString ? `and ${currentIdentity?.idString}` : ''
+      }`,
     )
+  },
+  loadStatesDetails: async (zkProof?: ZkpGen<QueryVariableName>) => {
+    throw new TypeError(`loadStatesDetails() not implemented for ${zkProof}`)
   },
   getZkProof: async (
     chain: SUPPORTED_CHAINS,
@@ -63,6 +111,12 @@ export const zkpContext = createContext<ZkpContextValue>({
   },
 })
 
+type ChainToPublish = {
+  title: string
+  value: string
+  iconName: ICON_NAMES
+}
+
 type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
@@ -72,6 +126,28 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [verifiableCredentials, setVerifiableCredentials] =
     useState<VerifiableCredentials<QueryVariableName>>()
   const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
+
+  const [publishedChains, setPublishedChains] = useState<SUPPORTED_CHAINS[]>([])
+  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
+    () => ({
+      [SUPPORTED_CHAINS.POLYGON]: {
+        title: 'Polygon chain',
+        value: SUPPORTED_CHAINS.POLYGON,
+        iconName: ICON_NAMES.polygon,
+      },
+      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
+        title: 'Polygon Testnet chain',
+        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
+        iconName: ICON_NAMES.polygon,
+      },
+      [SUPPORTED_CHAINS.SEPOLIA]: {
+        title: 'Sepolia chain',
+        value: SUPPORTED_CHAINS.SEPOLIA,
+        iconName: ICON_NAMES.ethereum,
+      },
+    }),
+    [],
+  )
 
   const createIdentity = useCallback(async (privateKeyHex?: string) => {
     Identity.setConfig({
@@ -90,7 +166,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       const { data } = await api.get<ClaimOffer>(
         `/integrations/issuer/v1/public/claims/offers/${
           _identity?.idString ?? identity?.idString
-        }/NaturalPerson`,
+        }/IdentityProviders`,
       )
 
       return data
@@ -100,10 +176,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const isClaimOfferExists = useCallback(
     async (_identity?: Identity) => {
-      const MAX_TRIES_COUNT = 10
       let tryCounter = 0
 
-      while (tryCounter < MAX_TRIES_COUNT) {
+      while (tryCounter < config.CLAIM_OFFER_MAX_TRIES_COUNT) {
         try {
           await getClaimOffer(_identity)
 
@@ -112,7 +187,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           /* empty */
         }
 
-        await sleep(1000)
+        await sleep(config.CLAIM_OFFER_DELAY)
         tryCounter++
       }
 
@@ -124,27 +199,57 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getVerifiableCredentials = useCallback(
     async (
       chain: SUPPORTED_CHAINS,
+      _identity?: Identity,
     ): Promise<VerifiableCredentials<QueryVariableName>> => {
-      if (!identity) throw new TypeError('Identity is not defined')
+      const currentIdentity = _identity ?? identity
+
+      if (!currentIdentity) throw new TypeError('Identity is not defined')
 
       AuthZkp.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        RPC_URL: config.RARIMO_EVM_RPC_URL,
+        STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
         ISSUER_API_URL: config.API_URL,
-
-        CIRCUIT_FINAL_KEY_URL: AuthZkp.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: AuthZkp.config.CIRCUIT_WASM_URL,
       })
 
-      const authProof = new AuthZkp<QueryVariableName>(identity)
+      const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
 
-      const verifiableCredentials = await authProof.getVerifiableCredentials()
+      const verifiableCredentials = await authProof.getVerifiableCredentials(
+        'IdentityProviders',
+      )
 
       setVerifiableCredentials(verifiableCredentials)
 
       return verifiableCredentials
     },
     [identity],
+  )
+
+  const loadStatesDetails = useCallback(
+    async (zkProof?: ZkpGen<QueryVariableName>) => {
+      const currentZkp = zkProof || isNaturalZkp
+
+      do {
+        try {
+          await currentZkp?.loadStatesDetails(querier)
+          await currentZkp?.loadMerkleProof(querier, config.ISSUER_ID)
+        } catch (error) {
+          if (
+            error instanceof FetcherError &&
+            error.response.status === HTTP_STATUS_CODES.NOT_IMPLEMENTED
+          ) {
+            await sleep(30 * 1000)
+          } else {
+            throw error
+          }
+        }
+      } while (
+        !currentZkp?.targetStateDetails ||
+        !currentZkp?.coreStateDetails ||
+        !currentZkp?.operationProof ||
+        !currentZkp?.merkleProof
+      )
+    },
+    [isNaturalZkp],
   )
 
   const getZkProof = useCallback(
@@ -161,13 +266,12 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         throw new TypeError('VerifiableCredentials is not defined')
 
       ZkpGen.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        CORE_CHAIN_RPC_URL: config.RARIMO_EVM_RPC_URL,
+        TARGET_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+        LIGHTWEIGHT_STATE_V2_ADDRESS:
+          config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
-
-        CIRCUIT_FINAL_KEY_URL: ZkpGen.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: ZkpGen.config.CIRCUIT_WASM_URL,
-        CLAIM_PROOF_SIBLINGS_COUNT: ZkpGen.config.CLAIM_PROOF_SIBLINGS_COUNT,
       })
 
       const zkProof = new ZkpGen<QueryVariableName>({
@@ -181,16 +285,20 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           variableName: 'isNatural',
           operator: ZkpOperators.Equals,
           value: ['1'],
+          circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+          issuerId: config.ISSUER_ID,
         },
       })
 
       await zkProof.generateProof()
 
+      await loadStatesDetails(zkProof)
+
       setIsNaturalZkp(zkProof)
 
       return zkProof
     },
-    [identity, provider?.address, verifiableCredentials],
+    [identity, loadStatesDetails, provider?.address, verifiableCredentials],
   )
 
   return (
@@ -198,11 +306,17 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       value={{
         identity,
         isNaturalZkp,
+        publishedChains: {
+          get: publishedChains,
+          set: setPublishedChains,
+        },
+        CHAINS_DETAILS_MAP,
 
         getClaimOffer,
         isClaimOfferExists,
         createIdentity,
         getVerifiableCredentials,
+        loadStatesDetails,
         getZkProof,
       }}
       {...rest}

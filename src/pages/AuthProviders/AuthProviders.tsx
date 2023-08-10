@@ -24,10 +24,6 @@ const AuthProviders: FC<Props> = () => {
       <div className='auth-providers__list'>
         <AuthProvidersItem
           className='auth-providers__list-item'
-          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.WORDLCOIN}
-        />
-        <AuthProvidersItem
-          className='auth-providers__list-item'
           supportedKycProvider={SUPPORTED_KYC_PROVIDERS.CIVIC}
         />
         <AuthProvidersItem
@@ -38,11 +34,10 @@ const AuthProviders: FC<Props> = () => {
           className='auth-providers__list-item'
           supportedKycProvider={SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}
         />
-      </div>
-
-      <div className='auth-providers__tip'>
-        {`Dont have any account? `}
-        <span className='auth-providers__tip-link'>{`Create Now`}</span>
+        <AuthProvidersItem
+          className='auth-providers__list-item'
+          supportedKycProvider={SUPPORTED_KYC_PROVIDERS.WORLDCOIN}
+        />
       </div>
     </div>
   )

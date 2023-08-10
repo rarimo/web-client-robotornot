@@ -4,7 +4,10 @@
 
 import { Contract, Signer, utils } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { DemoVerifier, DemoVerifierInterface } from "../DemoVerifier";
+import type {
+  IdentityVerifier,
+  IdentityVerifierInterface,
+} from "../IdentityVerifier";
 
 const _abi = [
   {
@@ -66,9 +69,47 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "__DemoVerifier_init",
+    name: "__IdentityVerifier_init",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "addressToIdentityId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+    ],
+    name: "getAllowedIssuers",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -94,9 +135,52 @@ const _abi = [
             type: "bool",
           },
         ],
-        internalType: "struct IDemoVerifier.IdentityProofInfo",
+        internalType: "struct IIdentityVerifier.IdentityProofInfo",
         name: "",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "issuerId_",
+        type: "uint256",
+      },
+    ],
+    name: "isAllowedIssuer",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "userAddr_",
+        type: "address",
+      },
+    ],
+    name: "isIdentityProved",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -136,6 +220,33 @@ const _abi = [
   },
   {
     inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "issuerId",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "issuerState",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "createdAtTimestamp",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "merkleProof",
+            type: "bytes32[]",
+          },
+        ],
+        internalType: "struct ILightweightState.StatesMerkleData",
+        name: "statesMerkleData_",
+        type: "tuple",
+      },
       {
         internalType: "uint256[]",
         name: "inputs_",
@@ -196,6 +307,29 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "schema_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "issuerIds_",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bool",
+        name: "isAdding_",
+        type: "bool",
+      },
+    ],
+    name: "updateAllowedIssuers",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "zkpQueriesStorage",
     outputs: [
@@ -210,15 +344,15 @@ const _abi = [
   },
 ] as const;
 
-export class DemoVerifier__factory {
+export class IdentityVerifier__factory {
   static readonly abi = _abi;
-  static createInterface(): DemoVerifierInterface {
-    return new utils.Interface(_abi) as DemoVerifierInterface;
+  static createInterface(): IdentityVerifierInterface {
+    return new utils.Interface(_abi) as IdentityVerifierInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): DemoVerifier {
-    return new Contract(address, _abi, signerOrProvider) as DemoVerifier;
+  ): IdentityVerifier {
+    return new Contract(address, _abi, signerOrProvider) as IdentityVerifier;
   }
 }

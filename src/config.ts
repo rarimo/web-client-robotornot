@@ -60,32 +60,44 @@ export const config = {
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
 
+  RARIMO_CORE_RPC_API_URL: import.meta.env.VITE_RARIMO_CORE_RPC_API_URL,
+  RARIMO_EVM_RPC_URL: import.meta.env.VITE_RARIMO_EVM_RPC_URL,
+  STATE_V2_CONTRACT_ADDRESS: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS,
+
   UNSTOPPABLE_DOMAINS_CLIENT_ID: import.meta.env
     .VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID,
-  WORLDCOIN_APP_ID: import.meta.env.VITE_WORLDCOIN_APP_ID,
 
+  WORLDCOIN_APP_ID: import.meta.env.VITE_WORLDCOIN_APP_ID,
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
+  ISSUER_ID: import.meta.env.VITE_ISSUER_ID,
 
   ...(Object.values(SUPPORTED_CHAINS).reduce(
     (acc, curr) => ({
       ...acc,
       /* eslint-disable max-len */
       /* prettier-ignore */
-      [`DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
+      [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* prettier-ignore */
-      [`DEMO_SBT_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_SBT_CONTRACT_ADDRESS_${curr}`] || '',
-      /* prettier-ignore */
-      [`STATE_V2_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_STATE_V2_CONTRACT_ADDRESS_${curr}`] || '',
+      [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]:
+        import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] ||
+        '',
     }),
     {},
   ) as {
     [k in
-      | `DEMO_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
-      | `DEMO_SBT_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
-      | `STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
+      | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
+      | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
   }),
 
   DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
+
+  EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
+    .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
+
+  CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
+  CLAIM_OFFER_MAX_TRIES_COUNT:
+    import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 10,
+  KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

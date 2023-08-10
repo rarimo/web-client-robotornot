@@ -1,7 +1,7 @@
 import { RuntimeError } from '@distributedlab/tools'
-import { errors } from '@distributedlab/w3p'
 import log from 'loglevel'
 
+import { errors } from '@/errors'
 import { bus, BUS_EVENTS } from '@/helpers'
 import i18n from '@/localization'
 

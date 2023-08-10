@@ -7,6 +7,7 @@ import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  setKycDetails: (details: unknown) => void
 }
 
 const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {

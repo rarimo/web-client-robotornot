@@ -26,7 +26,7 @@ import type {
   OnEvent,
 } from "./common";
 
-export declare namespace IDemoVerifier {
+export declare namespace IIdentityVerifier {
   export type IdentityProofInfoStruct = {
     senderAddr: string;
     isProved: boolean;
@@ -38,48 +38,96 @@ export declare namespace IDemoVerifier {
   };
 }
 
-export interface DemoVerifierInterface extends utils.Interface {
+export declare namespace ILightweightState {
+  export type StatesMerkleDataStruct = {
+    issuerId: BigNumberish;
+    issuerState: BigNumberish;
+    createdAtTimestamp: BigNumberish;
+    merkleProof: BytesLike[];
+  };
+
+  export type StatesMerkleDataStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    string[]
+  ] & {
+    issuerId: BigNumber;
+    issuerState: BigNumber;
+    createdAtTimestamp: BigNumber;
+    merkleProof: string[];
+  };
+}
+
+export interface IdentityVerifierInterface extends utils.Interface {
   functions: {
-    "__DemoVerifier_init(address)": FunctionFragment;
+    "__IdentityVerifier_init(address)": FunctionFragment;
+    "addressToIdentityId(address)": FunctionFragment;
+    "getAllowedIssuers(uint256)": FunctionFragment;
     "getIdentityProofInfo(uint256)": FunctionFragment;
+    "isAllowedIssuer(uint256,uint256)": FunctionFragment;
+    "isIdentityProved(address)": FunctionFragment;
     "isIdentityProved(uint256)": FunctionFragment;
     "owner()": FunctionFragment;
-    "proveIdentity(uint256[],uint256[2],uint256[2][2],uint256[2])": FunctionFragment;
+    "proveIdentity((uint256,uint256,uint256,bytes32[]),uint256[],uint256[2],uint256[2][2],uint256[2])": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "setZKPQueriesStorage(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "updateAllowedIssuers(uint256,uint256[],bool)": FunctionFragment;
     "zkpQueriesStorage()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "__DemoVerifier_init"
+      | "__IdentityVerifier_init"
+      | "addressToIdentityId"
+      | "getAllowedIssuers"
       | "getIdentityProofInfo"
-      | "isIdentityProved"
+      | "isAllowedIssuer"
+      | "isIdentityProved(address)"
+      | "isIdentityProved(uint256)"
       | "owner"
       | "proveIdentity"
       | "renounceOwnership"
       | "setZKPQueriesStorage"
       | "transferOwnership"
+      | "updateAllowedIssuers"
       | "zkpQueriesStorage"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "__DemoVerifier_init",
+    functionFragment: "__IdentityVerifier_init",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "addressToIdentityId",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllowedIssuers",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getIdentityProofInfo",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "isIdentityProved",
+    functionFragment: "isAllowedIssuer",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isIdentityProved(address)",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isIdentityProved(uint256)",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proveIdentity",
     values: [
+      ILightweightState.StatesMerkleDataStruct,
       BigNumberish[],
       [BigNumberish, BigNumberish],
       [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -99,12 +147,24 @@ export interface DemoVerifierInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "updateAllowedIssuers",
+    values: [BigNumberish, BigNumberish[], boolean]
+  ): string;
+  encodeFunctionData(
     functionFragment: "zkpQueriesStorage",
     values?: undefined
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "__DemoVerifier_init",
+    functionFragment: "__IdentityVerifier_init",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "addressToIdentityId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllowedIssuers",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -112,7 +172,15 @@ export interface DemoVerifierInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "isIdentityProved",
+    functionFragment: "isAllowedIssuer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isIdentityProved(address)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isIdentityProved(uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -130,6 +198,10 @@ export interface DemoVerifierInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateAllowedIssuers",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -178,12 +250,12 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
-export interface DemoVerifier extends BaseContract {
+export interface IdentityVerifier extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: DemoVerifierInterface;
+  interface: IdentityVerifierInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -205,17 +277,38 @@ export interface DemoVerifier extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
+    addressToIdentityId(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    getAllowedIssuers(
+      schema_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]]>;
+
     getIdentityProofInfo(
       identityId_: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[IDemoVerifier.IdentityProofInfoStructOutput]>;
+    ): Promise<[IIdentityVerifier.IdentityProofInfoStructOutput]>;
 
-    isIdentityProved(
+    isAllowedIssuer(
+      schema_: BigNumberish,
+      issuerId_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    "isIdentityProved(address)"(
+      userAddr_: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    "isIdentityProved(uint256)"(
       identityId_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
@@ -223,6 +316,7 @@ export interface DemoVerifier extends BaseContract {
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     proveIdentity(
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -244,20 +338,48 @@ export interface DemoVerifier extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
+    updateAllowedIssuers(
+      schema_: BigNumberish,
+      issuerIds_: BigNumberish[],
+      isAdding_: boolean,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
     zkpQueriesStorage(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  __DemoVerifier_init(
+  __IdentityVerifier_init(
     zkpQueriesStorage_: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
+  addressToIdentityId(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getAllowedIssuers(
+    schema_: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber[]>;
+
   getIdentityProofInfo(
     identityId_: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<IDemoVerifier.IdentityProofInfoStructOutput>;
+  ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput>;
 
-  isIdentityProved(
+  isAllowedIssuer(
+    schema_: BigNumberish,
+    issuerId_: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "isIdentityProved(address)"(
+    userAddr_: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "isIdentityProved(uint256)"(
     identityId_: BigNumberish,
     overrides?: CallOverrides
   ): Promise<boolean>;
@@ -265,6 +387,7 @@ export interface DemoVerifier extends BaseContract {
   owner(overrides?: CallOverrides): Promise<string>;
 
   proveIdentity(
+    statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
     inputs_: BigNumberish[],
     a_: [BigNumberish, BigNumberish],
     b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -286,20 +409,48 @@ export interface DemoVerifier extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
+  updateAllowedIssuers(
+    schema_: BigNumberish,
+    issuerIds_: BigNumberish[],
+    isAdding_: boolean,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
   zkpQueriesStorage(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    addressToIdentityId(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getAllowedIssuers(
+      schema_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
+
     getIdentityProofInfo(
       identityId_: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<IDemoVerifier.IdentityProofInfoStructOutput>;
+    ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput>;
 
-    isIdentityProved(
+    isAllowedIssuer(
+      schema_: BigNumberish,
+      issuerId_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "isIdentityProved(address)"(
+      userAddr_: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "isIdentityProved(uint256)"(
       identityId_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
@@ -307,6 +458,7 @@ export interface DemoVerifier extends BaseContract {
     owner(overrides?: CallOverrides): Promise<string>;
 
     proveIdentity(
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -323,6 +475,13 @@ export interface DemoVerifier extends BaseContract {
 
     transferOwnership(
       newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateAllowedIssuers(
+      schema_: BigNumberish,
+      issuerIds_: BigNumberish[],
+      isAdding_: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -353,9 +512,19 @@ export interface DemoVerifier extends BaseContract {
   };
 
   estimateGas: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    addressToIdentityId(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getAllowedIssuers(
+      schema_: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getIdentityProofInfo(
@@ -363,7 +532,18 @@ export interface DemoVerifier extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    isIdentityProved(
+    isAllowedIssuer(
+      schema_: BigNumberish,
+      issuerId_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "isIdentityProved(address)"(
+      userAddr_: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "isIdentityProved(uint256)"(
       identityId_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -371,6 +551,7 @@ export interface DemoVerifier extends BaseContract {
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     proveIdentity(
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -389,6 +570,13 @@ export interface DemoVerifier extends BaseContract {
 
     transferOwnership(
       newOwner: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    updateAllowedIssuers(
+      schema_: BigNumberish,
+      issuerIds_: BigNumberish[],
+      isAdding_: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -396,9 +584,19 @@ export interface DemoVerifier extends BaseContract {
   };
 
   populateTransaction: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    addressToIdentityId(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getAllowedIssuers(
+      schema_: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getIdentityProofInfo(
@@ -406,7 +604,18 @@ export interface DemoVerifier extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    isIdentityProved(
+    isAllowedIssuer(
+      schema_: BigNumberish,
+      issuerId_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "isIdentityProved(address)"(
+      userAddr_: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "isIdentityProved(uint256)"(
       identityId_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -414,6 +623,7 @@ export interface DemoVerifier extends BaseContract {
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     proveIdentity(
+      statesMerkleData_: ILightweightState.StatesMerkleDataStruct,
       inputs_: BigNumberish[],
       a_: [BigNumberish, BigNumberish],
       b_: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
@@ -432,6 +642,13 @@ export interface DemoVerifier extends BaseContract {
 
     transferOwnership(
       newOwner: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    updateAllowedIssuers(
+      schema_: BigNumberish,
+      issuerIds_: BigNumberish[],
+      isAdding_: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 

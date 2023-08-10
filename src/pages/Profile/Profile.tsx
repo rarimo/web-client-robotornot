@@ -25,7 +25,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
   }, [identity?.privateKeyHex])
 
   useEffect(() => {
-    if (identity?.privateKeyHex || !filesContent?.[0]?.content) return
+    if (!filesContent?.[0]?.content) return
 
     const setIdentity = async () => {
       await createIdentity(filesContent[0].content)
@@ -46,7 +46,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <div className='profile__header-icon-wrp'>
           <Icon className='profile__header-icon' name={ICON_NAMES.user} />
         </div>
-        <h2 className='profile__header-title'>
+        <h2 className='profile__header-title' title={identity?.idString}>
           {`DID:Rarimo:${abbrCenter(identity?.idString ?? '', 4)}`}
         </h2>
         <span className='profile__header-subtitle'>
@@ -71,6 +71,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
               download={`pk.json`}
               text={`EXPORT`}
               size='small'
+              isDisabled={!identity?.privateKeyHex}
             />
           </div>
         </div>

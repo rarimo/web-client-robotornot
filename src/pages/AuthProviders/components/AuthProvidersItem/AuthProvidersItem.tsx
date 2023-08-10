@@ -13,16 +13,16 @@ const KYC_PROVIDERS_MAP: Record<
     iconName: ICON_NAMES
   }
 > = {
-  [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {
-    name: 'Wordlcoin.org',
+  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+    name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
   },
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
-    name: 'Civic.me',
+    name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
   },
   [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
-    name: 'Passport.gitcoin.co',
+    name: 'Gitcoin Passport',
     iconName: ICON_NAMES.providerGitCoin,
   },
   [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {

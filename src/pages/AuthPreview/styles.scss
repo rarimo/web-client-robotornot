@@ -36,7 +36,7 @@
 .auth-preview__metadata-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  gap: toRem(12);
 }
 
 .auth-preview__metadata-item-label {
@@ -46,6 +46,7 @@
 }
 
 .auth-preview__metadata-item-value {
+  text-align: right;
   font-size: toRem(16);
   font-weight: 500;
   line-height: 1.4;
