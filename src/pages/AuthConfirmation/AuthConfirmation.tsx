@@ -112,6 +112,7 @@ const AuthConfirmation: FC<Props> = () => {
 
   const transitState = useCallback(async () => {
     setIsPending(true)
+
     try {
       const transitParams = await isNaturalZkp?.loadParamsForTransitState(
         querier,
@@ -134,6 +135,7 @@ const AuthConfirmation: FC<Props> = () => {
     } catch (error) {
       ErrorHandler.process(error)
     }
+
     setIsPending(false)
   }, [isNaturalZkp, loadStatesDetails, provider, selectedChainToPublish])
 

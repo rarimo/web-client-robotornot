@@ -1,4 +1,5 @@
 import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { FetcherError, HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import {
   AuthZkp,
   ClaimOffer,
@@ -39,7 +40,7 @@ interface ZkpContextValue {
     chain: SUPPORTED_CHAINS,
     currentIdentity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
-  loadStatesDetails: () => Promise<void>
+  loadStatesDetails: (zkProof?: ZkpGen<QueryVariableName>) => Promise<void>
   getZkProof: (
     chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
@@ -95,8 +96,8 @@ export const zkpContext = createContext<ZkpContextValue>({
       }`,
     )
   },
-  loadStatesDetails: async () => {
-    throw new TypeError(`loadStatesDetails() not implemented`)
+  loadStatesDetails: async (zkProof?: ZkpGen<QueryVariableName>) => {
+    throw new TypeError(`loadStatesDetails() not implemented for ${zkProof}`)
   },
   getZkProof: async (
     chain: SUPPORTED_CHAINS,
@@ -223,10 +224,33 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [identity],
   )
 
-  const loadStatesDetails = useCallback(async () => {
-    await isNaturalZkp?.loadStatesDetails(querier)
-    await isNaturalZkp?.loadMerkleProof(querier, config.ISSUER_ID)
-  }, [isNaturalZkp])
+  const loadStatesDetails = useCallback(
+    async (zkProof?: ZkpGen<QueryVariableName>) => {
+      const currentZkp = zkProof || isNaturalZkp
+
+      do {
+        try {
+          await currentZkp?.loadStatesDetails(querier)
+          await currentZkp?.loadMerkleProof(querier, config.ISSUER_ID)
+        } catch (error) {
+          if (
+            error instanceof FetcherError &&
+            error.response.status === HTTP_STATUS_CODES.NOT_IMPLEMENTED
+          ) {
+            await sleep(30 * 1000)
+          } else {
+            throw error
+          }
+        }
+      } while (
+        !currentZkp?.targetStateDetails ||
+        !currentZkp?.coreStateDetails ||
+        !currentZkp?.operationProof ||
+        !currentZkp?.merkleProof
+      )
+    },
+    [isNaturalZkp],
+  )
 
   const getZkProof = useCallback(
     async (
@@ -261,14 +285,14 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           variableName: 'isNatural',
           operator: ZkpOperators.Equals,
           value: ['1'],
-          circuitId: CircuitId.AtomicQuerySigV2OnChain,
+          circuitId: CircuitId.AtomicQueryMTPV2OnChain,
           issuerId: config.ISSUER_ID,
         },
       })
 
       await zkProof.generateProof()
 
-      await loadStatesDetails()
+      await loadStatesDetails(zkProof)
 
       setIsNaturalZkp(zkProof)
 
