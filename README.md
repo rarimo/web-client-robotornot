@@ -14,6 +14,13 @@ VITE_API_URL=http://127.0.0.1:8000
 # APP title name
 VITE_APP_NAME=Identity
 
+# RPC API of rarimo-core https://gitlab.com/rarimo/dev-edition
+VITE_RARIMO_CORE_RPC_API_URL=http://localhost:1317
+# RPC of rarimo-core (evm) https://gitlab.com/rarimo/dev-edition
+VITE_RARIMO_EVM_RPC_URL=http://localhost:8545
+# Contract addres of deployed state contract at the rarimo core chain
+VITE_STATE_V2_CONTRACT_ADDRESS=0x...
+
 # Client Id of created "client" in your Unstoppable Domains account
 # To create client, check this guide https://docs.unstoppabledomains.com/identity/overview/login-with-unstoppable/, especcialy video guide
 VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID=
@@ -25,6 +32,11 @@ VITE_WORLDCOIN_APP_ID=
 # https://0xpolygonid.github.io/tutorials/issuer/cred-issue-methods/#verifiable-presentations-leveraging-zk-proofs
 # Get this hash by generate Keccak256(<JSON-LD schema_url>) last 16 bytes
 VITE_AUTH_BJJ_CREDENTIAL_HASH=cca3371a6cb1b715004407e325bd993c
+
+# 0x + hex(issuerID.BigInt.Bytes)
+# issuerID.BigInt.Bytes - can be found in issuer-svc logs at startup
+# setup this env and add it to te IdentityVerifier contract issuers whitelist
+VITE_ISSUER_ID=0x0c761d5a56cf03b6ef6a6180f24531bb70962609c2970fdec52c22a3920001
 
 # redirect link for success page
 VITE_EXTERNAL_PLATFORM_REDIRECT_URL=https://galxe.com/
@@ -42,8 +54,8 @@ Go to https://gitlab.com/rarimo/identity/contracts to get more info about contra
 
 To setup contract addresses follow this format:
 ```dotenv
-VITE_QUERY_VERIFIER_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
-VITE_VERIFIED_SBT_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
+VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
+VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
 ```
 
 currently supported chains is ```[SEPOLIA, POLYGON, POLYGON_TESTNET]```
@@ -52,14 +64,14 @@ And set the default chain you'll work with
 
 e. g:
 ```dotenv
-VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_SEPOLIA=0x...
-VITE_STATE_V2_CONTRACT_ADDRESS_SEPOLIA=0x...
+VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_SEPOLIA=0x...
+VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_SEPOLIA=0x...
 
-VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_POLYGON=0x...
-VITE_STATE_V2_CONTRACT_ADDRESS_POLYGON=0x...
+VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_POLYGON=0x...
+VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_POLYGON=0x...
 
-VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_GOERLI=0x...
-VITE_STATE_V2_CONTRACT_ADDRESS_GOERLI=0x...
+VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_GOERLI=0x...
+VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_GOERLI=0x...
 
 VITE_DEFAULT_CHAIN='SEPOLIA'
 ```
