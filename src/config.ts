@@ -56,14 +56,18 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
 
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,
-  RARIMO_CORE_RPC_API_URL: import.meta.env.VITE_RARIMO_CORE_RPC_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
 
+  RARIMO_CORE_RPC_API_URL: import.meta.env.VITE_RARIMO_CORE_RPC_API_URL,
+  RARIMO_EVM_RPC_URL: import.meta.env.VITE_RARIMO_EVM_RPC_URL,
+  STATE_V2_CONTRACT_ADDRESS: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS,
+
   UNSTOPPABLE_DOMAINS_CLIENT_ID: import.meta.env
     .VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID,
 
+  WORLDCOIN_APP_ID: import.meta.env.VITE_WORLDCOIN_APP_ID,
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
   ISSUER_ID: import.meta.env.VITE_ISSUER_ID,
 
@@ -74,7 +78,6 @@ export const config = {
       /* prettier-ignore */
       [`DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* prettier-ignore */
-      [`STATE_V2_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_STATE_V2_CONTRACT_ADDRESS_${curr}`] || '',
       [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]:
         import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] ||
         '',
@@ -83,13 +86,10 @@ export const config = {
   ) as {
     [k in
       | `DEMO_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
-      | `STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
       | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
   }),
 
   DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
-
-  WORLDCOIN_APP_ID: import.meta.env.VITE_WORLDCOIN_APP_ID,
 
   EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
     .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,

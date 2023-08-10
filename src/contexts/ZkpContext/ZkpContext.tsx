@@ -205,12 +205,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       if (!currentIdentity) throw new TypeError('Identity is not defined')
 
       AuthZkp.setConfig({
-        RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        RPC_URL: config.RARIMO_EVM_RPC_URL,
+        STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
         ISSUER_API_URL: config.API_URL,
-
-        CIRCUIT_FINAL_KEY_URL: AuthZkp.config.CIRCUIT_FINAL_KEY_URL,
-        CIRCUIT_WASM_URL: AuthZkp.config.CIRCUIT_WASM_URL,
       })
 
       const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
@@ -245,9 +242,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         throw new TypeError('VerifiableCredentials is not defined')
 
       ZkpGen.setConfig({
-        CORE_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        CORE_CHAIN_RPC_URL: config.RARIMO_EVM_RPC_URL,
         TARGET_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
-        STATE_V2_ADDRESS: config?.[`STATE_V2_CONTRACT_ADDRESS_${chain}`],
+        STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+        LIGHTWEIGHT_STATE_V2_ADDRESS:
+          config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
       })
 
