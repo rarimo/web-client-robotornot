@@ -12,23 +12,20 @@ import { AppButton, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler } from '@/helpers'
-import { useDemoVerifierContract } from '@/hooks/contracts'
+import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthConfirmation: FC<Props> = () => {
+  const [isStateManuallyTransited, setIsStateManuallyTransited] =
+    useState(false)
   const [isPending, setIsPending] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const navigate = useNavigate()
-  const { getProveIdentityTxBody } = useDemoVerifierContract()
+  const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const {
-    isNaturalZkp,
-    publishedChains,
-    CHAINS_DETAILS_MAP,
-    loadStatesDetails,
-  } = useZkpContext()
+  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -88,7 +85,7 @@ const AuthConfirmation: FC<Props> = () => {
 
       await provider?.signAndSendTx?.({
         to: config?.[
-          `DEMO_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
+          `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],
         ...txBody,
       })
@@ -131,13 +128,13 @@ const AuthConfirmation: FC<Props> = () => {
         ),
       )
 
-      await loadStatesDetails()
+      setIsStateManuallyTransited(true)
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     setIsPending(false)
-  }, [isNaturalZkp, loadStatesDetails, provider, selectedChainToPublish])
+  }, [isNaturalZkp, provider, selectedChainToPublish])
 
   const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
 
@@ -259,7 +256,7 @@ const AuthConfirmation: FC<Props> = () => {
         {provider?.isConnected ? (
           isProviderValidChain ? (
             <>
-              {isStatesActual ? (
+              {isStatesActual || isStateManuallyTransited ? (
                 <AppButton
                   className='auth-confirmation__submit-btn'
                   text={`SUBMIT PROOF`}

@@ -76,7 +76,7 @@ export const config = {
       ...acc,
       /* eslint-disable max-len */
       /* prettier-ignore */
-      [`DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_DEMO_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
+      [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* prettier-ignore */
       [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]:
         import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] ||
@@ -85,7 +85,7 @@ export const config = {
     {},
   ) as {
     [k in
-      | `DEMO_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
+      | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
       | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
   }),
 

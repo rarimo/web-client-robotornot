@@ -58,7 +58,7 @@
         "type": "address"
       }
     ],
-    "name": "__DemoVerifier_init",
+    "name": "__IdentityVerifier_init",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -124,7 +124,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct IDemoVerifier.IdentityProofInfo",
+        "internalType": "struct IIdentityVerifier.IdentityProofInfo",
         "name": "",
         "type": "tuple"
       }

@@ -4,7 +4,10 @@
 
 import { Contract, Signer, utils } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { DemoVerifier, DemoVerifierInterface } from "../DemoVerifier";
+import type {
+  IdentityVerifier,
+  IdentityVerifierInterface,
+} from "../IdentityVerifier";
 
 const _abi = [
   {
@@ -66,7 +69,7 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "__DemoVerifier_init",
+    name: "__IdentityVerifier_init",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -132,7 +135,7 @@ const _abi = [
             type: "bool",
           },
         ],
-        internalType: "struct IDemoVerifier.IdentityProofInfo",
+        internalType: "struct IIdentityVerifier.IdentityProofInfo",
         name: "",
         type: "tuple",
       },
@@ -341,15 +344,15 @@ const _abi = [
   },
 ] as const;
 
-export class DemoVerifier__factory {
+export class IdentityVerifier__factory {
   static readonly abi = _abi;
-  static createInterface(): DemoVerifierInterface {
-    return new utils.Interface(_abi) as DemoVerifierInterface;
+  static createInterface(): IdentityVerifierInterface {
+    return new utils.Interface(_abi) as IdentityVerifierInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): DemoVerifier {
-    return new Contract(address, _abi, signerOrProvider) as DemoVerifier;
+  ): IdentityVerifier {
+    return new Contract(address, _abi, signerOrProvider) as IdentityVerifier;
   }
 }

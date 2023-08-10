@@ -26,7 +26,7 @@ import type {
   OnEvent,
 } from "./common";
 
-export declare namespace IDemoVerifier {
+export declare namespace IIdentityVerifier {
   export type IdentityProofInfoStruct = {
     senderAddr: string;
     isProved: boolean;
@@ -59,9 +59,9 @@ export declare namespace ILightweightState {
   };
 }
 
-export interface DemoVerifierInterface extends utils.Interface {
+export interface IdentityVerifierInterface extends utils.Interface {
   functions: {
-    "__DemoVerifier_init(address)": FunctionFragment;
+    "__IdentityVerifier_init(address)": FunctionFragment;
     "addressToIdentityId(address)": FunctionFragment;
     "getAllowedIssuers(uint256)": FunctionFragment;
     "getIdentityProofInfo(uint256)": FunctionFragment;
@@ -79,7 +79,7 @@ export interface DemoVerifierInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "__DemoVerifier_init"
+      | "__IdentityVerifier_init"
       | "addressToIdentityId"
       | "getAllowedIssuers"
       | "getIdentityProofInfo"
@@ -96,7 +96,7 @@ export interface DemoVerifierInterface extends utils.Interface {
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "__DemoVerifier_init",
+    functionFragment: "__IdentityVerifier_init",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -156,7 +156,7 @@ export interface DemoVerifierInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "__DemoVerifier_init",
+    functionFragment: "__IdentityVerifier_init",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -250,12 +250,12 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
-export interface DemoVerifier extends BaseContract {
+export interface IdentityVerifier extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: DemoVerifierInterface;
+  interface: IdentityVerifierInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -277,7 +277,7 @@ export interface DemoVerifier extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
@@ -295,7 +295,7 @@ export interface DemoVerifier extends BaseContract {
     getIdentityProofInfo(
       identityId_: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[IDemoVerifier.IdentityProofInfoStructOutput]>;
+    ): Promise<[IIdentityVerifier.IdentityProofInfoStructOutput]>;
 
     isAllowedIssuer(
       schema_: BigNumberish,
@@ -348,7 +348,7 @@ export interface DemoVerifier extends BaseContract {
     zkpQueriesStorage(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  __DemoVerifier_init(
+  __IdentityVerifier_init(
     zkpQueriesStorage_: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
@@ -366,7 +366,7 @@ export interface DemoVerifier extends BaseContract {
   getIdentityProofInfo(
     identityId_: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<IDemoVerifier.IdentityProofInfoStructOutput>;
+  ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput>;
 
   isAllowedIssuer(
     schema_: BigNumberish,
@@ -419,7 +419,7 @@ export interface DemoVerifier extends BaseContract {
   zkpQueriesStorage(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -437,7 +437,7 @@ export interface DemoVerifier extends BaseContract {
     getIdentityProofInfo(
       identityId_: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<IDemoVerifier.IdentityProofInfoStructOutput>;
+    ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput>;
 
     isAllowedIssuer(
       schema_: BigNumberish,
@@ -512,7 +512,7 @@ export interface DemoVerifier extends BaseContract {
   };
 
   estimateGas: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
@@ -584,7 +584,7 @@ export interface DemoVerifier extends BaseContract {
   };
 
   populateTransaction: {
-    __DemoVerifier_init(
+    __IdentityVerifier_init(
       zkpQueriesStorage_: string,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;

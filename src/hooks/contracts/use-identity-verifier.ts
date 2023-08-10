@@ -4,17 +4,17 @@ import { BigNumberish } from 'ethers'
 import { useCallback, useMemo } from 'react'
 
 import { useWeb3Context } from '@/contexts'
-import { DemoVerifier__factory } from '@/types'
+import { IdentityVerifier__factory } from '@/types'
 import {
-  IDemoVerifier,
+  IIdentityVerifier,
   ILightweightState,
-} from '@/types/contracts/DemoVerifier'
+} from '@/types/contracts/IdentityVerifier'
 
-export const useDemoVerifierContract = (address?: string) => {
+export const useIdentityVerifier = (address?: string) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
-    () => DemoVerifier__factory.createInterface(),
+    () => IdentityVerifier__factory.createInterface(),
     [],
   )
 
@@ -22,7 +22,7 @@ export const useDemoVerifierContract = (address?: string) => {
     if (!address || !provider) return undefined
 
     return provider?.rawProvider
-      ? DemoVerifier__factory.connect(
+      ? IdentityVerifier__factory.connect(
           address,
           provider.rawProvider as unknown as Provider,
         )
@@ -32,7 +32,7 @@ export const useDemoVerifierContract = (address?: string) => {
   const getIdentityProofInfo = useCallback(
     async (
       identityId_: BigNumberish,
-    ): Promise<IDemoVerifier.IdentityProofInfoStructOutput | undefined> => {
+    ): Promise<IIdentityVerifier.IdentityProofInfoStructOutput | undefined> => {
       return contractInstance?.getIdentityProofInfo?.(identityId_)
     },
     [contractInstance],
