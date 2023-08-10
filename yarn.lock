@@ -605,44 +605,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@distributedlab/fetcher@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/fetcher::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@distributedlab/fetcher@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/fetcher::locator=react-template%40workspace%3A."
+"@distributedlab/fetcher@npm:1.0.0-rc.6, @distributedlab/fetcher@npm:^1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "@distributedlab/fetcher@npm:1.0.0-rc.6"
   dependencies:
     uuid: ^9.0.0
+  checksum: f70fdf9bca4fdcc780a1a22fbb9ad9c53a3ea8d134e39260092bad1b3747f3cd20c871df16fb87b80b5311971f6bf31450c5f44e8f8613681f718142e8dcdfcc
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@distributedlab/jac@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/jac::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@distributedlab/jac@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/jac::locator=react-template%40workspace%3A."
+"@distributedlab/jac@npm:1.0.0-rc.6, @distributedlab/jac@npm:^1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "@distributedlab/jac@npm:1.0.0-rc.6"
   dependencies:
-    "@distributedlab/fetcher": "workspace:*"
+    "@distributedlab/fetcher": 1.0.0-rc.6
     lodash: ^4.17.21
+  checksum: 7ddee40327bb6f7f884d9787c46606221de66b664bc34721b0b2fadc9048ff7382321a73fa333bd526718028eb553fcb1b0a241eab744bbfef768417c6c29bfd
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@distributedlab/reactivity@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/reactivity::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@distributedlab/reactivity@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/reactivity::locator=react-template%40workspace%3A."
+"@distributedlab/reactivity@npm:^1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "@distributedlab/reactivity@npm:1.0.0-rc.6"
+  checksum: 166f5a50610b6bcdce6665943ddc5a87a89c63bde7e54a3ebdb0624f3e2cd439e4fc7f3b0140418cfca15add7b594b97bec1be4d3e8766e820572c63b2b2b692
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@distributedlab/tools@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/tools::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@distributedlab/tools@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/tools::locator=react-template%40workspace%3A."
+"@distributedlab/tools@npm:1.0.0-rc.6, @distributedlab/tools@npm:^1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "@distributedlab/tools@npm:1.0.0-rc.6"
   dependencies:
     bignumber.js: ^9.1.1
     dayjs: ^1.11.7
     tslib: ^2.5.0
+  checksum: f9a48e8defa095671979c2dfc36420421530738ed242f0580af9b21b7d5de3bf57ad93cfd3452a5ff60904580e95181a86ce61cddc9d0e1ab723ea63853bd698
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@distributedlab/w3p@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/w3p::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@distributedlab/w3p@portal:/Users/lukachisama/Documents/DISTRIBUTED_LAB/FRONTEND/web-kit/packages/w3p::locator=react-template%40workspace%3A."
+"@distributedlab/w3p@npm:1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "@distributedlab/w3p@npm:1.0.0-rc.6"
   dependencies:
-    "@distributedlab/tools": "workspace:*"
+    "@distributedlab/tools": 1.0.0-rc.6
     "@ethersproject/abstract-provider": ^5.7.0
     "@ethersproject/properties": ^5.7.0
     "@near-wallet-selector/core": ^7.8.2
@@ -651,8 +655,9 @@ __metadata:
     bs58: ^5.0.0
     ethers: ^5.7.2
     near-api-js: ^1.1.0
+  checksum: 361f15f77ed604c51e60883e2ac329a51591291114348541804d6c88fcd961e4b632786fa7a30143a5661c75c2842c4bacb1b49c4ed6b49be88ab467c6da70a0
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@emotion/is-prop-valid@npm:^0.8.2":
   version: 0.8.8
@@ -1692,7 +1697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:1.3.1, @noble/hashes@npm:^1, @noble/hashes@npm:^1.0.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.3.0":
+"@noble/hashes@npm:1.3.1, @noble/hashes@npm:^1, @noble/hashes@npm:^1.0.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.3.1":
   version: 1.3.1
   resolution: "@noble/hashes@npm:1.3.1"
   checksum: 7fdefc0f7a0c1ec27acc6ff88841793e3f93ec4ce6b8a6a12bfc0dd70ae6b7c4c82fe305fdfeda1735d5ad4a9eebe761e6693b3d355689c559e91242f4bc95b1
@@ -1815,87 +1820,93 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/auth-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/auth-zkp-iden3::locator=react-template%40workspace%3A."
+"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.16"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/identity-gen-iden3": "workspace:^"
-    "@rarimo/provider": "workspace:^"
-    "@rarimo/shared-zkp-iden3": "workspace:^"
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.16
+    "@rarimo/provider": ^2.0.0-rc.16
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.16
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
+  checksum: 5c1bd99680c97967151adf4c679c3e6b6e466855f475d267811a60ca35cabddd264cb9b7f1bb6590d8253341b6fd5b50aa3886f8f3e6c4321ea23ed3fc029ab2
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/client@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/client::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/client@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/client::locator=react-template%40workspace%3A."
+"@rarimo/client@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/client@npm:2.0.0-rc.16"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.31.0
     "@cosmjs/stargate": ^0.31.0
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/reactivity": ^1.0.0-rc.6
-    "@rarimo/shared": "workspace:^"
+    "@rarimo/shared": ^2.0.0-rc.16
+  checksum: c2f475f29462ebcb496ac73e7afbec4753f4903afac6f62b88df81a15accfc70a701c5ca43c5aba15ce2b487c9b09c5ced7e4774bef889fdad2a8af46fe870ad
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/identity-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/identity-gen-iden3::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/identity-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/identity-gen-iden3::locator=react-template%40workspace%3A."
+"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.16"
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
+  checksum: ab988b06dab60c331f8d8f05ace9c3593f0933c2cb2d63b7810ebe715cc329069dd0968e9e6c8ca6aa873b37b941781973b45b4cda2850d168bbfd89f93ede42
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/provider@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/provider::locator=react-template%40workspace%3A."
+"@rarimo/provider@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/provider@npm:2.0.0-rc.16"
   dependencies:
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/shared": "workspace:^"
+    "@rarimo/shared": ^2.0.0-rc.16
+  checksum: 993a5bfef5a94314834010bc2260c6e8e0f2c96d0b0cd1fa6c33c8af4f7ba7f1248ee92ce18eedb73b304e006096ac4fb4179206ef2bce384774e7ebe3d9d752
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/shared-zkp-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared-zkp-iden3::locator=react-template%40workspace%3A."
+"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.14, @rarimo/shared-zkp-iden3@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.16"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/client": "workspace:^"
+    "@rarimo/client": ^2.0.0-rc.16
     tslib: ^2.5.0
+  checksum: 9c5f007fb0b2e6c571e1655121fc44b348cacab50a3e369bd26584db6063d79c5d46f3f3ce4d87460344943907468f7fad27591d5e2234a53b2e77358f9abc9a
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/shared@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/shared::locator=react-template%40workspace%3A."
+"@rarimo/shared@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/shared@npm:2.0.0-rc.16"
   dependencies:
     "@distributedlab/jac": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
+  checksum: 1aa7d065e7b41df2f7a115c0efed9a6bd0eb338f58a07e6123fb1bbb1d14f955234d3d1d60684a5b2123816323db464eaf1372ca9b12451b42d0935e70605228
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@rarimo/zkp-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/zkp-gen-iden3@portal:/Users/lukachisama/Documents/RARIMO/js-sdk/packages/zkp-gen-iden3::locator=react-template%40workspace%3A."
+"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.16":
+  version: 2.0.0-rc.16
+  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.16"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/auth-zkp-iden3": "workspace:^"
-    "@rarimo/client": "workspace:^"
-    "@rarimo/identity-gen-iden3": "workspace:^"
-    "@rarimo/shared": "workspace:^"
-    "@rarimo/shared-zkp-iden3": "workspace:^"
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.16
+    "@rarimo/client": ^2.0.0-rc.16
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.16
+    "@rarimo/shared": ^2.0.0-rc.16
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.16
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1903,13 +1914,14 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.14
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
+  checksum: 6a9567433efb787acf23b555bc48fb310d8803b6eedcc91513bb731dd2a6955e63b9b67bd315895ffc581d82d9b281dd03d5417b47d3a46341aad8e1b4220b9a
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@remix-run/router@npm:1.7.2":
-  version: 1.7.2
-  resolution: "@remix-run/router@npm:1.7.2"
-  checksum: ea43bb662f1f5c93965989b1667fb6e8a301cb69c44341ee92c81cb15ea685b494168e5905593b5777d59058f1455b4b58083d5b895f04382e49362e420d7af4
+"@remix-run/router@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@remix-run/router@npm:1.8.0"
+  checksum: f754f02d3b4fc86791b88acf16065000609e2324b9436027844a76831c7107c0994067cb83abdd6093c282bd518a5c89b5e02aead585782978586e3a04534428
   languageName: node
   linkType: hard
 
@@ -1955,12 +1967,12 @@ __metadata:
   linkType: hard
 
 "@solana/web3.js@npm:^1.73.2":
-  version: 1.78.3
-  resolution: "@solana/web3.js@npm:1.78.3"
+  version: 1.78.4
+  resolution: "@solana/web3.js@npm:1.78.4"
   dependencies:
     "@babel/runtime": ^7.22.6
     "@noble/curves": ^1.0.0
-    "@noble/hashes": ^1.3.0
+    "@noble/hashes": ^1.3.1
     "@solana/buffer-layout": ^4.0.0
     agentkeepalive: ^4.3.0
     bigint-buffer: ^1.1.5
@@ -1973,7 +1985,7 @@ __metadata:
     node-fetch: ^2.6.12
     rpc-websockets: ^7.5.1
     superstruct: ^0.14.2
-  checksum: 6d652c31ffcd7c21425a39db58a7017c74922c9c0a515022f1f8025c1822d8bc8aab5bbcdcebae23d6dd8cb30d7f43f321c297fad3602b704179be091dd4922a
+  checksum: e1c44c6cbec87cdfd4d6d23b4241b746e14ed3a9ca73d596693758d91ac825cecf579345da3b0b7bb5e54b6794791bc0eac02cadf11f1ec79e859b6536f26f11
   languageName: node
   linkType: hard
 
@@ -8489,12 +8501,12 @@ __metadata:
   linkType: hard
 
 "n3@npm:^1.16.3":
-  version: 1.17.0
-  resolution: "n3@npm:1.17.0"
+  version: 1.17.1
+  resolution: "n3@npm:1.17.1"
   dependencies:
     queue-microtask: ^1.1.2
     readable-stream: ^4.0.0
-  checksum: 20fd3c9e4e5534b4fc3e81fee151781fdfcb35ff6afd7d845904ef6f062263ac13242e8d8bb940bea44e3cf41f5f3ffc08aae0227b3cf70225c9bab96d9d5d16
+  checksum: a5f028db16ef7e1a2e27edf20416c9c719bf0d2bc918cc69276b63214a09fc8a91713e6a38fe8322b8b5b9f195e5d658f60959511edf32d6a4401a9132a0a00d
   languageName: node
   linkType: hard
 
@@ -9713,26 +9725,26 @@ __metadata:
   linkType: hard
 
 "react-router-dom@npm:^6.6.2":
-  version: 6.14.2
-  resolution: "react-router-dom@npm:6.14.2"
+  version: 6.15.0
+  resolution: "react-router-dom@npm:6.15.0"
   dependencies:
-    "@remix-run/router": 1.7.2
-    react-router: 6.14.2
+    "@remix-run/router": 1.8.0
+    react-router: 6.15.0
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: a53dbc566ecab7890b829d42d38553684f704803c1f615db1bd6aa2d71542c369a1a79e4385be31ae71a14b72ddbcd0d8b51188248c2bccd44e015050d1927df
+  checksum: 95301837e293654f00934de6a4bdb27bfb06f613503e4cce7a93f19384793729832e7479d50faf3b9457d149014d4df40a3ee3a5193d7e3a3caadb7aaa6ec0f9
   languageName: node
   linkType: hard
 
-"react-router@npm:6.14.2":
-  version: 6.14.2
-  resolution: "react-router@npm:6.14.2"
+"react-router@npm:6.15.0":
+  version: 6.15.0
+  resolution: "react-router@npm:6.15.0"
   dependencies:
-    "@remix-run/router": 1.7.2
+    "@remix-run/router": 1.8.0
   peerDependencies:
     react: ">=16.8"
-  checksum: 7507bf5732b3a8ddbd901c2061216eebca73e194449bff58acc1445171e22bdda36b455b8af066e467748ebfb5875b3c0a565941c46af65c6f653a6ed0dc4fe4
+  checksum: 345b29277e13997f2625f0037f537eaf1955bb9f44ebfea80dd3ff83fc06273f7b64e1be944bfc75945fd2af5af917874133a8a93ed5ecaca523be8f045ae166
   languageName: node
   linkType: hard
 
@@ -9751,11 +9763,11 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.15
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-    "@rarimo/auth-zkp-iden3": "*"
-    "@rarimo/client": "*"
-    "@rarimo/identity-gen-iden3": "*"
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.16
+    "@rarimo/client": ^2.0.0-rc.16
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.16
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.14
-    "@rarimo/zkp-gen-iden3": "*"
+    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.16
     "@typechain/ethers-v5": ^11.0.0
     "@types/lodash": ^4.14.195
     "@types/node": ^20.3.1
