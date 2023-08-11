@@ -35,6 +35,14 @@ const AuthConfirmation: FC<Props> = () => {
     return SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
   }, [selectedChainToPublish])
 
+  const chainsToSwitch = useMemo(
+    () =>
+      Object.values(SUPPORTED_CHAINS)?.filter(el =>
+        Boolean(config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${el}`]),
+      ),
+    [],
+  )
+
   const isStatesActual = useMemo(
     () => isNaturalZkp?.isStatesActual(),
     [isNaturalZkp],
@@ -218,38 +226,42 @@ const AuthConfirmation: FC<Props> = () => {
           </span>
         </div>
 
-        <Dropdown
-          isOpen={isDropdownOpen}
-          setIsOpen={setIsDropdownOpen}
-          head={
-            <AppButton
-              className='auth-confirmation__chains-switch-btn'
-              scheme='none'
-              modification='none'
-              iconLeft={ICON_NAMES.plus}
-              text={`Switch chain`}
-              onClick={() => setIsDropdownOpen(prev => !prev)}
-            />
-          }
-        >
-          <div className='auth-confirmation__chains'>
-            {Object.values(SUPPORTED_CHAINS)?.map?.((el, idx) => (
-              <button
-                key={idx}
-                className='auth-confirmation__chain-item'
-                onClick={() => handleSelectChain(el)}
-              >
-                <Icon
-                  className='auth-confirmation__chain-item-icon'
-                  name={CHAINS_DETAILS_MAP[el].iconName}
-                />
-                <span className='auth-confirmation__chain-item-title'>
-                  {CHAINS_DETAILS_MAP[el].title}
-                </span>
-              </button>
-            ))}
-          </div>
-        </Dropdown>
+        {chainsToSwitch?.length > 1 ? (
+          <Dropdown
+            isOpen={isDropdownOpen}
+            setIsOpen={setIsDropdownOpen}
+            head={
+              <AppButton
+                className='auth-confirmation__chains-switch-btn'
+                scheme='none'
+                modification='none'
+                iconLeft={ICON_NAMES.plus}
+                text={`Switch chain`}
+                onClick={() => setIsDropdownOpen(prev => !prev)}
+              />
+            }
+          >
+            <div className='auth-confirmation__chains'>
+              {chainsToSwitch?.map?.((el, idx) => (
+                <button
+                  key={idx}
+                  className='auth-confirmation__chain-item'
+                  onClick={() => handleSelectChain(el)}
+                >
+                  <Icon
+                    className='auth-confirmation__chain-item-icon'
+                    name={CHAINS_DETAILS_MAP[el].iconName}
+                  />
+                  <span className='auth-confirmation__chain-item-title'>
+                    {CHAINS_DETAILS_MAP[el].title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Dropdown>
+        ) : (
+          <></>
+        )}
 
         <div className='auth-confirmation__divider' />
 
