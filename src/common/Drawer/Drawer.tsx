@@ -1,3 +1,5 @@
+import './styles.scss'
+
 import { AnimatePresence, motion, MotionProps } from 'framer-motion'
 import { FC, HTMLAttributes, useEffect, useMemo, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -44,44 +46,35 @@ const Drawer: FC<Props> = ({
         <>
           <motion.div
             className='drawer__backdrop'
-            style={{
-              position: 'fixed',
-              width: '100%',
-              height: '100%',
-              top: '0',
-              right: '0',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 99,
-            }}
             onClick={() => updateIsShown(false)}
-          />
-          <motion.div
-            key={`drawer-${uid}`}
-            style={{
-              display: 'flex',
-              position: 'fixed',
-              height: '100%',
-              zIndex: 100,
-              top: '0',
-              right: '0',
-              overflow: 'hidden',
-            }}
             variants={{
               closed: {
                 width: '0',
-                opacity: 0,
-                transitionDuration: '0.15s',
               },
               open: {
-                width: 'auto',
-                opacity: 1,
-                transitionDuration: '0.15s',
+                width: '100%',
               },
             }}
             initial='closed'
             animate='open'
             exit='closed'
+          />
+          <motion.div
+            key={`drawer-${uid}`}
             className={`drawer ${className || ''}`}
+            variants={{
+              closed: {
+                width: '0',
+                opacity: 0,
+              },
+              open: {
+                width: 'auto',
+                opacity: 1,
+              },
+            }}
+            initial='closed'
+            animate='open'
+            exit='closed'
             ref={drawerRef}
             {...rest}
           >
