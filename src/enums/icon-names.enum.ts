@@ -241,4 +241,7 @@ export enum ICON_NAMES {
 
   polygon = 'polygon',
   ethereum = 'ethereum',
+
+  usersGroup4 = 'users-group-4',
+  robot = 'robot',
 }

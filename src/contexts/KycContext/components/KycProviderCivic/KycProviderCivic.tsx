@@ -123,36 +123,31 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
       updateIsShown={setIsModalShown}
     >
       <div className='kyc-provider-civic__modal-body'>
-        <div className='kyc-provider-civic__modal-body-icon-wrp'>
-          <Icon
-            className='kyc-provider-civic__modal-body-icon'
-            name={ICON_NAMES.exclamationCircle}
-          />
-        </div>
-        <h3 className='kyc-provider-civic__modal-body-title'>
-          {`Civic pass verified users get permissioned access to dAPPs`}
-        </h3>
-        <div className='kyc-provider-civic__modal-body-actions'>
-          <AppButton
-            className='kyc-provider-civic__modal-body-actions-btn'
-            text={`Uniqueness`}
-            onClick={() =>
-              setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)
-            }
-            iconLeft={ICON_NAMES.users}
-          />
-          <div className='kyc-provider-civic__modal-body-actions-divider-wrp'>
-            <div className='kyc-provider-civic__modal-body-actions-divider' />
-            <span className='kyc-provider-civic__modal-body-actions-divider-text'>{`OR`}</span>
-          </div>
-          <AppButton
-            className='kyc-provider-civic__modal-body-actions-btn'
-            text={`Captcha`}
-            scheme='flat'
-            onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
-            iconLeft={ICON_NAMES.reCaptcha}
-          />
-        </div>
+        <button
+          className='kyc-provider-civic__modal-body-btn'
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)}
+        >
+          <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
+            <Icon
+              className='kyc-provider-civic__modal-body-btn-icon'
+              name={ICON_NAMES.usersGroup4}
+            />
+          </span>
+          {`Unique Verification`}
+        </button>
+
+        <button
+          className='kyc-provider-civic__modal-body-btn'
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
+        >
+          <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
+            <Icon
+              className='kyc-provider-civic__modal-body-btn-icon'
+              name={ICON_NAMES.robot}
+            />
+          </span>
+          {`CAPTCHA Verification`}
+        </button>
       </div>
 
       {gatekeeperNetwork ? (
