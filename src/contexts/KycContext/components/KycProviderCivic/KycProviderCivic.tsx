@@ -15,7 +15,7 @@ import {
 import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
-import { AppButton, BasicModal, Icon } from '@/common'
+import { BasicModal, Icon } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'

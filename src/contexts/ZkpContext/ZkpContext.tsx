@@ -31,6 +31,7 @@ interface ZkpContextValue {
     get: SUPPORTED_CHAINS[]
     set: (value: SetStateAction<SUPPORTED_CHAINS[]>) => void
   }
+  verifiableCredentials?: VerifiableCredentials<QueryVariableName>
   CHAINS_DETAILS_MAP: Record<SUPPORTED_CHAINS, ChainToPublish>
 
   isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
@@ -56,6 +57,7 @@ export const zkpContext = createContext<ZkpContextValue>({
       throw new TypeError(`publishedChains.set() not implemented`)
     },
   },
+  verifiableCredentials: undefined,
   CHAINS_DETAILS_MAP: {
     [SUPPORTED_CHAINS.POLYGON]: {
       title: 'Polygon chain',
@@ -310,6 +312,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           get: publishedChains,
           set: setPublishedChains,
         },
+        verifiableCredentials,
         CHAINS_DETAILS_MAP,
 
         getClaimOffer,

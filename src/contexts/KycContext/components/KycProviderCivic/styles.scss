@@ -40,6 +40,16 @@ $civic-brand-color: #ff6b4e;
   font-weight: 400;
 }
 
+.kyc-provider-civic__modal-body-btn-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: $civic_brand_color;
+  border-radius: 50%;
+
+  @include static-icon-size(48);
+}
+
 .kyc-provider-civic__modal-body-btn {
   display: flex;
   flex-direction: column;
@@ -55,16 +65,6 @@ $civic-brand-color: #ff6b4e;
   &:last-child .kyc-provider-civic__modal-body-btn-icon-wrp {
     color: var(--white);
   }
-}
-
-.kyc-provider-civic__modal-body-btn-icon-wrp {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: $civic_brand_color;
-  border-radius: 50%;
-
-  @include static-icon-size(48);
 }
 
 .kyc-provider-civic__modal-body-btn-icon {

@@ -19,7 +19,8 @@ const AuthPreview: FC<Props> = () => {
 
   const { provider } = useWeb3Context()
 
-  const { getVerifiableCredentials, getZkProof } = useZkpContext()
+  const { verifiableCredentials, getVerifiableCredentials, getZkProof } =
+    useZkpContext()
 
   const {
     isLoaded,
@@ -33,11 +34,11 @@ const AuthPreview: FC<Props> = () => {
     setIsPending(true)
 
     try {
-      const verifiableCredentials = await getVerifiableCredentials(
-        config.DEFAULT_CHAIN,
-      )
+      const currentVerifiableCredentials =
+        verifiableCredentials ||
+        (await getVerifiableCredentials(config.DEFAULT_CHAIN))
 
-      await getZkProof(config.DEFAULT_CHAIN, verifiableCredentials)
+      await getZkProof(config.DEFAULT_CHAIN, currentVerifiableCredentials)
 
       navigate(RoutesPaths.authConfirmation)
     } catch (error) {
@@ -45,7 +46,7 @@ const AuthPreview: FC<Props> = () => {
     }
 
     setIsPending(false)
-  }, [getVerifiableCredentials, getZkProof, navigate])
+  }, [getVerifiableCredentials, getZkProof, navigate, verifiableCredentials])
 
   const completeKyc = useCallback(async () => {
     navigate(RoutesPaths.authProviders)

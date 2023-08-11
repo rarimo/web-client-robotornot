@@ -32,7 +32,7 @@
     "@rarimo/auth-zkp-iden3": "^2.0.0-rc.16",
     "@rarimo/client": "^2.0.0-rc.16",
     "@rarimo/identity-gen-iden3": "^2.0.0-rc.16",
-    "@rarimo/shared-zkp-iden3": "^2.0.0-rc.14",
+    "@rarimo/shared-zkp-iden3": "^2.0.0-rc.16",
     "@rarimo/zkp-gen-iden3": "^2.0.0-rc.16",
     "@uauth/js": "^2.8.0",
     "@walletconnect/ethereum-provider": "^2.8.6",
