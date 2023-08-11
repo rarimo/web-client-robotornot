@@ -125,13 +125,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     if (!selectedKycProviderName) return []
 
     const unstoppablePartialDetails = kycDetails as unknown as UserInfo
+
     const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData &&
     kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
       : {}) as unknown as GitCoinPassportUserInfo
+
     const civicPartialDetails = kycDetails as unknown as {
-      address: string
+      address?: string
     }
+
     const worldcoinPartialDetails = (kycDetails?.kycAdditionalData &&
     kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
@@ -163,14 +166,17 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         ],
       ],
       [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
-          ),
-          civicPartialDetails?.address
-            ? abbrCenter(civicPartialDetails?.address)
-            : '',
-        ],
+        ...(civicPartialDetails?.address &&
+        civicPartialDetails?.address !== 'none'
+          ? [
+              [
+                t(
+                  `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
+                ),
+                abbrCenter(civicPartialDetails?.address),
+              ] as [string, string],
+            ]
+          : []),
       ],
       [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
         [

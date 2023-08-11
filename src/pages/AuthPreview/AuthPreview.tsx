@@ -25,7 +25,7 @@ const AuthPreview: FC<Props> = () => {
     isLoaded,
     isValidCredentials,
     selectedKycDetails,
-    retryKyc,
+    // retryKyc,
     verificationErrorMessages,
   } = useKycContext()
 
@@ -49,8 +49,11 @@ const AuthPreview: FC<Props> = () => {
 
   const completeKyc = useCallback(async () => {
     navigate(RoutesPaths.authProviders)
-    retryKyc()
-  }, [navigate, retryKyc])
+    // retryKyc()
+  }, [
+    navigate,
+    // retryKyc
+  ])
 
   const ValidCredentialsPreview = useMemo(
     () => (

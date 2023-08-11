@@ -33,7 +33,10 @@ const GATEKEEPER_NETWORK_MAP = {
   captcha: 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6',
 }
 
-const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
+const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
+  loginCb,
+  handleSigned,
+}) => {
   const { gatewayToken, requestGatewayToken } = useGateway()
   const [signedNonce, setSignedNonce] = useState<string>()
   const btnRef = useRef<HTMLButtonElement>()
@@ -58,6 +61,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
       const signedMessage = await provider?.signMessage?.(data.message)
 
       setSignedNonce(signedMessage)
+      handleSigned()
       await loginCb({
         chainName: 'ethereum',
         address: provider?.address,
@@ -66,7 +70,7 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [loginCb, provider])
+  }, [loginCb, provider, handleSigned])
 
   useEffect(() => {
     if (gatewayToken?.state === State.ACTIVE || signedNonce) return
@@ -107,6 +111,10 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
     }
   })
 
+  const handleSigned = useCallback(() => {
+    setIsModalShown(false)
+  }, [])
+
   return (
     <BasicModal
       className='kyc-provider-civic__modal'
@@ -127,7 +135,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
         <div className='kyc-provider-civic__modal-body-actions'>
           <AppButton
             className='kyc-provider-civic__modal-body-actions-btn'
-            text={`Uniqness`}
+            text={`Uniqueness`}
             onClick={() =>
               setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)
             }
@@ -158,6 +166,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
           <KycProviderCivicContent
             loginCb={loginCb}
             setKycDetails={setKycDetails}
+            handleSigned={handleSigned}
           />
         </GatewayProvider>
       ) : (

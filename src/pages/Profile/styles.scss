@@ -15,6 +15,12 @@ $card-padding-side: #{toRem(24)};
   gap: toRem(16);
 }
 
+.profile__header-title {
+  @include respond-to(xsmall) {
+    font-size: clamp(#{toRem(24)}, 7.5vw, #{toRem(32)});
+  }
+}
+
 .profile__header-icon-wrp {
   display: flex;
   justify-content: center;
@@ -59,6 +65,13 @@ $card-padding-side: #{toRem(24)};
   padding-left: $card-padding-side;
   padding-right: $card-padding-side;
   max-width: 80%;
+
+  @include respond-to(xsmall) {
+    align-self: center;
+    text-align: center;
+    max-width: none;
+    width: 100%;
+  }
 }
 
 .profile__copy-field-wrp {
@@ -75,6 +88,11 @@ $card-padding-side: #{toRem(24)};
   padding: toRem(16);
   background: rgba(0, 0, 0, 0.05);
   border: toRem(1) solid var(--border-primary-main);
+
+  @include respond-to(xsmall) {
+    flex-direction: column;
+    gap: toRem(24);
+  }
 }
 
 .profile__copy-field-btn {
@@ -86,10 +104,19 @@ $card-padding-side: #{toRem(24)};
   font-size: toRem(14);
   font-weight: 700;
   letter-spacing: toRem(0.56);
+
+  @include respond-to(xsmall) {
+    width: 100%;
+  }
 }
 
 .profile__tip {
   color: var(--text-secondary-main);
+
+  @include respond-to(xsmall) {
+    align-self: center;
+    text-align: center;
+  }
 }
 
 .profile__tip-link {
