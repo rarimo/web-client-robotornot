@@ -19,7 +19,7 @@
 
 .auth-providers__header-title {
   color: var(--text-primary-main);
-  font-size: clamp(#{toRem(24)}, 5vw, #{toRem(48)});
+  font-size: clamp(#{toRem(24)}, 5vw, #{toRem(42)});
   font-weight: 700;
 }
 
@@ -27,7 +27,7 @@
   text-transform: capitalize;
   text-align: center;
   color: var(--text-tertiary-main);
-  font-size: clamp(#{toRem(12)}, 2.5vw, #{toRem(20)});
+  font-size: clamp(#{toRem(12)}, 2.5vw, #{toRem(16)});
 }
 
 .auth-providers__list {
