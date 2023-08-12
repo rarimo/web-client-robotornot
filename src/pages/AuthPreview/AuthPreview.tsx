@@ -131,10 +131,12 @@ const AuthPreview: FC<Props> = () => {
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>
           {verifiableCredentials && isPending ? (
-            `Proof generation`
+            <>
+              {`Proof of Humanity`} <br /> {`Proof Generating`}
+            </>
           ) : (
             <>
-              {`Proof of Humanity`} <br /> {`Credentials generating`}
+              {`Proof of Humanity`} <br /> {`Credentials Generating`}
             </>
           )}
         </h2>
