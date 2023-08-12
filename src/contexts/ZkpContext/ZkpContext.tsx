@@ -237,7 +237,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         } catch (error) {
           if (
             error instanceof FetcherError &&
-            error.response.status === HTTP_STATUS_CODES.NOT_IMPLEMENTED
+            error.response.status === HTTP_STATUS_CODES.BAD_REQUEST
           ) {
             await sleep(30 * 1000)
           } else {
