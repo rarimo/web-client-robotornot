@@ -19,17 +19,17 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   const nonce = uuidv4()
 
   useEffectOnce(() => {
+    const wcRedirectUrl = `https://id.worldcoin.org/authorize?client_id=${
+      config.WORLDCOIN_APP_ID
+    }&response_type=${RESPONSE_TYPE}&redirect_uri=${
+      new URL(window.location.href).href
+    }&scope=openid&state=${state}&nonce=${nonce}`
+
+    alert(wcRedirectUrl)
+
     searchParams.get('id_token')
       ? loginCb(searchParams.get('id_token'))
-      : window.open(
-          `https://id.worldcoin.org/authorize?client_id=${
-            config.WORLDCOIN_APP_ID
-          }&response_type=${RESPONSE_TYPE}&redirect_uri=${
-            new URL(window.location.href).href
-          }&scope=openid&state=${state}&nonce=${nonce}`,
-          '_self',
-          'noopener,noreferrer',
-        )
+      : window.open(wcRedirectUrl, '_self', 'noopener,noreferrer')
   })
 
   return <></>
