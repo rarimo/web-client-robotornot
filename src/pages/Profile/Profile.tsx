@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useFilePicker } from 'use-file-picker'
 
 import { AppButton, Icon } from '@/common'
@@ -9,6 +10,8 @@ import { ICON_NAMES } from '@/enums'
 import { abbrCenter, ErrorHandler } from '@/helpers'
 
 const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
+  const navigate = useNavigate()
+
   const { identity, createIdentity } = useZkpContext()
   const [openFileSelector, { filesContent, clear }] = useFilePicker({
     accept: '.json',
@@ -42,6 +45,14 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   return (
     <div className='profile'>
+      <AppButton
+        className='profile__back-btn'
+        iconLeft={ICON_NAMES.chevronLeft}
+        scheme='none'
+        size={'none'}
+        onClick={() => navigate(-1)}
+      />
+
       <div className='profile__header'>
         <div className='profile__header-icon-wrp'>
           <Icon className='profile__header-icon' name={ICON_NAMES.user} />
@@ -62,17 +73,28 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <div className='profile__copy-field-wrp'>
           <div className='profile__copy-field'>
             {abbrCenter(identity?.idString ?? '', 10)}
-            <AppButton
-              className='profile__copy-field-btn'
-              modification='none'
-              iconLeft={ICON_NAMES.download}
-              href={exportLink}
-              target='_blank'
-              download={`pk.json`}
-              text={`EXPORT`}
-              size='small'
-              isDisabled={!identity?.privateKeyHex}
-            />
+
+            {identity?.privateKeyHex ? (
+              <AppButton
+                className='profile__copy-field-btn'
+                modification='none'
+                iconLeft={ICON_NAMES.download}
+                href={exportLink}
+                target='_blank'
+                download={`pk.json`}
+                text={`EXPORT`}
+                size='small'
+              />
+            ) : (
+              <AppButton
+                className='profile__copy-field-btn'
+                modification='none'
+                iconLeft={ICON_NAMES.download}
+                text={`CREATE`}
+                size='small'
+                onClick={() => createIdentity()}
+              />
+            )}
           </div>
         </div>
       </div>

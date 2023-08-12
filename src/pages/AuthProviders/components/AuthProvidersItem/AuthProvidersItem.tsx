@@ -1,10 +1,12 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes, useMemo } from 'react'
+import { PROVIDERS } from '@distributedlab/w3p'
+import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
 
 import { Icon } from '@/common'
-import { useKycContext } from '@/contexts'
+import { useKycContext, useWeb3Context } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 const KYC_PROVIDERS_MAP: Record<
   SUPPORTED_KYC_PROVIDERS,
@@ -37,11 +39,32 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 const AuthProvidersItem: FC<Props> = ({ supportedKycProvider }) => {
   const { login } = useKycContext()
+  const { provider, init } = useWeb3Context()
 
   const kycProvider = useMemo(
     () => KYC_PROVIDERS_MAP[supportedKycProvider],
     [supportedKycProvider],
   )
+
+  const connectProvider = useCallback(async () => {
+    try {
+      await init(PROVIDERS.Metamask)
+      bus.emit(BUS_EVENTS.info, {
+        title: 'Wallet connected',
+        message: 'You have successfully connected your wallet',
+      })
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+  }, [init])
+
+  const handleLogin = useCallback(async () => {
+    if (!provider?.isConnected) {
+      await connectProvider()
+    }
+
+    await login(supportedKycProvider)
+  }, [connectProvider, login, provider?.isConnected, supportedKycProvider])
 
   return (
     <div className='auth-providers-item'>
@@ -52,10 +75,7 @@ const AuthProvidersItem: FC<Props> = ({ supportedKycProvider }) => {
         name={ICON_NAMES.arrowRight}
       />
 
-      <button
-        className='auth-providers-item__button'
-        onClick={() => login(supportedKycProvider)}
-      />
+      <button className='auth-providers-item__button' onClick={handleLogin} />
     </div>
   )
 }

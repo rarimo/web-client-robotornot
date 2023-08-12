@@ -7,6 +7,12 @@ $card-padding-side: #{toRem(24)};
   gap: toRem(48);
 }
 
+.profile .profile__back-btn {
+  --button-icon-size: #{toRem(28)};
+
+  align-self: flex-start;
+}
+
 .profile__header {
   display: flex;
   flex-direction: column;
