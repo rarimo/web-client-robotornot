@@ -25,8 +25,6 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
       new URL(window.location.href).href
     }&scope=openid&state=${state}&nonce=${nonce}`
 
-    alert(wcRedirectUrl)
-
     searchParams.get('id_token')
       ? loginCb(searchParams.get('id_token'))
       : window.open(wcRedirectUrl, '_self', 'noopener,noreferrer')
