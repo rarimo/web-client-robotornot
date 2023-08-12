@@ -43,7 +43,7 @@ const AuthSuccess: FC<Props> = () => {
   })
 
   useEffect(() => {
-    if (count > 0) return
+    if (count > 0 || !config.EXTERNAL_PLATFORM_REDIRECT_URL) return
 
     window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
   }, [count])
@@ -115,10 +115,14 @@ const AuthSuccess: FC<Props> = () => {
         routePath={RoutesPaths.authProviders}
       />
 
-      <div className='auth-success__tip'>
-        {`Automatically redirected in `}
-        <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
-      </div>
+      {config.EXTERNAL_PLATFORM_REDIRECT_URL ? (
+        <div className='auth-success__tip'>
+          {`Automatically redirected in `}
+          <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   )
 }
