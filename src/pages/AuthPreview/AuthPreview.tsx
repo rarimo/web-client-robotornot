@@ -59,7 +59,7 @@ const AuthPreview: FC<Props> = () => {
   const ValidCredentialsPreview = useMemo(
     () => (
       <div className='auth-preview__card'>
-        {`The credential will be used to generate a zero-knowledge proof. No sensitive data will be shared with any party.`}
+        {`Zero-knowledge proof will be generated. No personal info will be shared with third parties.`}
         <CautionTip
           className='auth-preview__card-caution-tip'
           message={
@@ -129,7 +129,15 @@ const AuthPreview: FC<Props> = () => {
       }`}
     >
       <div className='auth-preview__header'>
-        <h2 className='auth-preview__header-title'>{`Proof of Human credentials`}</h2>
+        <h2 className='auth-preview__header-title'>
+          {verifiableCredentials && isPending ? (
+            `Proof generation`
+          ) : (
+            <>
+              {`Proof of Humanity`} <br /> {`Credentials generating`}
+            </>
+          )}
+        </h2>
       </div>
 
       {isLoaded ? (
@@ -146,7 +154,15 @@ const AuthPreview: FC<Props> = () => {
         )
       ) : (
         <div className='auth-preview__card'>
-          <Animation source={loaderJson} />
+          <div className='auth-preview__loader-wrp'>
+            <Animation source={loaderJson} />
+            <span className='auth-preview__loader-title'>
+              {`Please wait...`}
+            </span>
+            <span className='auth-preview__loader-subtitle'>
+              {`Information is being processed`}
+            </span>
+          </div>
         </div>
       )}
     </div>
