@@ -211,6 +211,18 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         RPC_URL: config.RARIMO_EVM_RPC_URL,
         STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
         ISSUER_API_URL: config.API_URL,
+
+        ...(config?.CIRCUIT_URLS?.auth?.wasm
+          ? {
+              CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
+            }
+          : {}),
+
+        ...(config?.CIRCUIT_URLS?.auth?.zkey
+          ? {
+              CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
+            }
+          : {}),
       })
 
       const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
@@ -274,6 +286,54 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         LIGHTWEIGHT_STATE_V2_ADDRESS:
           config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${chain}`],
         ISSUER_API_URL: config.API_URL,
+
+        ...(config?.CIRCUIT_URLS?.sigV2OnChain?.wasm
+          ? {
+              CIRCUIT_SIG_V2_ON_CHAIN_WASM_URL:
+                config.CIRCUIT_URLS.sigV2OnChain.wasm,
+            }
+          : {}),
+        ...(config?.CIRCUIT_URLS?.sigV2OnChain?.zkey
+          ? {
+              CIRCUIT_SIG_V2_ON_CHAIN_FINAL_KEY_URL:
+                config.CIRCUIT_URLS.sigV2OnChain.zkey,
+            }
+          : {}),
+
+        ...(config?.CIRCUIT_URLS?.sigV2?.wasm
+          ? {
+              CIRCUIT_SIG_V2_WASM_URL: config.CIRCUIT_URLS.sigV2.wasm,
+            }
+          : {}),
+        ...(config?.CIRCUIT_URLS?.sigV2?.zkey
+          ? {
+              CIRCUIT_SIG_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.sigV2.zkey,
+            }
+          : {}),
+
+        ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.wasm
+          ? {
+              CIRCUIT_MTP_V2_ON_CHAIN_WASM_URL:
+                config.CIRCUIT_URLS.mtpV2OnChain.wasm,
+            }
+          : {}),
+        ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.zkey
+          ? {
+              CIRCUIT_MTP_V2_ON_CHAIN_FINAL_KEY_URL:
+                config.CIRCUIT_URLS.mtpV2OnChain.zkey,
+            }
+          : {}),
+
+        ...(config?.CIRCUIT_URLS?.mtpV2?.wasm
+          ? {
+              CIRCUIT_MTP_V2_WASM_URL: config.CIRCUIT_URLS.mtpV2.wasm,
+            }
+          : {}),
+        ...(config?.CIRCUIT_URLS?.mtpV2?.zkey
+          ? {
+              CIRCUIT_MTP_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.mtpV2.zkey,
+            }
+          : {}),
       })
 
       const zkProof = new ZkpGen<QueryVariableName>({

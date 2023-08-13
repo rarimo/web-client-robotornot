@@ -25,6 +25,17 @@ interface ImportMetaEnv {
   VITE_CLAIM_OFFER_DELAY: number
   VITE_CLAIM_OFFER_MAX_TRIES_COUNT: number
   VITE_KYC_VERIFICATION_DELAY: number
+
+  VITE_AUTH_WASM_URL: string
+  VITE_AUTH_ZKEY_URL: string
+  VITE_SIG_V2_ON_CHAIN_WASM_URL: string
+  VITE_SIG_V2_ON_CHAIN_ZKEY_URL: string
+  VITE_SIG_V2_WASM_URL: string
+  VITE_SIG_V2_ZKEY_URL: string
+  VITE_MTP_V2_ON_CHAIN_WASM_URL: string
+  VITE_MTP_V2_ON_CHAIN_ZKEY_URL: string
+  VITE_MTP_V2_WASM_URL: string
+  VITE_MTP_V2_ZKEY_URL: string
 }
 
 interface Document {

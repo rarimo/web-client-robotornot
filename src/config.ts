@@ -98,6 +98,29 @@ export const config = {
   CLAIM_OFFER_MAX_TRIES_COUNT:
     import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 10,
   KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
+
+  CIRCUIT_URLS: {
+    auth: {
+      wasm: import.meta.env.VITE_AUTH_WASM_URL,
+      zkey: import.meta.env.VITE_AUTH_ZKEY_URL,
+    },
+    sigV2OnChain: {
+      wasm: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
+      zkey: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
+    },
+    sigV2: {
+      wasm: import.meta.env.VITE_SIG_V2_WASM_URL,
+      zkey: import.meta.env.VITE_SIG_V2_ZKEY_URL,
+    },
+    mtpV2OnChain: {
+      wasm: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
+      zkey: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
+    },
+    mtpV2: {
+      wasm: import.meta.env.VITE_MTP_V2_WASM_URL,
+      zkey: import.meta.env.VITE_MTP_V2_ZKEY_URL,
+    },
+  },
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

@@ -76,6 +76,29 @@ VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_GOERLI=0x...
 VITE_DEFAULT_CHAIN='SEPOLIA'
 ```
 
+Additionally you can setup your custom circuit urls, splitted by type:
+```dotenv
+# for getting credentials
+VITE_AUTH_WASM_URL=https://example.com
+VITE_AUTH_ZKEY_URL=https://example.com
+
+# credentialAtomicQuerySigV2OnChain
+VITE_SIG_V2_ON_CHAIN_WASM_URL=https://example.com
+VITE_SIG_V2_ON_CHAIN_ZKEY_URL=https://example.com
+
+# credentialAtomicQuerySigV2
+VITE_SIG_V2_WASM_URL=https://example.com
+VITE_SIG_V2_ZKEY_URL=https://example.com
+
+# credentialAtomicQueryMTPV2OnChain
+VITE_MTP_V2_ON_CHAIN_WASM_URL=https://example.com
+VITE_MTP_V2_ON_CHAIN_ZKEY_URL=https://example.com
+
+# credentialAtomicQueryMTPV2
+VITE_MTP_V2_WASM_URL=https://example.com
+VITE_MTP_V2_ZKEY_URL=https://example.com
+```
+
 ### Deploy
 To update variables in deployed app - setup .env variables from .env.example to [env.js](./static/env.js) but in `JSON` format, and change `VITE_` prefix to `VITE_APP`
 ```js
@@ -109,6 +132,21 @@ document.ENV = document.ENV || Object.freeze({
     VITE_APP_CLAIM_OFFER_DELAY: "1000",
     VITE_APP_CLAIM_OFFER_MAX_TRIES_COUNT: "10",
     VITE_APP_KYC_VERIFICATION_DELAY: "1000",
+
+    VITE_APP_AUTH_WASM_URL: '',
+    VITE_APP_AUTH_ZKEY_URL: '',
+
+    VITE_APP_SIG_V2_ON_CHAIN_WASM_URL: '',
+    VITE_APP_SIG_V2_ON_CHAIN_ZKEY_URL: '',
+
+    VITE_APP_SIG_V2_WASM_URL: '',
+    VITE_APP_SIG_V2_ZKEY_URL: '',
+
+    VITE_APP_MTP_V2_ON_CHAIN_WASM_URL: '',
+    VITE_APP_MTP_V2_ON_CHAIN_ZKEY_URL: '',
+
+    VITE_APP_MTP_V2_WASM_URL: '',
+    VITE_APP_MTP_V2_ZKEY_URL: '',
 })
 ```
 
