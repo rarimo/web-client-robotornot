@@ -28,6 +28,13 @@
     "tx-error-title": "Transaction error",
     "tx-error-message": "Your transaction was failed"
   },
+  "verifier-errors": {
+    "conflict-addresses-identity": "Sender address has already been used to prove the another identity",
+    "empty-state": "State doesn't exist in state contract",
+    "conflict-identity-id": "Identity has already been proven",
+    "invalid-zkp-query": "ZKP Query does not exist for passed query id",
+    "invalid-proof-sender-address": "Address in proof is not a sender address"
+  },
   "kyc-providers-metadata": {
     "unstoppable_domains": {
       "domain-lbl": "Domain"

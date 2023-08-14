@@ -38,11 +38,35 @@
 }
 
 .auth-providers__tip {
+  display: flex;
+  align-items: baseline;
+  gap: toRem(4);
   color: var(--text-secondary-main);
 }
 
-.auth-providers__tip-link {
+.auth-providers .auth-providers__dropdown-btn {
   text-decoration: underline;
   color: var(--primary-main);
+  gap: toRem(4);
+
+  &:hover, &:focus {
+    text-decoration: underline;
+    color: var(--primary-main);
+  }
 }
 
+.auth-providers__links-list {
+  background: var(--background-secondary-main);
+  border: toRem(1) solid var(--border-primary-main);
+  box-shadow: 0 toRem(4) toRem(6) -#{toRem(2)} rgba(16, 24, 40, 0.03),
+    0 toRem(12) toRem(16) -#{toRem(4)} rgba(16, 24, 40, 0.08);
+}
+
+.auth-providers .auth-providers__links-item {
+  justify-content: flex-start;
+  width: 100%;
+
+  &:hover {
+    background: #F2F4F7;
+  }
+}

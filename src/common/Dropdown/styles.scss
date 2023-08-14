@@ -4,6 +4,68 @@
 
 .dropdown__body {
   position: absolute;
-  top: 105%;
-  right: 0;
+
+  &-direction--top-left {
+    bottom: 105%;
+    right: 0;
+  }
+
+  &-direction--top-center {
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &-direction--top-right {
+    bottom: 105%;
+    left: 0;
+  }
+
+  &-direction--right-top {
+    left: 105%;
+    bottom: 0;
+  }
+
+  &-direction--right-center {
+    left: 105%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &-direction--right-bottom {
+    left: 105%;
+    top: 0;
+  }
+
+  &-direction--bottom-left {
+    top: 105%;
+    right: 0;
+  }
+
+  &-direction--bottom-center {
+    top: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &-direction--bottom-right {
+    top: 105%;
+    left: 0;
+  }
+
+  &-direction--left-top {
+    right: 105%;
+    bottom: 0;
+  }
+
+  &-direction--left-center {
+    right: 105%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &-direction--left-bottom {
+    right: 105%;
+    top: 0;
+  }
 }

@@ -10,6 +10,19 @@ type Props = {
   setIsOpen: (isOpen: boolean) => void
   duration?: number
   head: ReactNode
+  direction?:
+    | 'left-top'
+    | 'left-center'
+    | 'left-bottom'
+    | 'right-top'
+    | 'right-center'
+    | 'right-bottom'
+    | 'top-left'
+    | 'top-center'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-center'
+    | 'bottom-right'
 } & HTMLAttributes<HTMLDivElement> &
   MotionProps
 
@@ -19,6 +32,7 @@ const Dropdown: FC<Props> = ({
   duration = 0.25,
   children,
   head,
+  direction = 'bottom',
   ...rest
 }) => {
   const uid = useMemo(() => uuidv4(), [])
@@ -35,7 +49,7 @@ const Dropdown: FC<Props> = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className='dropdown__body'
+            className={`dropdown__body dropdown__body-direction--${direction}`}
             key={`dropdown-${uid}`}
             initial='dropdowned'
             animate='open'
