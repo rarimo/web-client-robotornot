@@ -6,7 +6,13 @@ import { FC, HTMLAttributes, useCallback, useState } from 'react'
 import { AppButton, AppLogo, Drawer } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { abbrCenter, ErrorHandler } from '@/helpers'
+import {
+  abbrCenter,
+  ErrorHandler,
+  GaActions,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 
 const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   className = '',
@@ -21,6 +27,12 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    gaSendCustomEvent(
+      GaCategories.Click,
+      GaActions.Click,
+      `Connect wallet Navbar`,
+    )
   }, [init])
 
   return (

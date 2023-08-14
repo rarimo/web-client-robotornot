@@ -167,6 +167,12 @@ const AuthConfirmation: FC<Props> = () => {
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    gaSendCustomEvent(
+      GaCategories.Click,
+      GaActions.Click,
+      `Connect wallet Confirmation page`,
+    )
   }, [init])
 
   const tryAddChain = useCallback(async () => {
