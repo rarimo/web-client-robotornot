@@ -121,6 +121,8 @@ export const config = {
       zkey: import.meta.env.VITE_MTP_V2_ZKEY_URL,
     },
   },
+
+  GA_ID: import.meta.env.VITE_GA_ID,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

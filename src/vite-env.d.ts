@@ -36,6 +36,8 @@ interface ImportMetaEnv {
   VITE_MTP_V2_ON_CHAIN_ZKEY_URL: string
   VITE_MTP_V2_WASM_URL: string
   VITE_MTP_V2_ZKEY_URL: string
+
+  VITE_GA_ID: string
 }
 
 interface Document {
