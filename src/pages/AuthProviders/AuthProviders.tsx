@@ -18,12 +18,6 @@ const KYC_PROVIDERS_MAP: Record<
     isWalletRequired: boolean
   }
 > = {
-  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
-    name: 'Worldcoin',
-    iconName: ICON_NAMES.providerWorldCoin,
-    link: 'https://worldcoin.org/download-app',
-    isWalletRequired: false,
-  },
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
@@ -40,6 +34,12 @@ const KYC_PROVIDERS_MAP: Record<
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
     link: 'https://unstoppabledomains.com/auth',
+    isWalletRequired: false,
+  },
+  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+    name: 'Worldcoin',
+    iconName: ICON_NAMES.providerWorldCoin,
+    link: 'https://worldcoin.org/download-app',
     isWalletRequired: false,
   },
 }

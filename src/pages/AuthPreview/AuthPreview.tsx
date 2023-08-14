@@ -2,7 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, CautionTip, Icon } from '@/common'
@@ -24,8 +24,12 @@ const AuthPreview: FC<Props> = () => {
 
   const { provider } = useWeb3Context()
 
-  const { verifiableCredentials, getVerifiableCredentials, getZkProof } =
-    useZkpContext()
+  const {
+    identity,
+    verifiableCredentials,
+    getVerifiableCredentials,
+    getZkProof,
+  } = useZkpContext()
 
   const {
     isLoaded,
@@ -34,6 +38,16 @@ const AuthPreview: FC<Props> = () => {
     // retryKyc,
     verificationErrorMessages,
   } = useKycContext()
+
+  const exportLink = useMemo(() => {
+    if (!identity?.privateKeyHex) return
+
+    const blob = new Blob([identity.privateKeyHex], {
+      type: 'application/json',
+    })
+
+    return URL.createObjectURL(blob)
+  }, [identity?.privateKeyHex])
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
@@ -68,15 +82,23 @@ const AuthPreview: FC<Props> = () => {
   const ValidCredentialsPreview = useMemo(
     () => (
       <div className='auth-preview__card'>
-        {`Zero-knowledge proof will be generated. No personal info will be shared with third parties.`}
+        <div className='auth-preview__card-overhead'>
+          {`Zero-knowledge proof will be generated. No personal info will be shared with third parties.`}
+        </div>
         <CautionTip
           className='auth-preview__card-caution-tip'
           message={
-            <>
-              You should back up your credentials{' '}
-              <NavLink to={RoutesPaths.profile}>here</NavLink>. Otherwise, you
-              may lose your identity.
-            </>
+            <div className='auth-preview__card-caution-body'>
+              {`Save your profile to continue session anytime, without losing data`}
+              <AppButton
+                className='auth-preview__card-caution-btn'
+                size='small'
+                target='_blank'
+                download={`pk.json`}
+                text={`SAVE`}
+                href={exportLink}
+              />
+            </div>
           }
         />
         <div className='auth-preview__metadata'>
@@ -100,7 +122,7 @@ const AuthPreview: FC<Props> = () => {
         />
       </div>
     ),
-    [handleGenerateProof, provider?.address, selectedKycDetails],
+    [exportLink, handleGenerateProof, provider?.address, selectedKycDetails],
   )
 
   const InvalidCredentialsMessage = useMemo(

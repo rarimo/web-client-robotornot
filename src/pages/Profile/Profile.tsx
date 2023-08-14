@@ -49,7 +49,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
         className='profile__back-btn'
         iconLeft={ICON_NAMES.chevronLeft}
         scheme='none'
-        size={'none'}
+        size='none'
         onClick={() => navigate(-1)}
       />
 

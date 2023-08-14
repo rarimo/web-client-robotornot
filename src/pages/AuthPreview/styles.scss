@@ -32,6 +32,11 @@
   @include card;
 }
 
+.auth-preview__card-overhead {
+  font: inherit;
+  line-height: 1.4;
+}
+
 .auth-preview__metadata {
   display: flex;
   flex-direction: column;
@@ -106,6 +111,27 @@
   font-size: toRem(16);
   line-height: 1.6;
   max-width: 80%;
+}
+
+.auth-preview__card-caution-body {
+  display: flex;
+  align-items: center;
+  gap: toRem(16);
+  font-size: toRem(14);
+  font-weight: 500;
+  line-height: 1.4;
+
+  @include respond-to(xsmall) {
+    flex-direction: column;
+  }
+}
+
+.auth-preview__card-caution-btn {
+  min-width: max-content;
+
+  @include respond-to(xsmall) {
+    width: 100%;
+  }
 }
 
 .auth-preview__loader-wrp {
