@@ -16,14 +16,13 @@ import {
   GaActions,
   GaCategories,
   gaSendCustomEvent,
+  sleep,
 } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthConfirmation: FC<Props> = () => {
-  const [isStateManuallyTransited, setIsStateManuallyTransited] =
-    useState(false)
   const [isPending, setIsPending] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -53,10 +52,35 @@ const AuthConfirmation: FC<Props> = () => {
     [isNaturalZkp],
   )
 
+  const transitState = useCallback(async () => {
+    const transitParams = await isNaturalZkp?.loadParamsForTransitState(querier)
+
+    if (!transitParams) throw new TypeError('Transit params is not defined')
+
+    await provider?.signAndSendTx?.(
+      getTransitStateTxBody(
+        config?.[
+          `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+        ],
+        transitParams.newIdentitiesStatesRoot,
+        transitParams.gistData,
+        transitParams.proof,
+      ),
+    )
+
+    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'transit state')
+  }, [isNaturalZkp, provider, selectedChainToPublish])
+
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
+      if (!isStatesActual) {
+        await transitState()
+
+        await sleep(1000)
+      }
+
       if (
         !isNaturalZkp ||
         !isNaturalZkp.coreStateDetails ||
@@ -116,42 +140,13 @@ const AuthConfirmation: FC<Props> = () => {
   }, [
     getProveIdentityTxBody,
     isNaturalZkp,
+    isStatesActual,
     navigate,
     provider,
     publishedChains,
     selectedChainToPublish,
+    transitState,
   ])
-
-  const transitState = useCallback(async () => {
-    setIsPending(true)
-
-    try {
-      const transitParams = await isNaturalZkp?.loadParamsForTransitState(
-        querier,
-      )
-
-      if (!transitParams) throw new TypeError('Transit params is not defined')
-
-      await provider?.signAndSendTx?.(
-        getTransitStateTxBody(
-          config?.[
-            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-          ],
-          transitParams.newIdentitiesStatesRoot,
-          transitParams.gistData,
-          transitParams.proof,
-        ),
-      )
-
-      setIsStateManuallyTransited(true)
-    } catch (error) {
-      ErrorHandler.process(error)
-    }
-
-    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'transit state')
-
-    setIsPending(false)
-  }, [isNaturalZkp, provider, selectedChainToPublish])
 
   const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
 
@@ -288,27 +283,14 @@ const AuthConfirmation: FC<Props> = () => {
 
         {provider?.isConnected ? (
           isProviderValidChain ? (
-            <>
-              {isStatesActual || isStateManuallyTransited ? (
-                <AppButton
-                  className='auth-confirmation__submit-btn'
-                  text={`SUBMIT PROOF`}
-                  iconRight={ICON_NAMES.arrowRight}
-                  size='large'
-                  onClick={submitZkp}
-                  isDisabled={isPending}
-                />
-              ) : (
-                <AppButton
-                  className='auth-confirmation__submit-btn'
-                  text={`TRANSIT STATE`}
-                  iconRight={ICON_NAMES.arrowRight}
-                  size='large'
-                  onClick={transitState}
-                  isDisabled={isPending}
-                />
-              )}
-            </>
+            <AppButton
+              className='auth-confirmation__submit-btn'
+              text={`SUBMIT PROOF`}
+              iconRight={ICON_NAMES.arrowRight}
+              size='large'
+              onClick={submitZkp}
+              isDisabled={isPending}
+            />
           ) : (
             <AppButton
               className='auth-confirmation__submit-btn'
