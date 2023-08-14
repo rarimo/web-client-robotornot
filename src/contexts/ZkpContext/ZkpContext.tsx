@@ -34,7 +34,10 @@ interface ZkpContextValue {
   verifiableCredentials?: VerifiableCredentials<QueryVariableName>
   CHAINS_DETAILS_MAP: Record<SUPPORTED_CHAINS, ChainToPublish>
 
-  isClaimOfferExists: (_identity?: Identity) => Promise<boolean>
+  isClaimOfferExists: (
+    _identity?: Identity,
+    triesLimit?: number,
+  ) => Promise<boolean>
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
@@ -82,8 +85,10 @@ export const zkpContext = createContext<ZkpContextValue>({
     )
   },
 
-  isClaimOfferExists: async (_identity?: Identity) => {
-    throw new TypeError(`isClaimOfferExists() not implemented for ${_identity}`)
+  isClaimOfferExists: async (_identity?: Identity, triesLimit?: number) => {
+    throw new TypeError(
+      `isClaimOfferExists() not implemented for ${_identity?.idString} and ${triesLimit}`,
+    )
   },
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
@@ -177,10 +182,13 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   )
 
   const isClaimOfferExists = useCallback(
-    async (_identity?: Identity) => {
+    async (
+      _identity?: Identity,
+      triesLimit = config.CLAIM_OFFER_MAX_TRIES_COUNT,
+    ) => {
       let tryCounter = 0
 
-      while (tryCounter < config.CLAIM_OFFER_MAX_TRIES_COUNT) {
+      while (tryCounter < triesLimit) {
         try {
           await getClaimOffer(_identity)
 

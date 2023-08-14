@@ -375,7 +375,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!currentIdentity?.idString) return
 
-      if (!(await isClaimOfferExists(currentIdentity))) {
+      if (!(await isClaimOfferExists(currentIdentity, 1))) {
         try {
           await verifyKyc(currentIdentity.idString, response)
         } catch (error) {
