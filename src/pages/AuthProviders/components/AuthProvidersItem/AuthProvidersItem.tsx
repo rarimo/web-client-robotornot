@@ -9,7 +9,6 @@ import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
   bus,
   BUS_EVENTS,
-  ErrorHandler,
   GaActions,
   GaCategories,
   gaSendCustomEvent,
@@ -19,30 +18,28 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   supportedKycProvider: SUPPORTED_KYC_PROVIDERS
   iconName: ICON_NAMES
   name: string
+  isWalletRequired: boolean
 }
 
 const AuthProvidersItem: FC<Props> = ({
   iconName,
   name,
   supportedKycProvider,
+  isWalletRequired,
 }) => {
   const { login } = useKycContext()
   const { provider, init } = useWeb3Context()
 
   const connectProvider = useCallback(async () => {
-    try {
-      await init(PROVIDERS.Metamask)
-      bus.emit(BUS_EVENTS.info, {
-        title: 'Wallet connected',
-        message: 'You have successfully connected your wallet',
-      })
-    } catch (error) {
-      ErrorHandler.process(error)
-    }
+    await init(PROVIDERS.Metamask)
+    bus.emit(BUS_EVENTS.info, {
+      title: 'Wallet connected',
+      message: 'You have successfully connected your wallet',
+    })
   }, [init])
 
   const handleLogin = useCallback(async () => {
-    if (!provider?.isConnected) {
+    if (!provider?.isConnected && isWalletRequired) {
       await connectProvider()
     }
 
@@ -53,7 +50,13 @@ const AuthProvidersItem: FC<Props> = ({
       GaActions.ProviderSelection,
       supportedKycProvider,
     )
-  }, [connectProvider, login, provider?.isConnected, supportedKycProvider])
+  }, [
+    connectProvider,
+    isWalletRequired,
+    login,
+    provider?.isConnected,
+    supportedKycProvider,
+  ])
 
   return (
     <div className='auth-providers-item'>

@@ -15,27 +15,32 @@ const KYC_PROVIDERS_MAP: Record<
     name: string
     iconName: ICON_NAMES
     link: string
+    isWalletRequired: boolean
   }
 > = {
   [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
     name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
     link: 'https://worldcoin.org/download-app',
+    isWalletRequired: false,
   },
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
     link: 'https://civic.me/',
+    isWalletRequired: true,
   },
   [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
     name: 'Gitcoin Passport',
     iconName: ICON_NAMES.providerGitCoin,
     link: 'https://passport.gitcoin.co/',
+    isWalletRequired: true,
   },
   [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
     link: 'https://unstoppabledomains.com/auth',
+    isWalletRequired: false,
   },
 }
 
@@ -61,6 +66,7 @@ const AuthProviders: FC<Props> = () => {
             supportedKycProvider={provider}
             name={KYC_PROVIDERS_MAP[provider].name}
             iconName={KYC_PROVIDERS_MAP[provider].iconName}
+            isWalletRequired={KYC_PROVIDERS_MAP[provider].isWalletRequired}
           />
         ))}
       </div>

@@ -161,6 +161,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         if (error.error instanceof errors.ProviderUserRejectedRequest) {
           await disconnect()
         }
+
+        throw error
       }
     },
     [
