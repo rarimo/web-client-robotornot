@@ -57,6 +57,9 @@ const AuthSuccess: FC<Props> = () => {
           <Icon className='auth-success__header-icon' name={ICON_NAMES.check} />
         </div>
         <h2 className='auth-success__header-title'>{`Proof Submitted`}</h2>
+        <h2 className='auth-success__header-subtitle'>
+          {`Proof of Humanity successfully completed! You can now return to the dApp as a verified user.`}
+        </h2>
       </div>
 
       <div className='auth-success__card'>

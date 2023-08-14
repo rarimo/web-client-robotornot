@@ -19,6 +19,16 @@
   font-weight: 700;
 }
 
+.auth-preview__header-subtitle {
+  text-align: center;
+  font-style: normal;
+  text-transform: capitalize;
+  color: var(--text-tertiary-main);
+  font-size: toRem(16);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
 .auth-preview__card {
   display: flex;
   flex-direction: column;

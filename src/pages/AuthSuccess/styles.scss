@@ -30,10 +30,18 @@
 }
 
 .auth-success__header-subtitle {
-  text-transform: capitalize;
   text-align: center;
+  font-style: normal;
+  text-transform: capitalize;
   color: var(--text-tertiary-main);
-  font-size: toRem(20);
+  font-size: toRem(16);
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 75%;
+
+  @include respond-to(small) {
+    max-width: none;
+  }
 }
 
 $card-padding-side: #{toRem(24)};

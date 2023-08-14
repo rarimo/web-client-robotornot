@@ -8,7 +8,8 @@ import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { querier } from '@/api'
-import { AppButton, Dropdown, Icon } from '@/common'
+import loaderJson from '@/assets/animations/loader.json'
+import { Animation, AppButton, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
@@ -224,92 +225,106 @@ const AuthConfirmation: FC<Props> = () => {
         </div>
         <h2 className='auth-confirmation__header-title'>{`Proof Generated`}</h2>
         <span className='auth-confirmation__header-subtitle'>
-          {`Proof is generated using Zero-Knowledge Proof (ZKP) and none of the personal info is shared with any party`}
+          {`At this stage, you are submitting your identity proof to the blockchain, enabling the dApp to verify it.`}
         </span>
       </div>
 
-      <div className='auth-confirmation__card'>
-        <div className='auth-confirmation__chain-preview'>
-          <div className='auth-confirmation__chain-preview-icon-wrp'>
-            <Icon
-              className='auth-confirmation__chain-preview-icon'
-              name={CHAINS_DETAILS_MAP[selectedChainToPublish].iconName}
-            />
+      {isPending ? (
+        <div className='auth-confirmation__card'>
+          <div className='auth-confirmation__loader-wrp'>
+            <Animation source={loaderJson} />
+            <span className='auth-confirmation__loader-title'>
+              {`Please wait...`}
+            </span>
+            <span className='auth-confirmation__loader-subtitle'>
+              {`Submitting transaction`}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className='auth-confirmation__card'>
+          <div className='auth-confirmation__chain-preview'>
+            <div className='auth-confirmation__chain-preview-icon-wrp'>
+              <Icon
+                className='auth-confirmation__chain-preview-icon'
+                name={CHAINS_DETAILS_MAP[selectedChainToPublish].iconName}
+              />
+            </div>
+
+            <span className='auth-confirmation__chain-preview-title'>
+              {`Your proof will be submitted on ${CHAINS_DETAILS_MAP[selectedChainToPublish].title}`}
+            </span>
           </div>
 
-          <span className='auth-confirmation__chain-preview-title'>
-            {`Your proof will be submitted on ${CHAINS_DETAILS_MAP[selectedChainToPublish].title}`}
-          </span>
-        </div>
+          {chainsToSwitch?.length > 1 ? (
+            <Dropdown
+              isOpen={isDropdownOpen}
+              setIsOpen={setIsDropdownOpen}
+              head={
+                <AppButton
+                  className='auth-confirmation__chains-switch-btn'
+                  scheme='none'
+                  modification='none'
+                  iconLeft={ICON_NAMES.plus}
+                  text={`Switch chain`}
+                  onClick={() => setIsDropdownOpen(prev => !prev)}
+                />
+              }
+            >
+              <div className='auth-confirmation__chains'>
+                {chainsToSwitch?.map?.((el, idx) => (
+                  <button
+                    key={idx}
+                    className='auth-confirmation__chain-item'
+                    onClick={() => handleSelectChain(el)}
+                  >
+                    <Icon
+                      className='auth-confirmation__chain-item-icon'
+                      name={CHAINS_DETAILS_MAP[el].iconName}
+                    />
+                    <span className='auth-confirmation__chain-item-title'>
+                      {CHAINS_DETAILS_MAP[el].title}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Dropdown>
+          ) : (
+            <></>
+          )}
 
-        {chainsToSwitch?.length > 1 ? (
-          <Dropdown
-            isOpen={isDropdownOpen}
-            setIsOpen={setIsDropdownOpen}
-            head={
+          <div className='auth-confirmation__divider' />
+
+          {provider?.isConnected ? (
+            isProviderValidChain ? (
               <AppButton
-                className='auth-confirmation__chains-switch-btn'
-                scheme='none'
-                modification='none'
-                iconLeft={ICON_NAMES.plus}
-                text={`Switch chain`}
-                onClick={() => setIsDropdownOpen(prev => !prev)}
+                className='auth-confirmation__submit-btn'
+                text={`SUBMIT PROOF`}
+                iconRight={ICON_NAMES.arrowRight}
+                size='large'
+                onClick={submitZkp}
+                isDisabled={isPending}
               />
-            }
-          >
-            <div className='auth-confirmation__chains'>
-              {chainsToSwitch?.map?.((el, idx) => (
-                <button
-                  key={idx}
-                  className='auth-confirmation__chain-item'
-                  onClick={() => handleSelectChain(el)}
-                >
-                  <Icon
-                    className='auth-confirmation__chain-item-icon'
-                    name={CHAINS_DETAILS_MAP[el].iconName}
-                  />
-                  <span className='auth-confirmation__chain-item-title'>
-                    {CHAINS_DETAILS_MAP[el].title}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </Dropdown>
-        ) : (
-          <></>
-        )}
-
-        <div className='auth-confirmation__divider' />
-
-        {provider?.isConnected ? (
-          isProviderValidChain ? (
-            <AppButton
-              className='auth-confirmation__submit-btn'
-              text={`SUBMIT PROOF`}
-              iconRight={ICON_NAMES.arrowRight}
-              size='large'
-              onClick={submitZkp}
-              isDisabled={isPending}
-            />
+            ) : (
+              <AppButton
+                className='auth-confirmation__submit-btn'
+                text={`SWITCH NETWORK`}
+                iconRight={ICON_NAMES.switchHorizontal}
+                size='large'
+                onClick={() => trySwitchChain()}
+              />
+            )
           ) : (
             <AppButton
               className='auth-confirmation__submit-btn'
-              text={`SWITCH NETWORK`}
-              iconRight={ICON_NAMES.switchHorizontal}
+              text={`CONNECT WALLET`}
+              iconRight={ICON_NAMES.metamask}
               size='large'
-              onClick={() => trySwitchChain()}
+              onClick={connectWallet}
             />
-          )
-        ) : (
-          <AppButton
-            className='auth-confirmation__submit-btn'
-            text={`CONNECT WALLET`}
-            iconRight={ICON_NAMES.metamask}
-            size='large'
-            onClick={connectWallet}
-          />
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

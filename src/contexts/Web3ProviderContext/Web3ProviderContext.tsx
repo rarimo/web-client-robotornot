@@ -5,7 +5,7 @@ import {
   MetamaskProvider,
   Provider,
   ProviderDetector,
-  type ProviderEventPayload,
+  // type ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -17,11 +17,14 @@ import {
   memo,
   useCallback,
   useMemo,
-  useState,
+  // useState,
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
-import { useNotification, useProvider } from '@/hooks'
+import {
+  // useNotification,
+  useProvider,
+} from '@/hooks'
 
 interface Web3ProviderContextValue {
   provider?: IProvider
@@ -71,34 +74,34 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
-  const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
-  const { showTxToast, removeToast } = useNotification()
+  // const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
+  // const { showTxToast, removeToast } = useNotification()
 
   const { provider, init: initProvider } = useProvider()
 
-  const handleTxSent = useMemo(
-    () => (e?: ProviderEventPayload) => {
-      setCurrentTxToastId(
-        showTxToast('pending', {
-          txHash: e?.txHash,
-        }),
-      )
-    },
-    [showTxToast],
-  )
+  // const handleTxSent = useMemo(
+  //   () => (e?: ProviderEventPayload) => {
+  //     setCurrentTxToastId(
+  //       showTxToast('pending', {
+  //         txHash: e?.txHash,
+  //       }),
+  //     )
+  //   },
+  //   [showTxToast],
+  // )
 
-  const handleTxConfirmed = useMemo(
-    () => (e?: ProviderEventPayload) => {
-      if (currentTxToastId) {
-        removeToast(currentTxToastId)
-      }
-
-      showTxToast('success', {
-        txResponse: e?.txResponse,
-      })
-    },
-    [currentTxToastId, removeToast, showTxToast],
-  )
+  // const handleTxConfirmed = useMemo(
+  //   () => (e?: ProviderEventPayload) => {
+  //     if (currentTxToastId) {
+  //       removeToast(currentTxToastId)
+  //     }
+  //
+  //     showTxToast('success', {
+  //       txResponse: e?.txResponse,
+  //     })
+  //   },
+  //   [currentTxToastId, removeToast, showTxToast],
+  // )
 
   const disconnect = useCallback(async () => {
     try {
@@ -112,11 +115,15 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
   const listeners = useMemo(
     () => ({
-      onTxSent: handleTxSent,
-      onTxConfirmed: handleTxConfirmed,
+      // onTxSent: handleTxSent,
+      // onTxConfirmed: handleTxConfirmed,
       onDisconnect: disconnect,
     }),
-    [disconnect, handleTxConfirmed, handleTxSent],
+    [
+      disconnect,
+      // handleTxConfirmed,
+      // handleTxSent
+    ],
   )
 
   const init = useCallback(

@@ -206,7 +206,20 @@ const AuthPreview: FC<Props> = () => {
       }`}
     >
       <div className='auth-preview__header'>
-        <h2 className='auth-preview__header-title'>{`Proof of Humanity`}</h2>
+        <h2 className='auth-preview__header-title'>
+          {verifiableCredentials
+            ? isPending
+              ? `Generating ZKProof`
+              : `Proof of Humanity`
+            : `Getting a credential `}
+        </h2>
+        <span className='auth-preview__header-subtitle'>
+          {verifiableCredentials
+            ? isPending
+              ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
+              : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
+            : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
+        </span>
       </div>
 
       {isLoaded ? (
