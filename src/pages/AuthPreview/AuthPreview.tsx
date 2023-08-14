@@ -9,20 +9,28 @@ import { Animation, AppButton, CautionTip, Icon } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
+  bus,
+  BUS_EVENTS,
   ErrorHandler,
   GaActions,
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
+import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
+  const [isIdentitySaved, setIsIdentitySaved] = useState(false)
   const [isPending, setIsPending] = useState(false)
 
   const navigate = useNavigate()
 
   const { provider } = useWeb3Context()
+
+  const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
+    config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
+  )
 
   const {
     identity,
@@ -52,7 +60,28 @@ const AuthPreview: FC<Props> = () => {
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
 
+    if (!identity?.idBigIntString || !provider?.address)
+      throw new TypeError(`Identity or provider is not defined`)
+
     try {
+      const isDIDProved = await isIdentityProved(identity.idBigIntString)
+
+      const isAddressProved = await isSenderAddressProved(provider.address)
+
+      if (!isDIDProved || !isAddressProved) {
+        bus.emit(
+          BUS_EVENTS.warning,
+          `${!isDIDProved ? 'Identity' : ''} has already been proven, ${
+            !isAddressProved
+              ? 'and sender address has already been used to prove the another identity'
+              : ''
+          }`,
+        )
+
+        setIsPending(false)
+        return
+      }
+
       const currentVerifiableCredentials =
         verifiableCredentials ||
         (await getVerifiableCredentials(config.DEFAULT_CHAIN))
@@ -67,7 +96,16 @@ const AuthPreview: FC<Props> = () => {
     gaSendCustomEvent(GaCategories.Click, GaActions.Click, `Generate proof`)
 
     setIsPending(false)
-  }, [getVerifiableCredentials, getZkProof, navigate, verifiableCredentials])
+  }, [
+    getVerifiableCredentials,
+    getZkProof,
+    identity?.idBigIntString,
+    isIdentityProved,
+    isSenderAddressProved,
+    navigate,
+    provider?.address,
+    verifiableCredentials,
+  ])
 
   const completeKyc = useCallback(async () => {
     navigate(RoutesPaths.authProviders)
@@ -97,6 +135,8 @@ const AuthPreview: FC<Props> = () => {
                 download={`pk.json`}
                 text={`SAVE`}
                 href={exportLink}
+                onClick={() => setIsIdentitySaved(true)}
+                isDisabled={isIdentitySaved}
               />
             </div>
           }
@@ -118,11 +158,17 @@ const AuthPreview: FC<Props> = () => {
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={handleGenerateProof}
-          isDisabled={!provider?.address}
+          isDisabled={!provider?.address || !isIdentitySaved}
         />
       </div>
     ),
-    [exportLink, handleGenerateProof, provider?.address, selectedKycDetails],
+    [
+      exportLink,
+      handleGenerateProof,
+      isIdentitySaved,
+      provider?.address,
+      selectedKycDetails,
+    ],
   )
 
   const InvalidCredentialsMessage = useMemo(

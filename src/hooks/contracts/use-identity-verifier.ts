@@ -21,12 +21,18 @@ export const useIdentityVerifier = (address?: string) => {
   const contractInstance = useMemo(() => {
     if (!address || !provider) return undefined
 
-    return provider?.rawProvider
-      ? IdentityVerifier__factory.connect(
-          address,
-          provider.rawProvider as unknown as Provider,
-        )
-      : undefined
+    try {
+      return provider?.rawProvider
+        ? IdentityVerifier__factory.connect(
+            address,
+            provider.rawProvider as unknown as Provider,
+          )
+        : undefined
+    } catch (error) {
+      /* empty */
+    }
+
+    return undefined
   }, [address, provider])
 
   const getIdentityProofInfo = useCallback(
@@ -39,12 +45,15 @@ export const useIdentityVerifier = (address?: string) => {
   )
 
   const isIdentityProved = useCallback(
-    async (
-      didOrAddress: BigNumberish | string,
-    ): Promise<boolean | undefined> => {
-      return typeof didOrAddress === 'string'
-        ? contractInstance?.['isIdentityProved(address)']?.(didOrAddress)
-        : contractInstance?.['isIdentityProved(uint256)']?.(didOrAddress)
+    async (did: BigNumberish): Promise<boolean | undefined> => {
+      return contractInstance?.['isIdentityProved(uint256)']?.(did)
+    },
+    [contractInstance],
+  )
+
+  const isSenderAddressProved = useCallback(
+    (address: string) => {
+      return contractInstance?.['isIdentityProved(address)']?.(address)
     },
     [contractInstance],
   )
@@ -133,6 +142,7 @@ export const useIdentityVerifier = (address?: string) => {
   return {
     getIdentityProofInfo,
     isIdentityProved,
+    isSenderAddressProved,
     owner,
 
     proveIdentity,
