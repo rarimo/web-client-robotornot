@@ -11,7 +11,12 @@ import { querier } from '@/api'
 import { AppButton, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { ErrorHandler } from '@/helpers'
+import {
+  ErrorHandler,
+  GaActions,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -105,6 +110,8 @@ const AuthConfirmation: FC<Props> = () => {
       ErrorHandler.process(error)
     }
 
+    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'submit zkp')
+
     setIsPending(false)
   }, [
     getProveIdentityTxBody,
@@ -140,6 +147,8 @@ const AuthConfirmation: FC<Props> = () => {
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'transit state')
 
     setIsPending(false)
   }, [isNaturalZkp, provider, selectedChainToPublish])
@@ -185,14 +194,20 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const handleSelectChain = useCallback(
-    async (el: SUPPORTED_CHAINS) => {
+    async (chain: SUPPORTED_CHAINS) => {
       try {
         setIsDropdownOpen(false)
-        await trySwitchChain(SUPPORTED_CHAINS_DETAILS[el])
-        setSelectedChainToPublish(el)
+        await trySwitchChain(SUPPORTED_CHAINS_DETAILS[chain])
+        setSelectedChainToPublish(chain)
       } catch (error) {
         ErrorHandler.processWithoutFeedback(error)
       }
+
+      gaSendCustomEvent(
+        GaCategories.Click,
+        GaActions.Click,
+        `select chain: ${chain}`,
+      )
     },
     [trySwitchChain],
   )

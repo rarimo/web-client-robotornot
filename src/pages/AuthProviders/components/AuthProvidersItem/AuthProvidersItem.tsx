@@ -1,12 +1,19 @@
 import './styles.scss'
 
 import { PROVIDERS } from '@distributedlab/w3p'
-import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
+import { FC, HTMLAttributes, useCallback } from 'react'
 
 import { Icon } from '@/common'
 import { useKycContext, useWeb3Context } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import {
+  bus,
+  BUS_EVENTS,
+  ErrorHandler,
+  GaActions,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   supportedKycProvider: SUPPORTED_KYC_PROVIDERS
@@ -40,6 +47,12 @@ const AuthProvidersItem: FC<Props> = ({
     }
 
     await login(supportedKycProvider)
+
+    gaSendCustomEvent(
+      GaCategories.ProviderSelection,
+      GaActions.ProviderSelection,
+      supportedKycProvider,
+    )
   }, [connectProvider, login, provider?.isConnected, supportedKycProvider])
 
   return (

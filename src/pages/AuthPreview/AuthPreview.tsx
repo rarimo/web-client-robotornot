@@ -8,7 +8,12 @@ import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, CautionTip, Icon } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { ErrorHandler } from '@/helpers'
+import {
+  ErrorHandler,
+  GaActions,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -45,12 +50,16 @@ const AuthPreview: FC<Props> = () => {
       ErrorHandler.process(error)
     }
 
+    gaSendCustomEvent(GaCategories.Click, GaActions.Click, `Generate proof`)
+
     setIsPending(false)
   }, [getVerifiableCredentials, getZkProof, navigate, verifiableCredentials])
 
   const completeKyc = useCallback(async () => {
     navigate(RoutesPaths.authProviders)
     // retryKyc()
+
+    gaSendCustomEvent(GaCategories.RetryKyc, GaActions.Click)
   }, [
     navigate,
     // retryKyc

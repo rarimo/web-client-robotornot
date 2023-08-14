@@ -7,11 +7,19 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 import { AppNavbar, Loader } from '@/common'
 import { useWeb3Context, ZkpContextProvider } from '@/contexts'
-import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import {
+  bus,
+  BUS_EVENTS,
+  ErrorHandler,
+  GaActions,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
 
 const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
@@ -19,6 +27,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
   const [isAppInitialized, setIsAppInitialized] = useState(false)
 
+  const location = useLocation()
   const { showToast } = useNotification()
   const { provider, init: initWeb3 } = useWeb3Context()
 
@@ -65,6 +74,10 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    gaSendCustomEvent(GaCategories.Page, GaActions.PageView, location.pathname)
+  }, [location])
 
   return (
     <ZkpContextProvider>
