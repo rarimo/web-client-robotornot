@@ -1,8 +1,9 @@
+import { UnauthorizedError } from '@distributedlab/jac'
 import { RuntimeError } from '@distributedlab/tools'
 import log from 'loglevel'
 
 import { errors } from '@/errors'
-import { bus, BUS_EVENTS } from '@/helpers'
+import { bus, BUS_EVENTS, localizeUnauthorizedError } from '@/helpers'
 import i18n from '@/localization'
 
 enum VERIFIER_INTERNAL_ERRORS {
@@ -36,6 +37,10 @@ export class ErrorHandler {
 
     if (error instanceof Error) {
       switch (error.constructor) {
+        case errors.UnauthorizedError: {
+          errorMessage = localizeUnauthorizedError(error as UnauthorizedError)
+          break
+        }
         case errors.ProviderUserRejectedRequest:
           errorMessage = ''
           break

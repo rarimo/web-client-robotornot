@@ -50,5 +50,13 @@
       "score-lbl": "Score",
       "sub-lbl": "domain"
     }
+  },
+  "kyc-unauthorized-errors": {
+    "invalid-access-token": "Invalid access token",
+    "invalid-signature": "Invalid signature",
+    "nonce-not-found": "Nonce not found",
+    "not-likely-human": "Not likely human",
+    "score-too-low": "Score too low, should be at least 15",
+    "invalid-gateway-token": "Invalid gateway token"
   }
 }

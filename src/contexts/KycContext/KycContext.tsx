@@ -1,4 +1,5 @@
 import { config } from '@config'
+import { type JsonApiError } from '@distributedlab/jac'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -18,8 +19,12 @@ import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { errors } from '@/errors'
-import { abbrCenter, sleep } from '@/helpers'
+import {
+  abbrCenter,
+  ErrorHandler,
+  localizeUnauthorizedError,
+  sleep,
+} from '@/helpers'
 
 const KycProviderUnstoppableDomains = lazy(
   () =>
@@ -213,20 +218,20 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const [refreshKey, setRefreshKey] = useState(0)
 
-  const [errorMessageCode, setErrorMessageCode] = useState(0)
+  const [kycError, setKycError] = useState<JsonApiError>()
 
-  const verificationErrorMessages = useMemo(
-    () =>
-      errorMessageCode
-        ? {
-            401: t('Complete Your Profile with an Identity Provider'),
-            409: t(
-              'This KYC provider / Address was already claimed by another identity',
-            ),
-          }[errorMessageCode] || ''
-        : '',
-    [errorMessageCode, t],
-  )
+  const verificationErrorMessages = useMemo(() => {
+    switch (kycError?.httpStatus) {
+      case 401:
+        return localizeUnauthorizedError(kycError)
+      case 409:
+        return t(
+          'This KYC provider / Address was already claimed by another identity',
+        )
+      default:
+        return ''
+    }
+  }, [kycError, t])
 
   const navigate = useNavigate()
 
@@ -379,14 +384,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         try {
           await verifyKyc(currentIdentity.idString, response)
         } catch (error) {
-          if (error instanceof errors.ConflictError && error.httpStatus) {
-            setErrorMessageCode(error.httpStatus)
-          } else if (
-            error instanceof errors.UnauthorizedError &&
-            error.httpStatus
-          ) {
-            setErrorMessageCode(error.httpStatus)
-          }
+          setKycError(error as JsonApiError)
+
+          ErrorHandler.processWithoutFeedback(error)
 
           setIsValidCredentials(false)
 
