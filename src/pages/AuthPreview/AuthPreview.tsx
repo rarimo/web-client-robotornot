@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config } from '@config'
+import { AnimatePresence, motion } from 'framer-motion'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -236,7 +237,28 @@ const AuthPreview: FC<Props> = () => {
       ) : (
         <div className='auth-preview__card'>
           <div className='auth-preview__loader-wrp'>
-            <Animation source={loaderJson} />
+            {verifiableCredentials ? (
+              <Animation source={loaderJson} />
+            ) : (
+              <AnimatePresence>
+                <motion.div
+                  variants={{
+                    start: { opacity: 1 },
+                    end: { opacity: 0 },
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                    duration: '1.5',
+                  }}
+                  initial='end'
+                  animate='start'
+                  exit='end'
+                >
+                  <Icon name={ICON_NAMES.credentialsLoader} />
+                </motion.div>
+              </AnimatePresence>
+            )}
             <span className='auth-preview__loader-title'>
               {`Please wait...`}
             </span>

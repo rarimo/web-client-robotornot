@@ -34,6 +34,7 @@
   flex-direction: column;
   gap: toRem(24);
   width: 100%;
+  min-height: toRem(400);
 
   .auth-preview--invalid & {
     gap: toRem(40);
@@ -148,6 +149,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: auto;
 }
 
 .auth-preview__loader-title {

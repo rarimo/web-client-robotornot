@@ -244,4 +244,6 @@ export enum ICON_NAMES {
 
   usersGroup4 = 'users-group-4',
   robot = 'robot',
+
+  credentialsLoader = 'credentials-loader',
 }
