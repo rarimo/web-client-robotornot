@@ -78,11 +78,11 @@ const AuthPreview: FC<Props> = () => {
 
       const isAddressProved = await isSenderAddressProved(provider.address)
 
-      if (!isDIDProved || !isAddressProved) {
+      if (isDIDProved || isAddressProved) {
         bus.emit(
           BUS_EVENTS.warning,
-          `${!isDIDProved ? 'Identity' : ''} has already been proven, ${
-            !isAddressProved
+          `${isDIDProved ? 'Identity' : ''} has already been proven, ${
+            isAddressProved
               ? 'and sender address has already been used to prove the another identity'
               : ''
           }`,
