@@ -34,7 +34,10 @@
   flex-direction: column;
   gap: toRem(24);
   width: 100%;
-  min-height: toRem(400);
+
+  .auth-preview--loading & {
+    min-height: toRem(400);
+  }
 
   .auth-preview--invalid & {
     gap: toRem(40);

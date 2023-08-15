@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
@@ -22,6 +23,8 @@ function bytesToBase64(bytes: Uint8Array) {
 }
 
 const AuthSuccess: FC<Props> = () => {
+  const navigate = useNavigate()
+
   const { selectedKycDetails } = useKycContext()
   const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
 
@@ -49,6 +52,16 @@ const AuthSuccess: FC<Props> = () => {
 
     window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
   }, [count])
+
+  useEffect(() => {
+    if (!publishedChains?.get?.length) {
+      navigate(RoutesPaths.authProviders)
+    }
+  }, [
+    isNaturalZkp?.verifiableCredentials.id,
+    navigate,
+    publishedChains?.get?.length,
+  ])
 
   return (
     <div className='auth-success'>

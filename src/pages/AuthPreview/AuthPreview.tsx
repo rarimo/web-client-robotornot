@@ -2,7 +2,14 @@ import './styles.scss'
 
 import { config } from '@config'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
@@ -41,6 +48,8 @@ const AuthPreview: FC<Props> = () => {
   } = useZkpContext()
 
   const {
+    selectedKycProviderName,
+
     isLoaded,
     isValidCredentials,
     selectedKycDetails,
@@ -199,11 +208,19 @@ const AuthPreview: FC<Props> = () => {
     [completeKyc, verificationErrorMessages],
   )
 
+  useEffect(() => {
+    if (!selectedKycProviderName) {
+      navigate(RoutesPaths.authProviders)
+    }
+  }, [navigate, selectedKycProviderName])
+
   return (
     <div
-      className={`auth-preview ${
-        isValidCredentials ? '' : `auth-preview--invalid`
-      }`}
+      className={[
+        'auth-preview',
+        ...(isValidCredentials ? [] : ['auth-preview--invalid']),
+        ...(isPending || !isLoaded ? ['auth-preview--loading'] : []),
+      ].join(' ')}
     >
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>

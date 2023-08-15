@@ -4,7 +4,14 @@ import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
 import { utils } from 'ethers'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { querier } from '@/api'
@@ -213,6 +220,12 @@ const AuthConfirmation: FC<Props> = () => {
     },
     [trySwitchChain],
   )
+
+  useEffect(() => {
+    if (!isNaturalZkp?.verifiableCredentials?.id) {
+      navigate(RoutesPaths.authProviders)
+    }
+  }, [isNaturalZkp?.verifiableCredentials?.id, navigate])
 
   return (
     <div className='auth-confirmation'>
