@@ -15,7 +15,7 @@ const root = createRoot(document.getElementById('root') as Element)
 
 initApi(config.API_URL)
 
-ReactGA.initialize(config.GA_ID)
+if (config.GA_ID) ReactGA.initialize(config.GA_ID)
 
 root.render(
   import.meta.env.DEV ? (
