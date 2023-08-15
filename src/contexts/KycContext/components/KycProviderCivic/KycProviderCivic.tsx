@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { State } from '@civic/common-gateway-react/dist/esm/types'
 import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
+import { SUPPORTED_CHAINS_DETAILS } from '@config'
 import { providers, Wallet } from 'ethers'
 import {
   FC,
@@ -62,8 +63,19 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
 
       setSignedNonce(signedMessage)
       handleSigned()
+
+      const KYC_CIVIC_CHAINS_NAMES_MAP = {
+        [SUPPORTED_CHAINS_DETAILS.MAINNET.id]: 'ethereum',
+        [SUPPORTED_CHAINS_DETAILS.POLYGON.id]: 'polygon',
+        [SUPPORTED_CHAINS_DETAILS.ARBITRUM.id]: 'arbitrum',
+        [SUPPORTED_CHAINS_DETAILS.XDC.id]: 'xdc',
+      }
+
+      if (!provider?.chainId)
+        throw new Error('Provider Chain ID is not defined')
+
       await loginCb({
-        chainName: 'ethereum',
+        chainName: KYC_CIVIC_CHAINS_NAMES_MAP[provider.chainId],
         address: provider?.address,
         signature: signedMessage,
       })

@@ -6,9 +6,12 @@ import { LogLevelDesc } from 'loglevel'
 import packageJson from '../package.json'
 
 export enum SUPPORTED_CHAINS {
+  MAINNET = 'MAINNET',
   SEPOLIA = 'SEPOLIA',
   POLYGON = 'POLYGON',
   POLYGON_TESTNET = 'POLYGON_TESTNET',
+  ARBITRUM = 'ARBITRUM',
+  XDC = 'XDC',
 }
 
 export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
@@ -47,6 +50,45 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
     token: {
       name: 'Matic',
       symbol: 'Matic',
+      decimals: 18,
+    },
+    type: CHAIN_TYPES.EVM,
+    icon: '',
+  },
+  [SUPPORTED_CHAINS.MAINNET]: {
+    id: '1',
+    name: 'Ethereum',
+    rpcUrl: 'https://mainnet.infura.io/v3/',
+    explorerUrl: 'https://etherscan.io/',
+    token: {
+      name: 'Ethereum',
+      symbol: 'Eth',
+      decimals: 18,
+    },
+    type: CHAIN_TYPES.EVM,
+    icon: '',
+  },
+  [SUPPORTED_CHAINS.ARBITRUM]: {
+    id: '42161',
+    name: 'Arbitrum',
+    rpcUrl: 'https://arbitrum.meowrpc.com',
+    explorerUrl: 'https://arbiscan.io/',
+    token: {
+      name: 'Ethereum',
+      symbol: 'Eth',
+      decimals: 18,
+    },
+    type: CHAIN_TYPES.EVM,
+    icon: '',
+  },
+  [SUPPORTED_CHAINS.XDC]: {
+    id: '50',
+    name: 'XDC',
+    rpcUrl: 'https://rpc-xdc.icecreamswap.com',
+    explorerUrl: 'https://xdc.blocksscan.io/',
+    token: {
+      name: 'XDC',
+      symbol: 'XDC',
       decimals: 18,
     },
     type: CHAIN_TYPES.EVM,

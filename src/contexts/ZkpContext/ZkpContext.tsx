@@ -81,6 +81,21 @@ export const zkpContext = createContext<ZkpContextValue>({
       value: SUPPORTED_CHAINS.SEPOLIA,
       iconName: ICON_NAMES.ethereum,
     },
+    [SUPPORTED_CHAINS.MAINNET]: {
+      title: 'Mainnet',
+      value: SUPPORTED_CHAINS.MAINNET,
+      iconName: ICON_NAMES.ethereum,
+    },
+    [SUPPORTED_CHAINS.ARBITRUM]: {
+      title: 'Arbitrum',
+      value: SUPPORTED_CHAINS.ARBITRUM,
+      iconName: ICON_NAMES.ethereum,
+    },
+    [SUPPORTED_CHAINS.XDC]: {
+      title: 'XDC',
+      value: SUPPORTED_CHAINS.XDC,
+      iconName: ICON_NAMES.ethereum,
+    },
   },
 
   getClaimOffer: async (_identity?: Identity) => {
@@ -163,6 +178,21 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       [SUPPORTED_CHAINS.SEPOLIA]: {
         title: 'Sepolia chain',
         value: SUPPORTED_CHAINS.SEPOLIA,
+        iconName: ICON_NAMES.ethereum,
+      },
+      [SUPPORTED_CHAINS.MAINNET]: {
+        title: 'Mainnet',
+        value: SUPPORTED_CHAINS.MAINNET,
+        iconName: ICON_NAMES.ethereum,
+      },
+      [SUPPORTED_CHAINS.ARBITRUM]: {
+        title: 'Arbitrum',
+        value: SUPPORTED_CHAINS.ARBITRUM,
+        iconName: ICON_NAMES.ethereum,
+      },
+      [SUPPORTED_CHAINS.XDC]: {
+        title: 'XDC',
+        value: SUPPORTED_CHAINS.XDC,
         iconName: ICON_NAMES.ethereum,
       },
     }),
