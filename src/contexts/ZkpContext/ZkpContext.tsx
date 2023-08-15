@@ -7,6 +7,7 @@ import {
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
 import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import isEqual from 'lodash/isEqual'
 import {
   createContext,
   FC,
@@ -16,6 +17,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
@@ -49,6 +51,8 @@ interface ZkpContextValue {
     chain: SUPPORTED_CHAINS,
     _verifiableCredentials?: VerifiableCredentials<QueryVariableName>,
   ) => Promise<ZkpGen<QueryVariableName>>
+
+  reset: () => void
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
@@ -116,6 +120,10 @@ export const zkpContext = createContext<ZkpContextValue>({
       }`,
     )
   },
+
+  reset: () => {
+    throw new TypeError(`reset() not implemented`)
+  },
 })
 
 type ChainToPublish = {
@@ -128,6 +136,11 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const { provider } = useWeb3Context()
+
+  const [storagePK, setStoragePK] = useLocalStorage('pkey', '')
+  const [storageVC, setStorageVC] = useLocalStorage<
+    VerifiableCredentials<QueryVariableName>
+  >('vc', undefined)
 
   const [identity, setIdentity] = useState<Identity>()
   const [verifiableCredentials, setVerifiableCredentials] =
@@ -156,17 +169,24 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [],
   )
 
-  const createIdentity = useCallback(async (privateKeyHex?: string) => {
-    Identity.setConfig({
-      AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
-    })
+  const createIdentity = useCallback(
+    async (privateKeyHex?: string) => {
+      Identity.setConfig({
+        AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
+      })
 
-    const newIdentity = await Identity.create(privateKeyHex)
+      const newIdentity = await Identity.create(privateKeyHex)
 
-    setIdentity(newIdentity)
+      setIdentity(newIdentity)
 
-    return newIdentity
-  }, [])
+      if (storagePK !== newIdentity.privateKeyHex) {
+        setStoragePK(newIdentity.privateKeyHex)
+      }
+
+      return newIdentity
+    },
+    [setStoragePK, storagePK],
+  )
 
   const getClaimOffer = useCallback(
     async (_identity?: Identity) => {
@@ -206,11 +226,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [getClaimOffer],
   )
 
-  const getVerifiableCredentials = useCallback(
-    async (
-      chain: SUPPORTED_CHAINS,
-      _identity?: Identity,
-    ): Promise<VerifiableCredentials<QueryVariableName>> => {
+  const loadVerifiableCredentials = useCallback(
+    async (chain: SUPPORTED_CHAINS, _identity?: Identity) => {
       const currentIdentity = _identity ?? identity
 
       if (!currentIdentity) throw new TypeError('Identity is not defined')
@@ -235,15 +252,34 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
 
-      const verifiableCredentials = await authProof.getVerifiableCredentials(
-        'IdentityProviders',
-      )
-
-      setVerifiableCredentials(verifiableCredentials)
-
-      return verifiableCredentials
+      return authProof.getVerifiableCredentials('IdentityProviders')
     },
     [identity],
+  )
+
+  const getVerifiableCredentials = useCallback(
+    async (
+      chain: SUPPORTED_CHAINS,
+      _identity?: Identity,
+    ): Promise<VerifiableCredentials<QueryVariableName>> => {
+      const vc: VerifiableCredentials<QueryVariableName> =
+        verifiableCredentials &&
+        _identity?.idString &&
+        verifiableCredentials?.body?.credential?.credentialSubject?.id.includes(
+          _identity?.idString,
+        )
+          ? verifiableCredentials
+          : await loadVerifiableCredentials(chain, _identity)
+
+      if (!isEqual(storageVC, vc)) {
+        setStorageVC(vc)
+      }
+
+      setVerifiableCredentials(vc)
+
+      return vc
+    },
+    [loadVerifiableCredentials, setStorageVC, storageVC, verifiableCredentials],
   )
 
   const loadStatesDetails = useCallback(
@@ -371,6 +407,24 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [identity, loadStatesDetails, provider?.address, verifiableCredentials],
   )
 
+  const reset = useCallback(() => {
+    setIdentity(undefined)
+    setVerifiableCredentials(undefined)
+    setIsNaturalZkp(undefined)
+    setStoragePK('')
+    setStorageVC(undefined)
+  }, [setStoragePK, setStorageVC])
+
+  useEffectOnce(() => {
+    if (storagePK) {
+      createIdentity(storagePK)
+    }
+
+    if (storageVC) {
+      setVerifiableCredentials(storageVC)
+    }
+  })
+
   return (
     <zkpContext.Provider
       value={{
@@ -389,6 +443,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         getVerifiableCredentials,
         loadStatesDetails,
         getZkProof,
+
+        reset,
       }}
       {...rest}
     >

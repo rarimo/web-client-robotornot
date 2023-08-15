@@ -95,14 +95,24 @@ $card-padding-side: #{toRem(24)};
   background: rgba(0, 0, 0, 0.05);
   border: toRem(1) solid var(--border-primary-main);
 
-  @include respond-to(xsmall) {
+  @include respond-to(small) {
     flex-direction: column;
     gap: toRem(24);
   }
 }
 
-.profile__copy-field-btn {
-  --button-icon-size: 1.3em;
+.profile__copy-field-btns-wrp {
+  display: flex;
+  align-items: center;
+  gap: toRem(12);
+
+  @include respond-to(small) {
+    width: 100%;
+  }
+}
+
+.profile .profile__copy-field-btn {
+  --button-icon-size: 1.9em;
 
   margin-left: auto;
   background: var(--background-secondary-main);
@@ -111,8 +121,22 @@ $card-padding-side: #{toRem(24)};
   font-weight: 700;
   letter-spacing: toRem(0.56);
 
-  @include respond-to(xsmall) {
-    width: 100%;
+  @include respond-to(small) {
+
+    &:first-child {
+      width: 100%;
+    }
+  }
+
+  &--reset {
+    background: var(--background-secondary-main);
+    color: var(--error-main);
+
+    .profile &:hover,
+    .profile &:focus {
+      background: var(--background-secondary-main);
+      color: var(--error-main);
+    }
   }
 }
 

@@ -1820,93 +1820,93 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.16"
+"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.16, @rarimo/auth-zkp-iden3@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.17"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.16
-    "@rarimo/provider": ^2.0.0-rc.16
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.16
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.17
+    "@rarimo/provider": ^2.0.0-rc.17
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.17
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 5c1bd99680c97967151adf4c679c3e6b6e466855f475d267811a60ca35cabddd264cb9b7f1bb6590d8253341b6fd5b50aa3886f8f3e6c4321ea23ed3fc029ab2
+  checksum: 91326397ab821695439967effdc26ce7b64e9b14231a1a8e15524f58a5199056a4246c8ee362e502bf654ef85a62ebe835b667a7413c4534cae1e12274d14cf5
   languageName: node
   linkType: hard
 
-"@rarimo/client@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/client@npm:2.0.0-rc.16"
+"@rarimo/client@npm:^2.0.0-rc.16, @rarimo/client@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/client@npm:2.0.0-rc.17"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.31.0
     "@cosmjs/stargate": ^0.31.0
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/reactivity": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.16
-  checksum: c2f475f29462ebcb496ac73e7afbec4753f4903afac6f62b88df81a15accfc70a701c5ca43c5aba15ce2b487c9b09c5ced7e4774bef889fdad2a8af46fe870ad
+    "@rarimo/shared": ^2.0.0-rc.17
+  checksum: 60820ecbafcb2e41b942aa539cb97dd88f8c4f2a317b8b8b41db8cdd3546dac93319005d12e32b74c9497dae375d9bd57b8f161ef51140b9348f334bcc395f15
   languageName: node
   linkType: hard
 
-"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.16"
+"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.16, @rarimo/identity-gen-iden3@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.17"
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: ab988b06dab60c331f8d8f05ace9c3593f0933c2cb2d63b7810ebe715cc329069dd0968e9e6c8ca6aa873b37b941781973b45b4cda2850d168bbfd89f93ede42
+  checksum: e32fb9ff11efcc6f3f55cab043daa0e258c77c8862b3b21c492e585271e0acabf5143d52256325547b7508b195b320e14b6affeaec211b06a392e14b9fa9fe30
   languageName: node
   linkType: hard
 
-"@rarimo/provider@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/provider@npm:2.0.0-rc.16"
+"@rarimo/provider@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/provider@npm:2.0.0-rc.17"
   dependencies:
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.16
-  checksum: 993a5bfef5a94314834010bc2260c6e8e0f2c96d0b0cd1fa6c33c8af4f7ba7f1248ee92ce18eedb73b304e006096ac4fb4179206ef2bce384774e7ebe3d9d752
+    "@rarimo/shared": ^2.0.0-rc.17
+  checksum: c6154849e20e3e6d47826c8d2aebaf0a9d32520690f19bc341691df9dee7ae1c910959e85878c530722a0955c04dad457765ca0aa309c6c8cfd86fa337cb3841
   languageName: node
   linkType: hard
 
-"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.16"
+"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.16, @rarimo/shared-zkp-iden3@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.17"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/client": ^2.0.0-rc.16
+    "@rarimo/client": ^2.0.0-rc.17
     tslib: ^2.5.0
-  checksum: 9c5f007fb0b2e6c571e1655121fc44b348cacab50a3e369bd26584db6063d79c5d46f3f3ce4d87460344943907468f7fad27591d5e2234a53b2e77358f9abc9a
+  checksum: 267c2da94de1f6086c863f51b437a9709c649401d6d15918130681a87ee5cfe7c20c3daaf1fc44c34bfade1f582ceb70524d887795c2aad16b0dd3f3490be5e5
   languageName: node
   linkType: hard
 
-"@rarimo/shared@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/shared@npm:2.0.0-rc.16"
+"@rarimo/shared@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/shared@npm:2.0.0-rc.17"
   dependencies:
     "@distributedlab/jac": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-  checksum: 1aa7d065e7b41df2f7a115c0efed9a6bd0eb338f58a07e6123fb1bbb1d14f955234d3d1d60684a5b2123816323db464eaf1372ca9b12451b42d0935e70605228
+  checksum: 3a480133b4618d31fcd1e6579709ea63d115c9d56b7b73ed1ea8580a68047a3d2472391adaec9e4268b4352503e660a47fb387462d8ed7d53f58696b23084fda
   languageName: node
   linkType: hard
 
 "@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.16"
+  version: 2.0.0-rc.17
+  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.17"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.16
-    "@rarimo/client": ^2.0.0-rc.16
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.16
-    "@rarimo/shared": ^2.0.0-rc.16
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.16
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.17
+    "@rarimo/client": ^2.0.0-rc.17
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.17
+    "@rarimo/shared": ^2.0.0-rc.17
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.17
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1914,7 +1914,7 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.14
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 6a9567433efb787acf23b555bc48fb310d8803b6eedcc91513bb731dd2a6955e63b9b67bd315895ffc581d82d9b281dd03d5417b47d3a46341aad8e1b4220b9a
+  checksum: e4bf3caf4038104f08da8dfa97f297f685dee884fe42ff06655f632594bcad0eec85022360ac1c14fa5579f3abf5b7866e746a9f13b9da3ab70f2253909e3c9f
   languageName: node
   linkType: hard
 
@@ -1942,8 +1942,8 @@ __metadata:
   linkType: hard
 
 "@rollup/pluginutils@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "@rollup/pluginutils@npm:5.0.2"
+  version: 5.0.3
+  resolution: "@rollup/pluginutils@npm:5.0.3"
   dependencies:
     "@types/estree": ^1.0.0
     estree-walker: ^2.0.2
@@ -1953,7 +1953,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: edea15e543bebc7dcac3b0ac8bc7b8e8e6dbd46e2864dbe5dd28072de1fbd5b0e10d545a610c0edaa178e8a7ac432e2a2a52e547ece1308471412caba47db8ce
+  checksum: 8efbdeac53c58ba7b26c353a0a95acb0286cb6afec9816e0c52c3537404be80af11d897f78416a3339a8a76cbce8600269bdf4853edfdebcc89b2e90c56bf3d9
   languageName: node
   linkType: hard
 
@@ -2248,9 +2248,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.3.1":
-  version: 20.4.9
-  resolution: "@types/node@npm:20.4.9"
-  checksum: 504e3da96274f3865c1251830f4750bb0a8f6ef6f8648902cd3bba33370c5f219235471bfbf55cce726b25c8eacfcc8e2aad0ec3b13e27ea6708b00d4a9a46c8
+  version: 20.5.0
+  resolution: "@types/node@npm:20.5.0"
+  checksum: 659bc5fc93b5c02bd88ca4bfae4f6b9dc307d45884d1dd9d69df85819a9943cdc00cd3c87eec3048866df6a67f52297f74d170e47a44f61edb3e8f770d94e85e
   languageName: node
   linkType: hard
 
@@ -3813,14 +3813,14 @@ __metadata:
   linkType: hard
 
 "cacache@npm:^17.0.0":
-  version: 17.1.3
-  resolution: "cacache@npm:17.1.3"
+  version: 17.1.4
+  resolution: "cacache@npm:17.1.4"
   dependencies:
     "@npmcli/fs": ^3.1.0
     fs-minipass: ^3.0.0
     glob: ^10.2.2
     lru-cache: ^7.7.1
-    minipass: ^5.0.0
+    minipass: ^7.0.3
     minipass-collect: ^1.0.2
     minipass-flush: ^1.0.5
     minipass-pipeline: ^1.2.4
@@ -3828,7 +3828,7 @@ __metadata:
     ssri: ^10.0.0
     tar: ^6.1.11
     unique-filename: ^3.0.0
-  checksum: 385756781e1e21af089160d89d7462b7ed9883c978e848c7075b90b73cb823680e66092d61513050164588387d2ca87dd6d910e28d64bc13a9ac82cd8580c796
+  checksum: b7751df756656954a51201335addced8f63fc53266fa56392c9f5ae83c8d27debffb4458ac2d168a744a4517ec3f2163af05c20097f93d17bdc2dc8a385e14a6
   languageName: node
   linkType: hard
 
@@ -3918,9 +3918,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001517":
-  version: 1.0.30001519
-  resolution: "caniuse-lite@npm:1.0.30001519"
-  checksum: 66085133ede05d947e30b62fed2cbae18e5767afda8b0de38840883e1cfe5846bf1568ddbafd31647544e59112355abedaf9c867ac34541bfc20d69e7a19d94c
+  version: 1.0.30001520
+  resolution: "caniuse-lite@npm:1.0.30001520"
+  checksum: 59991ad8f36cf282f81abbcc6074c3097c21914cdd54bd2b3f73ac9462f57fc74e90371cd22bcdff4d085d09da42a07dcea384cb81e4ac260496e1bd79e1fe7c
   languageName: node
   linkType: hard
 
@@ -5006,9 +5006,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.477":
-  version: 1.4.490
-  resolution: "electron-to-chromium@npm:1.4.490"
-  checksum: c81bf177ff64ceb54fa90f715f1d52fb9106b0ef4426b816c4ae0471c562d8f4d110531df1a164ce17eda13ad9481f6bcd15f1368b6d5442a1d2f93102ef221a
+  version: 1.4.491
+  resolution: "electron-to-chromium@npm:1.4.491"
+  checksum: 8d96c720c808a694b907b7a9d63da89f739374f90adb9db3d2b065a8e05de5548caf1b6ab0eade3150947cdefc962d342edc6d69c68ef489ecdd45e92a17677c
   languageName: node
   linkType: hard
 
@@ -6235,8 +6235,8 @@ __metadata:
   linkType: hard
 
 "framer-motion@npm:^10.12.10":
-  version: 10.15.1
-  resolution: "framer-motion@npm:10.15.1"
+  version: 10.15.2
+  resolution: "framer-motion@npm:10.15.2"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     tslib: ^2.4.0
@@ -6251,7 +6251,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: b8b08561d13452be63e44f12541ff1e2c620f016522bbfb65b80b4cca27e83a85e032aebbcc38c57667ffac90ec0f63a25e73c83730e50b8ca85b85134776be0
+  checksum: 57dc428f11d140eddc4a6d2fd68489ae5613af21407d92afee0bd626ef284488a8d84decb68f07ea790882137c1587f6177bd322a25477cfbbda07d0949cb8fe
   languageName: node
   linkType: hard
 
@@ -6298,11 +6298,11 @@ __metadata:
   linkType: hard
 
 "fs-minipass@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "fs-minipass@npm:3.0.2"
+  version: 3.0.3
+  resolution: "fs-minipass@npm:3.0.3"
   dependencies:
-    minipass: ^5.0.0
-  checksum: e9cc0e1f2d01c6f6f62f567aee59530aba65c6c7b2ae88c5027bc34c711ebcfcfaefd0caf254afa6adfe7d1fba16bc2537508a6235196bac7276747d078aef0a
+    minipass: ^7.0.3
+  checksum: 8722a41109130851d979222d3ec88aabaceeaaf8f57b2a8f744ef8bd2d1ce95453b04a61daa0078822bc5cd21e008814f06fe6586f56fef511e71b8d2394d802
   languageName: node
   linkType: hard
 
@@ -8349,17 +8349,17 @@ __metadata:
   linkType: hard
 
 "minipass-fetch@npm:^3.0.0":
-  version: 3.0.3
-  resolution: "minipass-fetch@npm:3.0.3"
+  version: 3.0.4
+  resolution: "minipass-fetch@npm:3.0.4"
   dependencies:
     encoding: ^0.1.13
-    minipass: ^5.0.0
+    minipass: ^7.0.3
     minipass-sized: ^1.0.3
     minizlib: ^2.1.2
   dependenciesMeta:
     encoding:
       optional: true
-  checksum: af5ab2552a16fcf505d35fd7ffb84b57f4a0eeb269e6e1d9a2a75824dda48b36e527083250b7cca4a4def21d9544e2ade441e4730e233c0bc2133f6abda31e18
+  checksum: af7aad15d5c128ab1ebe52e043bdf7d62c3c6f0cecb9285b40d7b395e1375b45dcdfd40e63e93d26a0e8249c9efd5c325c65575aceee192883970ff8cb11364a
   languageName: node
   linkType: hard
 
@@ -8406,10 +8406,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:^5.0.0 || ^6.0.2 || ^7.0.0":
-  version: 7.0.2
-  resolution: "minipass@npm:7.0.2"
-  checksum: 46776de732eb7cef2c7404a15fb28c41f5c54a22be50d47b03c605bf21f5c18d61a173c0a20b49a97e7a65f78d887245066410642551e45fffe04e9ac9e325bc
+"minipass@npm:^5.0.0 || ^6.0.2 || ^7.0.0, minipass@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "minipass@npm:7.0.3"
+  checksum: 6f1614f5b5b55568a46bca5fec0e7c46dac027691db27d0e1923a8192866903144cd962ac772c0e9f89b608ea818b702709c042bce98e190d258847d85461531
   languageName: node
   linkType: hard
 
@@ -9462,8 +9462,8 @@ __metadata:
   linkType: hard
 
 "protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2, protobufjs@npm:~6.11.3":
-  version: 6.11.3
-  resolution: "protobufjs@npm:6.11.3"
+  version: 6.11.4
+  resolution: "protobufjs@npm:6.11.4"
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -9481,7 +9481,7 @@ __metadata:
   bin:
     pbjs: bin/pbjs
     pbts: bin/pbts
-  checksum: 4a6ce1964167e4c45c53fd8a312d7646415c777dd31b4ba346719947b88e61654912326101f927da387d6b6473ab52a7ea4f54d6f15d63b31130ce28e2e15070
+  checksum: b2fc6a01897b016c2a7e43a854ab4a3c57080f61be41e552235436e7a730711b8e89e47cb4ae52f0f065b5ab5d5989fc932f390337ce3a8ccf07203415700850
   languageName: node
   linkType: hard
 
@@ -10259,8 +10259,8 @@ __metadata:
   linkType: hard
 
 "rpc-websockets@npm:^7.5.1":
-  version: 7.5.1
-  resolution: "rpc-websockets@npm:7.5.1"
+  version: 7.6.0
+  resolution: "rpc-websockets@npm:7.6.0"
   dependencies:
     "@babel/runtime": ^7.17.2
     bufferutil: ^4.0.1
@@ -10273,7 +10273,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 9dda8c63a1d3e85e11597e1c364835ec6aa9a8de1b5cfb1629d0eafc3ae04509011d485025ed4f717c0b1dd048e2aafdd75080e866540b93e55fd8a2cd91bcfe
+  checksum: af2b254f65985610bd354e8e13de07b5a36010b94672b0b5a9d226b9bb1b8b17d01c63221cad97263845888f3610e55867a32e4c0017dfb92fddf89417c4cb6c
   languageName: node
   linkType: hard
 
@@ -10819,11 +10819,11 @@ __metadata:
   linkType: hard
 
 "ssri@npm:^10.0.0":
-  version: 10.0.4
-  resolution: "ssri@npm:10.0.4"
+  version: 10.0.5
+  resolution: "ssri@npm:10.0.5"
   dependencies:
-    minipass: ^5.0.0
-  checksum: fb14da9f8a72b04eab163eb13a9dda11d5962cd2317f85457c4e0b575e9a6e0e3a6a87b5bf122c75cb36565830cd5f263fb457571bf6f1587eb5f95d095d6165
+    minipass: ^7.0.3
+  checksum: 0a31b65f21872dea1ed3f7c200d7bc1c1b91c15e419deca14f282508ba917cbb342c08a6814c7f68ca4ca4116dd1a85da2bbf39227480e50125a1ceffeecb750
   languageName: node
   linkType: hard
 
@@ -12080,17 +12080,20 @@ __metadata:
   linkType: hard
 
 "valtio@npm:^1.10.6":
-  version: 1.11.1
-  resolution: "valtio@npm:1.11.1"
+  version: 1.11.2
+  resolution: "valtio@npm:1.11.2"
   dependencies:
     proxy-compare: 2.5.1
     use-sync-external-store: 1.2.0
   peerDependencies:
+    "@types/react": ">=16.8"
     react: ">=16.8"
   peerDependenciesMeta:
+    "@types/react":
+      optional: true
     react:
       optional: true
-  checksum: 9376cbb6151af788607126a0cf12f12473f4b4e0d7d18ad7825ae9a31a3bfee0af621bb21cde1b965f271e9ab5c2fd45b2df6be982b72439f08d69157c61982f
+  checksum: cce2d9212aac9fc4bdeba2d381188cc831cfe8d2d03039024cfcd58ba1801f2a5b14d01c2bb21a2c9f12046d2ede64f1dd887175185f39bee553677a35592c30
   languageName: node
   linkType: hard
 

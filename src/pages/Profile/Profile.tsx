@@ -12,7 +12,7 @@ import { abbrCenter, ErrorHandler } from '@/helpers'
 const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const navigate = useNavigate()
 
-  const { identity, createIdentity } = useZkpContext()
+  const { identity, createIdentity, reset } = useZkpContext()
   const [openFileSelector, { filesContent, clear }] = useFilePicker({
     accept: '.json',
   })
@@ -75,16 +75,25 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
             {abbrCenter(identity?.idString ?? '', 10)}
 
             {identity?.privateKeyHex ? (
-              <AppButton
-                className='profile__copy-field-btn'
-                modification='none'
-                iconLeft={ICON_NAMES.download}
-                href={exportLink}
-                target='_blank'
-                download={`pk.json`}
-                text={`EXPORT`}
-                size='small'
-              />
+              <div className='profile__copy-field-btns-wrp'>
+                <AppButton
+                  className='profile__copy-field-btn'
+                  modification='none'
+                  iconLeft={ICON_NAMES.download}
+                  href={exportLink}
+                  target='_blank'
+                  download={`pk.json`}
+                  text={`EXPORT`}
+                  size='small'
+                />
+                <AppButton
+                  className='profile__copy-field-btn profile__copy-field-btn--reset'
+                  modification='none'
+                  iconLeft={ICON_NAMES.trash}
+                  size='small'
+                  onClick={reset}
+                />
+              </div>
             ) : (
               <AppButton
                 className='profile__copy-field-btn'

@@ -82,9 +82,9 @@ const AuthPreview: FC<Props> = () => {
         return
       }
 
-      const currentVerifiableCredentials =
-        verifiableCredentials ||
-        (await getVerifiableCredentials(config.DEFAULT_CHAIN))
+      const currentVerifiableCredentials = await getVerifiableCredentials(
+        config.DEFAULT_CHAIN,
+      )
 
       await getZkProof(config.DEFAULT_CHAIN, currentVerifiableCredentials)
 
@@ -104,7 +104,6 @@ const AuthPreview: FC<Props> = () => {
     isSenderAddressProved,
     navigate,
     provider?.address,
-    verifiableCredentials,
   ])
 
   const completeKyc = useCallback(async () => {
@@ -242,7 +241,9 @@ const AuthPreview: FC<Props> = () => {
               {`Please wait...`}
             </span>
             <span className='auth-preview__loader-subtitle'>
-              {`Information is being processed`}
+              {verifiableCredentials
+                ? `Ensuring the privacy`
+                : `Service provider is submitting a credential`}
             </span>
           </div>
         </div>
