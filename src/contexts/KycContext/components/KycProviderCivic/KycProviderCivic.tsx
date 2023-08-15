@@ -66,7 +66,9 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
 
       const KYC_CIVIC_CHAINS_NAMES_MAP = {
         [SUPPORTED_CHAINS_DETAILS.MAINNET.id]: 'ethereum',
+        [SUPPORTED_CHAINS_DETAILS.SEPOLIA.id]: 'ethereum',
         [SUPPORTED_CHAINS_DETAILS.POLYGON.id]: 'polygon',
+        [SUPPORTED_CHAINS_DETAILS.POLYGON_TESTNET.id]: 'polygon',
         [SUPPORTED_CHAINS_DETAILS.ARBITRUM.id]: 'arbitrum',
         [SUPPORTED_CHAINS_DETAILS.XDC.id]: 'xdc',
       }

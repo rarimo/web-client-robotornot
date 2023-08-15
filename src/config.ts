@@ -96,6 +96,29 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
   },
 }
 
+export const FALLBACK_CIRCUIT_URLS = {
+  auth: {
+    wasm: `${window.location.origin}/circuits/auth/circuit.wasm`,
+    zkey: `${window.location.origin}/circuits/auth/circuit_final.zkey`,
+  },
+  sigV2OnChain: {
+    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit.wasm`,
+    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit_final.zkey`,
+  },
+  sigV2: {
+    wasm: `${window.location.origin}/circuits/credentialAtomicQuerySigV2/circuit.wasm`,
+    zkey: `${window.location.origin}/circuits/credentialAtomicQuerySigV2/circuit_final.zkey`,
+  },
+  mtpV2OnChain: {
+    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit.wasm`,
+    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit_final.zkey`,
+  },
+  mtpV2: {
+    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2/circuit.wasm`,
+    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2/circuit_final.zkey`,
+  },
+}
+
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
@@ -142,26 +165,55 @@ export const config = {
   KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
 
   CIRCUIT_URLS: {
-    auth: {
-      wasm: import.meta.env.VITE_AUTH_WASM_URL,
-      zkey: import.meta.env.VITE_AUTH_ZKEY_URL,
-    },
-    sigV2OnChain: {
-      wasm: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
-      zkey: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
-    },
-    sigV2: {
-      wasm: import.meta.env.VITE_SIG_V2_WASM_URL,
-      zkey: import.meta.env.VITE_SIG_V2_ZKEY_URL,
-    },
-    mtpV2OnChain: {
-      wasm: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
-      zkey: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
-    },
-    mtpV2: {
-      wasm: import.meta.env.VITE_MTP_V2_WASM_URL,
-      zkey: import.meta.env.VITE_MTP_V2_ZKEY_URL,
-    },
+    ...FALLBACK_CIRCUIT_URLS,
+
+    ...(import.meta.env.VITE_AUTH_WASM_URL && import.meta.env.VITE_AUTH_ZKEY_URL
+      ? {
+          auth: {
+            wasm: import.meta.env.VITE_AUTH_WASM_URL,
+            zkey: import.meta.env.VITE_AUTH_ZKEY_URL,
+          },
+        }
+      : {}),
+
+    ...(import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL &&
+    import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL
+      ? {
+          sigV2OnChain: {
+            wasm: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
+            zkey: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
+          },
+        }
+      : {}),
+
+    ...(import.meta.env.VITE_SIG_V2_WASM_URL &&
+    import.meta.env.VITE_SIG_V2_ZKEY_URL
+      ? {
+          sigV2: {
+            wasm: import.meta.env.VITE_SIG_V2_WASM_URL,
+            zkey: import.meta.env.VITE_SIG_V2_ZKEY_URL,
+          },
+        }
+      : {}),
+
+    ...(import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL &&
+    import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL
+      ? {
+          mtpV2OnChain: {
+            wasm: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
+            zkey: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
+          },
+        }
+      : {}),
+    ...(import.meta.env.VITE_MTP_V2_WASM_URL &&
+    import.meta.env.VITE_MTP_V2_ZKEY_URL
+      ? {
+          mtpV2: {
+            wasm: import.meta.env.VITE_MTP_V2_WASM_URL,
+            zkey: import.meta.env.VITE_MTP_V2_ZKEY_URL,
+          },
+        }
+      : {}),
   },
 
   GA_ID: import.meta.env.VITE_GA_ID,

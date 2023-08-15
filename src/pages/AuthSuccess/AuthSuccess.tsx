@@ -15,7 +15,7 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 const SECOND = 1000
 
-const REDIRECT_TIMEOUT = 30
+const REDIRECT_TIMEOUT = 5
 
 function bytesToBase64(bytes: Uint8Array) {
   const binString = Array.from(bytes, x => String.fromCodePoint(x)).join('')
@@ -135,8 +135,23 @@ const AuthSuccess: FC<Props> = () => {
 
       {config.EXTERNAL_PLATFORM_REDIRECT_URL ? (
         <div className='auth-success__tip'>
-          {`Automatically redirected in `}
-          <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
+          {count ? (
+            <>
+              {`Automatically redirected in `}
+              <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
+            </>
+          ) : (
+            <>
+              {`Haven't redirect? `}
+              <a
+                className='auth-success__tip-link'
+                style={{ textDecoration: 'underline' }}
+                href={config.EXTERNAL_PLATFORM_REDIRECT_URL}
+                target='_blank'
+                rel='noreferrer'
+              >{`click here`}</a>
+            </>
+          )}
         </div>
       ) : (
         <></>
