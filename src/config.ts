@@ -58,7 +58,7 @@ export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
   [SUPPORTED_CHAINS.MAINNET]: {
     id: '1',
     name: 'Ethereum',
-    rpcUrl: 'https://mainnet.infura.io/v3/',
+    rpcUrl: 'https://eth.llamarpc.com',
     explorerUrl: 'https://etherscan.io/',
     token: {
       name: 'Ethereum',
