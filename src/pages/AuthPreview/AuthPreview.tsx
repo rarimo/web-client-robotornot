@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config } from '@config'
+import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   FC,
@@ -54,6 +55,8 @@ const AuthPreview: FC<Props> = () => {
     isValidCredentials,
     selectedKycDetails,
     // retryKyc,
+
+    kycError,
     verificationErrorMessages,
   } = useKycContext()
 
@@ -190,9 +193,15 @@ const AuthPreview: FC<Props> = () => {
               name={ICON_NAMES.x}
             />
           </div>
-          <span className='auth-preview__card-error-title'>{`Insufficient Credentials`}</span>
+          <span className='auth-preview__card-error-title'>
+            {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+              ? `Credentials already used`
+              : verificationErrorMessages}
+          </span>
           <span className='auth-preview__card-error-message'>
-            {` Unable to Generate Proof of Human Identity. ${verificationErrorMessages}`}
+            {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+              ? 'This address is already used This DiD has been already used, so you should reinitiate the session'
+              : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
           </span>
         </div>
 
@@ -205,7 +214,7 @@ const AuthPreview: FC<Props> = () => {
         />
       </div>
     ),
-    [completeKyc, verificationErrorMessages],
+    [completeKyc, kycError?.httpStatus, verificationErrorMessages],
   )
 
   useEffect(() => {
@@ -230,13 +239,17 @@ const AuthPreview: FC<Props> = () => {
               : `Proof of Humanity`
             : `Getting a credential `}
         </h2>
-        <span className='auth-preview__header-subtitle'>
-          {verifiableCredentials
-            ? isPending
-              ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
-              : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
-            : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
-        </span>
+        {verificationErrorMessages ? (
+          ''
+        ) : (
+          <span className='auth-preview__header-subtitle'>
+            {verifiableCredentials
+              ? isPending
+                ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
+                : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
+              : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
+          </span>
+        )}
       </div>
 
       {isLoaded ? (

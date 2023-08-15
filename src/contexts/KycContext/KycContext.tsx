@@ -47,6 +47,7 @@ interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
   selectedKycDetails: [string, string][]
+  kycError?: JsonApiError
   verificationErrorMessages: string
 
   isLoaded: boolean
@@ -437,6 +438,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycProviderName,
           authorizedKycResponse,
           selectedKycDetails,
+          kycError,
           verificationErrorMessages,
 
           isLoaded,
