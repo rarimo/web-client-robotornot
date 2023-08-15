@@ -98,7 +98,7 @@ export const useNotification = () => {
             warning: NOTIFICATION_TYPE.warning,
           }[messageType] as TypeOptions,
           className: 'default-toast',
-          autoClose: MINUTE / 2,
+          autoClose: MINUTE / 4,
           closeOnClick: false,
         },
       )
@@ -136,7 +136,7 @@ export const useNotification = () => {
           pending: NOTIFICATION_TYPE.info,
         }[type] as TypeOptions,
         className: 'transaction-toast',
-        autoClose: MINUTE / 2,
+        autoClose: MINUTE / 4,
         closeOnClick: false,
       },
     )
