@@ -38,6 +38,8 @@ interface ImportMetaEnv {
   VITE_MTP_V2_ZKEY_URL: string
 
   VITE_GA_ID: string
+
+  VITE_SUPPORTED_CHAINS_DETAILS: string
 }
 
 interface Document {

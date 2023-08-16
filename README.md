@@ -155,6 +155,110 @@ document.ENV = document.ENV || Object.freeze({
 })
 ```
 
+### Chains List
+By following [this](./src/assets/fallback-supported-chains.json) scheme, you can define a list of supported chains, e. g.
+
+`JSON stringify` this js object:
+```json
+{
+  "SEPOLIA": {
+    "id": "11155111",
+    "name": "Sepolia chain",
+    "rpcUrl": "https://endpoints.omniatech.io/v1/eth/sepolia/public",
+    "explorerUrl": "https://sepolia.etherscan.io",
+    "token": {
+      "name": "Sepolia",
+      "symbol": "Sepolia",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  },
+  "POLYGON": {
+    "id": "137",
+    "name": "Polygon chain",
+    "rpcUrl": "https://polygon-rpc.com/",
+    "explorerUrl": "https://polygonscan.com/",
+    "token": {
+      "name": "MATIC",
+      "symbol": "MATIC",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "polygon"
+  },
+  "POLYGON_TESTNET": {
+    "id": "80001",
+    "name": "Polygon Testnet chain",
+    "rpcUrl": "https://endpoints.omniatech.io/v1/matic/mumbai/public",
+    "explorerUrl": "https://mumbai.polygonscan.com/",
+    "token": {
+      "name": "Matic",
+      "symbol": "Matic",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "polygon"
+  },
+  "MAINNET": {
+    "id": "1",
+    "name": "Ethereum",
+    "rpcUrl": "https://eth.llamarpc.com",
+    "explorerUrl": "https://etherscan.io/",
+    "token": {
+      "name": "Ethereum",
+      "symbol": "Eth",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  },
+  "ARBITRUM": {
+    "id": "42161",
+    "name": "Arbitrum",
+    "rpcUrl": "https://arbitrum.meowrpc.com",
+    "explorerUrl": "https://arbiscan.io/",
+    "token": {
+      "name": "Ethereum",
+      "symbol": "Eth",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "arbitrum"
+  },
+  "XDC": {
+    "id": "50",
+    "name": "XDC",
+    "rpcUrl": "https://rpc-xdc.icecreamswap.com",
+    "explorerUrl": "https://xdc.blocksscan.io/",
+    "token": {
+      "name": "XDC",
+      "symbol": "XDC",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  }
+}
+```
+
+where key - is a supported chain and value is a chain details
+
+then put into .env file or env.js file
+
+.env
+```dotenv
+VITE_SUPPORTED_CHAINS_DETAILS='{"SEPOLIA":{"id":"11155111","name":"Sepolia chain","rpcUrl":"https://endpoints.omniatech.io/v1/eth/sepolia/public","explorerUrl":"https://sepolia.etherscan.io","token":{"name":"Sepolia","symbol":"Sepolia","decimals":18},"type":"EVM","icon":"ethereum"},"POLYGON":{"id":"137","name":"Polygon chain","rpcUrl":"https://polygon-rpc.com/","explorerUrl":"https://polygonscan.com/","token":{"name":"MATIC","symbol":"MATIC","decimals":18},"type":"EVM","icon":"polygon"},"POLYGON_TESTNET":{"id":"80001","name":"Polygon Testnet chain","rpcUrl":"https://endpoints.omniatech.io/v1/matic/mumbai/public","explorerUrl":"https://mumbai.polygonscan.com/","token":{"name":"Matic","symbol":"Matic","decimals":18},"type":"EVM","icon":"polygon"},"MAINNET":{"id":"1","name":"Ethereum","rpcUrl":"https://eth.llamarpc.com","explorerUrl":"https://etherscan.io/","token":{"name":"Ethereum","symbol":"Eth","decimals":18},"type":"EVM","icon":"ethereum"},"ARBITRUM":{"id":"42161","name":"Arbitrum","rpcUrl":"https://arbitrum.meowrpc.com","explorerUrl":"https://arbiscan.io/","token":{"name":"Ethereum","symbol":"Eth","decimals":18},"type":"EVM","icon":"arbitrum"},"XDC":{"id":"50","name":"XDC","rpcUrl":"https://rpc-xdc.icecreamswap.com","explorerUrl":"https://xdc.blocksscan.io/","token":{"name":"XDC","symbol":"XDC","decimals":18},"type":"EVM","icon":"ethereum"}}'
+```
+
+env.js
+```js
+{
+  VITE_APP_SUPPORTED_CHAINS_DETAILS: '{"SEPOLIA":{"id":"11155111","name":"Sepolia chain","rpcUrl":"https://endpoints.omniatech.io/v1/eth/sepolia/public","explorerUrl":"https://sepolia.etherscan.io","token":{"name":"Sepolia","symbol":"Sepolia","decimals":18},"type":"EVM","icon":"ethereum"},"POLYGON":{"id":"137","name":"Polygon chain","rpcUrl":"https://polygon-rpc.com/","explorerUrl":"https://polygonscan.com/","token":{"name":"MATIC","symbol":"MATIC","decimals":18},"type":"EVM","icon":"polygon"},"POLYGON_TESTNET":{"id":"80001","name":"Polygon Testnet chain","rpcUrl":"https://endpoints.omniatech.io/v1/matic/mumbai/public","explorerUrl":"https://mumbai.polygonscan.com/","token":{"name":"Matic","symbol":"Matic","decimals":18},"type":"EVM","icon":"polygon"},"MAINNET":{"id":"1","name":"Ethereum","rpcUrl":"https://eth.llamarpc.com","explorerUrl":"https://etherscan.io/","token":{"name":"Ethereum","symbol":"Eth","decimals":18},"type":"EVM","icon":"ethereum"},"ARBITRUM":{"id":"42161","name":"Arbitrum","rpcUrl":"https://arbitrum.meowrpc.com","explorerUrl":"https://arbiscan.io/","token":{"name":"Ethereum","symbol":"Eth","decimals":18},"type":"EVM","icon":"arbitrum"},"XDC":{"id":"50","name":"XDC","rpcUrl":"https://rpc-xdc.icecreamswap.com","explorerUrl":"https://xdc.blocksscan.io/","token":{"name":"XDC","symbol":"XDC","decimals":18},"type":"EVM","icon":"ethereum"}}'
+}
+```
+
+After that you can set into `VITE_DEFAULT_CHAIN` any of supported chains you've defined (keys of object)
 
 ### Compiles and hot-reloads for development
 ```
