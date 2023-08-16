@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite'
 import { checker } from 'vite-plugin-checker'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
@@ -36,6 +36,7 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
+      splitVendorChunkPlugin(),
       react(),
 
       tsconfigPaths(),
@@ -143,6 +144,20 @@ export default defineConfig(({ mode }) => {
           // used during production bundling
           nodePolyfills(),
         ],
+
+        output: {
+          manualChunks: {
+            'js-merkletree': ['@iden3/js-merkletree'],
+            'js-jsonld-merklization': ['@iden3/js-jsonld-merklization'],
+            'js-crypto': ['@iden3/js-crypto'],
+            'js-jwz': ['@iden3/js-jwz'],
+            'js-iden3-core': ['@iden3/js-iden3-core'],
+            'near-api-js': ['near-api-js'],
+            'ethereum-gateway-react': ['@civic/ethereum-gateway-react'],
+            snarkjs: ['snarkjs'],
+            uauth: ['@uauth/js'],
+          },
+        },
       },
       commonjsOptions: {
         transformMixedEsModules: true,
