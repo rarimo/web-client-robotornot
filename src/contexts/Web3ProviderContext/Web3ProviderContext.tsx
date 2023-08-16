@@ -1,4 +1,3 @@
-import { SUPPORTED_CHAINS_DETAILS } from '@config'
 import {
   errors,
   IProvider,
@@ -21,6 +20,7 @@ import {
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
+import { config } from '@/config'
 import {
   // useNotification,
   useProvider,
@@ -136,7 +136,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         await providerDetector.init()
 
         Provider.setChainsDetails(
-          Object.entries(SUPPORTED_CHAINS_DETAILS).reduce(
+          Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
             (acc, [, chainDetails]) => ({
               ...acc,
               [chainDetails.id]: chainDetails,

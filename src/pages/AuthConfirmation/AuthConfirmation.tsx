@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { config, SUPPORTED_CHAINS } from '@config'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
 import { utils } from 'ethers'
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { querier } from '@/api'
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, Dropdown, Icon } from '@/common'
+import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
@@ -37,19 +37,23 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
+  const { isNaturalZkp, publishedChains } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
   const selectedChainToPublishDetails = useMemo(() => {
-    return SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
+    return config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
   }, [selectedChainToPublish])
 
   const chainsToSwitch = useMemo(
     () =>
-      Object.values(SUPPORTED_CHAINS)?.filter(el =>
+      (
+        Object.keys(
+          config.SUPPORTED_CHAINS_DETAILS,
+        ) as (keyof typeof config.SUPPORTED_CHAINS_DETAILS)[]
+      )?.filter(el =>
         Boolean(config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${el}`]),
       ),
     [],
@@ -206,7 +210,7 @@ const AuthConfirmation: FC<Props> = () => {
     async (chain: SUPPORTED_CHAINS) => {
       try {
         setIsDropdownOpen(false)
-        await trySwitchChain(SUPPORTED_CHAINS_DETAILS[chain])
+        await trySwitchChain(config.SUPPORTED_CHAINS_DETAILS[chain])
         setSelectedChainToPublish(chain)
       } catch (error) {
         ErrorHandler.processWithoutFeedback(error)
@@ -258,14 +262,14 @@ const AuthConfirmation: FC<Props> = () => {
         <div className='auth-confirmation__card'>
           <div className='auth-confirmation__chain-preview'>
             <div className='auth-confirmation__chain-preview-icon-wrp'>
-              <Icon
+              <ChainIcon
                 className='auth-confirmation__chain-preview-icon'
-                name={CHAINS_DETAILS_MAP[selectedChainToPublish].iconName}
+                chain={selectedChainToPublish}
               />
             </div>
 
             <span className='auth-confirmation__chain-preview-title'>
-              {`Your proof will be submitted on ${CHAINS_DETAILS_MAP[selectedChainToPublish].title}`}
+              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name}`}
             </span>
           </div>
 
@@ -291,12 +295,12 @@ const AuthConfirmation: FC<Props> = () => {
                     className='auth-confirmation__chain-item'
                     onClick={() => handleSelectChain(el)}
                   >
-                    <Icon
-                      className='auth-confirmation__chain-item-icon'
-                      name={CHAINS_DETAILS_MAP[el].iconName}
+                    <ChainIcon
+                      className='auth-confirmation__chain-preview-icon'
+                      chain={el}
                     />
                     <span className='auth-confirmation__chain-item-title'>
-                      {CHAINS_DETAILS_MAP[el].title}
+                      {config.SUPPORTED_CHAINS_DETAILS[el].name}
                     </span>
                   </button>
                 ))}

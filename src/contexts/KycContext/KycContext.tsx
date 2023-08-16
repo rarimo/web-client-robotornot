@@ -400,7 +400,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       setIsValidCredentials(await isClaimOfferExists(currentIdentity))
 
       const verifiableCredentials = await getVerifiableCredentials(
-        config.DEFAULT_CHAIN,
         currentIdentity,
       )
 

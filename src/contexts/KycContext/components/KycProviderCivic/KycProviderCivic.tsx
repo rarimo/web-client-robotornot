@@ -2,7 +2,6 @@ import './styles.scss'
 
 import { State } from '@civic/common-gateway-react/dist/esm/types'
 import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
-import { SUPPORTED_CHAINS_DETAILS } from '@config'
 import { providers, Wallet } from 'ethers'
 import {
   FC,
@@ -17,6 +16,7 @@ import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { BasicModal, Icon } from '@/common'
+import { config } from '@/config'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
@@ -65,19 +65,19 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
       handleSigned()
 
       const KYC_CIVIC_CHAINS_NAMES_MAP = {
-        [SUPPORTED_CHAINS_DETAILS.MAINNET.id]: 'ethereum',
-        [SUPPORTED_CHAINS_DETAILS.SEPOLIA.id]: 'ethereum',
-        [SUPPORTED_CHAINS_DETAILS.POLYGON.id]: 'polygon',
-        [SUPPORTED_CHAINS_DETAILS.POLYGON_TESTNET.id]: 'polygon',
-        [SUPPORTED_CHAINS_DETAILS.ARBITRUM.id]: 'arbitrum',
-        [SUPPORTED_CHAINS_DETAILS.XDC.id]: 'xdc',
+        [config.SUPPORTED_CHAINS_DETAILS?.['MAINNET'].id]: 'ethereum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['SEPOLIA'].id]: 'ethereum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['POLYGON'].id]: 'polygon',
+        [config.SUPPORTED_CHAINS_DETAILS?.['POLYGON_TESTNET'].id]: 'polygon',
+        [config.SUPPORTED_CHAINS_DETAILS?.['ARBITRUM'].id]: 'arbitrum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['XDC'].id]: 'xdc',
       }
 
       if (!provider?.chainId)
         throw new Error('Provider Chain ID is not defined')
 
       await loginCb({
-        chainName: KYC_CIVIC_CHAINS_NAMES_MAP[provider.chainId],
+        chainName: KYC_CIVIC_CHAINS_NAMES_MAP[provider.chainId] || 'ethereum',
         address: provider?.address,
         signature: signedMessage,
       })

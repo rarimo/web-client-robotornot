@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
-import { AppButton, Icon } from '@/common'
+import { AppButton, ChainIcon, Icon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { abbrCenter, copyToClipboard } from '@/helpers'
@@ -26,7 +26,7 @@ const AuthSuccess: FC<Props> = () => {
   const navigate = useNavigate()
 
   const { selectedKycDetails } = useKycContext()
-  const { isNaturalZkp, publishedChains, CHAINS_DETAILS_MAP } = useZkpContext()
+  const { isNaturalZkp, publishedChains } = useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -79,9 +79,9 @@ const AuthSuccess: FC<Props> = () => {
         {publishedChains.get?.map?.((el, idx) => (
           <div className='auth-success__card-published-item' key={idx}>
             <div className='auth-success__card-published-item-icon-wrp'>
-              <Icon
+              <ChainIcon
                 className='auth-success__card-published-item-chain-icon'
-                name={CHAINS_DETAILS_MAP[el].iconName}
+                chain={el}
               />
               <div className='auth-success__card-published-item-success-icon-wrp'>
                 <Icon
@@ -91,7 +91,7 @@ const AuthSuccess: FC<Props> = () => {
               </div>
             </div>
             <span className='auth-success__card-published-item-title'>
-              {`Your proof has been published on ${CHAINS_DETAILS_MAP[el].title}`}
+              {`Your proof has been published on ${config.SUPPORTED_CHAINS_DETAILS[el].name}`}
             </span>
           </div>
         ))}

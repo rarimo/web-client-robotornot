@@ -1,7 +1,7 @@
 import 'react-toastify/dist/ReactToastify.css'
 import './styles.scss'
 
-import { config, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { config } from '@config'
 import { type TransactionResponse } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -65,7 +65,7 @@ const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
 
     if (txHash) {
       return provider?.getTxUrl?.(
-        SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+        config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
         txHash,
       )
     }
@@ -76,7 +76,7 @@ const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
       if (!txHash) return ''
 
       return provider?.getTxUrl?.(
-        SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+        config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
         txHash,
       )
     }

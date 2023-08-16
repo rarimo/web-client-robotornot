@@ -1,3 +1,4 @@
+export * from './chains.helpers'
 export * from './clipboard.helpers'
 export * from './error-handler'
 export * from './event-bus'

@@ -95,9 +95,7 @@ const AuthPreview: FC<Props> = () => {
         return
       }
 
-      const currentVerifiableCredentials = await getVerifiableCredentials(
-        config.DEFAULT_CHAIN,
-      )
+      const currentVerifiableCredentials = await getVerifiableCredentials()
 
       await getZkProof(config.DEFAULT_CHAIN, currentVerifiableCredentials)
 
@@ -289,6 +287,7 @@ const AuthPreview: FC<Props> = () => {
                 </motion.div>
               </AnimatePresence>
             )}
+
             <span className='auth-preview__loader-title'>
               {`Please wait...`}
             </span>

@@ -1,4 +1,4 @@
-import { config, SUPPORTED_CHAINS, SUPPORTED_CHAINS_DETAILS } from '@config'
+import { config, SUPPORTED_CHAINS } from '@config'
 import { FetcherError, HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import {
   AuthZkp,
@@ -14,14 +14,12 @@ import {
   HTMLAttributes,
   SetStateAction,
   useCallback,
-  useMemo,
   useState,
 } from 'react'
 import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
-import { ICON_NAMES } from '@/enums'
 import { sleep } from '@/helpers'
 
 export type QueryVariableName = { isNatural: number }
@@ -34,7 +32,6 @@ interface ZkpContextValue {
     set: (value: SetStateAction<SUPPORTED_CHAINS[]>) => void
   }
   verifiableCredentials?: VerifiableCredentials<QueryVariableName>
-  CHAINS_DETAILS_MAP: Record<SUPPORTED_CHAINS, ChainToPublish>
 
   isClaimOfferExists: (
     _identity?: Identity,
@@ -43,7 +40,6 @@ interface ZkpContextValue {
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
-    chain: SUPPORTED_CHAINS,
     currentIdentity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName>>
   loadStatesDetails: (zkProof?: ZkpGen<QueryVariableName>) => Promise<void>
@@ -65,38 +61,6 @@ export const zkpContext = createContext<ZkpContextValue>({
     },
   },
   verifiableCredentials: undefined,
-  CHAINS_DETAILS_MAP: {
-    [SUPPORTED_CHAINS.POLYGON]: {
-      title: 'Polygon chain',
-      value: SUPPORTED_CHAINS.POLYGON,
-      iconName: ICON_NAMES.polygon,
-    },
-    [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-      title: 'Polygon Testnet chain',
-      value: SUPPORTED_CHAINS.POLYGON_TESTNET,
-      iconName: ICON_NAMES.polygon,
-    },
-    [SUPPORTED_CHAINS.SEPOLIA]: {
-      title: 'Sepolia chain',
-      value: SUPPORTED_CHAINS.SEPOLIA,
-      iconName: ICON_NAMES.ethereum,
-    },
-    [SUPPORTED_CHAINS.MAINNET]: {
-      title: 'Mainnet',
-      value: SUPPORTED_CHAINS.MAINNET,
-      iconName: ICON_NAMES.ethereum,
-    },
-    [SUPPORTED_CHAINS.ARBITRUM]: {
-      title: 'Arbitrum',
-      value: SUPPORTED_CHAINS.ARBITRUM,
-      iconName: ICON_NAMES.ethereum,
-    },
-    [SUPPORTED_CHAINS.XDC]: {
-      title: 'XDC',
-      value: SUPPORTED_CHAINS.XDC,
-      iconName: ICON_NAMES.ethereum,
-    },
-  },
 
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
@@ -112,13 +76,10 @@ export const zkpContext = createContext<ZkpContextValue>({
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
-  getVerifiableCredentials: async (
-    chain: SUPPORTED_CHAINS,
-    currentIdentity?: Identity,
-  ) => {
+  getVerifiableCredentials: async (currentIdentity?: Identity) => {
     throw new TypeError(
-      `getVerifiableCredentials() not implemented for ${chain} ${
-        currentIdentity?.idString ? `and ${currentIdentity?.idString}` : ''
+      `getVerifiableCredentials() not implemented${
+        currentIdentity?.idString ? ` for ${currentIdentity?.idString}` : ''
       }`,
     )
   },
@@ -141,12 +102,6 @@ export const zkpContext = createContext<ZkpContextValue>({
   },
 })
 
-type ChainToPublish = {
-  title: string
-  value: string
-  iconName: ICON_NAMES
-}
-
 type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
@@ -163,41 +118,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [isNaturalZkp, setIsNaturalZkp] = useState<ZkpGen<QueryVariableName>>()
 
   const [publishedChains, setPublishedChains] = useState<SUPPORTED_CHAINS[]>([])
-  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
-    () => ({
-      [SUPPORTED_CHAINS.POLYGON]: {
-        title: 'Polygon chain',
-        value: SUPPORTED_CHAINS.POLYGON,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-        title: 'Polygon Testnet chain',
-        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.SEPOLIA]: {
-        title: 'Sepolia chain',
-        value: SUPPORTED_CHAINS.SEPOLIA,
-        iconName: ICON_NAMES.ethereum,
-      },
-      [SUPPORTED_CHAINS.MAINNET]: {
-        title: 'Mainnet',
-        value: SUPPORTED_CHAINS.MAINNET,
-        iconName: ICON_NAMES.ethereum,
-      },
-      [SUPPORTED_CHAINS.ARBITRUM]: {
-        title: 'Arbitrum',
-        value: SUPPORTED_CHAINS.ARBITRUM,
-        iconName: ICON_NAMES.ethereum,
-      },
-      [SUPPORTED_CHAINS.XDC]: {
-        title: 'XDC',
-        value: SUPPORTED_CHAINS.XDC,
-        iconName: ICON_NAMES.ethereum,
-      },
-    }),
-    [],
-  )
 
   const createIdentity = useCallback(
     async (privateKeyHex?: string) => {
@@ -257,7 +177,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   )
 
   const loadVerifiableCredentials = useCallback(
-    async (chain: SUPPORTED_CHAINS, _identity?: Identity) => {
+    async (_identity?: Identity) => {
       const currentIdentity = _identity ?? identity
 
       if (!currentIdentity) throw new TypeError('Identity is not defined')
@@ -289,7 +209,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const getVerifiableCredentials = useCallback(
     async (
-      chain: SUPPORTED_CHAINS,
       _identity?: Identity,
     ): Promise<VerifiableCredentials<QueryVariableName>> => {
       const vc: VerifiableCredentials<QueryVariableName> =
@@ -299,7 +218,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           _identity?.idString,
         )
           ? verifiableCredentials
-          : await loadVerifiableCredentials(chain, _identity)
+          : await loadVerifiableCredentials(_identity)
 
       if (!isEqual(storageVC, vc)) {
         setStorageVC(vc)
@@ -355,7 +274,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       ZkpGen.setConfig({
         CORE_CHAIN_RPC_URL: config.RARIMO_EVM_RPC_URL,
-        TARGET_CHAIN_RPC_URL: SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
+        TARGET_CHAIN_RPC_URL: config.SUPPORTED_CHAINS_DETAILS[chain].rpcUrl,
         STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
         LIGHTWEIGHT_STATE_V2_ADDRESS:
           config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${chain}`],
@@ -465,7 +384,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           set: setPublishedChains,
         },
         verifiableCredentials,
-        CHAINS_DETAILS_MAP,
 
         getClaimOffer,
         isClaimOfferExists,

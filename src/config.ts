@@ -1,100 +1,13 @@
-import { Chain, CHAIN_TYPES } from '@distributedlab/w3p'
+import { Chain } from '@distributedlab/w3p'
 import mapKeys from 'lodash/mapKeys'
 import pickBy from 'lodash/pickBy'
 import { LogLevelDesc } from 'loglevel'
 
+import FALLBACK_SUPPORTED_CHAINS from '@/assets/fallback-supported-chains.json'
+
 import packageJson from '../package.json'
 
-export enum SUPPORTED_CHAINS {
-  MAINNET = 'MAINNET',
-  SEPOLIA = 'SEPOLIA',
-  POLYGON = 'POLYGON',
-  POLYGON_TESTNET = 'POLYGON_TESTNET',
-  ARBITRUM = 'ARBITRUM',
-  XDC = 'XDC',
-}
-
-export const SUPPORTED_CHAINS_DETAILS: Record<SUPPORTED_CHAINS, Chain> = {
-  [SUPPORTED_CHAINS.SEPOLIA]: {
-    id: '11155111',
-    name: 'Sepolia',
-    rpcUrl: 'https://endpoints.omniatech.io/v1/eth/sepolia/public',
-    explorerUrl: 'https://sepolia.etherscan.io',
-    token: {
-      name: 'Sepolia',
-      symbol: 'Sepolia',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  // FIXME: use the correct chain details for polygon
-  [SUPPORTED_CHAINS.POLYGON]: {
-    id: '137',
-    name: 'Polygon',
-    rpcUrl: 'https://polygon-rpc.com/',
-    explorerUrl: 'https://polygonscan.com/',
-    token: {
-      name: 'MATIC',
-      symbol: 'MATIC',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-    id: '80001',
-    name: 'Mumbai',
-    rpcUrl: 'https://endpoints.omniatech.io/v1/matic/mumbai/public',
-    explorerUrl: 'https://mumbai.polygonscan.com/',
-    token: {
-      name: 'Matic',
-      symbol: 'Matic',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  [SUPPORTED_CHAINS.MAINNET]: {
-    id: '1',
-    name: 'Ethereum',
-    rpcUrl: 'https://eth.llamarpc.com',
-    explorerUrl: 'https://etherscan.io/',
-    token: {
-      name: 'Ethereum',
-      symbol: 'Eth',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  [SUPPORTED_CHAINS.ARBITRUM]: {
-    id: '42161',
-    name: 'Arbitrum',
-    rpcUrl: 'https://arbitrum.meowrpc.com',
-    explorerUrl: 'https://arbiscan.io/',
-    token: {
-      name: 'Ethereum',
-      symbol: 'Eth',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-  [SUPPORTED_CHAINS.XDC]: {
-    id: '50',
-    name: 'XDC',
-    rpcUrl: 'https://rpc-xdc.icecreamswap.com',
-    explorerUrl: 'https://xdc.blocksscan.io/',
-    token: {
-      name: 'XDC',
-      symbol: 'XDC',
-      decimals: 18,
-    },
-    type: CHAIN_TYPES.EVM,
-    icon: '',
-  },
-}
+export type SUPPORTED_CHAINS = keyof typeof FALLBACK_SUPPORTED_CHAINS
 
 export const FALLBACK_CIRCUIT_URLS = {
   auth: {
@@ -136,7 +49,7 @@ export const config = {
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
   ISSUER_ID: import.meta.env.VITE_ISSUER_ID,
 
-  ...(Object.values(SUPPORTED_CHAINS).reduce(
+  ...(Object.keys(FALLBACK_SUPPORTED_CHAINS).reduce(
     (acc, curr) => ({
       ...acc,
       /* eslint-disable max-len */
@@ -217,6 +130,13 @@ export const config = {
   },
 
   GA_ID: import.meta.env.VITE_GA_ID,
+
+  SUPPORTED_CHAINS_DETAILS: (import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS
+    ? JSON.parse(import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS)
+    : FALLBACK_SUPPORTED_CHAINS) as Record<
+    keyof typeof FALLBACK_SUPPORTED_CHAINS,
+    Chain
+  >,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))
