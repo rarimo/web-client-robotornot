@@ -1,6 +1,7 @@
+import { config } from '@config'
 import { type TransactionResponse } from '@distributedlab/w3p'
-import { Provider } from '@ethersproject/providers'
-import { BigNumberish } from 'ethers'
+import { Web3Provider } from '@ethersproject/providers'
+import type { BigNumberish, providers } from 'ethers'
 import { useCallback, useMemo } from 'react'
 
 import { useWeb3Context } from '@/contexts'
@@ -10,7 +11,11 @@ import {
   ILightweightState,
 } from '@/types/contracts/IdentityVerifier'
 
-export const useIdentityVerifier = (address?: string) => {
+export const useIdentityVerifier = (
+  address = config?.[
+    `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`
+  ],
+) => {
   const { provider } = useWeb3Context()
 
   const contractInterface = useMemo(
@@ -19,21 +24,16 @@ export const useIdentityVerifier = (address?: string) => {
   )
 
   const contractInstance = useMemo(() => {
-    if (!address || !provider) return undefined
+    if (!address || !provider?.rawProvider) return undefined
 
-    try {
-      return provider?.rawProvider
-        ? IdentityVerifier__factory.connect(
-            address,
-            provider.rawProvider as unknown as Provider,
-          )
-        : undefined
-    } catch (error) {
-      /* empty */
-    }
+    const web3Provider = new Web3Provider(
+      provider?.rawProvider as unknown as providers.ExternalProvider,
+    )
 
-    return undefined
-  }, [address, provider])
+    return provider?.rawProvider && address
+      ? IdentityVerifier__factory.connect(address, web3Provider.getSigner())
+      : undefined
+  }, [address, provider?.rawProvider])
 
   const getIdentityProofInfo = useCallback(
     async (
