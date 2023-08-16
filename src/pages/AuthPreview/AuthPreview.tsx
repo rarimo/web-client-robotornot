@@ -231,7 +231,7 @@ const AuthPreview: FC<Props> = () => {
     >
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>
-          {verifiableCredentials
+          {verifiableCredentials && isLoaded
             ? isPending
               ? `Generating ZKProof`
               : `Proof of Humanity`
@@ -241,7 +241,7 @@ const AuthPreview: FC<Props> = () => {
           ''
         ) : (
           <span className='auth-preview__header-subtitle'>
-            {verifiableCredentials
+            {verifiableCredentials && isLoaded
               ? isPending
                 ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
@@ -254,7 +254,16 @@ const AuthPreview: FC<Props> = () => {
         isPending ? (
           <>
             <div className='auth-preview__card'>
-              <Animation source={loaderJson} />
+              <div className='auth-preview__loader-wrp'>
+                <Animation source={loaderJson} />
+
+                <span className='auth-preview__loader-title'>
+                  {`Please wait...`}
+                </span>
+                <span className='auth-preview__loader-subtitle'>
+                  {`Ensuring the privacy`}
+                </span>
+              </div>
             </div>
           </>
         ) : isValidCredentials ? (
@@ -265,36 +274,30 @@ const AuthPreview: FC<Props> = () => {
       ) : (
         <div className='auth-preview__card'>
           <div className='auth-preview__loader-wrp'>
-            {verifiableCredentials ? (
-              <Animation source={loaderJson} />
-            ) : (
-              <AnimatePresence>
-                <motion.div
-                  variants={{
-                    start: { opacity: 1 },
-                    end: { opacity: 0 },
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                    duration: '1.5',
-                  }}
-                  initial='end'
-                  animate='start'
-                  exit='end'
-                >
-                  <Icon name={ICON_NAMES.credentialsLoader} />
-                </motion.div>
-              </AnimatePresence>
-            )}
+            <AnimatePresence>
+              <motion.div
+                variants={{
+                  start: { opacity: 1 },
+                  end: { opacity: 0 },
+                }}
+                transition={{
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                  duration: '1.5',
+                }}
+                initial='end'
+                animate='start'
+                exit='end'
+              >
+                <Icon name={ICON_NAMES.credentialsLoader} />
+              </motion.div>
+            </AnimatePresence>
 
             <span className='auth-preview__loader-title'>
               {`Please wait...`}
             </span>
             <span className='auth-preview__loader-subtitle'>
-              {verifiableCredentials
-                ? `Ensuring the privacy`
-                : `Service provider is submitting a credential`}
+              {`Service provider is submitting a credential`}
             </span>
           </div>
         </div>
