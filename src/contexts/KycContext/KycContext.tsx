@@ -201,10 +201,12 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         ],
         ...(gitCoinPassportPartialDetails?.stamps?.map<[string, string]>(
           ({ metadata }) => [
-            metadata.platform.id,
-            ['Encrypted', metadata.platform.id].includes(metadata.description)
+            metadata?.platform?.id,
+            ['Encrypted', metadata?.platform?.id].includes(
+              metadata?.description,
+            )
               ? 'Confirmed'
-              : metadata.description,
+              : metadata?.description,
           ],
         ) ?? []),
       ],

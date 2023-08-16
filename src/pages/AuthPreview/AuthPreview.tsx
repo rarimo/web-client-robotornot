@@ -193,12 +193,12 @@ const AuthPreview: FC<Props> = () => {
           </div>
           <span className='auth-preview__card-error-title'>
             {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-              ? `Credentials already used`
+              ? `Provider already used`
               : verificationErrorMessages}
           </span>
           <span className='auth-preview__card-error-message'>
             {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-              ? 'This address is already used This DiD has been already used, so you should reinitiate the session'
+              ? "Seems like you're trying to use the provider that you have been used already, please choose another one."
               : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
           </span>
         </div>
