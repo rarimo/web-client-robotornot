@@ -6,6 +6,7 @@ import {
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
 import { Identity } from '@rarimo/identity-gen-iden3'
+import { FileEmptyError } from '@rarimo/shared-zkp-iden3'
 import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
 import isEqual from 'lodash/isEqual'
 import {
@@ -178,31 +179,44 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const loadVerifiableCredentials = useCallback(
     async (_identity?: Identity) => {
-      const currentIdentity = _identity ?? identity
+      let triesCount = 0
 
-      if (!currentIdentity) throw new TypeError('Identity is not defined')
+      do {
+        try {
+          const currentIdentity = _identity ?? identity
 
-      AuthZkp.setConfig({
-        RPC_URL: config.RARIMO_EVM_RPC_URL,
-        STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-        ISSUER_API_URL: config.API_URL,
+          if (!currentIdentity) throw new TypeError('Identity is not defined')
 
-        ...(config?.CIRCUIT_URLS?.auth?.wasm
-          ? {
-              CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
-            }
-          : {}),
+          AuthZkp.setConfig({
+            RPC_URL: config.RARIMO_EVM_RPC_URL,
+            STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+            ISSUER_API_URL: config.API_URL,
 
-        ...(config?.CIRCUIT_URLS?.auth?.zkey
-          ? {
-              CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
-            }
-          : {}),
-      })
+            ...(config?.CIRCUIT_URLS?.auth?.wasm
+              ? {
+                  CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
+                }
+              : {}),
 
-      const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
+            ...(config?.CIRCUIT_URLS?.auth?.zkey
+              ? {
+                  CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
+                }
+              : {}),
+          })
 
-      return authProof.getVerifiableCredentials('IdentityProviders')
+          const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
+
+          return authProof.getVerifiableCredentials('IdentityProviders')
+        } catch (error) {
+          if (error instanceof FileEmptyError) {
+            triesCount++
+            await sleep(500)
+          } else {
+            throw error
+          }
+        }
+      } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
     },
     [identity],
   )
@@ -211,7 +225,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     async (
       _identity?: Identity,
     ): Promise<VerifiableCredentials<QueryVariableName>> => {
-      const vc: VerifiableCredentials<QueryVariableName> =
+      const vc: VerifiableCredentials<QueryVariableName> | undefined =
         verifiableCredentials &&
         _identity?.idString &&
         verifiableCredentials?.body?.credential?.credentialSubject?.id.includes(
@@ -226,7 +240,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       setVerifiableCredentials(vc)
 
-      return vc
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return vc!
     },
     [loadVerifiableCredentials, setStorageVC, storageVC, verifiableCredentials],
   )
@@ -345,7 +360,19 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         },
       })
 
-      await zkProof.generateProof()
+      let triesCount = 0
+
+      do {
+        try {
+          await zkProof.generateProof()
+          break
+        } catch (error) {
+          if (error instanceof FileEmptyError) {
+            triesCount++
+            await sleep(500)
+          }
+        }
+      } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
 
       await loadStatesDetails(zkProof)
 

@@ -102,6 +102,22 @@ VITE_MTP_V2_WASM_URL=https://example.com
 VITE_MTP_V2_ZKEY_URL=https://example.com
 ```
 
+Sometimes loaded file can throw an empty error, so to fix that you can define this env:
+
+.env
+```dotenv
+VITE_CIRCUITS_LOADING_TRIES_LIMIT=3
+```
+
+env.js
+```js
+{
+  VITE_APP_CIRCUITS_LOADING_TRIES_LIMIT: 3
+}
+```
+
+to retry loading circuit file
+
 ### Deploy
 To update variables in deployed app - setup .env variables from .env.example to [env.js](./static/env.js) but in `JSON` format, and change `VITE_` prefix to `VITE_APP`
 ```js

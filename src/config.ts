@@ -137,6 +137,9 @@ export const config = {
     keyof typeof FALLBACK_SUPPORTED_CHAINS,
     Chain
   >,
+
+  CIRCUITS_LOADING_TRIES_LIMIT:
+    import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))
