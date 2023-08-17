@@ -24,7 +24,7 @@ import { useWeb3Context } from '@/contexts'
 import {
   GaCategories,
   gaSendCustomEvent,
-  poorFileBytesLoading,
+  pureFileBytesLoading,
   sleep,
 } from '@/helpers'
 
@@ -213,8 +213,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
 
           const [wasm, zkey] = await Promise.all([
-            poorFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
-            poorFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
+            pureFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
+            pureFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
           ])
 
           authProof.setCircuits(wasm, zkey)
@@ -375,10 +375,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       })
 
       const [wasm, zkey] = await Promise.all([
-        poorFileBytesLoading(
+        pureFileBytesLoading(
           zkProof.circuitFilesUrlsMap[zkProof.query.circuitId].wasm,
         ),
-        poorFileBytesLoading(
+        pureFileBytesLoading(
           zkProof.circuitFilesUrlsMap[zkProof.query.circuitId].zkey,
         ),
       ])

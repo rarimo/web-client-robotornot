@@ -1,4 +1,4 @@
-export const poorFileBytesLoading = async (
+export const pureFileBytesLoading = async (
   fileUrl: string,
   config?: RequestInit,
 ): Promise<Uint8Array> => {
