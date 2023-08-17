@@ -55,7 +55,7 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const isStatesActual = useMemo(
-    () => isNaturalZkp?.isStatesActual(),
+    () => isNaturalZkp?.isStatesActual,
     [isNaturalZkp],
   )
 

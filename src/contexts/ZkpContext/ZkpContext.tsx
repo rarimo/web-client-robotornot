@@ -21,7 +21,12 @@ import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
-import { GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import {
+  GaCategories,
+  gaSendCustomEvent,
+  poorFileBytesLoading,
+  sleep,
+} from '@/helpers'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -207,6 +212,13 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
           const authProof = new AuthZkp<QueryVariableName>(currentIdentity)
 
+          const [wasm, zkey] = await Promise.all([
+            poorFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
+            poorFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
+          ])
+
+          authProof.setCircuits(wasm, zkey)
+
           return authProof.getVerifiableCredentials('IdentityProviders')
         } catch (error) {
           if (error instanceof FileEmptyError) {
@@ -361,6 +373,17 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           issuerId: config.ISSUER_ID,
         },
       })
+
+      const [wasm, zkey] = await Promise.all([
+        poorFileBytesLoading(
+          zkProof.circuitFilesUrlsMap[zkProof.query.circuitId].wasm,
+        ),
+        poorFileBytesLoading(
+          zkProof.circuitFilesUrlsMap[zkProof.query.circuitId].zkey,
+        ),
+      ])
+
+      zkProof.setCircuits(wasm, zkey)
 
       let triesCount = 0
 
