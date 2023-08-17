@@ -16,7 +16,6 @@ import {
   bus,
   BUS_EVENTS,
   ErrorHandler,
-  GaActions,
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
@@ -76,7 +75,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    gaSendCustomEvent(GaCategories.Page, GaActions.PageView, location.pathname)
+    gaSendCustomEvent(GaCategories.PageView, { pathname: location.pathname })
   }, [location])
 
   return (

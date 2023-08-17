@@ -6,13 +6,7 @@ import { FC, HTMLAttributes, useCallback } from 'react'
 import { Icon } from '@/common'
 import { useKycContext, useWeb3Context } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import {
-  bus,
-  BUS_EVENTS,
-  GaActions,
-  GaCategories,
-  gaSendCustomEvent,
-} from '@/helpers'
+import { bus, BUS_EVENTS, GaCategories, gaSendCustomEvent } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   supportedKycProvider: SUPPORTED_KYC_PROVIDERS
@@ -45,11 +39,9 @@ const AuthProvidersItem: FC<Props> = ({
 
     await login(supportedKycProvider)
 
-    gaSendCustomEvent(
-      GaCategories.ProviderSelection,
-      GaActions.ProviderSelection,
-      supportedKycProvider,
-    )
+    gaSendCustomEvent(GaCategories.ProviderSelection, {
+      provider: supportedKycProvider,
+    })
   }, [
     connectProvider,
     isWalletRequired,

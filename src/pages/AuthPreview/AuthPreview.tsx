@@ -21,7 +21,6 @@ import {
   bus,
   BUS_EVENTS,
   ErrorHandler,
-  GaActions,
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
@@ -104,7 +103,7 @@ const AuthPreview: FC<Props> = () => {
       ErrorHandler.process(error)
     }
 
-    gaSendCustomEvent(GaCategories.Click, GaActions.Click, `Generate proof`)
+    gaSendCustomEvent(GaCategories.GenerateProof)
 
     setIsPending(false)
   }, [
@@ -121,7 +120,7 @@ const AuthPreview: FC<Props> = () => {
     navigate(RoutesPaths.authProviders)
     // retryKyc()
 
-    gaSendCustomEvent(GaCategories.RetryKyc, GaActions.Click)
+    gaSendCustomEvent(GaCategories.RetryKyc)
   }, [
     navigate,
     // retryKyc

@@ -21,7 +21,7 @@ import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
-import { sleep } from '@/helpers'
+import { GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -239,6 +239,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       }
 
       setVerifiableCredentials(vc)
+
+      gaSendCustomEvent(GaCategories.GettingVerifiableCredentials)
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return vc!

@@ -19,13 +19,7 @@ import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import {
-  ErrorHandler,
-  GaActions,
-  GaCategories,
-  gaSendCustomEvent,
-  sleep,
-} from '@/helpers'
+import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -80,7 +74,7 @@ const AuthConfirmation: FC<Props> = () => {
       ),
     )
 
-    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'transit state')
+    gaSendCustomEvent(GaCategories.TransitState)
   }, [isNaturalZkp, provider, selectedChainToPublish])
 
   const submitZkp = useCallback(async () => {
@@ -146,7 +140,7 @@ const AuthConfirmation: FC<Props> = () => {
       ErrorHandler.process(error)
     }
 
-    gaSendCustomEvent(GaCategories.Click, GaActions.Click, 'submit zkp')
+    gaSendCustomEvent(GaCategories.SubmitZkp)
 
     setIsPending(false)
   }, [
@@ -175,11 +169,9 @@ const AuthConfirmation: FC<Props> = () => {
       ErrorHandler.process(error)
     }
 
-    gaSendCustomEvent(
-      GaCategories.Click,
-      GaActions.Click,
-      `Connect wallet Confirmation page`,
-    )
+    gaSendCustomEvent(GaCategories.WalletConnection, {
+      location: `Submit zkp page`,
+    })
   }, [init])
 
   const tryAddChain = useCallback(async () => {
@@ -216,11 +208,10 @@ const AuthConfirmation: FC<Props> = () => {
         ErrorHandler.processWithoutFeedback(error)
       }
 
-      gaSendCustomEvent(
-        GaCategories.Click,
-        GaActions.Click,
-        `select chain: ${chain}`,
-      )
+      gaSendCustomEvent(GaCategories.ChainSelection, {
+        name: chain,
+        chainId: config.SUPPORTED_CHAINS_DETAILS[chain].id,
+      })
     },
     [trySwitchChain],
   )

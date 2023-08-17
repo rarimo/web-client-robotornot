@@ -3,31 +3,20 @@ import ReactGA from 'react-ga4'
 import { ErrorHandler } from '@/helpers'
 
 export enum GaCategories {
-  Page = 'page',
-  Click = 'click',
+  PageView = 'page-view',
+  WalletConnection = 'wallet-connection',
+  ChainSelection = 'chain-selection',
+  TransitState = 'transit-state',
+  SubmitZkp = 'submit-zkp',
+  GenerateProof = 'generate-proof',
   ProviderSelection = 'provider-selection',
   RetryKyc = 'retry-kyc',
+  GettingVerifiableCredentials = 'getting-verifiable-credentials',
 }
 
-export enum GaActions {
-  PageView = 'page-view',
-  Click = 'click',
-  ProviderSelection = 'provider-selection',
-}
-
-export const gaSendCustomEvent = (
-  category: string,
-  action: string,
-  label?: string,
-  value?: number,
-) => {
+export const gaSendCustomEvent = (name: string, params?: unknown) => {
   try {
-    ReactGA.event({
-      category,
-      action,
-      ...(label ? { label } : {}),
-      ...(value ? { value } : {}),
-    })
+    ReactGA.event(name, params)
   } catch (error) {
     ErrorHandler.processWithoutFeedback(error)
   }

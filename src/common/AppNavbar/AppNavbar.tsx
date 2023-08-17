@@ -9,7 +9,6 @@ import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   abbrCenter,
   ErrorHandler,
-  GaActions,
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
@@ -28,11 +27,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
       ErrorHandler.process(error)
     }
 
-    gaSendCustomEvent(
-      GaCategories.Click,
-      GaActions.Click,
-      `Connect wallet Navbar`,
-    )
+    gaSendCustomEvent(GaCategories.WalletConnection, { location: `Navbar` })
   }, [init])
 
   return (
