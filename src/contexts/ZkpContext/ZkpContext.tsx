@@ -372,6 +372,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           if (error instanceof FileEmptyError) {
             triesCount++
             await sleep(500)
+          } else {
+            throw error
           }
         }
       } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
