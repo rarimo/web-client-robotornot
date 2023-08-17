@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
+import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
 import { utils } from 'ethers'
@@ -59,22 +60,38 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const transitState = useCallback(async () => {
-    const transitParams = await isNaturalZkp?.loadParamsForTransitState(querier)
+    try {
+      const transitParams = await isNaturalZkp?.loadParamsForTransitState(
+        querier,
+      )
 
-    if (!transitParams) throw new TypeError('Transit params is not defined')
+      if (!transitParams) throw new TypeError('Transit params is not defined')
 
-    await provider?.signAndSendTx?.(
-      getTransitStateTxBody(
-        config?.[
-          `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-        ],
-        transitParams.newIdentitiesStatesRoot,
-        transitParams.gistData,
-        transitParams.proof,
-      ),
-    )
+      await provider?.signAndSendTx?.(
+        getTransitStateTxBody(
+          config?.[
+            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+          ],
+          transitParams.newIdentitiesStatesRoot,
+          transitParams.gistData,
+          transitParams.proof,
+        ),
+      )
 
-    gaSendCustomEvent(GaCategories.TransitState)
+      gaSendCustomEvent(GaCategories.TransitState)
+    } catch (error) {
+      if (error instanceof Error && 'error' in error) {
+        const str = 'Identities states root already exists'
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message?.split(': ')[2]
+
+        if (errorString?.includes(str)) {
+          return
+        }
+      }
+
+      throw error
+    }
   }, [isNaturalZkp, provider, selectedChainToPublish])
 
   const submitZkp = useCallback(async () => {
