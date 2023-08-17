@@ -3,49 +3,17 @@ import './styles.scss'
 import { FC, HTMLAttributes, useState } from 'react'
 
 import { AppButton, Dropdown, Icon } from '@/common'
+import { useKycContext } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 
 import { AuthProvidersItem } from './components'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const KYC_PROVIDERS_MAP: Record<
-  SUPPORTED_KYC_PROVIDERS,
-  {
-    name: string
-    iconName: ICON_NAMES
-    link: string
-    isWalletRequired: boolean
-  }
-> = {
-  [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
-    name: 'Civic',
-    iconName: ICON_NAMES.providerCivic,
-    link: 'https://civic.me/',
-    isWalletRequired: true,
-  },
-  [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
-    name: 'Gitcoin Passport',
-    iconName: ICON_NAMES.providerGitCoin,
-    link: 'https://passport.gitcoin.co/',
-    isWalletRequired: true,
-  },
-  [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
-    name: 'Unstoppable domains',
-    iconName: ICON_NAMES.providerUnstoppable,
-    link: 'https://unstoppabledomains.com/auth',
-    isWalletRequired: false,
-  },
-  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
-    name: 'Worldcoin',
-    iconName: ICON_NAMES.providerWorldCoin,
-    link: 'https://worldcoin.org/download-app',
-    isWalletRequired: false,
-  },
-}
-
 const AuthProviders: FC<Props> = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  const { KYC_PROVIDERS_DETAILS_MAP } = useKycContext()
 
   return (
     <div className='auth-providers'>
@@ -64,9 +32,11 @@ const AuthProviders: FC<Props> = () => {
             key={idx}
             className='auth-providers__list-item'
             supportedKycProvider={provider}
-            name={KYC_PROVIDERS_MAP[provider].name}
-            iconName={KYC_PROVIDERS_MAP[provider].iconName}
-            isWalletRequired={KYC_PROVIDERS_MAP[provider].isWalletRequired}
+            name={KYC_PROVIDERS_DETAILS_MAP[provider].name}
+            iconName={KYC_PROVIDERS_DETAILS_MAP[provider].iconName}
+            isWalletRequired={
+              KYC_PROVIDERS_DETAILS_MAP[provider].isWalletRequired
+            }
           />
         ))}
       </div>
@@ -94,9 +64,9 @@ const AuthProviders: FC<Props> = () => {
                 className='auth-providers__links-item'
                 scheme='none'
                 key={idx}
-                text={KYC_PROVIDERS_MAP[provider].name}
-                iconLeft={KYC_PROVIDERS_MAP[provider].iconName}
-                href={KYC_PROVIDERS_MAP[provider].link}
+                text={KYC_PROVIDERS_DETAILS_MAP[provider].name}
+                iconLeft={KYC_PROVIDERS_DETAILS_MAP[provider].iconName}
+                href={KYC_PROVIDERS_DETAILS_MAP[provider].link}
                 target='_blank'
               />
             ))}

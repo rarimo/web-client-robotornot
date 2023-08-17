@@ -48,6 +48,8 @@ const AuthPreview: FC<Props> = () => {
   } = useZkpContext()
 
   const {
+    KYC_PROVIDERS_DETAILS_MAP,
+
     selectedKycProviderName,
 
     isLoaded,
@@ -117,12 +119,19 @@ const AuthPreview: FC<Props> = () => {
   ])
 
   const completeKyc = useCallback(async () => {
+    if (!selectedKycProviderName)
+      throw new TypeError(`Kyc Provider is not defined`)
+
+    KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProviderName]?.completeKycCb?.()
+
     navigate(RoutesPaths.authProviders)
     // retryKyc()
 
     gaSendCustomEvent(GaCategories.RetryKyc)
   }, [
+    KYC_PROVIDERS_DETAILS_MAP,
     navigate,
+    selectedKycProviderName,
     // retryKyc
   ])
 
@@ -204,14 +213,25 @@ const AuthPreview: FC<Props> = () => {
 
         <AppButton
           className='auth-preview__card-button'
-          text={`RETURN TO PROVIDER LIST`}
+          text={
+            (selectedKycProviderName &&
+              KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProviderName]
+                ?.completeKycMessage) ||
+            `RETURN TO PROVIDER LIST`
+          }
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={completeKyc}
         />
       </div>
     ),
-    [completeKyc, kycError?.httpStatus, verificationErrorMessages],
+    [
+      KYC_PROVIDERS_DETAILS_MAP,
+      completeKyc,
+      kycError?.httpStatus,
+      selectedKycProviderName,
+      verificationErrorMessages,
+    ],
   )
 
   useEffect(() => {

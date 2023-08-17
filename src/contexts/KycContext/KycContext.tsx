@@ -18,7 +18,7 @@ import { useEffectOnce } from 'react-use'
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
-import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { ICON_NAMES, RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
   abbrCenter,
   ErrorHandler,
@@ -43,12 +43,57 @@ const KycProviderGitCoin = lazy(
   () => import('@/contexts/KycContext/components/KycProviderGitCoin'),
 )
 
+const KYC_PROVIDERS_DETAILS_MAP: Record<
+  SUPPORTED_KYC_PROVIDERS,
+  {
+    name: string
+    iconName: ICON_NAMES
+    link: string
+    isWalletRequired: boolean
+
+    completeKycCb?: () => void
+    completeKycMessage?: string
+  }
+> = {
+  [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
+    name: 'Civic',
+    iconName: ICON_NAMES.providerCivic,
+    link: 'https://civic.me/',
+    isWalletRequired: true,
+  },
+  [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
+    name: 'Gitcoin Passport',
+    iconName: ICON_NAMES.providerGitCoin,
+    link: 'https://passport.gitcoin.co/',
+    isWalletRequired: true,
+
+    completeKycCb: () => {
+      window.open('https://passport.gitcoin.co/', '_blank')
+    },
+    completeKycMessage: 'Complete your Gitcoin Passport',
+  },
+  [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
+    name: 'Unstoppable domains',
+    iconName: ICON_NAMES.providerUnstoppable,
+    link: 'https://unstoppabledomains.com/auth',
+    isWalletRequired: false,
+  },
+  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+    name: 'Worldcoin',
+    iconName: ICON_NAMES.providerWorldCoin,
+    link: 'https://worldcoin.org/download-app',
+    isWalletRequired: false,
+  },
+}
+
 interface KycContextValue {
   selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
   selectedKycDetails: [string, string][]
   kycError?: JsonApiError
   verificationErrorMessages: string
+
+  KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
   isLoaded: boolean
 
@@ -85,6 +130,8 @@ export const kycContext = createContext<KycContextValue>({
   authorizedKycResponse: undefined,
   selectedKycDetails: [],
   verificationErrorMessages: '',
+
+  KYC_PROVIDERS_DETAILS_MAP,
 
   isLoaded: false,
 
@@ -441,6 +488,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycDetails,
           kycError,
           verificationErrorMessages,
+
+          KYC_PROVIDERS_DETAILS_MAP,
 
           isLoaded,
           isValidCredentials,
