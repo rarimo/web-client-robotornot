@@ -164,6 +164,10 @@
   align-items: center;
 }
 
+.auth-confirmation__loader-animation {
+  max-width: 75%;
+}
+
 .auth-confirmation__loader-title {
   text-align: center;
   margin: toRem(16) 0 toRem(8);

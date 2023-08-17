@@ -240,7 +240,9 @@ const AuthConfirmation: FC<Props> = () => {
       {isPending ? (
         <div className='auth-confirmation__card'>
           <div className='auth-confirmation__loader-wrp'>
-            <Animation source={loaderJson} />
+            <div className='auth-confirmation__loader-animation'>
+              <Animation source={loaderJson} />
+            </div>
             <span className='auth-confirmation__loader-title'>
               {`Please wait...`}
             </span>

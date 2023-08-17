@@ -254,7 +254,9 @@ const AuthPreview: FC<Props> = () => {
           <>
             <div className='auth-preview__card'>
               <div className='auth-preview__loader-wrp'>
-                <Animation source={loaderJson} />
+                <div className='auth-preview__loader-animation'>
+                  <Animation source={loaderJson} />
+                </div>
 
                 <span className='auth-preview__loader-title'>
                   {`Please wait...`}

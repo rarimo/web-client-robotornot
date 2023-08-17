@@ -155,6 +155,10 @@
   margin: auto;
 }
 
+.auth-preview__loader-animation {
+  max-width: 75%;
+}
+
 .auth-preview__loader-title {
   text-align: center;
   margin: toRem(16) 0 toRem(8);
