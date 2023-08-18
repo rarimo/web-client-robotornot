@@ -5,14 +5,8 @@ import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
 import { utils } from 'ethers'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import isEmpty from 'lodash/isEmpty'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { querier } from '@/api'
@@ -32,7 +26,15 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { isNaturalZkp, publishedChains } = useZkpContext()
+  const {
+    zkpGen,
+    zkProof,
+    publishedChains,
+    isStatesDetailsLoaded,
+    isUserSubmittedZkp,
+
+    loadStatesDetails,
+  } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -54,16 +56,9 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
-  const isStatesActual = useMemo(
-    () => isNaturalZkp?.isStatesActual,
-    [isNaturalZkp],
-  )
-
   const transitState = useCallback(async () => {
     try {
-      const transitParams = await isNaturalZkp?.loadParamsForTransitState(
-        querier,
-      )
+      const transitParams = await zkpGen?.loadParamsForTransitState(querier)
 
       if (!transitParams) throw new TypeError('Transit params is not defined')
 
@@ -92,55 +87,49 @@ const AuthConfirmation: FC<Props> = () => {
 
       throw error
     }
-  }, [isNaturalZkp, provider, selectedChainToPublish])
+  }, [zkpGen, provider, selectedChainToPublish])
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
-      if (!isStatesActual) {
+      let currZkpGen = zkpGen
+
+      if (!isStatesDetailsLoaded) {
+        currZkpGen = await loadStatesDetails()
+      }
+
+      if (!currZkpGen?.isStatesActual) {
         await transitState()
 
         await sleep(1000)
       }
 
-      if (
-        !isNaturalZkp ||
-        !isNaturalZkp.coreStateDetails ||
-        !isNaturalZkp.merkleProof
-      )
+      if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
         throw new TypeError('ZKP is not defined')
+
+      const zkpParams = isEmpty(zkpGen?.subjectProof)
+        ? zkProof.get
+        : zkpGen?.subjectProof
+
+      if (!zkpParams) throw new TypeError('ZKP params is not defined')
 
       const txBody = getProveIdentityTxBody(
         {
           issuerId: config.ISSUER_ID,
           // StateInfo.hash
-          issuerState: isNaturalZkp.coreStateDetails.hash,
+          issuerState: zkpGen.coreStateDetails.hash,
           // StateInfo.createdAtTimestamp
-          createdAtTimestamp: isNaturalZkp.coreStateDetails.createdAtTimestamp,
-          merkleProof: isNaturalZkp.merkleProof.proof.map(el =>
-            utils.arrayify(el),
-          ),
+          createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
+          merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
         },
-        isNaturalZkp?.subjectProof.pub_signals.map(el => BigInt(el)),
+        zkpParams?.pub_signals?.map?.(el => BigInt(el)),
+        [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
         [
-          isNaturalZkp?.subjectProof.proof.pi_a[0],
-          isNaturalZkp?.subjectProof.proof.pi_a[1],
+          [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
+          [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
         ],
-        [
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[0][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[0][0],
-          ],
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[1][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[1][0],
-          ],
-        ],
-        [
-          isNaturalZkp?.subjectProof.proof.pi_c[0],
-          isNaturalZkp?.subjectProof.proof.pi_c[1],
-        ],
+        [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
       )
 
       await provider?.signAndSendTx?.({
@@ -150,7 +139,12 @@ const AuthConfirmation: FC<Props> = () => {
         ...txBody,
       })
 
-      publishedChains.set(prev => [...prev, selectedChainToPublish])
+      publishedChains.set([
+        ...(publishedChains?.get ? publishedChains.get : []),
+        selectedChainToPublish,
+      ])
+
+      isUserSubmittedZkp.set(true)
 
       navigate(RoutesPaths.authSuccess)
     } catch (error) {
@@ -161,13 +155,16 @@ const AuthConfirmation: FC<Props> = () => {
 
     setIsPending(false)
   }, [
+    zkpGen,
+    isStatesDetailsLoaded,
+    zkProof.get,
     getProveIdentityTxBody,
-    isNaturalZkp,
-    isStatesActual,
-    navigate,
     provider,
-    publishedChains,
     selectedChainToPublish,
+    publishedChains,
+    isUserSubmittedZkp,
+    navigate,
+    loadStatesDetails,
     transitState,
   ])
 
@@ -232,12 +229,6 @@ const AuthConfirmation: FC<Props> = () => {
     },
     [trySwitchChain],
   )
-
-  useEffect(() => {
-    if (!isNaturalZkp?.verifiableCredentials?.id) {
-      navigate(RoutesPaths.authProviders)
-    }
-  }, [isNaturalZkp?.verifiableCredentials?.id, navigate])
 
   return (
     <div className='auth-confirmation'>

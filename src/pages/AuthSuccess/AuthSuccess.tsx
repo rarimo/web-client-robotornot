@@ -1,32 +1,25 @@
 import './styles.scss'
 
 import { config } from '@config'
+import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, ChainIcon, Icon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { abbrCenter, copyToClipboard } from '@/helpers'
+import { abbrCenter, bytesToBase64, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const SECOND = 1000
 
-const REDIRECT_TIMEOUT = 5
-
-function bytesToBase64(bytes: Uint8Array) {
-  const binString = Array.from(bytes, x => String.fromCodePoint(x)).join('')
-  return btoa(binString)
-}
+const REDIRECT_TIMEOUT = 30
 
 const AuthSuccess: FC<Props> = () => {
-  const navigate = useNavigate()
-
   const { selectedKycDetails } = useKycContext()
-  const { isNaturalZkp, publishedChains } = useZkpContext()
+  const { zkpGen, zkProof, publishedChains } = useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -34,12 +27,16 @@ const AuthSuccess: FC<Props> = () => {
   })
 
   const encodedProof = useMemo(() => {
-    return isNaturalZkp?.subjectProof
+    return zkpGen?.subjectProof
       ? bytesToBase64(
-          new TextEncoder().encode(JSON.stringify(isNaturalZkp?.subjectProof)),
+          new TextEncoder().encode(
+            JSON.stringify(
+              isEmpty(zkpGen?.subjectProof) ? zkProof : zkpGen?.subjectProof,
+            ),
+          ),
         )
       : ''
-  }, [isNaturalZkp?.subjectProof])
+  }, [zkProof, zkpGen?.subjectProof])
 
   useEffectOnce(() => {
     startCountdown()
@@ -52,16 +49,6 @@ const AuthSuccess: FC<Props> = () => {
 
     window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
   }, [count])
-
-  useEffect(() => {
-    if (!publishedChains?.get?.length) {
-      navigate(RoutesPaths.authProviders)
-    }
-  }, [
-    isNaturalZkp?.verifiableCredentials.id,
-    navigate,
-    publishedChains?.get?.length,
-  ])
 
   return (
     <div className='auth-success'>
@@ -112,8 +99,6 @@ const AuthSuccess: FC<Props> = () => {
         <div className='auth-success__card-divider-wrp'>
           <div className='auth-success__card-divider' />
         </div>
-
-        {/*TODO: publish to another chains button*/}
       </div>
 
       <div className='auth-success__card'>
