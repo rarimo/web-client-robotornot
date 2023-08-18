@@ -32,6 +32,20 @@ export const FALLBACK_CIRCUIT_URLS = {
   },
 }
 
+export const META_CIRCUIT_URLS = {
+  AUTH_WASM_URL: import.meta.env.VITE_AUTH_WASM_URL,
+  AUTH_ZKEY_URL: import.meta.env.VITE_AUTH_ZKEY_URL,
+  SIG_V2_ON_CHAIN_WASM_URL: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
+  SIG_V2_ON_CHAIN_ZKEY_URL: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
+  SIG_V2_WASM_URL: import.meta.env.VITE_SIG_V2_WASM_URL,
+  SIG_V2_ZKEY_URL: import.meta.env.VITE_SIG_V2_ZKEY_URL,
+  MTP_V2_ON_CHAIN_WASM_URL: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
+  MTP_V2_ON_CHAIN_ZKEY_URL: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
+  MTP_V2_WASM_URL: import.meta.env.VITE_MTP_V2_WASM_URL,
+  MTP_V2_ZKEY_URL: import.meta.env.VITE_MTP_V2_ZKEY_URL,
+}
+Object.assign(META_CIRCUIT_URLS, _mapEnvCfg(window.document.ENV))
+
 export const config = {
   API_URL: import.meta.env.VITE_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
@@ -80,50 +94,48 @@ export const config = {
   CIRCUIT_URLS: {
     ...FALLBACK_CIRCUIT_URLS,
 
-    ...(import.meta.env.VITE_AUTH_WASM_URL && import.meta.env.VITE_AUTH_ZKEY_URL
+    ...(META_CIRCUIT_URLS.AUTH_WASM_URL && META_CIRCUIT_URLS.AUTH_ZKEY_URL
       ? {
           auth: {
-            wasm: import.meta.env.VITE_AUTH_WASM_URL,
-            zkey: import.meta.env.VITE_AUTH_ZKEY_URL,
+            wasm: META_CIRCUIT_URLS.AUTH_WASM_URL,
+            zkey: META_CIRCUIT_URLS.AUTH_ZKEY_URL,
           },
         }
       : {}),
 
-    ...(import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL &&
-    import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL
+    ...(META_CIRCUIT_URLS.SIG_V2_ON_CHAIN_WASM_URL &&
+    META_CIRCUIT_URLS.SIG_V2_ON_CHAIN_ZKEY_URL
       ? {
           sigV2OnChain: {
-            wasm: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
-            zkey: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
+            wasm: META_CIRCUIT_URLS.SIG_V2_ON_CHAIN_WASM_URL,
+            zkey: META_CIRCUIT_URLS.SIG_V2_ON_CHAIN_ZKEY_URL,
           },
         }
       : {}),
 
-    ...(import.meta.env.VITE_SIG_V2_WASM_URL &&
-    import.meta.env.VITE_SIG_V2_ZKEY_URL
+    ...(META_CIRCUIT_URLS.SIG_V2_WASM_URL && META_CIRCUIT_URLS.SIG_V2_ZKEY_URL
       ? {
           sigV2: {
-            wasm: import.meta.env.VITE_SIG_V2_WASM_URL,
-            zkey: import.meta.env.VITE_SIG_V2_ZKEY_URL,
+            wasm: META_CIRCUIT_URLS.SIG_V2_WASM_URL,
+            zkey: META_CIRCUIT_URLS.SIG_V2_ZKEY_URL,
           },
         }
       : {}),
 
-    ...(import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL &&
-    import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL
+    ...(META_CIRCUIT_URLS.MTP_V2_ON_CHAIN_WASM_URL &&
+    META_CIRCUIT_URLS.MTP_V2_ON_CHAIN_ZKEY_URL
       ? {
           mtpV2OnChain: {
-            wasm: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
-            zkey: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
+            wasm: META_CIRCUIT_URLS.MTP_V2_ON_CHAIN_WASM_URL,
+            zkey: META_CIRCUIT_URLS.MTP_V2_ON_CHAIN_ZKEY_URL,
           },
         }
       : {}),
-    ...(import.meta.env.VITE_MTP_V2_WASM_URL &&
-    import.meta.env.VITE_MTP_V2_ZKEY_URL
+    ...(META_CIRCUIT_URLS.MTP_V2_WASM_URL && META_CIRCUIT_URLS.MTP_V2_ZKEY_URL
       ? {
           mtpV2: {
-            wasm: import.meta.env.VITE_MTP_V2_WASM_URL,
-            zkey: import.meta.env.VITE_MTP_V2_ZKEY_URL,
+            wasm: META_CIRCUIT_URLS.MTP_V2_WASM_URL,
+            zkey: META_CIRCUIT_URLS.MTP_V2_ZKEY_URL,
           },
         }
       : {}),
