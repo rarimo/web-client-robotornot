@@ -66,7 +66,7 @@ interface ZkpContextValue {
   getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
   createIdentity: (privateKeyHex?: string) => Promise<Identity>
   getVerifiableCredentials: (
-    currentIdentity?: Identity,
+    identity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName> | undefined>
   loadStatesDetails: (
     zkProof?: ZkpGen<QueryVariableName>,
@@ -346,55 +346,88 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [getClaimOffer],
   )
 
-  const loadVerifiableCredentials = useCallback(async () => {
-    if (!authZkp) throw new TypeError('authZkp is not defined')
+  const loadVerifiableCredentials = useCallback(
+    async (_identity?: Identity) => {
+      let currentAuthZkp = authZkp
+      const currentIdentity = _identity ?? identity
 
-    let triesCount = 0
+      if (!currentIdentity) throw new TypeError('Identity is not defined')
 
-    do {
-      try {
-        const [wasm, zkey] = await Promise.all([
-          pureFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
-          pureFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
-        ])
+      if (!authZkp) {
+        AuthZkp.setConfig({
+          RPC_URL: config.RARIMO_EVM_RPC_URL,
+          STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+          ISSUER_API_URL: config.API_URL,
 
-        authZkp.setCircuits(wasm, zkey)
+          ...(config?.CIRCUIT_URLS?.auth?.wasm
+            ? {
+                CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
+              }
+            : {}),
 
-        return authZkp.getVerifiableCredentials('IdentityProviders')
-      } catch (error) {
-        if (error instanceof FileEmptyError) {
-          triesCount++
-          await sleep(500)
-        } else {
-          throw error
-        }
+          ...(config?.CIRCUIT_URLS?.auth?.zkey
+            ? {
+                CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
+              }
+            : {}),
+        })
+
+        currentAuthZkp = new AuthZkp<QueryVariableName>(currentIdentity)
       }
-    } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
-  }, [authZkp])
 
-  const getVerifiableCredentials = useCallback(async (): Promise<
-    VerifiableCredentials<QueryVariableName> | undefined
-  > => {
-    const vc: VerifiableCredentials<QueryVariableName> | undefined =
-      verifiableCredentials &&
-      identity?.idString &&
-      verifiableCredentials?.body?.credential?.credentialSubject?.id.includes(
-        identity?.idString,
-      )
-        ? verifiableCredentials
-        : await loadVerifiableCredentials()
+      let triesCount = 0
 
-    setVerifiableCredentials(vc)
+      do {
+        try {
+          const [wasm, zkey] = await Promise.all([
+            pureFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
+            pureFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
+          ])
 
-    gaSendCustomEvent(GaCategories.GettingVerifiableCredentials)
+          currentAuthZkp?.setCircuits(wasm, zkey)
 
-    return vc
-  }, [
-    identity?.idString,
-    loadVerifiableCredentials,
-    setVerifiableCredentials,
-    verifiableCredentials,
-  ])
+          return currentAuthZkp?.getVerifiableCredentials('IdentityProviders')
+        } catch (error) {
+          if (error instanceof FileEmptyError) {
+            triesCount++
+            await sleep(500)
+          } else {
+            throw error
+          }
+        }
+      } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
+    },
+    [authZkp, identity],
+  )
+
+  const getVerifiableCredentials = useCallback(
+    async (
+      _identity?: Identity,
+    ): Promise<VerifiableCredentials<QueryVariableName> | undefined> => {
+      const currentIdentity = _identity ?? identity
+
+      const vc: VerifiableCredentials<QueryVariableName> | undefined =
+        verifiableCredentials &&
+        currentIdentity?.idString &&
+        verifiableCredentials?.body?.credential?.credentialSubject?.id.includes(
+          currentIdentity?.idString,
+        )
+          ? verifiableCredentials
+          : await loadVerifiableCredentials(currentIdentity)
+
+      setVerifiableCredentials(vc)
+
+      gaSendCustomEvent(GaCategories.GettingVerifiableCredentials)
+
+      return vc
+    },
+    [
+      identity,
+      loadVerifiableCredentials,
+      setVerifiableCredentials,
+      verifiableCredentials,
+    ],
+  )
 
   const [isStatesDetailsLoaded, setIsStatesDetailsLoaded] = useState(false)
 
