@@ -478,6 +478,18 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   )
 
   useEffectOnce(() => {
+    // FIXME: hotfix due to worldcoin redirect link respond
+    if (window.location.href.includes('providers#id_token')) {
+      window.open(
+        window.location.href.replace(
+          'providers#id_token',
+          'providers?id_token',
+        ),
+        '_self',
+        'noopener,noreferrer',
+      )
+    }
+
     if (searchParams.get('id_token')) {
       login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
     }
