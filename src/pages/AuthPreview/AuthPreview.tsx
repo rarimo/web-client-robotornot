@@ -230,7 +230,7 @@ const AuthPreview: FC<Props> = () => {
         <h2 className='auth-preview__header-title'>
           {verifiableCredentials && isLoaded
             ? isPending
-              ? `Generating ZKProof`
+              ? `Generating Zero-Knowledge Proof`
               : `Proof of Humanity`
             : `Getting a credential `}
         </h2>
@@ -240,7 +240,7 @@ const AuthPreview: FC<Props> = () => {
           <span className='auth-preview__header-subtitle'>
             {verifiableCredentials && isLoaded
               ? isPending
-                ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
+                ? `You won't reveal your personal data to any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
               : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
           </span>

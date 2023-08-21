@@ -8,7 +8,7 @@ import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, ChainIcon, Icon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
-import { ICON_NAMES, RoutesPaths } from '@/enums'
+import { ICON_NAMES } from '@/enums'
 import { abbrCenter, bytesToBase64, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -58,7 +58,7 @@ const AuthSuccess: FC<Props> = () => {
         </div>
         <h2 className='auth-success__header-title'>{`Proof Submitted`}</h2>
         <h2 className='auth-success__header-subtitle'>
-          {`Proof of Humanity successfully completed! You can now return to the dApp as a verified user.`}
+          {`You've proven your humanity! Now you can claim the reward.`}
         </h2>
       </div>
 
@@ -78,10 +78,16 @@ const AuthSuccess: FC<Props> = () => {
               </div>
             </div>
             <span className='auth-success__card-published-item-title'>
-              {`Your proof has been published on ${config.SUPPORTED_CHAINS_DETAILS[el].name}`}
+              {`Your proof has been published on ${config.SUPPORTED_CHAINS_DETAILS[el].name} chain`}
             </span>
           </div>
         ))}
+
+        <div className='auth-success__card-divider-wrp'>
+          <div className='auth-success__card-divider' />
+        </div>
+
+        <span className='auth-success__card-title'>{`Your Zero-Knowledge proof, just in case`}</span>
 
         <div className='auth-success__copy-field-wrp'>
           <div className='auth-success__copy-field'>
@@ -95,10 +101,6 @@ const AuthSuccess: FC<Props> = () => {
             />
           </div>
         </div>
-
-        <div className='auth-success__card-divider-wrp'>
-          <div className='auth-success__card-divider' />
-        </div>
       </div>
 
       <div className='auth-success__card'>
@@ -111,12 +113,6 @@ const AuthSuccess: FC<Props> = () => {
           ))}
         </div>
       </div>
-
-      <AppButton
-        className='auth-success__return-btn'
-        text={`RETURN HOME`}
-        routePath={RoutesPaths.authProviders}
-      />
 
       {config.EXTERNAL_PLATFORM_REDIRECT_URL ? (
         <div className='auth-success__tip'>

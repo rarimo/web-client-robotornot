@@ -241,7 +241,7 @@ const AuthConfirmation: FC<Props> = () => {
         </div>
         <h2 className='auth-confirmation__header-title'>{`Proof Generated`}</h2>
         <span className='auth-confirmation__header-subtitle'>
-          {`At this stage, you are submitting your identity proof to the blockchain, enabling the dApp to verify it.`}
+          {`Now you will submit your Proof of Humanity to a smart contract for verification.`}
         </span>
       </div>
 
@@ -270,7 +270,7 @@ const AuthConfirmation: FC<Props> = () => {
             </div>
 
             <span className='auth-confirmation__chain-preview-title'>
-              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name}`}
+              {`${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name} chain`}
             </span>
           </div>
 
