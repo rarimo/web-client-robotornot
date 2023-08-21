@@ -58,16 +58,13 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
           <Icon className='profile__header-icon' name={ICON_NAMES.user} />
         </div>
         <h2 className='profile__header-title' title={identity?.idString}>
-          {`DID:Rarimo:${abbrCenter(identity?.idString ?? '', 4)}`}
+          {`did:rarimo:${abbrCenter(identity?.idString ?? '', 4)}`}
         </h2>
-        <span className='profile__header-subtitle'>
-          {`Show your private key`}
-        </span>
       </div>
 
       <div className='profile__card'>
         <span className='profile__card-title'>
-          {`Preserve or Utilize These Keys for Profile Restoration or Cross-Device use`}
+          {`Preserve these credentials for profile restoration or cross-device use`}
         </span>
 
         <div className='profile__copy-field-wrp'>
