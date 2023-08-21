@@ -270,7 +270,7 @@ const AuthConfirmation: FC<Props> = () => {
             </div>
 
             <span className='auth-confirmation__chain-preview-title'>
-              {`${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name} chain`}
+              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name} chain`}
             </span>
           </div>
 

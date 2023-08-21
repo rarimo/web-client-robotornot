@@ -440,9 +440,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         await zkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
 
         setIsStatesDetailsLoaded(
-          !!zkpGen?.targetStateDetails ||
-            !!zkpGen?.coreStateDetails ||
-            !!zkpGen?.operationProof ||
+          !!zkpGen?.targetStateDetails &&
+            !!zkpGen?.coreStateDetails &&
+            !!zkpGen?.operationProof &&
             !!zkpGen?.merkleProof,
         )
 
