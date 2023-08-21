@@ -95,7 +95,15 @@ const AuthConfirmation: FC<Props> = () => {
     try {
       let currZkpGen = zkpGen
 
-      if (!isStatesDetailsLoaded) {
+      if (
+        !isStatesDetailsLoaded ||
+        !(
+          zkpGen?.targetStateDetails &&
+          zkpGen?.coreStateDetails &&
+          zkpGen?.operationProof &&
+          zkpGen?.merkleProof
+        )
+      ) {
         currZkpGen = await loadStatesDetails()
       }
 
