@@ -1,6 +1,5 @@
 import {
   errors,
-  IProvider,
   MetamaskProvider,
   Provider,
   ProviderDetector,
@@ -27,7 +26,7 @@ import {
 } from '@/hooks'
 
 interface Web3ProviderContextValue {
-  provider?: IProvider
+  provider?: ReturnType<typeof useProvider>
   providerDetector: ProviderDetector<SUPPORTED_PROVIDERS>
 
   init: (providerType?: SUPPORTED_PROVIDERS) => Promise<void>
@@ -77,7 +76,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
   // const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
   // const { showTxToast, removeToast } = useNotification()
 
-  const { provider, init: initProvider } = useProvider()
+  const provider = useProvider()
 
   // const handleTxSent = useMemo(
   //   () => (e?: ProviderEventPayload) => {
@@ -149,7 +148,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         if (!currentProviderType) return
 
-        const initializedProvider = await initProvider(
+        const initializedProvider = await provider.init(
           SUPPORTED_PROVIDERS_MAP[
             currentProviderType
           ] as ProviderProxyConstructor,
@@ -173,8 +172,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       }
     },
     [
+      provider,
       disconnect,
-      initProvider,
       listeners,
       providerDetector,
       setStorageState,

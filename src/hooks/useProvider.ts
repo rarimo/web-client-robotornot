@@ -1,4 +1,6 @@
 import {
+  Chain,
+  ChainId,
   createProvider,
   CreateProviderOpts,
   IProvider,
@@ -6,6 +8,8 @@ import {
   ProviderEventPayload,
   ProviderProxyConstructor,
   RawProvider,
+  TransactionResponse,
+  TxRequestBody,
 } from '@distributedlab/w3p'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useState } from 'react'
@@ -30,16 +34,6 @@ export function useProvider<T extends keyof Record<string, string>>() {
       providerType: provider?.providerType,
     }
   })
-
-  const disconnect = useCallback(async (): Promise<void> => {
-    if (provider?.disconnect) {
-      await provider.disconnect()
-
-      return
-    }
-
-    setProvider(undefined)
-  }, [provider])
 
   const setListeners = useCallback(
     (_provider?: Provider) => {
@@ -99,6 +93,65 @@ export function useProvider<T extends keyof Record<string, string>>() {
     [setListeners],
   )
 
+  const connect = useCallback(async () => {
+    await provider?.connect?.()
+  }, [provider])
+
+  const addChain = useCallback(
+    async (chain: Chain) => {
+      await provider?.addChain?.(chain)
+    },
+    [provider],
+  )
+
+  const switchChain = useCallback(
+    async (chainId: ChainId) => {
+      await provider?.switchChain?.(chainId)
+    },
+    [provider],
+  )
+
+  const signAndSendTx = useCallback(
+    async (txRequestBody: TxRequestBody) => {
+      return provider?.signAndSendTx?.(txRequestBody)
+    },
+    [provider],
+  )
+
+  const signMessage = useCallback(
+    async (message: string) => {
+      return provider?.signMessage?.(message)
+    },
+    [provider],
+  )
+
+  const getHashFromTx = useCallback(
+    (txResponse: TransactionResponse) => {
+      return provider?.getHashFromTx?.(txResponse)
+    },
+    [provider],
+  )
+
+  const getTxUrl = useCallback(
+    (chain: Chain, txHash: string) => {
+      return provider?.getTxUrl?.(chain, txHash)
+    },
+    [provider],
+  )
+
+  const getAddressUrl = useCallback(
+    (chain: Chain, address: string) => {
+      return provider?.getAddressUrl?.(chain, address)
+    },
+    [provider],
+  )
+
+  const disconnect = useCallback(async (): Promise<void> => {
+    if (await provider?.disconnect?.()) return
+
+    setProvider(undefined)
+  }, [provider])
+
   useEffect(() => {
     return () => {
       provider?.clearHandlers?.()
@@ -107,13 +160,19 @@ export function useProvider<T extends keyof Record<string, string>>() {
   }, [])
 
   return {
-    provider,
     rawProvider,
 
     ...providerReactiveState,
 
     init,
-
+    connect,
+    addChain,
+    switchChain,
+    signAndSendTx,
+    signMessage,
+    getHashFromTx,
+    getTxUrl,
+    getAddressUrl,
     disconnect,
   }
 }

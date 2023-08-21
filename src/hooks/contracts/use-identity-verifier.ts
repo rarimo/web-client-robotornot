@@ -1,7 +1,6 @@
 import { config } from '@config'
 import { type TransactionResponse } from '@distributedlab/w3p'
-import { Web3Provider } from '@ethersproject/providers'
-import type { BigNumberish, providers } from 'ethers'
+import { type BigNumberish, providers } from 'ethers'
 import { useCallback, useMemo } from 'react'
 
 import { useWeb3Context } from '@/contexts'
@@ -26,12 +25,13 @@ export const useIdentityVerifier = (
   const contractInstance = useMemo(() => {
     if (!address || !provider?.rawProvider) return undefined
 
-    const web3Provider = new Web3Provider(
-      provider?.rawProvider as unknown as providers.ExternalProvider,
-    )
-
     return provider?.rawProvider && address
-      ? IdentityVerifier__factory.connect(address, web3Provider.getSigner())
+      ? IdentityVerifier__factory.connect(
+          address,
+          new providers.Web3Provider(
+            provider?.rawProvider as providers.ExternalProvider,
+          ),
+        )
       : undefined
   }, [address, provider?.rawProvider])
 
