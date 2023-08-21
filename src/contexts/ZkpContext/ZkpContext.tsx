@@ -460,10 +460,12 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       await sleep(30 * 1000)
     } while (
-      !zkpGen?.targetStateDetails ||
-      !zkpGen?.coreStateDetails ||
-      !zkpGen?.operationProof ||
-      !zkpGen?.merkleProof
+      !(
+        zkpGen?.targetStateDetails &&
+        zkpGen?.coreStateDetails &&
+        zkpGen?.operationProof &&
+        zkpGen?.merkleProof
+      )
     )
   }, [zkpGen])
 
