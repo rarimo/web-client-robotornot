@@ -4,6 +4,7 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
+import { ZkpGen } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
 import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
@@ -13,6 +14,7 @@ import { querier } from '@/api'
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
+import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
@@ -56,38 +58,45 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
-  const transitState = useCallback(async () => {
-    try {
-      const transitParams = await zkpGen?.loadParamsForTransitState(querier)
+  const transitState = useCallback(
+    async (_zkpGen?: ZkpGen<QueryVariableName>) => {
+      try {
+        const currZkpGen = _zkpGen || zkpGen
 
-      if (!transitParams) throw new TypeError('Transit params is not defined')
+        const transitParams = await currZkpGen?.loadParamsForTransitState(
+          querier,
+        )
 
-      await provider?.signAndSendTx?.(
-        getTransitStateTxBody(
-          config?.[
-            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-          ],
-          transitParams.newIdentitiesStatesRoot,
-          transitParams.gistData,
-          transitParams.proof,
-        ),
-      )
+        if (!transitParams) throw new TypeError('Transit params is not defined')
 
-      gaSendCustomEvent(GaCategories.TransitState)
-    } catch (error) {
-      if (error instanceof Error && 'error' in error) {
-        const str = 'Identities states root already exists'
-        const currentError = error.error as RuntimeError
-        const errorString = currentError?.message?.split(': ')[2]
+        await provider?.signAndSendTx?.(
+          getTransitStateTxBody(
+            config?.[
+              `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+            ],
+            transitParams.newIdentitiesStatesRoot,
+            transitParams.gistData,
+            transitParams.proof,
+          ),
+        )
 
-        if (errorString?.includes(str)) {
-          return
+        gaSendCustomEvent(GaCategories.TransitState)
+      } catch (error) {
+        if (error instanceof Error && 'error' in error) {
+          const str = 'Identities states root already exists'
+          const currentError = error.error as RuntimeError
+          const errorString = currentError?.message?.split(': ')[2]
+
+          if (errorString?.includes(str)) {
+            return
+          }
         }
-      }
 
-      throw error
-    }
-  }, [zkpGen, provider, selectedChainToPublish])
+        throw error
+      }
+    },
+    [zkpGen, provider, selectedChainToPublish],
+  )
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
@@ -108,7 +117,7 @@ const AuthConfirmation: FC<Props> = () => {
       }
 
       if (!currZkpGen?.isStatesActual) {
-        await transitState()
+        await transitState(currZkpGen)
 
         await sleep(1000)
       }
