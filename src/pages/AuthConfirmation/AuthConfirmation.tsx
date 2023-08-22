@@ -85,7 +85,7 @@ const AuthConfirmation: FC<Props> = () => {
         if (error instanceof Error && 'error' in error) {
           const str = 'Identities states root already exists'
           const currentError = error.error as RuntimeError
-          const errorString = currentError?.message?.split(': ')[2]
+          const errorString = currentError?.message
 
           if (errorString?.includes(str)) {
             return

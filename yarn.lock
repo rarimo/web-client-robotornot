@@ -1821,93 +1821,93 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.18"
+"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.19"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.18
-    "@rarimo/provider": ^2.0.0-rc.18
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.18
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.19
+    "@rarimo/provider": ^2.0.0-rc.19
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.19
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 6b013291c6f49fec0340fbcaf99f09440f77ca93ac25584981c8144c632955724c280d8abd7a043d4b0c8e4acc3bc57beb6c5c35f06a3dbcdce573143297377d
+  checksum: e030399f059a594eb780c8ce285602929edf79e768868bb1dd1b0ce181dfd77cf55e878e8516bfbfd6f9e49112ca52ea2bea78189cf898c1edf71ff7787d2399
   languageName: node
   linkType: hard
 
-"@rarimo/client@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/client@npm:2.0.0-rc.18"
+"@rarimo/client@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/client@npm:2.0.0-rc.19"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.31.0
     "@cosmjs/stargate": ^0.31.0
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/reactivity": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.18
-  checksum: 7b92af27d39a206377a2ba3e7d4bb964f1952647af206c9c524b800208e5d4b4210bcebcdb788ddaab2db75483cdb02e0816444810371a59481d4afafbff2910
+    "@rarimo/shared": ^2.0.0-rc.19
+  checksum: 0b0510d85a69420d7fdab97ba8a15dba05a3ec2836b954aa9c5258b1fefdd5cc96a14dbe9ca938d1b5eef89d83d0b21db6c3db428b3673cfd091af1d0c7b5f4f
   languageName: node
   linkType: hard
 
-"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.18"
+"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.19"
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 81595f1ca9ecaec32b49085128225ca023113925dde61d5510936665d0f190be336222865e0d6a612cf9664fce3f262c8e3a170bdcbb40bdd155fb86778dac24
+  checksum: 07e05860d46106ede4641f9d20d556c0fa6044eab5631894e09ea15964fbdfbb779e61a46cfe0424d7a246529cc37c68132bd1d713e2ca76d95f5b56a09a6b21
   languageName: node
   linkType: hard
 
-"@rarimo/provider@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/provider@npm:2.0.0-rc.18"
+"@rarimo/provider@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/provider@npm:2.0.0-rc.19"
   dependencies:
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.18
-  checksum: be557ba10aee037b940c32586d06c59354df3888e3868b39f5cf6ee7ec0a63c8323303b35c7c78eb7690bc9fc6a4107c5adf38f654e3896069d0d058406d6f55
+    "@rarimo/shared": ^2.0.0-rc.19
+  checksum: cd28124166b63770e8a61e208465d4150accef71ea4205b0c75d1e3eeec14f0695a09e8c7c97cbfea70ffafc40e07e2a605c191b6b6dff47f6b86eb2a458c8d6
   languageName: node
   linkType: hard
 
-"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.18"
+"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.19"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/client": ^2.0.0-rc.18
+    "@rarimo/client": ^2.0.0-rc.19
     tslib: ^2.5.0
-  checksum: 002e5e45aadd19fc5773d2dc4caa8e1a8bcc92416aff6658cbc1b368d6c4a8948ac04539072319ebe79925bf0bca8410e9251b6ea44315b25cff82c3b4fd72a5
+  checksum: 3fb37594a0817afd27150293e9db7aecd0402a3927361d7f769b032930cd91579c7299a4b1af0b8f3181f1f11f633b188bf29569f526e3192c5c226a2c716bb6
   languageName: node
   linkType: hard
 
-"@rarimo/shared@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/shared@npm:2.0.0-rc.18"
+"@rarimo/shared@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/shared@npm:2.0.0-rc.19"
   dependencies:
     "@distributedlab/jac": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-  checksum: c4db9e60a69662db04fb44ca89134a27650cea0ce1cddb4702125312fb929645150a9f687092f822a192b598729bbc65048b7a38d8c9e8a4471cd182e50804e5
+  checksum: e0372059c6f7bebcba0a765793d8df8260cc82a71bdfe1c58350e668ec1ca9d573d854acb7e79a5cc37b80e467bfa1cdd341d69a0fa1ddad1c8f1dd6aea65df7
   languageName: node
   linkType: hard
 
-"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.18":
-  version: 2.0.0-rc.18
-  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.18"
+"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.19":
+  version: 2.0.0-rc.19
+  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.19"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.18
-    "@rarimo/client": ^2.0.0-rc.18
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.18
-    "@rarimo/shared": ^2.0.0-rc.18
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.18
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.19
+    "@rarimo/client": ^2.0.0-rc.19
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.19
+    "@rarimo/shared": ^2.0.0-rc.19
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.19
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1915,7 +1915,7 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.14
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 2efa72942c6bbb83ba37a11ff35fc895664607df1014d329e935ec1b7126c0ebe00c911aa7b1c37837915852032b110578e705f284f94aff99a82b26a96880ec
+  checksum: 3cd2984205f5ace8f466b37290c5cf5a11235f1841b6374625cb9022bedb77a3f552e9d74f5b78962f04220d20c6259dbdb0aaab1ece24ffc2f36e4d401c1740
   languageName: node
   linkType: hard
 
@@ -2249,9 +2249,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.3.1":
-  version: 20.5.1
-  resolution: "@types/node@npm:20.5.1"
-  checksum: 3dbe611cd67afa987102c8558ee70f848949c5dcfee5f60abc073e55c0d7b048e391bf06bb1e0dc052cb7210ca97136ac496cbaf6e89123c989de6bd125fde82
+  version: 20.5.2
+  resolution: "@types/node@npm:20.5.2"
+  checksum: 46d032bb9a1db687693f6351702572d2f1e12face32caf8182323413918de27d4ac16cc2b15ff6b891651313e602da18edbdd095d16d2b5a26588c2edffca892
   languageName: node
   linkType: hard
 
@@ -9864,11 +9864,11 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.15
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.18
-    "@rarimo/client": ^2.0.0-rc.18
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.18
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.18
-    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.18
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.19
+    "@rarimo/client": ^2.0.0-rc.19
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.19
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.19
+    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.19
     "@typechain/ethers-v5": ^11.0.0
     "@types/lodash": ^4.14.195
     "@types/node": ^20.3.1

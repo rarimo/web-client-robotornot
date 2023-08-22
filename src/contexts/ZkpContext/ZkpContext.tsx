@@ -6,9 +6,11 @@ import {
   ClaimOffer,
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
+import type { MerkleProof, OperationProof, StateInfo } from '@rarimo/client'
 import { Identity } from '@rarimo/identity-gen-iden3'
 import { FileEmptyError } from '@rarimo/shared-zkp-iden3'
 import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import { type BigNumber } from 'ethers'
 import {
   createContext,
   FC,
@@ -185,11 +187,33 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     SUPPORTED_CHAINS[]
   >('submittedChains', [])
 
+  const [coreStateDetails, setCoreStateDetails] = useLocalStorage<StateInfo>(
+    'coreStateDetails',
+    undefined,
+  )
+
+  const [targetStateDetails, setTargetStateDetails] = useLocalStorage<
+    [BigNumber, BigNumber] & {
+      root: BigNumber
+      createdAtTimestamp: BigNumber
+    }
+  >('targetStateDetails', undefined)
+
+  const [operationProof, setOperationProof] = useLocalStorage<OperationProof>(
+    'operationProof',
+    undefined,
+  )
+
+  const [merkleProof, setMerkleProof] = useLocalStorage<MerkleProof>(
+    'merkleProof',
+    undefined,
+  )
+
   const authZkp = useMemo<AuthZkp<QueryVariableName> | undefined>(() => {
     if (!identity) return undefined
 
     AuthZkp.setConfig({
-      RPC_URL: config.RARIMO_EVM_RPC_URL,
+      RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
       STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
       ISSUER_API_URL: config.API_URL,
 
@@ -213,8 +237,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     if (!identity || !verifiableCredentials) return undefined
 
     ZkpGen.setConfig({
-      CORE_CHAIN_RPC_URL: config.RARIMO_EVM_RPC_URL,
-      TARGET_CHAIN_RPC_URL:
+      CORE_CHAIN_RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
+      TARGET_CHAIN_RPC_URL_OR_RAW_PROVIDER:
         config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].rpcUrl,
       STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
       LIGHTWEIGHT_STATE_V2_ADDRESS:
@@ -355,7 +379,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       if (!authZkp) {
         AuthZkp.setConfig({
-          RPC_URL: config.RARIMO_EVM_RPC_URL,
+          RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
           STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
           ISSUER_API_URL: config.API_URL,
 
@@ -434,17 +458,41 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const loadStatesDetails = useCallback(async (): Promise<
     ZkpGen<QueryVariableName> | undefined
   > => {
+    if (
+      coreStateDetails &&
+      targetStateDetails &&
+      merkleProof &&
+      operationProof
+    ) {
+      zkpGen?.populateStateDetails({
+        targetStateDetails,
+        coreStateDetails,
+        merkleProof,
+        operationProof,
+      })
+
+      return zkpGen
+    }
+
+    await zkpGen?.loadStatesDetails(querier)
+    await zkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
+
+    setCoreStateDetails(zkpGen?.coreStateDetails)
+    setTargetStateDetails(zkpGen?.targetStateDetails)
+    setMerkleProof(zkpGen?.merkleProof)
+
     do {
       try {
-        await zkpGen?.loadStatesDetails(querier)
-        await zkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
+        if (!zkpGen?.coreStateDetails?.lastUpdateOperationIndex) continue
 
-        setIsStatesDetailsLoaded(
-          !!zkpGen?.targetStateDetails &&
-            !!zkpGen?.coreStateDetails &&
-            !!zkpGen?.operationProof &&
-            !!zkpGen?.merkleProof,
+        await zkpGen?.loadOperationProof(
+          querier,
+          zkpGen.coreStateDetails.lastUpdateOperationIndex,
         )
+
+        setOperationProof(zkpGen?.operationProof)
+
+        setIsStatesDetailsLoaded(!!zkpGen?.operationProof)
 
         return zkpGen
       } catch (error) {
@@ -459,15 +507,18 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       }
 
       await sleep(30 * 1000)
-    } while (
-      !(
-        zkpGen?.targetStateDetails &&
-        zkpGen?.coreStateDetails &&
-        zkpGen?.operationProof &&
-        zkpGen?.merkleProof
-      )
-    )
-  }, [zkpGen])
+    } while (!zkpGen?.operationProof)
+  }, [
+    coreStateDetails,
+    merkleProof,
+    operationProof,
+    setCoreStateDetails,
+    setMerkleProof,
+    setOperationProof,
+    setTargetStateDetails,
+    targetStateDetails,
+    zkpGen,
+  ])
 
   const getZkProof = useCallback(async (): Promise<
     ZkpGen<QueryVariableName>
