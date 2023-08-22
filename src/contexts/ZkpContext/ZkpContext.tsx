@@ -6,11 +6,9 @@ import {
   ClaimOffer,
   VerifiableCredentials,
 } from '@rarimo/auth-zkp-iden3'
-import type { MerkleProof, OperationProof, StateInfo } from '@rarimo/client'
 import { Identity } from '@rarimo/identity-gen-iden3'
 import { FileEmptyError } from '@rarimo/shared-zkp-iden3'
 import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
-import { type BigNumber } from 'ethers'
 import {
   createContext,
   FC,
@@ -42,6 +40,7 @@ interface ZkpContextValue {
     get?: SUPPORTED_CHAINS[]
     set: (value: SUPPORTED_CHAINS[]) => void
   }
+
   verifiableCredentials?: VerifiableCredentials<QueryVariableName>
 
   selectedKycProvider: {
@@ -58,8 +57,6 @@ interface ZkpContextValue {
     get?: ZKProof
     set: (value: ZKProof) => void
   }
-
-  isStatesDetailsLoaded: boolean
 
   isClaimOfferExists: (
     _identity?: Identity,
@@ -115,8 +112,6 @@ export const zkpContext = createContext<ZkpContextValue>({
       )
     },
   },
-
-  isStatesDetailsLoaded: false,
 
   getClaimOffer: async (_identity?: Identity) => {
     throw new TypeError(
@@ -186,28 +181,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [publishedChains, setPublishedChains] = useLocalStorage<
     SUPPORTED_CHAINS[]
   >('submittedChains', [])
-
-  const [coreStateDetails, setCoreStateDetails] = useLocalStorage<StateInfo>(
-    'coreStateDetails',
-    undefined,
-  )
-
-  const [targetStateDetails, setTargetStateDetails] = useLocalStorage<
-    [BigNumber, BigNumber] & {
-      root: BigNumber
-      createdAtTimestamp: BigNumber
-    }
-  >('targetStateDetails', undefined)
-
-  const [operationProof, setOperationProof] = useLocalStorage<OperationProof>(
-    'operationProof',
-    undefined,
-  )
-
-  const [merkleProof, setMerkleProof] = useLocalStorage<MerkleProof>(
-    'merkleProof',
-    undefined,
-  )
 
   const authZkp = useMemo<AuthZkp<QueryVariableName> | undefined>(() => {
     if (!identity) return undefined
@@ -453,33 +426,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ],
   )
 
-  const [isStatesDetailsLoaded, setIsStatesDetailsLoaded] = useState(false)
-
   const loadStatesDetails = useCallback(async (): Promise<
     ZkpGen<QueryVariableName> | undefined
   > => {
-    if (
-      coreStateDetails &&
-      targetStateDetails &&
-      merkleProof &&
-      operationProof
-    ) {
-      zkpGen?.populateStateDetails({
-        targetStateDetails,
-        coreStateDetails,
-        merkleProof,
-        operationProof,
-      })
-
-      return zkpGen
-    }
-
     await zkpGen?.loadStatesDetails(querier)
     await zkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
-
-    setCoreStateDetails(zkpGen?.coreStateDetails)
-    setTargetStateDetails(zkpGen?.targetStateDetails)
-    setMerkleProof(zkpGen?.merkleProof)
 
     do {
       try {
@@ -489,10 +440,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           querier,
           zkpGen.coreStateDetails.lastUpdateOperationIndex,
         )
-
-        setOperationProof(zkpGen?.operationProof)
-
-        setIsStatesDetailsLoaded(!!zkpGen?.operationProof)
 
         return zkpGen
       } catch (error) {
@@ -508,17 +455,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       await sleep(30 * 1000)
     } while (!zkpGen?.operationProof)
-  }, [
-    coreStateDetails,
-    merkleProof,
-    operationProof,
-    setCoreStateDetails,
-    setMerkleProof,
-    setOperationProof,
-    setTargetStateDetails,
-    targetStateDetails,
-    zkpGen,
-  ])
+  }, [zkpGen])
 
   const getZkProof = useCallback(async (): Promise<
     ZkpGen<QueryVariableName>
@@ -588,7 +525,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     if (
       selectedKycProvider &&
       !verifiableCredentials &&
-      // FIXME + stucked in preview loading per 1 reload
       !searchParams.get('id_token')
     ) {
       removeSelectedKycProvider()
@@ -596,8 +532,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     if (isUserSubmittedZkp) {
       navigate(RoutesPaths.authSuccess)
-    } else if (zkProof) {
-      navigate(RoutesPaths.authConfirmation)
     } else if (verifiableCredentials) {
       navigate(RoutesPaths.authPreview)
     } else {
@@ -637,8 +571,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           get: zkProof,
           set: setZkProof,
         },
-
-        isStatesDetailsLoaded,
 
         getClaimOffer,
         isClaimOfferExists,

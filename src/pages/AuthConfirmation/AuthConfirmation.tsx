@@ -32,7 +32,6 @@ const AuthConfirmation: FC<Props> = () => {
     zkpGen,
     zkProof,
     publishedChains,
-    isStatesDetailsLoaded,
     isUserSubmittedZkp,
 
     loadStatesDetails,
@@ -102,19 +101,7 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(true)
 
     try {
-      let currZkpGen = zkpGen
-
-      if (
-        !isStatesDetailsLoaded ||
-        !(
-          zkpGen?.targetStateDetails &&
-          zkpGen?.coreStateDetails &&
-          zkpGen?.operationProof &&
-          zkpGen?.merkleProof
-        )
-      ) {
-        currZkpGen = await loadStatesDetails()
-      }
+      const currZkpGen = await loadStatesDetails()
 
       if (!currZkpGen?.isStatesActual) {
         await transitState(currZkpGen)
@@ -173,7 +160,6 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(false)
   }, [
     zkpGen,
-    isStatesDetailsLoaded,
     zkProof.get,
     getProveIdentityTxBody,
     provider,
