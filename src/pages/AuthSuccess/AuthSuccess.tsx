@@ -1,32 +1,26 @@
 import './styles.scss'
 
 import { config } from '@config'
-import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import isEmpty from 'lodash/isEmpty'
+import { FC, HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
 import { AppButton, ChainIcon, Icon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
-import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { abbrCenter, copyToClipboard } from '@/helpers'
+import { ICON_NAMES } from '@/enums'
+import { abbrCenter, bytesToBase64, copyToClipboard } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const SECOND = 1000
 
-const REDIRECT_TIMEOUT = 5
-
-function bytesToBase64(bytes: Uint8Array) {
-  const binString = Array.from(bytes, x => String.fromCodePoint(x)).join('')
-  return btoa(binString)
-}
+const REDIRECT_TIMEOUT = 30
 
 const AuthSuccess: FC<Props> = () => {
-  const navigate = useNavigate()
-
   const { selectedKycDetails } = useKycContext()
-  const { isNaturalZkp, publishedChains } = useZkpContext()
+  const { zkpGen, zkProof, publishedChains } = useZkpContext()
+  const [isManualRedirected, setIsManualRedirected] = useState(false)
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -34,12 +28,16 @@ const AuthSuccess: FC<Props> = () => {
   })
 
   const encodedProof = useMemo(() => {
-    return isNaturalZkp?.subjectProof
+    return zkpGen?.subjectProof
       ? bytesToBase64(
-          new TextEncoder().encode(JSON.stringify(isNaturalZkp?.subjectProof)),
+          new TextEncoder().encode(
+            JSON.stringify(
+              isEmpty(zkpGen?.subjectProof) ? zkProof : zkpGen?.subjectProof,
+            ),
+          ),
         )
       : ''
-  }, [isNaturalZkp?.subjectProof])
+  }, [zkProof, zkpGen?.subjectProof])
 
   useEffectOnce(() => {
     startCountdown()
@@ -48,20 +46,10 @@ const AuthSuccess: FC<Props> = () => {
   useEffect(() => {
     if (count > 0) return
 
-    if (!config.EXTERNAL_PLATFORM_REDIRECT_URL) return
+    if (!config.EXTERNAL_PLATFORM_REDIRECT_URL || isManualRedirected) return
 
     window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
-  }, [count])
-
-  useEffect(() => {
-    if (!publishedChains?.get?.length) {
-      navigate(RoutesPaths.authProviders)
-    }
-  }, [
-    isNaturalZkp?.verifiableCredentials.id,
-    navigate,
-    publishedChains?.get?.length,
-  ])
+  }, [count, isManualRedirected])
 
   return (
     <div className='auth-success'>
@@ -71,7 +59,7 @@ const AuthSuccess: FC<Props> = () => {
         </div>
         <h2 className='auth-success__header-title'>{`Proof Submitted`}</h2>
         <h2 className='auth-success__header-subtitle'>
-          {`Proof of Humanity successfully completed! You can now return to the dApp as a verified user.`}
+          {`You've proven your humanity! Now you can claim the reward.`}
         </h2>
       </div>
 
@@ -91,10 +79,16 @@ const AuthSuccess: FC<Props> = () => {
               </div>
             </div>
             <span className='auth-success__card-published-item-title'>
-              {`Your proof has been published on ${config.SUPPORTED_CHAINS_DETAILS[el].name}`}
+              {`Your proof has been published on ${config.SUPPORTED_CHAINS_DETAILS[el].name} chain`}
             </span>
           </div>
         ))}
+
+        <div className='auth-success__card-divider-wrp'>
+          <div className='auth-success__card-divider' />
+        </div>
+
+        <span className='auth-success__card-title'>{`Your Zero-Knowledge proof, just in case`}</span>
 
         <div className='auth-success__copy-field-wrp'>
           <div className='auth-success__copy-field'>
@@ -108,12 +102,6 @@ const AuthSuccess: FC<Props> = () => {
             />
           </div>
         </div>
-
-        <div className='auth-success__card-divider-wrp'>
-          <div className='auth-success__card-divider' />
-        </div>
-
-        {/*TODO: publish to another chains button*/}
       </div>
 
       <div className='auth-success__card'>
@@ -127,32 +115,41 @@ const AuthSuccess: FC<Props> = () => {
         </div>
       </div>
 
-      <AppButton
-        className='auth-success__return-btn'
-        text={`RETURN HOME`}
-        routePath={RoutesPaths.authProviders}
-      />
-
       {config.EXTERNAL_PLATFORM_REDIRECT_URL ? (
-        <div className='auth-success__tip'>
-          {count ? (
-            <>
-              {`Automatically redirected in `}
-              <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
-            </>
+        <>
+          <AppButton
+            className='auth-success__return-btn'
+            text={`RETURN TO QUEST`}
+            onClick={() => {
+              window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
+              setIsManualRedirected(true)
+            }}
+          />
+
+          {isManualRedirected ? (
+            <></>
           ) : (
-            <>
-              {`Haven't redirect? `}
-              <a
-                className='auth-success__tip-link'
-                style={{ textDecoration: 'underline' }}
-                href={config.EXTERNAL_PLATFORM_REDIRECT_URL}
-                target='_blank'
-                rel='noreferrer'
-              >{`click here`}</a>
-            </>
+            <div className='auth-success__tip'>
+              {count ? (
+                <>
+                  {`Automatically redirected in `}
+                  <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
+                </>
+              ) : (
+                <>
+                  {`Haven't redirect? `}
+                  <a
+                    className='auth-success__tip-link'
+                    style={{ textDecoration: 'underline' }}
+                    href={config.EXTERNAL_PLATFORM_REDIRECT_URL}
+                    target='_blank'
+                    rel='noreferrer'
+                  >{`click here`}</a>
+                </>
+              )}
+            </div>
           )}
-        </div>
+        </>
       ) : (
         <></>
       )}

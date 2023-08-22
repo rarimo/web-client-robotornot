@@ -22,6 +22,8 @@ $card-padding-side: #{toRem(24)};
 }
 
 .profile__header-title {
+  text-transform: none;
+
   @include respond-to(xsmall) {
     font-size: clamp(#{toRem(24)}, 7.5vw, #{toRem(32)});
   }
@@ -45,7 +47,6 @@ $card-padding-side: #{toRem(24)};
 }
 
 .profile__header-subtitle {
-  text-transform: capitalize;
   text-align: center;
   color: var(--text-tertiary-main);
   font-size: toRem(20);

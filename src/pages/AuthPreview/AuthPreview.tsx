@@ -3,14 +3,7 @@ import './styles.scss'
 import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
@@ -41,16 +34,15 @@ const AuthPreview: FC<Props> = () => {
   )
 
   const {
+    selectedKycProvider,
+
     identity,
     verifiableCredentials,
-    getVerifiableCredentials,
     getZkProof,
   } = useZkpContext()
 
   const {
     KYC_PROVIDERS_DETAILS_MAP,
-
-    selectedKycProviderName,
 
     isLoaded,
     isValidCredentials,
@@ -96,9 +88,7 @@ const AuthPreview: FC<Props> = () => {
         return
       }
 
-      const currentVerifiableCredentials = await getVerifiableCredentials()
-
-      await getZkProof(config.DEFAULT_CHAIN, currentVerifiableCredentials)
+      await getZkProof()
 
       navigate(RoutesPaths.authConfirmation)
     } catch (error) {
@@ -109,7 +99,6 @@ const AuthPreview: FC<Props> = () => {
 
     setIsPending(false)
   }, [
-    getVerifiableCredentials,
     getZkProof,
     identity?.idBigIntString,
     isIdentityProved,
@@ -119,21 +108,16 @@ const AuthPreview: FC<Props> = () => {
   ])
 
   const completeKyc = useCallback(async () => {
-    if (!selectedKycProviderName)
+    if (!selectedKycProvider?.get)
       throw new TypeError(`Kyc Provider is not defined`)
 
-    KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProviderName]?.completeKycCb?.()
+    KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider?.get]?.completeKycCb?.()
 
     navigate(RoutesPaths.authProviders)
     // retryKyc()
 
     gaSendCustomEvent(GaCategories.RetryKyc)
-  }, [
-    KYC_PROVIDERS_DETAILS_MAP,
-    navigate,
-    selectedKycProviderName,
-    // retryKyc
-  ])
+  }, [KYC_PROVIDERS_DETAILS_MAP, navigate, selectedKycProvider?.get])
 
   const ValidCredentialsPreview = useMemo(
     () => (
@@ -206,7 +190,7 @@ const AuthPreview: FC<Props> = () => {
           </span>
           <span className='auth-preview__card-error-message'>
             {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-              ? "Seems like you're trying to use the provider that you have been used already, please choose another one."
+              ? 'Seem like you are trying to use a provider that you used already. Please choose another one'
               : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
           </span>
         </div>
@@ -214,8 +198,8 @@ const AuthPreview: FC<Props> = () => {
         <AppButton
           className='auth-preview__card-button'
           text={
-            (selectedKycProviderName &&
-              KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProviderName]
+            (selectedKycProvider?.get &&
+              KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider?.get]
                 ?.completeKycMessage) ||
             `RETURN TO PROVIDER LIST`
           }
@@ -229,16 +213,10 @@ const AuthPreview: FC<Props> = () => {
       KYC_PROVIDERS_DETAILS_MAP,
       completeKyc,
       kycError?.httpStatus,
-      selectedKycProviderName,
+      selectedKycProvider?.get,
       verificationErrorMessages,
     ],
   )
-
-  useEffect(() => {
-    if (!selectedKycProviderName) {
-      navigate(RoutesPaths.authProviders)
-    }
-  }, [navigate, selectedKycProviderName])
 
   return (
     <div
@@ -252,7 +230,7 @@ const AuthPreview: FC<Props> = () => {
         <h2 className='auth-preview__header-title'>
           {verifiableCredentials && isLoaded
             ? isPending
-              ? `Generating ZKProof`
+              ? `Generating Zero-Knowledge Proof`
               : `Proof of Humanity`
             : `Getting a credential `}
         </h2>
@@ -262,9 +240,9 @@ const AuthPreview: FC<Props> = () => {
           <span className='auth-preview__header-subtitle'>
             {verifiableCredentials && isLoaded
               ? isPending
-                ? `Zero-Knowledge Proof (ZKP) will be created, while none of the personal info is shared with any party`
+                ? `You won't reveal your personal data to any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
-              : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
+              : `The Identity Provider creates, signs, and registers your Proof of Humanity credential`}
           </span>
         )}
       </div>
@@ -318,7 +296,7 @@ const AuthPreview: FC<Props> = () => {
               {`Please wait...`}
             </span>
             <span className='auth-preview__loader-subtitle'>
-              {`Service provider is submitting a credential`}
+              {`Identity Provider is creating the credential`}
             </span>
           </div>
         </div>

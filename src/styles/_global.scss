@@ -101,7 +101,6 @@ h1 {
 }
 
 h2 {
-  text-transform: capitalize;
   font-size: toRem(48);
   font-weight: 700;
 }
@@ -149,5 +148,18 @@ a {
   @include respond-to(xsmall) {
     padding-top: toRem(24);
     padding-bottom: toRem(24);
+  }
+}
+
+.app__invalid-chain-modal {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+}
+
+.app__invalid-chain-modal-actions {
+
+  .app__invalid-chain-modal-action-btn {
+    width: 100%;
   }
 }

@@ -1,6 +1,5 @@
 import {
   errors,
-  IProvider,
   MetamaskProvider,
   Provider,
   ProviderDetector,
@@ -27,8 +26,10 @@ import {
 } from '@/hooks'
 
 interface Web3ProviderContextValue {
-  provider?: IProvider
+  provider?: ReturnType<typeof useProvider>
   providerDetector: ProviderDetector<SUPPORTED_PROVIDERS>
+
+  isValidChain: boolean
 
   init: (providerType?: SUPPORTED_PROVIDERS) => Promise<void>
   addProvider: (provider: ProviderInstance) => void
@@ -38,6 +39,8 @@ interface Web3ProviderContextValue {
 export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   provider: undefined,
   providerDetector: new ProviderDetector<SUPPORTED_PROVIDERS>(),
+
+  isValidChain: false,
 
   init: async (providerType?: SUPPORTED_PROVIDERS) => {
     throw new TypeError(`init() not implemented for ${providerType}`)
@@ -77,7 +80,16 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
   // const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
   // const { showTxToast, removeToast } = useNotification()
 
-  const { provider, init: initProvider } = useProvider()
+  const provider = useProvider()
+
+  const isValidChain = useMemo(() => {
+    if (!provider?.chainId) return false
+
+    return (
+      config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].id ===
+      String(provider.chainId)
+    )
+  }, [provider.chainId])
 
   // const handleTxSent = useMemo(
   //   () => (e?: ProviderEventPayload) => {
@@ -149,7 +161,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         if (!currentProviderType) return
 
-        const initializedProvider = await initProvider(
+        const initializedProvider = await provider.init(
           SUPPORTED_PROVIDERS_MAP[
             currentProviderType
           ] as ProviderProxyConstructor,
@@ -173,8 +185,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       }
     },
     [
+      provider,
       disconnect,
-      initProvider,
       listeners,
       providerDetector,
       setStorageState,
@@ -193,6 +205,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       value={{
         provider,
         providerDetector,
+
+        isValidChain,
 
         init,
         addProvider,

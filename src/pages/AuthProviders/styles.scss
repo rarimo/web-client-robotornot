@@ -24,7 +24,6 @@
 }
 
 .auth-providers__header-subtitle {
-  text-transform: capitalize;
   text-align: center;
   color: var(--text-tertiary-main);
   font-size: clamp(#{toRem(12)}, 2.5vw, #{toRem(16)});

@@ -1,3 +1,5 @@
+import { FileEmptyError } from '@rarimo/shared-zkp-iden3'
+
 export const pureFileBytesLoading = async (
   fileUrl: string,
   config?: RequestInit,
@@ -5,7 +7,7 @@ export const pureFileBytesLoading = async (
   const response = await fetch(fileUrl, config)
 
   if (!response.ok) {
-    throw new Error(
+    throw new FileEmptyError(
       `Could not load file "${fileUrl}". Status: ${response.status} ${response.statusText}`,
     )
   }

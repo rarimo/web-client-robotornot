@@ -4,21 +4,17 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
+import { ZkpGen } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import isEmpty from 'lodash/isEmpty'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { querier } from '@/api'
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
+import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
@@ -32,7 +28,15 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { isNaturalZkp, publishedChains } = useZkpContext()
+  const {
+    zkpGen,
+    zkProof,
+    publishedChains,
+    isStatesDetailsLoaded,
+    isUserSubmittedZkp,
+
+    loadStatesDetails,
+  } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -54,93 +58,95 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
-  const isStatesActual = useMemo(
-    () => isNaturalZkp?.isStatesActual,
-    [isNaturalZkp],
-  )
+  const transitState = useCallback(
+    async (_zkpGen?: ZkpGen<QueryVariableName>) => {
+      try {
+        const currZkpGen = _zkpGen || zkpGen
 
-  const transitState = useCallback(async () => {
-    try {
-      const transitParams = await isNaturalZkp?.loadParamsForTransitState(
-        querier,
-      )
+        const transitParams = await currZkpGen?.loadParamsForTransitState(
+          querier,
+        )
 
-      if (!transitParams) throw new TypeError('Transit params is not defined')
+        if (!transitParams) throw new TypeError('Transit params is not defined')
 
-      await provider?.signAndSendTx?.(
-        getTransitStateTxBody(
-          config?.[
-            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-          ],
-          transitParams.newIdentitiesStatesRoot,
-          transitParams.gistData,
-          transitParams.proof,
-        ),
-      )
+        await provider?.signAndSendTx?.(
+          getTransitStateTxBody(
+            config?.[
+              `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+            ],
+            transitParams.newIdentitiesStatesRoot,
+            transitParams.gistData,
+            transitParams.proof,
+          ),
+        )
 
-      gaSendCustomEvent(GaCategories.TransitState)
-    } catch (error) {
-      if (error instanceof Error && 'error' in error) {
-        const str = 'Identities states root already exists'
-        const currentError = error.error as RuntimeError
-        const errorString = currentError?.message?.split(': ')[2]
+        gaSendCustomEvent(GaCategories.TransitState)
+      } catch (error) {
+        if (error instanceof Error && 'error' in error) {
+          const str = 'Identities states root already exists'
+          const currentError = error.error as RuntimeError
+          const errorString = currentError?.message
 
-        if (errorString?.includes(str)) {
-          return
+          if (errorString?.includes(str)) {
+            return
+          }
         }
-      }
 
-      throw error
-    }
-  }, [isNaturalZkp, provider, selectedChainToPublish])
+        throw error
+      }
+    },
+    [zkpGen, provider, selectedChainToPublish],
+  )
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
-      if (!isStatesActual) {
-        await transitState()
+      let currZkpGen = zkpGen
+
+      if (
+        !isStatesDetailsLoaded ||
+        !(
+          zkpGen?.targetStateDetails &&
+          zkpGen?.coreStateDetails &&
+          zkpGen?.operationProof &&
+          zkpGen?.merkleProof
+        )
+      ) {
+        currZkpGen = await loadStatesDetails()
+      }
+
+      if (!currZkpGen?.isStatesActual) {
+        await transitState(currZkpGen)
 
         await sleep(1000)
       }
 
-      if (
-        !isNaturalZkp ||
-        !isNaturalZkp.coreStateDetails ||
-        !isNaturalZkp.merkleProof
-      )
+      if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
         throw new TypeError('ZKP is not defined')
+
+      const zkpParams = isEmpty(zkpGen?.subjectProof)
+        ? zkProof.get
+        : zkpGen?.subjectProof
+
+      if (!zkpParams) throw new TypeError('ZKP params is not defined')
 
       const txBody = getProveIdentityTxBody(
         {
           issuerId: config.ISSUER_ID,
           // StateInfo.hash
-          issuerState: isNaturalZkp.coreStateDetails.hash,
+          issuerState: zkpGen.coreStateDetails.hash,
           // StateInfo.createdAtTimestamp
-          createdAtTimestamp: isNaturalZkp.coreStateDetails.createdAtTimestamp,
-          merkleProof: isNaturalZkp.merkleProof.proof.map(el =>
-            utils.arrayify(el),
-          ),
+          createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
+          merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
         },
-        isNaturalZkp?.subjectProof.pub_signals.map(el => BigInt(el)),
+        zkpParams?.pub_signals?.map?.(el => BigInt(el)),
+        [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
         [
-          isNaturalZkp?.subjectProof.proof.pi_a[0],
-          isNaturalZkp?.subjectProof.proof.pi_a[1],
+          [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
+          [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
         ],
-        [
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[0][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[0][0],
-          ],
-          [
-            isNaturalZkp?.subjectProof.proof.pi_b[1][1],
-            isNaturalZkp?.subjectProof.proof.pi_b[1][0],
-          ],
-        ],
-        [
-          isNaturalZkp?.subjectProof.proof.pi_c[0],
-          isNaturalZkp?.subjectProof.proof.pi_c[1],
-        ],
+        [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
       )
 
       await provider?.signAndSendTx?.({
@@ -150,7 +156,12 @@ const AuthConfirmation: FC<Props> = () => {
         ...txBody,
       })
 
-      publishedChains.set(prev => [...prev, selectedChainToPublish])
+      publishedChains.set([
+        ...(publishedChains?.get ? publishedChains.get : []),
+        selectedChainToPublish,
+      ])
+
+      isUserSubmittedZkp.set(true)
 
       navigate(RoutesPaths.authSuccess)
     } catch (error) {
@@ -161,13 +172,16 @@ const AuthConfirmation: FC<Props> = () => {
 
     setIsPending(false)
   }, [
+    zkpGen,
+    isStatesDetailsLoaded,
+    zkProof.get,
     getProveIdentityTxBody,
-    isNaturalZkp,
-    isStatesActual,
-    navigate,
     provider,
-    publishedChains,
     selectedChainToPublish,
+    publishedChains,
+    isUserSubmittedZkp,
+    navigate,
+    loadStatesDetails,
     transitState,
   ])
 
@@ -233,12 +247,6 @@ const AuthConfirmation: FC<Props> = () => {
     [trySwitchChain],
   )
 
-  useEffect(() => {
-    if (!isNaturalZkp?.verifiableCredentials?.id) {
-      navigate(RoutesPaths.authProviders)
-    }
-  }, [isNaturalZkp?.verifiableCredentials?.id, navigate])
-
   return (
     <div className='auth-confirmation'>
       <div className='auth-confirmation__header'>
@@ -250,7 +258,7 @@ const AuthConfirmation: FC<Props> = () => {
         </div>
         <h2 className='auth-confirmation__header-title'>{`Proof Generated`}</h2>
         <span className='auth-confirmation__header-subtitle'>
-          {`At this stage, you are submitting your identity proof to the blockchain, enabling the dApp to verify it.`}
+          {`Now you will submit your Proof of Humanity to a smart contract for verification.`}
         </span>
       </div>
 
@@ -279,7 +287,7 @@ const AuthConfirmation: FC<Props> = () => {
             </div>
 
             <span className='auth-confirmation__chain-preview-title'>
-              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name}`}
+              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name} chain`}
             </span>
           </div>
 
