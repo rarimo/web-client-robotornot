@@ -49,7 +49,8 @@ const Dropdown: FC<Props> = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className={`dropdown__body dropdown__body-direction--${direction}`}
+            {...rest}
+            className={`dropdown__body ${rest.className} dropdown__body-direction--${direction}`}
             key={`dropdown-${uid}`}
             initial='dropdowned'
             animate='open'
@@ -59,7 +60,6 @@ const Dropdown: FC<Props> = ({
               dropdowned: { opacity: 0, height: 0, overflowY: 'hidden' },
             }}
             transition={{ duration: duration }}
-            {...rest}
           >
             {children}
           </motion.div>

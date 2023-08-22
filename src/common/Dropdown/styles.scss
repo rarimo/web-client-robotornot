@@ -5,6 +5,11 @@
 .dropdown__body {
   position: absolute;
 
+  &-direction--bottom {
+    top: 105%;
+    left: 0;
+  }
+
   &-direction--top-left {
     bottom: 105%;
     right: 0;

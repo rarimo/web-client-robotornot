@@ -29,6 +29,8 @@ interface Web3ProviderContextValue {
   provider?: ReturnType<typeof useProvider>
   providerDetector: ProviderDetector<SUPPORTED_PROVIDERS>
 
+  isValidChain: boolean
+
   init: (providerType?: SUPPORTED_PROVIDERS) => Promise<void>
   addProvider: (provider: ProviderInstance) => void
   disconnect: () => Promise<void>
@@ -37,6 +39,8 @@ interface Web3ProviderContextValue {
 export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   provider: undefined,
   providerDetector: new ProviderDetector<SUPPORTED_PROVIDERS>(),
+
+  isValidChain: false,
 
   init: async (providerType?: SUPPORTED_PROVIDERS) => {
     throw new TypeError(`init() not implemented for ${providerType}`)
@@ -77,6 +81,15 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
   // const { showTxToast, removeToast } = useNotification()
 
   const provider = useProvider()
+
+  const isValidChain = useMemo(() => {
+    if (!provider?.chainId) return false
+
+    return (
+      config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].id ===
+      String(provider.chainId)
+    )
+  }, [provider.chainId])
 
   // const handleTxSent = useMemo(
   //   () => (e?: ProviderEventPayload) => {
@@ -192,6 +205,8 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       value={{
         provider,
         providerDetector,
+
+        isValidChain,
 
         init,
         addProvider,
