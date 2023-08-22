@@ -58,7 +58,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
-    link: 'https://civic.me/',
+    link: 'https://getpass.civic.com/',
     isWalletRequired: true,
   },
   [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {

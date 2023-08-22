@@ -2,7 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import isEmpty from 'lodash/isEmpty'
-import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { FC, HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
@@ -20,6 +20,7 @@ const REDIRECT_TIMEOUT = 30
 const AuthSuccess: FC<Props> = () => {
   const { selectedKycDetails } = useKycContext()
   const { zkpGen, zkProof, publishedChains } = useZkpContext()
+  const [isManualRedirected, setIsManualRedirected] = useState(false)
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -45,10 +46,10 @@ const AuthSuccess: FC<Props> = () => {
   useEffect(() => {
     if (count > 0) return
 
-    if (!config.EXTERNAL_PLATFORM_REDIRECT_URL) return
+    if (!config.EXTERNAL_PLATFORM_REDIRECT_URL || isManualRedirected) return
 
     window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
-  }, [count])
+  }, [count, isManualRedirected])
 
   return (
     <div className='auth-success'>
@@ -115,25 +116,40 @@ const AuthSuccess: FC<Props> = () => {
       </div>
 
       {config.EXTERNAL_PLATFORM_REDIRECT_URL ? (
-        <div className='auth-success__tip'>
-          {count ? (
-            <>
-              {`Automatically redirected in `}
-              <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
-            </>
+        <>
+          <AppButton
+            className='auth-success__return-btn'
+            text={`Return to quest`}
+            onClick={() => {
+              window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
+              setIsManualRedirected(true)
+            }}
+          />
+
+          {isManualRedirected ? (
+            <></>
           ) : (
-            <>
-              {`Haven't redirect? `}
-              <a
-                className='auth-success__tip-link'
-                style={{ textDecoration: 'underline' }}
-                href={config.EXTERNAL_PLATFORM_REDIRECT_URL}
-                target='_blank'
-                rel='noreferrer'
-              >{`click here`}</a>
-            </>
+            <div className='auth-success__tip'>
+              {count ? (
+                <>
+                  {`Automatically redirected in `}
+                  <span className='auth-success__tip-link'>{`(${count}sec)`}</span>
+                </>
+              ) : (
+                <>
+                  {`Haven't redirect? `}
+                  <a
+                    className='auth-success__tip-link'
+                    style={{ textDecoration: 'underline' }}
+                    href={config.EXTERNAL_PLATFORM_REDIRECT_URL}
+                    target='_blank'
+                    rel='noreferrer'
+                  >{`click here`}</a>
+                </>
+              )}
+            </div>
           )}
-        </div>
+        </>
       ) : (
         <></>
       )}

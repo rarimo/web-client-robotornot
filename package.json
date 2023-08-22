@@ -20,7 +20,7 @@
     "generate-ether-types": "typechain --target=ethers-v5 'abis/**/*.json' --out-dir src/types/contracts"
   },
   "dependencies": {
-    "@civic/ethereum-gateway-react": "0.11.0",
+    "@civic/ethereum-gateway-react": "^0.13.4",
     "@distributedlab/jac": "1.0.0-rc.6",
     "@distributedlab/tools": "1.0.0-rc.6",
     "@distributedlab/w3p": "1.0.0-rc.6",

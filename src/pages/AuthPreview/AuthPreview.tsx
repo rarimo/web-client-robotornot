@@ -190,7 +190,7 @@ const AuthPreview: FC<Props> = () => {
           </span>
           <span className='auth-preview__card-error-message'>
             {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-              ? "Seems like you're trying to use the provider that you have been used already, please choose another one."
+              ? 'Seem like you are trying to use a provider that you used already. Please choose another one'
               : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
           </span>
         </div>
@@ -242,7 +242,7 @@ const AuthPreview: FC<Props> = () => {
               ? isPending
                 ? `You won't reveal your personal data to any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
-              : `At this stage, your credential with the service provider is either created or retrieved if it already exists. `}
+              : `The Identity Provider creates, signs, and registers your Proof of Humanity credential`}
           </span>
         )}
       </div>
@@ -296,7 +296,7 @@ const AuthPreview: FC<Props> = () => {
               {`Please wait...`}
             </span>
             <span className='auth-preview__loader-subtitle'>
-              {`Service provider is submitting a credential`}
+              {`Identity Provider is creating the credential`}
             </span>
           </div>
         </div>
