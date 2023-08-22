@@ -119,7 +119,7 @@ const AuthSuccess: FC<Props> = () => {
         <>
           <AppButton
             className='auth-success__return-btn'
-            text={`Return to quest`}
+            text={`RETURN TO QUEST`}
             onClick={() => {
               window.open(config.EXTERNAL_PLATFORM_REDIRECT_URL, '_blank')
               setIsManualRedirected(true)
