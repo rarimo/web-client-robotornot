@@ -16,7 +16,14 @@ import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import {
+  bus,
+  BUS_EVENTS,
+  ErrorHandler,
+  GaCategories,
+  gaSendCustomEvent,
+  sleep,
+} from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -152,6 +159,20 @@ const AuthConfirmation: FC<Props> = () => {
 
       gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
+      if (error instanceof Error && 'error' in error) {
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message
+
+        if (errorString?.includes('invalid signature')) {
+          bus.emit(
+            BUS_EVENTS.warning,
+            `The proof has expired. Please generate a new one`,
+          )
+          navigate(RoutesPaths.authPreview)
+          return
+        }
+      }
+
       ErrorHandler.process(error)
     }
 
