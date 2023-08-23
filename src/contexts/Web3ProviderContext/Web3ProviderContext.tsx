@@ -1,7 +1,9 @@
 import {
+  errors,
   MetamaskProvider,
   Provider,
   ProviderDetector,
+  // type ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -13,11 +15,15 @@ import {
   memo,
   useCallback,
   useMemo,
-  useState,
+  // useState,
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
-import { useNotification, useProvider } from '@/hooks'
+import { config } from '@/config'
+import {
+  // useNotification,
+  useProvider,
+} from '@/hooks'
 
 interface Web3ProviderContextValue {
   provider?: ReturnType<typeof useProvider>
@@ -71,32 +77,66 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
-  const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
-  const { showToast, removeToast } = useNotification()
+  // const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
+  // const { showTxToast, removeToast } = useNotification()
 
   const provider = useProvider()
 
-  const isValidChain = useMemo(() => true, [])
+  const isValidChain = useMemo(() => {
+    if (!provider?.chainId) return false
 
-  const handleTxSent = useCallback(() => {
-    setCurrentTxToastId(
-      showToast('info', {
-        title: 'Transaction sent',
-        message: 'Waiting for confirmation...',
-      }),
+    return (
+      config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].id ===
+      String(provider.chainId)
     )
-  }, [showToast])
+  }, [provider.chainId])
 
-  const handleTxConfirmed = useCallback(() => {
-    if (currentTxToastId) {
-      removeToast(currentTxToastId)
+  // const handleTxSent = useMemo(
+  //   () => (e?: ProviderEventPayload) => {
+  //     setCurrentTxToastId(
+  //       showTxToast('pending', {
+  //         txHash: e?.txHash,
+  //       }),
+  //     )
+  //   },
+  //   [showTxToast],
+  // )
+
+  // const handleTxConfirmed = useMemo(
+  //   () => (e?: ProviderEventPayload) => {
+  //     if (currentTxToastId) {
+  //       removeToast(currentTxToastId)
+  //     }
+  //
+  //     showTxToast('success', {
+  //       txResponse: e?.txResponse,
+  //     })
+  //   },
+  //   [currentTxToastId, removeToast, showTxToast],
+  // )
+
+  const disconnect = useCallback(async () => {
+    try {
+      await provider?.disconnect?.()
+    } catch (error) {
+      // empty
     }
 
-    showToast('success', {
-      title: `Success`,
-      message: 'Transaction confirmed',
-    })
-  }, [currentTxToastId, removeToast, showToast])
+    removeStorageState()
+  }, [provider, removeStorageState])
+
+  const listeners = useMemo(
+    () => ({
+      // onTxSent: handleTxSent,
+      // onTxConfirmed: handleTxConfirmed,
+      onDisconnect: disconnect,
+    }),
+    [
+      disconnect,
+      // handleTxConfirmed,
+      // handleTxSent
+    ],
+  )
 
   const init = useCallback(
     async (providerType?: SUPPORTED_PROVIDERS) => {
@@ -107,8 +147,15 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         await providerDetector.init()
 
-        // TODO: fill config and set chains details
-        Provider.setChainsDetails({})
+        Provider.setChainsDetails(
+          Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
+            (acc, [, chainDetails]) => ({
+              ...acc,
+              [chainDetails.id]: chainDetails,
+            }),
+            {},
+          ),
+        )
 
         const currentProviderType = providerType || storageState?.providerType
 
@@ -120,10 +167,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           ] as ProviderProxyConstructor,
           {
             providerDetector,
-            listeners: {
-              onTxSent: handleTxSent,
-              onTxConfirmed: handleTxConfirmed,
-            },
+            listeners,
           },
         )
 
@@ -131,15 +175,20 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           await initializedProvider?.connect?.()
         }
       } catch (error) {
-        removeStorageState()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (error.error instanceof errors.ProviderUserRejectedRequest) {
+          await disconnect()
+        }
+
+        throw error
       }
     },
     [
-      handleTxConfirmed,
-      handleTxSent,
       provider,
+      disconnect,
+      listeners,
       providerDetector,
-      removeStorageState,
       setStorageState,
       storageState?.providerType,
     ],
@@ -150,21 +199,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
     providerDetector.addProvider(provider)
   }
-
-  const handleDisconnect = useCallback(() => {
-    removeStorageState()
-
-    init()
-  }, [init, removeStorageState])
-
-  const disconnect = useCallback(async () => {
-    try {
-      await provider?.disconnect?.()
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
-
-    handleDisconnect()
-  }, [handleDisconnect, provider])
 
   return (
     <web3ProviderContext.Provider

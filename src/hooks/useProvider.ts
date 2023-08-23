@@ -11,6 +11,7 @@ import {
   TransactionResponse,
   TxRequestBody,
 } from '@distributedlab/w3p'
+import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useState } from 'react'
 
 const PROVIDER_EVENTS: Array<keyof IProvider> = [
@@ -33,61 +34,6 @@ export function useProvider<T extends keyof Record<string, string>>() {
       providerType: provider?.providerType,
     }
   })
-
-  const connect = useCallback(
-    async (): Promise<void> => provider?.connect?.(),
-    [provider],
-  )
-
-  const addChain = useCallback(
-    async (chain: Chain): Promise<void> => provider?.addChain?.(chain),
-    [provider],
-  )
-
-  const switchChain = useCallback(
-    async (chainId: ChainId): Promise<void> => provider?.switchChain?.(chainId),
-    [provider],
-  )
-
-  const signAndSendTx = useCallback(
-    async (txRequestBody: TxRequestBody): Promise<TransactionResponse> =>
-      provider?.signAndSendTx?.(txRequestBody) ?? '',
-    [provider],
-  )
-
-  const signMessage = useCallback(
-    async (message: string): Promise<string> =>
-      provider?.signMessage?.(message) ?? '',
-    [provider],
-  )
-
-  const getHashFromTx = useCallback(
-    (txResponse: TransactionResponse): string =>
-      provider?.getHashFromTx?.(txResponse) ?? '',
-    [provider],
-  )
-
-  const getTxUrl = useCallback(
-    (chain: Chain, txHash: string): string =>
-      provider?.getTxUrl?.(chain, txHash) ?? '',
-    [provider],
-  )
-
-  const getAddressUrl = useCallback(
-    (chain: Chain, address: string): string =>
-      provider?.getAddressUrl?.(chain, address) ?? '',
-    [provider],
-  )
-
-  const disconnect = useCallback(async (): Promise<void> => {
-    if (provider?.disconnect) {
-      await provider.disconnect()
-
-      return
-    }
-
-    setProvider(undefined)
-  }, [provider])
 
   const setListeners = useCallback(
     (_provider?: Provider) => {
@@ -121,9 +67,15 @@ export function useProvider<T extends keyof Record<string, string>>() {
         createProviderOpts,
       )
 
-      setRawProvider(initializedProvider.rawProvider)
+      setProvider(prev =>
+        isEqual(initializedProvider, prev) ? prev : initializedProvider,
+      )
 
-      setProvider(initializedProvider)
+      setRawProvider(prev =>
+        isEqual(initializedProvider?.rawProvider, prev)
+          ? prev
+          : initializedProvider?.rawProvider,
+      )
 
       setListeners(initializedProvider)
 
@@ -141,6 +93,65 @@ export function useProvider<T extends keyof Record<string, string>>() {
     [setListeners],
   )
 
+  const connect = useCallback(async () => {
+    await provider?.connect?.()
+  }, [provider])
+
+  const addChain = useCallback(
+    async (chain: Chain) => {
+      await provider?.addChain?.(chain)
+    },
+    [provider],
+  )
+
+  const switchChain = useCallback(
+    async (chainId: ChainId) => {
+      await provider?.switchChain?.(chainId)
+    },
+    [provider],
+  )
+
+  const signAndSendTx = useCallback(
+    async (txRequestBody: TxRequestBody) => {
+      return provider?.signAndSendTx?.(txRequestBody)
+    },
+    [provider],
+  )
+
+  const signMessage = useCallback(
+    async (message: string) => {
+      return provider?.signMessage?.(message)
+    },
+    [provider],
+  )
+
+  const getHashFromTx = useCallback(
+    (txResponse: TransactionResponse) => {
+      return provider?.getHashFromTx?.(txResponse)
+    },
+    [provider],
+  )
+
+  const getTxUrl = useCallback(
+    (chain: Chain, txHash: string) => {
+      return provider?.getTxUrl?.(chain, txHash)
+    },
+    [provider],
+  )
+
+  const getAddressUrl = useCallback(
+    (chain: Chain, address: string) => {
+      return provider?.getAddressUrl?.(chain, address)
+    },
+    [provider],
+  )
+
+  const disconnect = useCallback(async (): Promise<void> => {
+    if (await provider?.disconnect?.()) return
+
+    setProvider(undefined)
+  }, [provider])
+
   useEffect(() => {
     return () => {
       provider?.clearHandlers?.()
@@ -149,21 +160,19 @@ export function useProvider<T extends keyof Record<string, string>>() {
   }, [])
 
   return {
-    provider,
     rawProvider,
 
     ...providerReactiveState,
 
     init,
     connect,
-    switchChain,
     addChain,
-    getAddressUrl,
-    getHashFromTx,
-    getTxUrl,
+    switchChain,
     signAndSendTx,
     signMessage,
-
+    getHashFromTx,
+    getTxUrl,
+    getAddressUrl,
     disconnect,
   }
 }

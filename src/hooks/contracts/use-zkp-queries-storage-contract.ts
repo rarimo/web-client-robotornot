@@ -120,7 +120,7 @@ export const useZkpQueriesStorageContract = (address: string) => {
         data,
       }
 
-      return provider?.signAndSendTx(txBody)
+      return provider?.signAndSendTx?.(txBody)
     },
     [address, contractInterface, provider],
   )
@@ -140,7 +140,7 @@ export const useZkpQueriesStorageContract = (address: string) => {
         data,
       }
 
-      return provider?.signAndSendTx(txBody)
+      return provider?.signAndSendTx?.(txBody)
     },
     [address, contractInterface, provider],
   )

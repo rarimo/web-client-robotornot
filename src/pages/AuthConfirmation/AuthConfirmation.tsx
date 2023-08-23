@@ -1,89 +1,234 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
+import { RuntimeError } from '@distributedlab/tools'
+import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
+import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
+import { ZkpGen } from '@rarimo/zkp-gen-iden3'
+import { utils } from 'ethers'
+import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { AppButton, Icon } from '@/common'
+import { querier } from '@/api'
+import loaderJson from '@/assets/animations/loader.json'
+import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
+import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { BasicSelectField } from '@/fields'
-import { ErrorHandler } from '@/helpers'
-import { useDemoVerifierContract } from '@/hooks/contracts'
+import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-type ChainToPublish = {
-  title: string
-  value: string
-  iconName: ICON_NAMES
-}
-
 const AuthConfirmation: FC<Props> = () => {
+  const [isPending, setIsPending] = useState(false)
+  const [isStateTransiting, setIsStateTransiting] = useState(false)
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
   const navigate = useNavigate()
-  const { getProveIdentityTxBody } = useDemoVerifierContract()
+  const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { isNaturalZkp } = useZkpContext()
-  const { provider } = useWeb3Context()
-
-  const CHAINS_DETAILS_MAP = useMemo<Record<SUPPORTED_CHAINS, ChainToPublish>>(
-    () => ({
-      [SUPPORTED_CHAINS.POLYGON]: {
-        title: 'Polygon chain',
-        value: SUPPORTED_CHAINS.POLYGON,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.POLYGON_TESTNET]: {
-        title: 'Polygon chain',
-        value: SUPPORTED_CHAINS.POLYGON_TESTNET,
-        iconName: ICON_NAMES.polygon,
-      },
-      [SUPPORTED_CHAINS.SEPOLIA]: {
-        title: 'Sepolia chain',
-        value: SUPPORTED_CHAINS.SEPOLIA,
-        iconName: ICON_NAMES.ethereum,
-      },
-    }),
-    [],
-  )
+  const { zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
+    useZkpContext()
+  const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
+  const selectedChainToPublishDetails = useMemo(() => {
+    return config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
+  }, [selectedChainToPublish])
+
+  const chainsToSwitch = useMemo(
+    () =>
+      (
+        Object.keys(
+          config.SUPPORTED_CHAINS_DETAILS,
+        ) as (keyof typeof config.SUPPORTED_CHAINS_DETAILS)[]
+      )?.filter(el =>
+        Boolean(config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${el}`]),
+      ),
+    [],
+  )
+
+  const transitState = useCallback(
+    async (_zkpGen?: ZkpGen<QueryVariableName>) => {
+      setIsStateTransiting(true)
+
+      try {
+        const currZkpGen = _zkpGen || zkpGen
+
+        const transitParams = await currZkpGen?.loadParamsForTransitState(
+          querier,
+        )
+
+        if (!transitParams) throw new TypeError('Transit params is not defined')
+
+        await provider?.signAndSendTx?.(
+          getTransitStateTxBody(
+            config?.[
+              `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+            ],
+            transitParams.newIdentitiesStatesRoot,
+            transitParams.gistData,
+            transitParams.proof,
+          ),
+        )
+
+        gaSendCustomEvent(GaCategories.TransitState)
+      } catch (error) {
+        if (error instanceof Error && 'error' in error) {
+          const str = 'Identities states root already exists'
+          const currentError = error.error as RuntimeError
+          const errorString = currentError?.message
+
+          if (errorString?.includes(str)) {
+            return
+          }
+        }
+
+        throw error
+      }
+
+      setIsStateTransiting(false)
+    },
+    [zkpGen, provider, selectedChainToPublish],
+  )
+
   const submitZkp = useCallback(async () => {
-    if (!isNaturalZkp) throw new TypeError('ZKP is not defined')
+    setIsPending(true)
 
     try {
+      if (!zkpGen?.isStatesActual) {
+        await transitState(zkpGen)
+
+        await sleep(500)
+      }
+
+      if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
+        throw new TypeError('ZKP is not defined')
+
+      const zkpParams = isEmpty(zkpGen?.subjectProof)
+        ? zkProof.get
+        : zkpGen?.subjectProof
+
+      if (!zkpParams) throw new TypeError('ZKP params is not defined')
+
       const txBody = getProveIdentityTxBody(
-        isNaturalZkp.pub_signals.map(el => BigInt(el)),
-        [isNaturalZkp.proof.pi_a[0], isNaturalZkp.proof.pi_a[1]],
+        {
+          issuerId: config.ISSUER_ID,
+          // StateInfo.hash
+          issuerState: zkpGen.coreStateDetails.hash,
+          // StateInfo.createdAtTimestamp
+          createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
+          merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
+        },
+        zkpParams?.pub_signals?.map?.(el => BigInt(el)),
+        [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
         [
-          [isNaturalZkp.proof.pi_b[0][1], isNaturalZkp.proof.pi_b[0][0]],
-          [isNaturalZkp.proof.pi_b[1][1], isNaturalZkp.proof.pi_b[1][0]],
+          [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
+          [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
         ],
-        [isNaturalZkp.proof.pi_c[0], isNaturalZkp.proof.pi_c[1]],
+        [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
       )
 
-      await provider?.signAndSendTx({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      await provider?.signAndSendTx?.({
         to: config?.[
-          `DEMO_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
+          `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],
         ...txBody,
       })
 
+      publishedChains.set([
+        ...(publishedChains?.get ? publishedChains.get : []),
+        selectedChainToPublish,
+      ])
+
+      isUserSubmittedZkp.set(true)
+
       navigate(RoutesPaths.authSuccess)
+
+      gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    setIsPending(false)
   }, [
+    zkpGen,
+    zkProof.get,
     getProveIdentityTxBody,
-    isNaturalZkp,
-    navigate,
     provider,
     selectedChainToPublish,
+    publishedChains,
+    isUserSubmittedZkp,
+    navigate,
+    transitState,
   ])
+
+  const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
+
+  const isProviderValidChain = useMemo(() => {
+    if (!providerChainId) return false
+
+    return +providerChainId === +selectedChainToPublishDetails.id
+  }, [providerChainId, selectedChainToPublishDetails?.id])
+
+  const connectWallet = useCallback(async () => {
+    try {
+      await init(PROVIDERS.Metamask)
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+
+    gaSendCustomEvent(GaCategories.WalletConnection, {
+      location: `Submit zkp page`,
+    })
+  }, [init])
+
+  const tryAddChain = useCallback(async () => {
+    try {
+      await provider?.addChain?.(selectedChainToPublishDetails)
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
+    }
+  }, [provider, selectedChainToPublishDetails])
+
+  const trySwitchChain = useCallback(
+    async (chain?: Chain) => {
+      try {
+        const chainToSwitch = chain || selectedChainToPublishDetails
+        await provider?.switchChain?.(Number(chainToSwitch.id))
+      } catch (error) {
+        if (error instanceof errors.ProviderChainNotFoundError) {
+          await tryAddChain()
+        } else {
+          throw error
+        }
+      }
+    },
+    [provider, selectedChainToPublishDetails, tryAddChain],
+  )
+
+  const handleSelectChain = useCallback(
+    async (chain: SUPPORTED_CHAINS) => {
+      try {
+        setIsDropdownOpen(false)
+        await trySwitchChain(config.SUPPORTED_CHAINS_DETAILS[chain])
+        setSelectedChainToPublish(chain)
+      } catch (error) {
+        ErrorHandler.processWithoutFeedback(error)
+      }
+
+      gaSendCustomEvent(GaCategories.ChainSelection, {
+        name: chain,
+        chainId: config.SUPPORTED_CHAINS_DETAILS[chain].id,
+      })
+    },
+    [trySwitchChain],
+  )
 
   return (
     <div className='auth-confirmation'>
@@ -96,49 +241,110 @@ const AuthConfirmation: FC<Props> = () => {
         </div>
         <h2 className='auth-confirmation__header-title'>{`Proof Generated`}</h2>
         <span className='auth-confirmation__header-subtitle'>
-          {`Proof is generated using Zero-Knowledge Proof (ZKP) and none of the personal info is shared with any party`}
+          {`Now you will submit your Proof of Humanity to a smart contract for verification.`}
         </span>
       </div>
 
-      <div className='auth-confirmation__card'>
-        <div className='auth-confirmation__card-header'>
-          <h5 className='auth-confirmation__card-title'>
-            {`Make it available on any chain`}
-          </h5>
-          <span className='auth-confirmation__card-subtitle'>
-            {`Your proof has been published on Polygon as default`}
-          </span>
-        </div>
-
-        <div className='auth-confirmation__chains'>
-          <div className='auth-confirmation__chain-item '>
-            <BasicSelectField
-              label={`Select chain`}
-              value={String(selectedChainToPublish)}
-              updateValue={value =>
-                setSelectedChainToPublish(value as SUPPORTED_CHAINS)
-              }
-              valueOptions={
-                Object.values(SUPPORTED_CHAINS)?.map?.(el => ({
-                  title: CHAINS_DETAILS_MAP[el].title,
-                  value: el,
-                  iconName: CHAINS_DETAILS_MAP[el].iconName,
-                })) ?? []
-              }
-            />
+      {isPending ? (
+        <div className='auth-confirmation__card'>
+          <div className='auth-confirmation__loader-wrp'>
+            <div className='auth-confirmation__loader-animation'>
+              <Animation source={loaderJson} />
+            </div>
+            <span className='auth-confirmation__loader-title'>
+              {isStateTransiting
+                ? `Ensuring all the necessary data is in place before submitting the proof...`
+                : `Proving your humanity`}
+            </span>
+            <span className='auth-confirmation__loader-subtitle'>
+              {`Submitting transaction`}
+            </span>
           </div>
         </div>
+      ) : (
+        <div className='auth-confirmation__card'>
+          <div className='auth-confirmation__chain-preview'>
+            <div className='auth-confirmation__chain-preview-icon-wrp'>
+              <ChainIcon
+                className='auth-confirmation__chain-preview-icon'
+                chain={selectedChainToPublish}
+              />
+            </div>
 
-        <div className='auth-confirmation__divider' />
+            <span className='auth-confirmation__chain-preview-title'>
+              {`Your proof will be submitted on ${config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish].name} chain`}
+            </span>
+          </div>
 
-        <AppButton
-          className='auth-confirmation__submit-btn'
-          text={`SUBMIT PROOF`}
-          iconRight={ICON_NAMES.arrowRight}
-          size='large'
-          onClick={submitZkp}
-        />
-      </div>
+          {chainsToSwitch?.length > 1 ? (
+            <Dropdown
+              isOpen={isDropdownOpen}
+              setIsOpen={setIsDropdownOpen}
+              head={
+                <AppButton
+                  className='auth-confirmation__chains-switch-btn'
+                  scheme='none'
+                  modification='none'
+                  iconLeft={ICON_NAMES.plus}
+                  text={`Switch chain`}
+                  onClick={() => setIsDropdownOpen(prev => !prev)}
+                />
+              }
+            >
+              <div className='auth-confirmation__chains'>
+                {chainsToSwitch?.map?.((el, idx) => (
+                  <button
+                    key={idx}
+                    className='auth-confirmation__chain-item'
+                    onClick={() => handleSelectChain(el)}
+                  >
+                    <ChainIcon
+                      className='auth-confirmation__chain-preview-icon'
+                      chain={el}
+                    />
+                    <span className='auth-confirmation__chain-item-title'>
+                      {config.SUPPORTED_CHAINS_DETAILS[el].name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Dropdown>
+          ) : (
+            <></>
+          )}
+
+          <div className='auth-confirmation__divider' />
+
+          {provider?.isConnected ? (
+            isProviderValidChain ? (
+              <AppButton
+                className='auth-confirmation__submit-btn'
+                text={`SUBMIT PROOF`}
+                iconRight={ICON_NAMES.arrowRight}
+                size='large'
+                onClick={submitZkp}
+                isDisabled={isPending}
+              />
+            ) : (
+              <AppButton
+                className='auth-confirmation__submit-btn'
+                text={`SWITCH NETWORK`}
+                iconRight={ICON_NAMES.switchHorizontal}
+                size='large'
+                onClick={() => trySwitchChain()}
+              />
+            )
+          ) : (
+            <AppButton
+              className='auth-confirmation__submit-btn'
+              text={`CONNECT WALLET`}
+              iconRight={ICON_NAMES.metamask}
+              size='large'
+              onClick={connectWallet}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

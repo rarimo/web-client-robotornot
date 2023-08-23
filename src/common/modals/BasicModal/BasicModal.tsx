@@ -45,7 +45,7 @@ const BasicModal: FC<Props> = ({
             onClick={() => updateIsShown(false)}
           />
         </div>
-        {children}
+        <div className='basic-modal__body'>{children}</div>
       </div>
     </Modal>
   )

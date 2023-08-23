@@ -1,29 +1,46 @@
-import './style.scss'
+import './styles.scss'
 
-import { State } from '@civic/common-gateway-react/dist/esm/types'
-import {
-  GatewayProvider,
-  IdentityButton,
-  useGateway,
-} from '@civic/ethereum-gateway-react'
+import { State } from '@civic/common-gateway-react'
+import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
 import { providers, Wallet } from 'ethers'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
-import { AppButton, BasicModal } from '@/common'
+import { BasicModal, Icon } from '@/common'
+import { config } from '@/config'
 import { useWeb3Context } from '@/contexts'
-import { ErrorHandler } from '@/helpers'
+import { ICON_NAMES } from '@/enums'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  setKycDetails: (details: unknown) => void
 }
 
-const UNIQUENESS_PASS = 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv'
+/**
+ * unique pass for the gateway to work with biometrics identity verification
+ */
+const GATEKEEPER_NETWORK_MAP = {
+  uniqness: 'uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv',
+  captcha: 'ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6',
+}
 
-const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
-  const [isModalShown, setIsModalShown] = useState(true)
-
-  const { gatewayToken } = useGateway()
+const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
+  loginCb,
+  handleSigned,
+}) => {
+  const { gatewayToken, requestGatewayToken } = useGateway()
+  const [signedNonce, setSignedNonce] = useState<string>()
+  const btnRef = useRef<HTMLButtonElement>()
 
   const { provider } = useWeb3Context()
 
@@ -43,48 +60,128 @@ const KycProviderCivicContent: FC<Props> = ({ loginCb }) => {
       })
 
       const signedMessage = await provider?.signMessage?.(data.message)
+
+      setSignedNonce(signedMessage)
+      handleSigned()
+
+      const KYC_CIVIC_CHAINS_NAMES_MAP = {
+        [config.SUPPORTED_CHAINS_DETAILS?.['MAINNET'].id]: 'ethereum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['SEPOLIA'].id]: 'ethereum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['POLYGON'].id]: 'polygon',
+        [config.SUPPORTED_CHAINS_DETAILS?.['POLYGON_TESTNET'].id]: 'polygon',
+        [config.SUPPORTED_CHAINS_DETAILS?.['ARBITRUM'].id]: 'arbitrum',
+        [config.SUPPORTED_CHAINS_DETAILS?.['XDC'].id]: 'xdc',
+      }
+
+      if (!provider?.chainId)
+        throw new Error('Provider Chain ID is not defined')
+
       await loginCb({
-        chainName: 'ethereum',
+        chainName: KYC_CIVIC_CHAINS_NAMES_MAP[provider.chainId] || 'ethereum',
         address: provider?.address,
         signature: signedMessage,
       })
-      setIsModalShown(false)
     } catch (error) {
       ErrorHandler.process(error)
     }
-  }, [loginCb, provider])
+  }, [loginCb, provider, handleSigned])
 
-  return (
-    <BasicModal isShown={isModalShown} updateIsShown={setIsModalShown}>
-      {!gatewayToken || gatewayToken.state !== State.ACTIVE ? (
-        <IdentityButton />
-      ) : (
-        <AppButton
-          className='kyc-provider-civic__login-btn'
-          isDisabled={!gatewayToken || gatewayToken.state !== State.ACTIVE}
-          text={'Login'}
-          onClick={getSignedNonce}
-        />
-      )}
-    </BasicModal>
-  )
+  useEffect(() => {
+    if (gatewayToken?.state === State.ACTIVE || signedNonce) return
+
+    setTimeout(async () => {
+      await requestGatewayToken()
+    }, 500)
+  }, [btnRef, gatewayToken?.state, requestGatewayToken, signedNonce])
+
+  useEffect(() => {
+    if (gatewayToken?.state !== State.ACTIVE || signedNonce) return
+
+    getSignedNonce()
+  }, [gatewayToken?.state, getSignedNonce, signedNonce])
+
+  return <></>
 }
 
-const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
+  const [isModalShown, setIsModalShown] = useState(true)
   const { provider } = useWeb3Context()
 
-  const wallet = useMemo(
-    () =>
-      new providers.Web3Provider(
+  const wallet = useMemo(() => {
+    try {
+      return new providers.Web3Provider(
         provider?.rawProvider as providers.ExternalProvider,
-      ).getSigner() as unknown as Wallet,
-    [provider?.rawProvider],
-  )
+      ).getSigner() as unknown as Wallet
+    } catch (error) {
+      /* empty */
+    }
+  }, [provider?.rawProvider])
+
+  const [gatekeeperNetwork, setGatekeeperNetwork] = useState<string>()
+
+  useEffectOnce(() => {
+    if (!provider?.isConnected) {
+      bus.emit(BUS_EVENTS.warning, `Please connect your wallet.`)
+    }
+  })
+
+  const handleSigned = useCallback(() => {
+    setIsModalShown(false)
+  }, [])
 
   return (
-    <GatewayProvider wallet={wallet} gatekeeperNetwork={UNIQUENESS_PASS}>
-      <KycProviderCivicContent loginCb={loginCb} />
-    </GatewayProvider>
+    <BasicModal
+      className='kyc-provider-civic__modal'
+      title={`Verification`}
+      isShown={isModalShown}
+      updateIsShown={setIsModalShown}
+    >
+      <div className='kyc-provider-civic__modal-body'>
+        <button
+          className='kyc-provider-civic__modal-body-btn'
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)}
+        >
+          <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
+            <Icon
+              className='kyc-provider-civic__modal-body-btn-icon'
+              name={ICON_NAMES.usersGroup4}
+            />
+          </span>
+          {`Unique Verification`}
+        </button>
+
+        <button
+          className='kyc-provider-civic__modal-body-btn'
+          onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
+        >
+          <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
+            <Icon
+              className='kyc-provider-civic__modal-body-btn-icon'
+              name={ICON_NAMES.robot}
+            />
+          </span>
+          {`CAPTCHA Verification`}
+        </button>
+      </div>
+
+      {gatekeeperNetwork ? (
+        <GatewayProvider
+          wallet={wallet}
+          gatekeeperNetwork={gatekeeperNetwork}
+          options={{
+            autoShowModal: true,
+          }}
+        >
+          <KycProviderCivicContent
+            loginCb={loginCb}
+            setKycDetails={setKycDetails}
+            handleSigned={handleSigned}
+          />
+        </GatewayProvider>
+      ) : (
+        <></>
+      )}
+    </BasicModal>
   )
 }
 

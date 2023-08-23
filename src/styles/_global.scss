@@ -101,7 +101,6 @@ h1 {
 }
 
 h2 {
-  text-transform: capitalize;
   font-size: toRem(48);
   font-weight: 700;
 }
@@ -138,11 +137,29 @@ a {
   flex-direction: column;
   align-items: center;
   flex: 1;
-  padding: toRem(58) var(--app-padding-right) toRem(145) var(--app-padding-left);
+  padding: toRem(36) var(--app-padding-right) 0 var(--app-padding-left);
 
   & > * {
     max-width: toRem(642);
     width: 100%;
     margin: 0 auto;
+  }
+
+  @include respond-to(xsmall) {
+    padding-top: toRem(24);
+    padding-bottom: toRem(24);
+  }
+}
+
+.app__invalid-chain-modal {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+}
+
+.app__invalid-chain-modal-actions {
+
+  .app__invalid-chain-modal-action-btn {
+    width: 100%;
   }
 }

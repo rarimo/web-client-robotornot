@@ -1,0 +1,72 @@
+$civic-brand-color: #ff6b4e;
+
+.kyc-provider-civic__modal {
+  --basic-modal-max-width: #{toRem(500)};
+
+  width: clamp(toRem(100), 100%, var(--basic-modal-max-width));
+  padding: 0;
+}
+
+.kyc-provider-civic__modal-body {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: toRem(8);
+  gap: toRem(24);
+}
+
+.kyc-provider-civic__modal-body-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--success-light);
+  border-radius: 50%;
+  margin-bottom: toRem(16);
+
+  @include static-icon-size(64);
+}
+
+.kyc-provider-civic__modal-body-icon {
+  width: 50%;
+  height: 50%;
+  color: var(--success-main);
+}
+
+.kyc-provider-civic__modal-body-title {
+  text-align: center;
+  color: var(--text-primary-main);
+  font-size: toRem(24);
+  line-height: 1.3;
+  font-weight: 400;
+}
+
+.kyc-provider-civic__modal-body-btn-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: $civic_brand_color;
+  border-radius: 50%;
+
+  @include static-icon-size(48);
+}
+
+.kyc-provider-civic__modal-body-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(16);
+  padding: toRem(16);
+  border-radius: toRem(4);
+  border: toRem(1) solid rgba($civic-brand-color, 0.1);
+  color: $civic_brand_color;
+  font-size: toRem(16);
+  font-weight: 600;
+
+  &:last-child .kyc-provider-civic__modal-body-btn-icon-wrp {
+    color: var(--white);
+  }
+}
+
+.kyc-provider-civic__modal-body-btn-icon {
+  @include static-icon-size(42);
+}

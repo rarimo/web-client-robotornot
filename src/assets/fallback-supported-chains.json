@@ -1,0 +1,80 @@
+{
+  "SEPOLIA": {
+    "id": "11155111",
+    "name": "Sepolia",
+    "rpcUrl": "https://endpoints.omniatech.io/v1/eth/sepolia/public",
+    "explorerUrl": "https://sepolia.etherscan.io",
+    "token": {
+      "name": "Sepolia",
+      "symbol": "Sepolia",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  },
+  "POLYGON": {
+    "id": "137",
+    "name": "Polygon",
+    "rpcUrl": "https://polygon-rpc.com/",
+    "explorerUrl": "https://polygonscan.com/",
+    "token": {
+      "name": "MATIC",
+      "symbol": "MATIC",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "polygon"
+  },
+  "POLYGON_TESTNET": {
+    "id": "80001",
+    "name": "Polygon Testnet",
+    "rpcUrl": "https://endpoints.omniatech.io/v1/matic/mumbai/public",
+    "explorerUrl": "https://mumbai.polygonscan.com/",
+    "token": {
+      "name": "Matic",
+      "symbol": "Matic",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "polygon"
+  },
+  "MAINNET": {
+    "id": "1",
+    "name": "Ethereum",
+    "rpcUrl": "https://eth.llamarpc.com",
+    "explorerUrl": "https://etherscan.io/",
+    "token": {
+      "name": "Ethereum",
+      "symbol": "Eth",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  },
+  "ARBITRUM": {
+    "id": "42161",
+    "name": "Arbitrum",
+    "rpcUrl": "https://arbitrum.meowrpc.com",
+    "explorerUrl": "https://arbiscan.io/",
+    "token": {
+      "name": "Ethereum",
+      "symbol": "Eth",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "arbitrum"
+  },
+  "XDC": {
+    "id": "50",
+    "name": "XDC",
+    "rpcUrl": "https://rpc-xdc.icecreamswap.com",
+    "explorerUrl": "https://xdc.blocksscan.io/",
+    "token": {
+      "name": "XDC",
+      "symbol": "XDC",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  }
+}

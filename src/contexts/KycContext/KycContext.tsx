@@ -1,3 +1,6 @@
+import { config } from '@config'
+import { type JsonApiError } from '@distributedlab/jac'
+import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
   FC,
@@ -5,13 +8,23 @@ import {
   lazy,
   memo,
   useCallback,
+  useMemo,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
-import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
+import { ICON_NAMES, RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import {
+  abbrCenter,
+  ErrorHandler,
+  localizeUnauthorizedError,
+  sleep,
+} from '@/helpers'
 
 const KycProviderUnstoppableDomains = lazy(
   () =>
@@ -30,9 +43,56 @@ const KycProviderGitCoin = lazy(
   () => import('@/contexts/KycContext/components/KycProviderGitCoin'),
 )
 
+const KYC_PROVIDERS_DETAILS_MAP: Record<
+  SUPPORTED_KYC_PROVIDERS,
+  {
+    name: string
+    iconName: ICON_NAMES
+    link: string
+    isWalletRequired: boolean
+
+    completeKycCb?: () => void
+    completeKycMessage?: string
+  }
+> = {
+  [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
+    name: 'Civic',
+    iconName: ICON_NAMES.providerCivic,
+    link: 'https://getpass.civic.com/',
+    isWalletRequired: true,
+  },
+  [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
+    name: 'Gitcoin Passport',
+    iconName: ICON_NAMES.providerGitCoin,
+    link: 'https://passport.gitcoin.co/',
+    isWalletRequired: true,
+
+    completeKycCb: () => {
+      window.open('https://passport.gitcoin.co/', '_blank')
+    },
+    completeKycMessage: 'Complete your Gitcoin Passport',
+  },
+  [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
+    name: 'Unstoppable domains',
+    iconName: ICON_NAMES.providerUnstoppable,
+    link: 'https://unstoppabledomains.com/auth',
+    isWalletRequired: false,
+  },
+  [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+    name: 'Worldcoin',
+    iconName: ICON_NAMES.providerWorldCoin,
+    link: 'https://worldcoin.org/download-app',
+    isWalletRequired: false,
+  },
+}
+
 interface KycContextValue {
-  selectedKycProviderName: SUPPORTED_KYC_PROVIDERS | undefined
   authorizedKycResponse: unknown | undefined
+  selectedKycDetails: [string, string][]
+  kycError?: JsonApiError
+  verificationErrorMessages: string
+
+  KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
   isLoaded: boolean
 
@@ -43,9 +103,33 @@ interface KycContextValue {
   retryKyc: () => void
 }
 
+type GitCoinPassportUserInfo = {
+  address: string
+  score: string
+  stamps: {
+    version: string
+    metadata: {
+      group: string
+      platform: {
+        id: string
+        icon: string
+        name: string
+        description: string
+        connectMessage: string
+      }
+      name: string
+      description: string
+      hash: string
+    }
+  }[]
+}
+
 export const kycContext = createContext<KycContextValue>({
-  selectedKycProviderName: undefined,
   authorizedKycResponse: undefined,
+  selectedKycDetails: [],
+  verificationErrorMessages: '',
+
+  KYC_PROVIDERS_DETAILS_MAP,
 
   isLoaded: false,
 
@@ -66,24 +150,193 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
-  const [selectedKycProviderName, setSelectedKycProviderName] =
-    useState<SUPPORTED_KYC_PROVIDERS>()
+  const [searchParams] = useSearchParams()
+  const { t } = useTranslation()
+
   const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
 
-  const [isLoaded, setIsLoaded] = useState(false)
+  const {
+    selectedKycProvider,
 
-  const [isValidCredentials, setIsValidCredentials] = useState(false)
+    identity,
+    verifiableCredentials,
+
+    createIdentity,
+    isClaimOfferExists,
+    getVerifiableCredentials,
+  } = useZkpContext()
+
+  const [kycDetails, setKycDetails] = useState<
+    Partial<
+      | {
+          address: string
+          civicGatekeeperNetworkId: number
+          gitcoinPassportScore: string
+          id: string
+          kycAdditionalData: string
+          provider: string
+          type: string
+          unstoppableDomain: string
+          worldcoinScore: string
+        } & QueryVariableName
+    >
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+  >(verifiableCredentials?.body?.credential?.credentialSubject)
+
+  const selectedKycDetails = useMemo((): [string, string][] => {
+    if (!selectedKycProvider.get) return []
+
+    const unstoppablePartialDetails = kycDetails as unknown as UserInfo
+
+    const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData &&
+    kycDetails?.kycAdditionalData !== 'none'
+      ? JSON.parse(kycDetails?.kycAdditionalData as string)
+      : {}) as unknown as GitCoinPassportUserInfo
+
+    const civicPartialDetails = kycDetails as unknown as {
+      address?: string
+    }
+
+    const worldcoinPartialDetails = (kycDetails?.kycAdditionalData &&
+    kycDetails?.kycAdditionalData !== 'none'
+      ? JSON.parse(kycDetails?.kycAdditionalData as string)
+      : {}) as unknown as { sub: string }
+
+    const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
+      [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.domain-lbl`,
+          ),
+          kycDetails?.unstoppableDomain || unstoppablePartialDetails?.sub,
+        ],
+      ],
+      [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.score-lbl`,
+          ),
+          kycDetails?.worldcoinScore ?? '',
+        ],
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.sub-lbl`,
+          ),
+          worldcoinPartialDetails?.sub
+            ? abbrCenter(worldcoinPartialDetails?.sub)
+            : '',
+        ],
+      ],
+      [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
+        ...(civicPartialDetails?.address &&
+        civicPartialDetails?.address !== 'none'
+          ? [
+              [
+                t(
+                  `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
+                ),
+                abbrCenter(civicPartialDetails?.address),
+              ] as [string, string],
+            ]
+          : []),
+      ],
+      [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.address-lbl`,
+          ),
+          gitCoinPassportPartialDetails?.address
+            ? abbrCenter(gitCoinPassportPartialDetails?.address)
+            : '',
+        ],
+        [
+          t(
+            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.score-lbl`,
+          ),
+          gitCoinPassportPartialDetails?.score,
+        ],
+        ...(gitCoinPassportPartialDetails?.stamps?.map<[string, string]>(
+          ({ metadata }) => [
+            metadata?.platform?.id,
+            ['Encrypted', metadata?.platform?.id].includes(
+              metadata?.description,
+            )
+              ? 'Confirmed'
+              : metadata?.description,
+          ],
+        ) ?? []),
+      ],
+    }
+
+    return kycDetailsMap[selectedKycProvider.get]
+  }, [kycDetails, selectedKycProvider?.get, t])
+
+  const [isLoaded, setIsLoaded] = useState(!!verifiableCredentials)
+
+  const [isValidCredentials, setIsValidCredentials] = useState(
+    !!verifiableCredentials,
+  )
 
   const [refreshKey, setRefreshKey] = useState(0)
 
+  const [kycError, setKycError] = useState<JsonApiError>()
+
+  const verificationErrorMessages = useMemo(() => {
+    switch (kycError?.httpStatus) {
+      case 401:
+        return localizeUnauthorizedError(kycError)
+      case 409:
+        return t(
+          'This KYC provider / Address was already claimed by another identity',
+        )
+      default:
+        return ''
+    }
+  }, [kycError, t])
+
   const navigate = useNavigate()
 
-  const { identityIdString, createIdentity, isClaimOfferExists } =
-    useZkpContext()
+  const retryKyc = useCallback(() => {
+    setIsLoaded(false)
+    setRefreshKey(prev => prev + 1)
+  }, [])
 
   const login = useCallback(
     async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
-      setSelectedKycProviderName(supportedKycProvider)
+      if (supportedKycProvider === selectedKycProvider?.get) {
+        retryKyc()
+      } else {
+        selectedKycProvider.set(supportedKycProvider)
+      }
+    },
+    [retryKyc, selectedKycProvider],
+  )
+
+  const handleVerificationChecking = useCallback(
+    async (verificationId: string) => {
+      let isPending = true
+
+      do {
+        const { data } = await api.get<{
+          type: 'verify_status'
+          id: 'string'
+          status: 'verified' | 'unverified' | 'pending'
+          user_data: unknown
+        }>(`/integrations/kyc-service/v1/public/status/${verificationId}`)
+
+        switch (data.status) {
+          case 'verified':
+            setAuthorizedKycResponse(data.user_data)
+            isPending = false
+            break
+          case 'unverified':
+            isPending = false
+            break
+          default:
+            await sleep(config.KYC_VERIFICATION_DELAY)
+        }
+      } while (isPending)
     },
     [],
   )
@@ -95,8 +348,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       if (!currentAuthKycResponse)
         throw new TypeError('authKycResponse is undefined')
 
+      if (!selectedKycProvider.get)
+        throw new TypeError('selectedKycProviderName is undefined')
+
       const VERIFY_KYC_DATA_MAP = {
-        [SUPPORTED_KYC_PROVIDERS.WORDLCOIN]: {},
+        [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
+          id_token: currentAuthKycResponse,
+        },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -122,8 +380,17 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         },
       }
 
-      await api.post(
-        `/integrations/kyc-service/v1/public/verify/${selectedKycProviderName}`,
+      const { data } = await api.post<
+        | {
+            type: 'user_data'
+            user_data: unknown
+          }
+        | {
+            type: 'verification_id'
+            id: 'string'
+          }
+      >(
+        `/integrations/kyc-service/v1/public/verify/${selectedKycProvider.get}`,
         {
           body: {
             data: {
@@ -131,22 +398,26 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
               attributes: {
                 identity_id: identityIdString,
                 provider_data: {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  ...VERIFY_KYC_DATA_MAP[selectedKycProviderName],
+                  ...VERIFY_KYC_DATA_MAP[selectedKycProvider.get],
                 },
               },
             },
           },
         },
       )
-    },
-    [authorizedKycResponse, selectedKycProviderName],
-  )
 
-  const retryKyc = useCallback(() => {
-    setRefreshKey(prev => prev + 1)
-  }, [])
+      if (!data) return
+
+      if (data.type === 'verification_id') {
+        await handleVerificationChecking(data.id)
+      }
+    },
+    [
+      authorizedKycResponse,
+      handleVerificationChecking,
+      selectedKycProvider?.get,
+    ],
+  )
 
   const handleKycProviderComponentLogin = useCallback(
     async (response: unknown) => {
@@ -154,20 +425,24 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       navigate(RoutesPaths.authPreview)
 
-      if (!selectedKycProviderName) return
+      if (!selectedKycProvider.get) return
 
-      let currentIdentityIdString = identityIdString
+      let currentIdentity = identity
 
-      if (!currentIdentityIdString) {
-        currentIdentityIdString = await createIdentity()
+      if (!currentIdentity?.idString) {
+        currentIdentity = await createIdentity()
       }
 
-      if (!currentIdentityIdString) return
+      if (!currentIdentity?.idString) return
 
-      if (!(await isClaimOfferExists(currentIdentityIdString))) {
+      if (!(await isClaimOfferExists(currentIdentity, 1))) {
         try {
-          await verifyKyc(currentIdentityIdString, response)
+          await verifyKyc(currentIdentity.idString, response)
         } catch (error) {
+          setKycError(error as JsonApiError)
+
+          ErrorHandler.processWithoutFeedback(error)
+
           setIsValidCredentials(false)
 
           setIsLoaded(true)
@@ -176,7 +451,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
       }
 
-      setIsValidCredentials(await isClaimOfferExists(currentIdentityIdString))
+      setIsValidCredentials(await isClaimOfferExists(currentIdentity))
+
+      const verifiableCredentials = await getVerifiableCredentials(
+        currentIdentity,
+      )
+
+      setKycDetails((prev: unknown) => ({
+        ...(typeof prev === 'object' ? prev : {}),
+        ...verifiableCredentials?.body.credential.credentialSubject,
+      }))
 
       setIsLoaded(true)
 
@@ -184,21 +468,44 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     },
     [
       createIdentity,
-      identityIdString,
+      getVerifiableCredentials,
+      identity,
       isClaimOfferExists,
       navigate,
-      selectedKycProviderName,
+      selectedKycProvider?.get,
       verifyKyc,
     ],
   )
+
+  useEffectOnce(() => {
+    // FIXME: hotfix due to worldcoin redirect link respond
+    if (window.location.href.includes('providers#id_token')) {
+      window.open(
+        window.location.href.replace(
+          'providers#id_token',
+          'providers?id_token',
+        ),
+        '_self',
+        'noopener,noreferrer',
+      )
+    }
+
+    if (searchParams.get('id_token')) {
+      login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
+    }
+  })
 
   return (
     <>
       <kycContext.Provider
         {...rest}
         value={{
-          selectedKycProviderName,
           authorizedKycResponse,
+          selectedKycDetails,
+          kycError,
+          verificationErrorMessages,
+
+          KYC_PROVIDERS_DETAILS_MAP,
 
           isLoaded,
           isValidCredentials,
@@ -211,29 +518,47 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         {children}
       </kycContext.Provider>
 
-      {selectedKycProviderName ===
-      SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
-        <KycProviderUnstoppableDomains
-          key={refreshKey}
-          loginCb={handleKycProviderComponentLogin}
-        />
-      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.WORDLCOIN ? (
-        <KycProviderWorldCoin
-          key={refreshKey}
-          loginCb={handleKycProviderComponentLogin}
-        />
-      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
-        <KycProviderCivic
-          key={refreshKey}
-          loginCb={handleKycProviderComponentLogin}
-        />
-      ) : selectedKycProviderName === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
-        <KycProviderGitCoin
-          key={refreshKey}
-          loginCb={handleKycProviderComponentLogin}
-        />
-      ) : (
+      {verifiableCredentials ? (
         <></>
+      ) : (
+        <>
+          {selectedKycProvider?.get ===
+          SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
+            <KycProviderUnstoppableDomains
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              setKycDetails={(details: unknown) =>
+                setKycDetails(details as unknown as { [k: string]: unknown })
+              }
+            />
+          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
+            <KycProviderWorldCoin
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              setKycDetails={(details: unknown) =>
+                setKycDetails(details as unknown as { [k: string]: unknown })
+              }
+            />
+          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
+            <KycProviderCivic
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              setKycDetails={(details: unknown) =>
+                setKycDetails(details as unknown as { [k: string]: unknown })
+              }
+            />
+          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
+            <KycProviderGitCoin
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              setKycDetails={(details: unknown) =>
+                setKycDetails(details as unknown as { [k: string]: unknown })
+              }
+            />
+          ) : (
+            <></>
+          )}
+        </>
       )}
     </>
   )

@@ -1,17 +1,21 @@
+import { config } from '@config'
 import UAuth from '@uauth/js'
-import debounce from 'lodash/debounce'
 import { FC, HTMLAttributes, useCallback, useMemo } from 'react'
 import { useEffectOnce } from 'react-use'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => void
+  setKycDetails: (details: unknown) => void
 }
 
-const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
+const KycProviderUnstoppableDomains: FC<Props> = ({
+  loginCb,
+  setKycDetails,
+}) => {
   const uauth = useMemo(
     () =>
       new UAuth({
-        clientID: '6411ad0a-4502-4cae-84ae-f810634f25b8',
+        clientID: config.UNSTOPPABLE_DOMAINS_CLIENT_ID,
         redirectUri: new URL(window.location.href).origin,
         scope: 'openid wallet messaging:notifications:optional',
       }),
@@ -19,15 +23,18 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   )
 
   const login = useCallback(async () => {
-    const response = await uauth.loginWithPopup()
-    loginCb(response)
-  }, [loginCb, uauth])
+    const authorization = await uauth.loginWithPopup()
 
-  useEffectOnce(
-    debounce(() => {
-      login()
-    }, 100),
-  )
+    const user = await uauth.user()
+
+    setKycDetails(user)
+
+    loginCb(authorization)
+  }, [loginCb, setKycDetails, uauth])
+
+  useEffectOnce(() => {
+    login()
+  })
 
   return <></>
 }

@@ -1,6 +1,6 @@
 {
-  "name": "web-client-identity",
-  "short_name": "web-client-identity",
+  "name": "Identity",
+  "short_name": "Identity",
   "icons": [
     {
       "src": "/branding/android-chrome-192x192.png",
