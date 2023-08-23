@@ -142,6 +142,24 @@ export const zkpContext = createContext<ZkpContextValue>({
 
 type Props = HTMLAttributes<HTMLDivElement>
 
+AuthZkp.setConfig({
+  RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
+  STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+  ISSUER_API_URL: config.API_URL,
+
+  ...(config?.CIRCUIT_URLS?.auth?.wasm
+    ? {
+        CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
+      }
+    : {}),
+
+  ...(config?.CIRCUIT_URLS?.auth?.zkey
+    ? {
+        CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
+      }
+    : {}),
+})
+
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -179,106 +197,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const authZkp = useMemo<AuthZkp<QueryVariableName> | undefined>(() => {
     if (!identity) return undefined
 
-    AuthZkp.setConfig({
-      RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
-      STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-      ISSUER_API_URL: config.API_URL,
-
-      ...(config?.CIRCUIT_URLS?.auth?.wasm
-        ? {
-            CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.auth?.zkey
-        ? {
-            CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
-          }
-        : {}),
-    })
-
     return new AuthZkp<QueryVariableName>(identity)
   }, [identity])
 
-  const zkpGen = useMemo<ZkpGen<QueryVariableName> | undefined>(() => {
-    if (!identity || !verifiableCredentials) return undefined
-
-    ZkpGen.setConfig({
-      CORE_CHAIN_RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
-      TARGET_CHAIN_RPC_URL_OR_RAW_PROVIDER:
-        config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].rpcUrl,
-      STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-      LIGHTWEIGHT_STATE_V2_ADDRESS:
-        config?.[
-          `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`
-        ],
-      ISSUER_API_URL: config.API_URL,
-
-      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.wasm
-        ? {
-            CIRCUIT_SIG_V2_ON_CHAIN_WASM_URL:
-              config.CIRCUIT_URLS.sigV2OnChain.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.zkey
-        ? {
-            CIRCUIT_SIG_V2_ON_CHAIN_FINAL_KEY_URL:
-              config.CIRCUIT_URLS.sigV2OnChain.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.sigV2?.wasm
-        ? {
-            CIRCUIT_SIG_V2_WASM_URL: config.CIRCUIT_URLS.sigV2.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.sigV2?.zkey
-        ? {
-            CIRCUIT_SIG_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.sigV2.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.wasm
-        ? {
-            CIRCUIT_MTP_V2_ON_CHAIN_WASM_URL:
-              config.CIRCUIT_URLS.mtpV2OnChain.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.zkey
-        ? {
-            CIRCUIT_MTP_V2_ON_CHAIN_FINAL_KEY_URL:
-              config.CIRCUIT_URLS.mtpV2OnChain.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.mtpV2?.wasm
-        ? {
-            CIRCUIT_MTP_V2_WASM_URL: config.CIRCUIT_URLS.mtpV2.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.mtpV2?.zkey
-        ? {
-            CIRCUIT_MTP_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.mtpV2.zkey,
-          }
-        : {}),
-    })
-
-    return new ZkpGen<QueryVariableName>({
-      requestId: '1',
-      identity: identity,
-      verifiableCredentials: verifiableCredentials,
-
-      challenge: String(provider?.address).substring(2),
-
-      query: {
-        variableName: 'isNatural',
-        operator: ZkpOperators.Equals,
-        value: ['1'],
-        circuitId: CircuitId.AtomicQueryMTPV2OnChain,
-        issuerId: config.ISSUER_ID,
-      },
-    })
-  }, [identity, provider?.address, verifiableCredentials])
+  const [zkpGen, setZkpGen] = useState<ZkpGen<QueryVariableName>>()
 
   const createIdentity = useCallback(
     async (privateKeyHex?: string) => {
@@ -420,60 +342,143 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ],
   )
 
-  const loadStatesDetails = useCallback(async (): Promise<
-    ZkpGen<QueryVariableName> | undefined
-  > => {
-    await zkpGen?.loadStatesDetails(querier)
-    await zkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
+  const loadStatesDetails = useCallback(
+    async (
+      _zkpGen?: ZkpGen<QueryVariableName>,
+    ): Promise<ZkpGen<QueryVariableName> | undefined> => {
+      const currentZkpGen = _zkpGen ?? zkpGen
 
-    do {
-      try {
-        if (!zkpGen?.coreStateDetails?.lastUpdateOperationIndex) continue
+      await currentZkpGen?.loadStatesDetails(querier)
+      await currentZkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
 
-        await zkpGen?.loadOperationProof(
-          querier,
-          zkpGen.coreStateDetails.lastUpdateOperationIndex,
-        )
+      do {
+        try {
+          if (!currentZkpGen?.coreStateDetails?.lastUpdateOperationIndex)
+            continue
 
-        return zkpGen
-      } catch (error) {
-        if (
-          error instanceof FetcherError &&
-          error.response.status === HTTP_STATUS_CODES.BAD_REQUEST
-        ) {
-          /* empty */
-        } else {
-          throw error
+          await currentZkpGen?.loadOperationProof(
+            querier,
+            currentZkpGen.coreStateDetails.lastUpdateOperationIndex,
+          )
+
+          return currentZkpGen
+        } catch (error) {
+          if (
+            error instanceof FetcherError &&
+            error.response.status === HTTP_STATUS_CODES.BAD_REQUEST
+          ) {
+            /* empty */
+          } else {
+            throw error
+          }
         }
-      }
 
-      await sleep(30 * 1000)
-    } while (!zkpGen?.operationProof)
-  }, [zkpGen])
+        await sleep(30 * 1000)
+      } while (!currentZkpGen?.operationProof)
+    },
+    [zkpGen],
+  )
 
   const getZkProof = useCallback(async (): Promise<
     ZkpGen<QueryVariableName>
   > => {
-    if (!zkpGen) throw new TypeError('zkpGen is not defined')
+    if (!identity || !verifiableCredentials)
+      throw new TypeError('identity/verifiableCredentials is not defined')
 
     let triesCount = 0
+
+    ZkpGen.setConfig({
+      CORE_CHAIN_RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
+      TARGET_CHAIN_RPC_URL_OR_RAW_PROVIDER:
+        config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].rpcUrl,
+      STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
+      LIGHTWEIGHT_STATE_V2_ADDRESS:
+        config?.[
+          `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`
+        ],
+      ISSUER_API_URL: config.API_URL,
+
+      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.wasm
+        ? {
+            CIRCUIT_SIG_V2_ON_CHAIN_WASM_URL:
+              config.CIRCUIT_URLS.sigV2OnChain.wasm,
+          }
+        : {}),
+      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.zkey
+        ? {
+            CIRCUIT_SIG_V2_ON_CHAIN_FINAL_KEY_URL:
+              config.CIRCUIT_URLS.sigV2OnChain.zkey,
+          }
+        : {}),
+
+      ...(config?.CIRCUIT_URLS?.sigV2?.wasm
+        ? {
+            CIRCUIT_SIG_V2_WASM_URL: config.CIRCUIT_URLS.sigV2.wasm,
+          }
+        : {}),
+      ...(config?.CIRCUIT_URLS?.sigV2?.zkey
+        ? {
+            CIRCUIT_SIG_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.sigV2.zkey,
+          }
+        : {}),
+
+      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.wasm
+        ? {
+            CIRCUIT_MTP_V2_ON_CHAIN_WASM_URL:
+              config.CIRCUIT_URLS.mtpV2OnChain.wasm,
+          }
+        : {}),
+      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.zkey
+        ? {
+            CIRCUIT_MTP_V2_ON_CHAIN_FINAL_KEY_URL:
+              config.CIRCUIT_URLS.mtpV2OnChain.zkey,
+          }
+        : {}),
+
+      ...(config?.CIRCUIT_URLS?.mtpV2?.wasm
+        ? {
+            CIRCUIT_MTP_V2_WASM_URL: config.CIRCUIT_URLS.mtpV2.wasm,
+          }
+        : {}),
+      ...(config?.CIRCUIT_URLS?.mtpV2?.zkey
+        ? {
+            CIRCUIT_MTP_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.mtpV2.zkey,
+          }
+        : {}),
+    })
+
+    const _zkpGen = new ZkpGen<QueryVariableName>({
+      requestId: '1',
+      identity: identity,
+      verifiableCredentials: verifiableCredentials,
+
+      challenge: String(provider?.address).substring(2),
+
+      query: {
+        variableName: 'isNatural',
+        operator: ZkpOperators.Equals,
+        value: ['1'],
+        circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+        issuerId: config.ISSUER_ID,
+      },
+    })
 
     do {
       try {
         const [wasm, zkey] = await Promise.all([
           pureFileBytesLoading(
-            zkpGen.circuitFilesUrlsMap[zkpGen.query.circuitId].wasm,
+            _zkpGen.circuitFilesUrlsMap[_zkpGen.query.circuitId].wasm,
           ),
           pureFileBytesLoading(
-            zkpGen.circuitFilesUrlsMap[zkpGen.query.circuitId].zkey,
+            _zkpGen.circuitFilesUrlsMap[_zkpGen.query.circuitId].zkey,
           ),
         ])
 
-        zkpGen.setCircuits(wasm, zkey)
+        _zkpGen.setCircuits(wasm, zkey)
 
-        await zkpGen.generateProof()
+        await _zkpGen.generateProof()
 
-        await loadStatesDetails()
+        setZkpGen(await loadStatesDetails(_zkpGen))
 
         break
       } catch (error) {
@@ -488,8 +493,15 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     setZkProof(zkpGen?.subjectProof)
 
-    return zkpGen
-  }, [zkpGen, loadStatesDetails, setZkProof])
+    return _zkpGen
+  }, [
+    identity,
+    verifiableCredentials,
+    provider?.address,
+    setZkProof,
+    zkpGen?.subjectProof,
+    loadStatesDetails,
+  ])
 
   const reset = useCallback(() => {
     setIdentity(undefined)
