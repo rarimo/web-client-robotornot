@@ -50,7 +50,6 @@ VITE_KYC_VERIFICATION_DELAY=1000
 
 # Google Analytics measurement id
 VITE_GA_ID=
-
 ```
 
 Go to https://gitlab.com/rarimo/identity/contracts to get more info about contracts or deploy them by yourself

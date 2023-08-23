@@ -30,15 +30,8 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const {
-    zkpGen,
-    zkProof,
-    publishedChains,
-    isUserSubmittedZkp,
-    isStatesDetailsLoaded,
-
-    loadStatesDetails,
-  } = useZkpContext()
+  const { zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
+    useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -108,16 +101,10 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(true)
 
     try {
-      let currZkpGen = zkpGen
+      if (!zkpGen?.isStatesActual) {
+        await transitState(zkpGen)
 
-      if (!isStatesDetailsLoaded) {
-        currZkpGen = await loadStatesDetails()
-      }
-
-      if (!currZkpGen?.isStatesActual) {
-        await transitState(currZkpGen)
-
-        await sleep(1000)
+        await sleep(500)
       }
 
       if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
@@ -171,7 +158,6 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(false)
   }, [
     zkpGen,
-    isStatesDetailsLoaded,
     zkProof.get,
     getProveIdentityTxBody,
     provider,
@@ -179,7 +165,6 @@ const AuthConfirmation: FC<Props> = () => {
     publishedChains,
     isUserSubmittedZkp,
     navigate,
-    loadStatesDetails,
     transitState,
   ])
 

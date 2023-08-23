@@ -36,8 +36,6 @@ interface ZkpContextValue {
   identity: Identity | undefined
   zkpGen: ZkpGen<QueryVariableName> | undefined
 
-  isStatesDetailsLoaded: boolean
-
   publishedChains: {
     get?: SUPPORTED_CHAINS[]
     set: (value: SUPPORTED_CHAINS[]) => void
@@ -69,9 +67,6 @@ interface ZkpContextValue {
   getVerifiableCredentials: (
     identity?: Identity,
   ) => Promise<VerifiableCredentials<QueryVariableName> | undefined>
-  loadStatesDetails: (
-    zkProof?: ZkpGen<QueryVariableName>,
-  ) => Promise<ZkpGen<QueryVariableName> | undefined>
   getZkProof: () => Promise<ZkpGen<QueryVariableName>>
 
   reset: () => void
@@ -87,8 +82,6 @@ export const zkpContext = createContext<ZkpContextValue>({
     },
   },
   verifiableCredentials: undefined,
-
-  isStatesDetailsLoaded: false,
 
   selectedKycProvider: {
     get: undefined,
@@ -138,9 +131,6 @@ export const zkpContext = createContext<ZkpContextValue>({
       }`,
     )
   },
-  loadStatesDetails: async (zkProof?: ZkpGen<QueryVariableName>) => {
-    throw new TypeError(`loadStatesDetails() not implemented for ${zkProof}`)
-  },
   getZkProof: async () => {
     throw new TypeError(`getZkProof() not implemented`)
   },
@@ -160,8 +150,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [searchParams] = useSearchParams()
 
   const { provider } = useWeb3Context()
-
-  const [isStatesDetailsLoaded, setIsStatesDetailsLoaded] = useState(false)
 
   const [
     selectedKycProvider,
@@ -461,8 +449,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       await sleep(30 * 1000)
     } while (!zkpGen?.operationProof)
-
-    setIsStatesDetailsLoaded(true)
   }, [zkpGen])
 
   const getZkProof = useCallback(async (): Promise<
@@ -486,6 +472,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         zkpGen.setCircuits(wasm, zkey)
 
         await zkpGen.generateProof()
+
+        await loadStatesDetails()
+
         break
       } catch (error) {
         if (error instanceof FileEmptyError) {
@@ -496,8 +485,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         }
       }
     } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
-
-    await loadStatesDetails()
 
     setZkProof(zkpGen?.subjectProof)
 
@@ -565,8 +552,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         },
         verifiableCredentials,
 
-        isStatesDetailsLoaded,
-
         selectedKycProvider: {
           get: selectedKycProvider,
           set: setSelectedKycProvider,
@@ -586,7 +571,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         isClaimOfferExists,
         createIdentity,
         getVerifiableCredentials,
-        loadStatesDetails,
         getZkProof,
 
         reset,
