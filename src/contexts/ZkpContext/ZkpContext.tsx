@@ -36,6 +36,8 @@ interface ZkpContextValue {
   identity: Identity | undefined
   zkpGen: ZkpGen<QueryVariableName> | undefined
 
+  isStatesDetailsLoaded: boolean
+
   publishedChains: {
     get?: SUPPORTED_CHAINS[]
     set: (value: SUPPORTED_CHAINS[]) => void
@@ -85,6 +87,8 @@ export const zkpContext = createContext<ZkpContextValue>({
     },
   },
   verifiableCredentials: undefined,
+
+  isStatesDetailsLoaded: false,
 
   selectedKycProvider: {
     get: undefined,
@@ -156,6 +160,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [searchParams] = useSearchParams()
 
   const { provider } = useWeb3Context()
+
+  const [isStatesDetailsLoaded, setIsStatesDetailsLoaded] = useState(false)
 
   const [
     selectedKycProvider,
@@ -455,6 +461,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       await sleep(30 * 1000)
     } while (!zkpGen?.operationProof)
+
+    setIsStatesDetailsLoaded(true)
   }, [zkpGen])
 
   const getZkProof = useCallback(async (): Promise<
@@ -556,6 +564,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           set: setPublishedChains,
         },
         verifiableCredentials,
+
+        isStatesDetailsLoaded,
 
         selectedKycProvider: {
           get: selectedKycProvider,

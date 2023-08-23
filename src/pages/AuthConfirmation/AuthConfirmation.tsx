@@ -23,6 +23,8 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthConfirmation: FC<Props> = () => {
   const [isPending, setIsPending] = useState(false)
+  const [isStateTransiting, setIsStateTransiting] = useState(false)
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const navigate = useNavigate()
@@ -33,6 +35,7 @@ const AuthConfirmation: FC<Props> = () => {
     zkProof,
     publishedChains,
     isUserSubmittedZkp,
+    isStatesDetailsLoaded,
 
     loadStatesDetails,
   } = useZkpContext()
@@ -59,6 +62,8 @@ const AuthConfirmation: FC<Props> = () => {
 
   const transitState = useCallback(
     async (_zkpGen?: ZkpGen<QueryVariableName>) => {
+      setIsStateTransiting(true)
+
       try {
         const currZkpGen = _zkpGen || zkpGen
 
@@ -93,6 +98,8 @@ const AuthConfirmation: FC<Props> = () => {
 
         throw error
       }
+
+      setIsStateTransiting(false)
     },
     [zkpGen, provider, selectedChainToPublish],
   )
@@ -101,7 +108,11 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(true)
 
     try {
-      const currZkpGen = await loadStatesDetails()
+      let currZkpGen = zkpGen
+
+      if (!isStatesDetailsLoaded) {
+        currZkpGen = await loadStatesDetails()
+      }
 
       if (!currZkpGen?.isStatesActual) {
         await transitState(currZkpGen)
@@ -151,15 +162,16 @@ const AuthConfirmation: FC<Props> = () => {
       isUserSubmittedZkp.set(true)
 
       navigate(RoutesPaths.authSuccess)
+
+      gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
       ErrorHandler.process(error)
     }
 
-    gaSendCustomEvent(GaCategories.SubmitZkp)
-
     setIsPending(false)
   }, [
     zkpGen,
+    isStatesDetailsLoaded,
     zkProof.get,
     getProveIdentityTxBody,
     provider,
@@ -255,7 +267,9 @@ const AuthConfirmation: FC<Props> = () => {
               <Animation source={loaderJson} />
             </div>
             <span className='auth-confirmation__loader-title'>
-              {`Please wait...`}
+              {isStateTransiting
+                ? `Ensuring all the necessary data is in place before submitting the proof...`
+                : `Proving your humanity`}
             </span>
             <span className='auth-confirmation__loader-subtitle'>
               {`Submitting transaction`}
