@@ -65,7 +65,6 @@ const AuthConfirmation: FC<Props> = () => {
 
     try {
       await provider?.signAndSendTx?.(transitStateTx)
-
       gaSendCustomEvent(GaCategories.TransitState)
     } catch (error) {
       if (error instanceof Error && 'error' in error) {
@@ -90,7 +89,7 @@ const AuthConfirmation: FC<Props> = () => {
     setIsPending(true)
 
     try {
-      if (transitStateTx) {
+      if (transitStateTx?.data) {
         await transitState()
 
         await awaitFinalityBlock(
