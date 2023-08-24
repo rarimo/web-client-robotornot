@@ -38,6 +38,9 @@ VITE_AUTH_BJJ_CREDENTIAL_HASH=cca3371a6cb1b715004407e325bd993c
 # setup this env and add it to te IdentityVerifier contract issuers whitelist
 VITE_ISSUER_ID=0x0c761d5a56cf03b6ef6a6180f24531bb70962609c2970fdec52c22a3920001
 
+# Amount of blocks to wait after state transition
+VITE_FINALITY_BLOCK_AMOUNT=10
+
 # redirect link for success page
 VITE_EXTERNAL_PLATFORM_REDIRECT_URL=https://galxe.com/
 
@@ -133,6 +136,8 @@ document.ENV = document.ENV || Object.freeze({
   VITE_APP_WORLDCOIN_APP_ID: "",
   VITE_APP_AUTH_BJJ_CREDENTIAL_HASH: "cca3371a6cb1b715004407e325bd993c",
   VITE_APP_ISSUER_ID: " ",
+
+  VITE_APP_FINALITY_BLOCK_AMOUNT: "10",
 
   VITE_APP_IDENTITY_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: " ",
   VITE_APP_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_SEPOLIA: " ",

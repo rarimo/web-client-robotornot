@@ -16,6 +16,8 @@ interface ImportMetaEnv {
   VITE_AUTH_BJJ_CREDENTIAL_HASH: string
   VITE_ISSUER_ID: string
 
+  VITE_FINALITY_BLOCK_AMOUNT: number
+
   /* Here should be a list of contract addresses for supported chains */
 
   VITE_DEFAULT_CHAIN: string

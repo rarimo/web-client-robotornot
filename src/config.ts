@@ -63,6 +63,8 @@ export const config = {
   AUTH_BJJ_CREDENTIAL_HASH: import.meta.env.VITE_AUTH_BJJ_CREDENTIAL_HASH,
   ISSUER_ID: import.meta.env.VITE_ISSUER_ID,
 
+  FINALITY_BLOCK_AMOUNT: import.meta.env.VITE_FINALITY_BLOCK_AMOUNT || 10,
+
   ...(Object.keys(FALLBACK_SUPPORTED_CHAINS).reduce(
     (acc, curr) => ({
       ...acc,

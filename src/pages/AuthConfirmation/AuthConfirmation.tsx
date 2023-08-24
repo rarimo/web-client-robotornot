@@ -12,12 +12,12 @@ import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
+  awaitFinalityBlock,
   bus,
   BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
-  sleep,
 } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
@@ -85,13 +85,18 @@ const AuthConfirmation: FC<Props> = () => {
   }, [provider, transitStateTx])
 
   const submitZkp = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
     setIsPending(true)
 
     try {
       if (transitStateTx) {
         await transitState()
 
-        await sleep(500)
+        await awaitFinalityBlock(
+          config.FINALITY_BLOCK_AMOUNT,
+          provider?.rawProvider,
+        )
       }
 
       if (!zkProof.get?.pub_signals)
