@@ -62,10 +62,10 @@ const AuthPreview: FC<Props> = () => {
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
 
-    if (!identityBigIntString || !provider?.address)
-      throw new TypeError(`Identity or provider is not defined`)
-
     try {
+      if (!identityBigIntString || !provider?.address)
+        throw new TypeError(`Identity or provider is not defined`)
+
       const isDIDProved = await isIdentityProved(identityBigIntString)
 
       const isAddressProved = await isSenderAddressProved(provider.address)

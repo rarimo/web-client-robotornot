@@ -171,7 +171,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [verifiableCredentials, setVerifiableCredentials] =
     useLocalStorage<W3CCredential>('vc', undefined)
 
-  const [identityIdString, setIdentityIdstring] = useState<string>('')
+  const [identityIdString, setIdentityIdstring] = useLocalStorage<string>(
+    'did',
+    '',
+  )
 
   const identityBigIntString = useMemo(() => {
     return identityIdString
@@ -184,6 +187,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   >('submittedChains', [])
 
   const createIdentity = useCallback(async () => {
+    if (identityIdString) return identityIdString
+
     const _identityIdString = await zkpSnap.createIdentity()
 
     if (!_identityIdString) throw new Error('Identity has not created')
@@ -191,7 +196,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setIdentityIdstring(_identityIdString)
 
     return _identityIdString
-  }, [zkpSnap])
+  }, [identityIdString, setIdentityIdstring, zkpSnap])
 
   const getClaimOffer = useCallback(
     async (_identityIdString?: string) => {
@@ -306,6 +311,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     localStorage.clear()
   }, [
+    setIdentityIdstring,
     setIsUserSubmittedZkp,
     setPublishedChains,
     setSelectedKycProvider,
@@ -341,7 +347,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   return (
     <zkpContext.Provider
       value={{
-        identityIdString,
+        identityIdString: identityIdString ?? '',
         identityBigIntString,
 
         publishedChains: {
