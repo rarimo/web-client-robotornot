@@ -17,12 +17,12 @@ import { useWeb3Context, useZkpContext } from '@/contexts'
 import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
+  awaitFinalityBlock,
   bus,
   BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
-  sleep,
 } from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
@@ -105,13 +105,18 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const submitZkp = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
     setIsPending(true)
 
     try {
       if (!zkpGen?.isStatesActual) {
         await transitState(zkpGen)
 
-        await sleep(500)
+        await awaitFinalityBlock(
+          config.FINALITY_BLOCK_AMOUNT,
+          provider?.rawProvider,
+        )
       }
 
       if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
