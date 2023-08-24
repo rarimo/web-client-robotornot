@@ -158,7 +158,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const {
     selectedKycProvider,
 
-    identity,
+    identityIdString,
     verifiableCredentials,
 
     createIdentity,
@@ -182,7 +182,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     >
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-  >(verifiableCredentials?.body?.credential?.credentialSubject)
+  >(verifiableCredentials?.credentialSubject)
 
   const selectedKycDetails = useMemo((): [string, string][] => {
     if (!selectedKycProvider.get) return []
@@ -427,52 +427,57 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!selectedKycProvider.get) return
 
-      let currentIdentity = identity
+      let currentIdentityIdString = identityIdString
 
-      if (!currentIdentity?.idString) {
-        currentIdentity = await createIdentity()
+      if (!currentIdentityIdString) {
+        currentIdentityIdString = (await createIdentity()) ?? ''
       }
 
-      if (!currentIdentity?.idString) return
+      if (!currentIdentityIdString) return
 
-      if (!(await isClaimOfferExists(currentIdentity, 1))) {
-        try {
-          await verifyKyc(currentIdentity.idString, response)
-        } catch (error) {
-          setKycError(error as JsonApiError)
+      try {
+        if (!(await isClaimOfferExists(currentIdentityIdString, 1))) {
+          try {
+            await verifyKyc(currentIdentityIdString, response)
+          } catch (error) {
+            setKycError(error as JsonApiError)
 
-          ErrorHandler.processWithoutFeedback(error)
+            ErrorHandler.processWithoutFeedback(error)
 
-          setIsValidCredentials(false)
+            setIsValidCredentials(false)
 
-          setIsLoaded(true)
+            setIsLoaded(true)
 
-          return
+            return
+          }
         }
+
+        setIsValidCredentials(await isClaimOfferExists(currentIdentityIdString))
+
+        const verifiableCredentials = await getVerifiableCredentials(
+          currentIdentityIdString,
+        )
+
+        setKycDetails((prev: unknown) => ({
+          ...(typeof prev === 'object' ? prev : {}),
+          ...verifiableCredentials?.credentialSubject,
+        }))
+
+        setIsLoaded(true)
+      } catch (error) {
+        ErrorHandler.processWithoutFeedback(error)
+        navigate(RoutesPaths.authProviders)
       }
-
-      setIsValidCredentials(await isClaimOfferExists(currentIdentity))
-
-      const verifiableCredentials = await getVerifiableCredentials(
-        currentIdentity,
-      )
-
-      setKycDetails((prev: unknown) => ({
-        ...(typeof prev === 'object' ? prev : {}),
-        ...verifiableCredentials?.body.credential.credentialSubject,
-      }))
-
-      setIsLoaded(true)
 
       return
     },
     [
       createIdentity,
       getVerifiableCredentials,
-      identity,
+      identityIdString,
       isClaimOfferExists,
       navigate,
-      selectedKycProvider?.get,
+      selectedKycProvider.get,
       verifyKyc,
     ],
   )

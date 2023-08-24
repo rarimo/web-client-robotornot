@@ -7,7 +7,7 @@ import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, CautionTip, Icon } from '@/common'
+import { Animation, AppButton, Icon } from '@/common'
 import {
   useKycContext,
   useMetamaskZkpSnapContext,
@@ -27,23 +27,22 @@ import { useIdentityVerifier } from '@/hooks/contracts'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
-  const [isIdentitySaved, setIsIdentitySaved] = useState(false)
   const [isPending, setIsPending] = useState(false)
 
   const navigate = useNavigate()
 
   const { provider } = useWeb3Context()
 
-  const { isSnapConnected } = useMetamaskZkpSnapContext()
+  const { isSnapInstalled } = useMetamaskZkpSnapContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
     config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
   )
 
   const {
-    selectedKycProvider,
+    identityBigIntString,
 
-    identity,
+    selectedKycProvider,
     verifiableCredentials,
     getZkProof,
   } = useZkpContext()
@@ -60,24 +59,14 @@ const AuthPreview: FC<Props> = () => {
     verificationErrorMessages,
   } = useKycContext()
 
-  const exportLink = useMemo(() => {
-    if (!identity?.privateKeyHex) return
-
-    const blob = new Blob([identity.privateKeyHex], {
-      type: 'application/json',
-    })
-
-    return URL.createObjectURL(blob)
-  }, [identity?.privateKeyHex])
-
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
 
-    if (!identity?.idBigIntString || !provider?.address)
+    if (!identityBigIntString || !provider?.address)
       throw new TypeError(`Identity or provider is not defined`)
 
     try {
-      const isDIDProved = await isIdentityProved(identity.idBigIntString)
+      const isDIDProved = await isIdentityProved(identityBigIntString)
 
       const isAddressProved = await isSenderAddressProved(provider.address)
 
@@ -107,7 +96,7 @@ const AuthPreview: FC<Props> = () => {
     setIsPending(false)
   }, [
     getZkProof,
-    identity?.idBigIntString,
+    identityBigIntString,
     isIdentityProved,
     isSenderAddressProved,
     navigate,
@@ -132,24 +121,6 @@ const AuthPreview: FC<Props> = () => {
         <div className='auth-preview__card-overhead'>
           {`Zero-knowledge proof will be generated. No personal info will be shared with third parties.`}
         </div>
-        <CautionTip
-          className='auth-preview__card-caution-tip'
-          message={
-            <div className='auth-preview__card-caution-body'>
-              {`Save your profile to continue session anytime, without losing data`}
-              <AppButton
-                className='auth-preview__card-caution-btn'
-                size='small'
-                target='_blank'
-                download={`pk.json`}
-                text={`SAVE`}
-                href={exportLink}
-                onClick={() => setIsIdentitySaved(true)}
-                isDisabled={isIdentitySaved}
-              />
-            </div>
-          }
-        />
         <div className='auth-preview__metadata'>
           {selectedKycDetails?.map(([label, value], idx) => (
             <div className='auth-preview__metadata-item' key={idx}>
@@ -167,19 +138,15 @@ const AuthPreview: FC<Props> = () => {
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={handleGenerateProof}
-          isDisabled={
-            !provider?.address || !isIdentitySaved || !isSnapConnected
-          }
+          isDisabled={!provider?.address || !isSnapInstalled}
         />
       </div>
     ),
     [
-      isSnapConnected,
-      exportLink,
-      handleGenerateProof,
-      isIdentitySaved,
-      provider?.address,
       selectedKycDetails,
+      handleGenerateProof,
+      provider?.address,
+      isSnapInstalled,
     ],
   )
 

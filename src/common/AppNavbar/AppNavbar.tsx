@@ -5,11 +5,9 @@ import { FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { AppButton, AppLogo, Drawer, Dropdown } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
-import { ICON_NAMES, RoutesPaths } from '@/enums'
+import { ICON_NAMES } from '@/enums'
 import {
   abbrCenter,
-  bus,
-  BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
@@ -23,24 +21,16 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isDrawerShown, setIsDrawerShown] = useState(false)
   const [isDropdownShown, setIsDropdownShown] = useState(false)
   const { provider, init: initProvider } = useWeb3Context()
-  const {
-    isSnapConnected,
-    connectSnap,
-    init: initZkpSnap,
-  } = useMetamaskZkpSnapContext()
+  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
   const connectProvider = useCallback(async () => {
     try {
       await initProvider(PROVIDERS.Metamask)
 
-      const { isSnapConnected, isFlaskDetected } = await initZkpSnap()
+      const { isSnapInstalled } = await initZkpSnap()
 
-      if (!isFlaskDetected) {
-        bus.emit(BUS_EVENTS.error, `Please install Metamask flask first`)
-      }
-
-      if (isFlaskDetected && !isSnapConnected) {
-        await connectSnap()
+      if (!isSnapInstalled) {
+        await initZkpSnap()
 
         await initZkpSnap()
       }
@@ -49,7 +39,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     gaSendCustomEvent(GaCategories.WalletConnection, { location: `Navbar` })
-  }, [connectSnap, initProvider, initZkpSnap])
+  }, [initZkpSnap, initProvider])
 
   const trySwitchAccount = useCallback(async () => {
     try {
@@ -85,17 +75,21 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
                 className='navbar__connection-btn'
                 scheme='flat'
                 text={
-                  !provider?.isConnected || !isSnapConnected
+                  !provider?.isConnected || !isSnapInstalled
                     ? `CONNECT METAMASK`
                     : abbrCenter(provider?.address ?? '')
                 }
                 iconLeft={ICON_NAMES.metamask}
+                iconRight={
+                  provider?.isConnected && isSnapInstalled
+                    ? ICON_NAMES.chevronDown
+                    : undefined
+                }
                 onClick={
-                  provider?.isConnected
+                  provider?.isConnected && isSnapInstalled
                     ? () => setIsDropdownShown(prev => !prev)
                     : connectProvider
                 }
-                isDisabled={provider?.isConnected}
               />
             }
           >
@@ -110,14 +104,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
               />
             </div>
           </Dropdown>
-
-          <AppButton
-            className='navbar__account-link'
-            iconLeft={ICON_NAMES.user}
-            scheme='flat'
-            size='large'
-            routePath={RoutesPaths.profile}
-          />
         </div>
       </Drawer>
 
@@ -131,16 +117,18 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
               className='navbar__connection-btn'
               scheme='flat'
               text={
-                !provider?.isConnected || !isSnapConnected
+                !provider?.isConnected || !isSnapInstalled
                   ? `CONNECT METAMASK`
                   : abbrCenter(provider?.address ?? '')
               }
               iconLeft={ICON_NAMES.metamask}
               iconRight={
-                provider?.isConnected ? ICON_NAMES.chevronDown : undefined
+                provider?.isConnected && isSnapInstalled
+                  ? ICON_NAMES.chevronDown
+                  : undefined
               }
               onClick={
-                provider?.isConnected
+                provider?.isConnected && isSnapInstalled
                   ? () => setIsDropdownShown(prev => !prev)
                   : connectProvider
               }
@@ -158,14 +146,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
             />
           </div>
         </Dropdown>
-
-        <AppButton
-          className='navbar__account-link'
-          iconLeft={ICON_NAMES.user}
-          scheme='flat'
-          size='large'
-          routePath={RoutesPaths.profile}
-        />
       </div>
     </div>
   )

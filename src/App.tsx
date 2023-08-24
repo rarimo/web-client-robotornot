@@ -34,7 +34,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const location = useLocation()
   const { showToast } = useNotification()
   const { provider, isValidChain, init: initWeb3 } = useWeb3Context()
-  const { isSnapConnected, init: initZkpSnap } = useMetamaskZkpSnapContext()
+  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
   const init = useCallback(async () => {
     if (provider?.address) return
@@ -42,7 +42,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     try {
       await initWeb3()
 
-      if (!isSnapConnected) {
+      if (!isSnapInstalled) {
         await initZkpSnap()
       }
 
@@ -52,7 +52,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3, initZkpSnap, isSnapConnected, provider?.address])
+  }, [initWeb3, initZkpSnap, isSnapInstalled, provider?.address])
 
   useEffect(() => {
     const showSuccessToast = (payload: unknown) => showToast('success', payload)

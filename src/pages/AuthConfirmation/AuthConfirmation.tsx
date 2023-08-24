@@ -3,20 +3,22 @@ import './styles.scss'
 import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
-import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
-import { ZkpGen } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
-import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { querier } from '@/api'
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
-import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
-import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import {
+  bus,
+  BUS_EVENTS,
+  ErrorHandler,
+  GaCategories,
+  gaSendCustomEvent,
+  sleep,
+} from '@/helpers'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -30,8 +32,13 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
-    useZkpContext()
+  const {
+    zkProof,
+    statesMerkleProof,
+    transitStateTx,
+    publishedChains,
+    isUserSubmittedZkp,
+  } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
@@ -53,85 +60,59 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
-  const transitState = useCallback(
-    async (_zkpGen?: ZkpGen<QueryVariableName>) => {
-      setIsStateTransiting(true)
+  const transitState = useCallback(async () => {
+    setIsStateTransiting(true)
 
-      try {
-        const currZkpGen = _zkpGen || zkpGen
+    try {
+      await provider?.signAndSendTx?.(transitStateTx)
 
-        const transitParams = await currZkpGen?.loadParamsForTransitState(
-          querier,
-        )
+      gaSendCustomEvent(GaCategories.TransitState)
+    } catch (error) {
+      if (error instanceof Error && 'error' in error) {
+        const str = 'Identities states root already exists'
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message
 
-        if (!transitParams) throw new TypeError('Transit params is not defined')
-
-        await provider?.signAndSendTx?.(
-          getTransitStateTxBody(
-            config?.[
-              `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-            ],
-            transitParams.newIdentitiesStatesRoot,
-            transitParams.gistData,
-            transitParams.proof,
-          ),
-        )
-
-        gaSendCustomEvent(GaCategories.TransitState)
-      } catch (error) {
-        if (error instanceof Error && 'error' in error) {
-          const str = 'Identities states root already exists'
-          const currentError = error.error as RuntimeError
-          const errorString = currentError?.message
-
-          if (errorString?.includes(str)) {
-            return
-          }
+        if (errorString?.includes(str)) {
+          return
         }
-
-        throw error
       }
 
-      setIsStateTransiting(false)
-    },
-    [zkpGen, provider, selectedChainToPublish],
-  )
+      throw error
+    }
+
+    setIsStateTransiting(false)
+  }, [provider, transitStateTx])
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
-      if (!zkpGen?.isStatesActual) {
-        await transitState(zkpGen)
+      if (transitStateTx) {
+        await transitState()
 
         await sleep(500)
       }
 
-      if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
-        throw new TypeError('ZKP is not defined')
-
-      const zkpParams = isEmpty(zkpGen?.subjectProof)
-        ? zkProof.get
-        : zkpGen?.subjectProof
-
-      if (!zkpParams) throw new TypeError('ZKP params is not defined')
+      if (!zkProof.get?.pub_signals)
+        throw new TypeError(`Pub signals is not defined`)
 
       const txBody = getProveIdentityTxBody(
         {
-          issuerId: config.ISSUER_ID,
-          // StateInfo.hash
-          issuerState: zkpGen.coreStateDetails.hash,
-          // StateInfo.createdAtTimestamp
-          createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
-          merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
+          issuerId: statesMerkleProof.issuerId,
+          issuerState: statesMerkleProof.state.hash,
+          createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
+          merkleProof: statesMerkleProof.merkleProof.map(el =>
+            utils.arrayify(el),
+          ),
         },
-        zkpParams?.pub_signals?.map?.(el => BigInt(el)),
-        [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
+        zkProof.get.pub_signals.map?.(el => BigInt(el)),
+        [zkProof?.get?.proof.pi_a[0], zkProof?.get?.proof.pi_a[1]],
         [
-          [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
-          [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
+          [zkProof?.get?.proof.pi_b[0][1], zkProof?.get?.proof.pi_b[0][0]],
+          [zkProof?.get?.proof.pi_b[1][1], zkProof?.get?.proof.pi_b[1][0]],
         ],
-        [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
+        [zkProof?.get?.proof.pi_c[0], zkProof?.get?.proof.pi_c[1]],
       )
 
       await provider?.signAndSendTx?.({
@@ -152,14 +133,35 @@ const AuthConfirmation: FC<Props> = () => {
 
       gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
+      if (error instanceof Error && 'error' in error) {
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message
+
+        if (errorString?.includes('invalid signature')) {
+          bus.emit(
+            BUS_EVENTS.warning,
+            `The proof has expired. Please generate a new one`,
+          )
+          navigate(RoutesPaths.authPreview)
+          return
+        }
+      }
+
       ErrorHandler.process(error)
     }
 
     setIsPending(false)
   }, [
-    zkpGen,
-    zkProof.get,
+    transitStateTx,
+    zkProof.get?.pub_signals,
+    zkProof.get?.proof.pi_a,
+    zkProof.get?.proof.pi_b,
+    zkProof.get?.proof.pi_c,
     getProveIdentityTxBody,
+    statesMerkleProof.issuerId,
+    statesMerkleProof.state.hash,
+    statesMerkleProof.state.createdAtTimestamp,
+    statesMerkleProof.merkleProof,
     provider,
     selectedChainToPublish,
     publishedChains,

@@ -1,7 +1,6 @@
 import './styles.scss'
 
 import { config } from '@config'
-import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
@@ -19,7 +18,7 @@ const REDIRECT_TIMEOUT = 30
 
 const AuthSuccess: FC<Props> = () => {
   const { selectedKycDetails } = useKycContext()
-  const { zkpGen, zkProof, publishedChains } = useZkpContext()
+  const { zkProof, publishedChains } = useZkpContext()
   const [isManualRedirected, setIsManualRedirected] = useState(false)
 
   const [count, { startCountdown }] = useCountdown({
@@ -28,16 +27,10 @@ const AuthSuccess: FC<Props> = () => {
   })
 
   const encodedProof = useMemo(() => {
-    return zkpGen?.subjectProof
-      ? bytesToBase64(
-          new TextEncoder().encode(
-            JSON.stringify(
-              isEmpty(zkpGen?.subjectProof) ? zkProof : zkpGen?.subjectProof,
-            ),
-          ),
-        )
+    return zkProof
+      ? bytesToBase64(new TextEncoder().encode(JSON.stringify(zkProof)))
       : ''
-  }, [zkProof, zkpGen?.subjectProof])
+  }, [zkProof])
 
   useEffectOnce(() => {
     startCountdown()

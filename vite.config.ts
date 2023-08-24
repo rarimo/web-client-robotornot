@@ -118,6 +118,10 @@ export default defineConfig(({ mode }) => {
           __dirname,
           'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
         ),
+        '@rarimo/connector': path.resolve(
+          __dirname,
+          'node_modules/@rarimo/connector/dist/index.js',
+        ),
       },
     },
     optimizeDeps: {
@@ -154,6 +158,7 @@ export default defineConfig(({ mode }) => {
             'js-iden3-core': ['@iden3/js-iden3-core'],
             'near-api-js': ['near-api-js'],
             'ethereum-gateway-react': ['@civic/ethereum-gateway-react'],
+            'rarimo-connector': ['@rarimo/connector'],
             snarkjs: ['snarkjs'],
             uauth: ['@uauth/js'],
           },

@@ -161,10 +161,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 .auth-confirmation__loader-animation {
-  max-width: 75%;
+  max-width: 70%;
 }
 
 .auth-confirmation__loader-title {
