@@ -42,7 +42,9 @@ const AuthProviders: FC<Props> = () => {
       </div>
 
       <div className='auth-providers__tip'>
-        {`Don't have any account?`}
+        <div className='auth-providers__tip-text'>
+          {`Don't have any account?`}
+        </div>
         <Dropdown
           isOpen={isDropdownOpen}
           setIsOpen={setIsDropdownOpen}

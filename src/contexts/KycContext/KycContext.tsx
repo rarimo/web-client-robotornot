@@ -1,5 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
+import { W3CCredential } from '@electr1xxxx/adapter'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -452,16 +453,26 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           }
         }
 
-        setIsValidCredentials(await isClaimOfferExists(currentIdentityIdString))
+        let _verifiableCredentials: W3CCredential | undefined
 
-        const verifiableCredentials = await getVerifiableCredentials(
-          currentIdentityIdString,
-        )
+        try {
+          await isClaimOfferExists(currentIdentityIdString)
+
+          _verifiableCredentials = await getVerifiableCredentials(
+            currentIdentityIdString,
+          )
+        } catch (error) {
+          ErrorHandler.process(error)
+        }
 
         setKycDetails((prev: unknown) => ({
           ...(typeof prev === 'object' ? prev : {}),
-          ...verifiableCredentials?.credentialSubject,
+          ...(verifiableCredentials?.credentialSubject
+            ? verifiableCredentials?.credentialSubject
+            : {}),
         }))
+
+        setIsValidCredentials(!!_verifiableCredentials?.id)
 
         setIsLoaded(true)
       } catch (error) {
@@ -478,6 +489,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       isClaimOfferExists,
       navigate,
       selectedKycProvider.get,
+      verifiableCredentials?.credentialSubject,
       verifyKyc,
     ],
   )

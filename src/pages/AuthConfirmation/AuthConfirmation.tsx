@@ -61,10 +61,18 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const transitState = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
     setIsStateTransiting(true)
 
     try {
       await provider?.signAndSendTx?.(transitStateTx)
+
+      await awaitFinalityBlock(
+        config.FINALITY_BLOCK_AMOUNT,
+        provider?.rawProvider,
+      )
+
       gaSendCustomEvent(GaCategories.TransitState)
     } catch (error) {
       if (error instanceof Error && 'error' in error) {
@@ -84,18 +92,11 @@ const AuthConfirmation: FC<Props> = () => {
   }, [provider, transitStateTx])
 
   const submitZkp = useCallback(async () => {
-    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
-
     setIsPending(true)
 
     try {
       if (transitStateTx?.data) {
         await transitState()
-
-        await awaitFinalityBlock(
-          config.FINALITY_BLOCK_AMOUNT,
-          provider?.rawProvider,
-        )
       }
 
       if (!zkProof.get?.pub_signals)

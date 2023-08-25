@@ -43,6 +43,10 @@
   color: var(--text-secondary-main);
 }
 
+.auth-providers__tip-text {
+  align-self: center;
+}
+
 .auth-providers .auth-providers__dropdown-btn {
   text-decoration: underline;
   color: var(--primary-main);
