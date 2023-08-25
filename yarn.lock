@@ -660,10 +660,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electr1xxxx/conector@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@electr1xxxx/conector@npm:0.2.0"
-  checksum: 04c308b31a8c0469406d469f38eb751e03ccdce595a1bfaa95c3d8d55c5cb5e385798a82047ea9d1659cc3515711c85651a5ac93de2f4cd8f27cf03f0ed14999
+"@electr1xxxx/adapter@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@electr1xxxx/adapter@npm:0.1.0"
+  dependencies:
+    "@ethersproject/providers": 5.7.2
+  checksum: 9fba98da11707f4aadb0c39bc284c9f8325c4c5c73eb5f5130b6ecde2b6dac916345bed77633cd01b5577125e2b7a269570454ead7333cc06cd362ecf612f670
   languageName: node
   linkType: hard
 
@@ -9864,7 +9866,7 @@ __metadata:
     "@distributedlab/jac": 1.0.0-rc.6
     "@distributedlab/tools": 1.0.0-rc.6
     "@distributedlab/w3p": 1.0.0-rc.6
-    "@electr1xxxx/conector": ^0.2.0
+    "@electr1xxxx/adapter": ^0.1.0
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@esbuild-plugins/node-modules-polyfill": ^0.2.2
     "@iden3/js-crypto": ^1.0.0-beta.1
