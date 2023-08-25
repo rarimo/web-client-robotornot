@@ -1,6 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
-import { W3CCredential } from '@electr1xxxx/adapter'
+import { W3CCredential } from '@electr1xxxx/conector'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -170,19 +170,19 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [kycDetails, setKycDetails] = useState<
     Partial<
       | {
-          address: string
-          civicGatekeeperNetworkId: number
-          gitcoinPassportScore: string
-          id: string
-          kycAdditionalData: string
-          provider: string
-          type: string
-          unstoppableDomain: string
-          worldcoinScore: string
-        } & QueryVariableName
+        address: string
+        civicGatekeeperNetworkId: number
+        gitcoinPassportScore: string
+        id: string
+        kycAdditionalData: string
+        provider: string
+        type: string
+        unstoppableDomain: string
+        worldcoinScore: string
+      } & QueryVariableName
     >
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   >(verifiableCredentials?.credentialSubject)
 
   const selectedKycDetails = useMemo((): [string, string][] => {
@@ -191,7 +191,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     const unstoppablePartialDetails = kycDetails as unknown as UserInfo
 
     const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData &&
-    kycDetails?.kycAdditionalData !== 'none'
+      kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
       : {}) as unknown as GitCoinPassportUserInfo
 
@@ -200,7 +200,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     const worldcoinPartialDetails = (kycDetails?.kycAdditionalData &&
-    kycDetails?.kycAdditionalData !== 'none'
+      kycDetails?.kycAdditionalData !== 'none'
       ? JSON.parse(kycDetails?.kycAdditionalData as string)
       : {}) as unknown as { sub: string }
 
@@ -231,15 +231,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       ],
       [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
         ...(civicPartialDetails?.address &&
-        civicPartialDetails?.address !== 'none'
+          civicPartialDetails?.address !== 'none'
           ? [
-              [
-                t(
-                  `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
-                ),
-                abbrCenter(civicPartialDetails?.address),
-              ] as [string, string],
-            ]
+            [
+              t(
+                `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
+              ),
+              abbrCenter(civicPartialDetails?.address),
+            ] as [string, string],
+          ]
           : []),
       ],
       [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
@@ -383,13 +383,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       const { data } = await api.post<
         | {
-            type: 'user_data'
-            user_data: unknown
-          }
+          type: 'user_data'
+          user_data: unknown
+        }
         | {
-            type: 'verification_id'
-            id: 'string'
-          }
+          type: 'verification_id'
+          id: 'string'
+        }
       >(
         `/integrations/kyc-service/v1/public/verify/${selectedKycProvider.get}`,
         {
@@ -540,7 +540,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       ) : (
         <>
           {selectedKycProvider?.get ===
-          SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
+            SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
             <KycProviderUnstoppableDomains
               key={refreshKey}
               loginCb={handleKycProviderComponentLogin}

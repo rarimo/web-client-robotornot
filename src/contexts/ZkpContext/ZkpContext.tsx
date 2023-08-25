@@ -4,7 +4,7 @@ import type {
   StateInfo,
   W3CCredential,
   ZKPProofResponse,
-} from '@electr1xxxx/adapter'
+} from '@electr1xxxx/conector'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
 import type { ZKProof } from '@iden3/js-jwz'
