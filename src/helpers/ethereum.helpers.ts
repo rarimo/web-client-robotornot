@@ -28,7 +28,8 @@ export const awaitFinalityBlock = async (
 
   if (!currentBlock) throw new Error('Current block has not been found')
 
-  const finalityBlock = +currentBlock + +blockAmount
+  const finalityBlock =
+    +currentBlock + (blockAmount && !isNaN(+blockAmount) ? +blockAmount : 0)
 
   do {
     await sleep(10_000)

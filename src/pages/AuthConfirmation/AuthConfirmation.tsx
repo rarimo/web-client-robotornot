@@ -10,7 +10,6 @@ import isEmpty from 'lodash/isEmpty'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { querier } from '@/api'
 import loaderJson from '@/assets/animations/loader.json'
 import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
@@ -62,14 +61,14 @@ const AuthConfirmation: FC<Props> = () => {
 
   const transitState = useCallback(
     async (_zkpGen?: ZkpGen<QueryVariableName>) => {
+      if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
       setIsStateTransiting(true)
 
       try {
         const currZkpGen = _zkpGen || zkpGen
 
-        const transitParams = await currZkpGen?.loadParamsForTransitState(
-          querier,
-        )
+        const transitParams = await currZkpGen?.loadParamsForTransitState()
 
         if (!transitParams) throw new TypeError('Transit params is not defined')
 
@@ -85,6 +84,11 @@ const AuthConfirmation: FC<Props> = () => {
         )
 
         gaSendCustomEvent(GaCategories.TransitState)
+
+        await awaitFinalityBlock(
+          config.FINALITY_BLOCK_AMOUNT,
+          provider?.rawProvider,
+        )
       } catch (error) {
         if (error instanceof Error && 'error' in error) {
           const str = 'Identities states root already exists'
@@ -105,18 +109,11 @@ const AuthConfirmation: FC<Props> = () => {
   )
 
   const submitZkp = useCallback(async () => {
-    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
-
     setIsPending(true)
 
     try {
       if (!zkpGen?.isStatesActual) {
         await transitState(zkpGen)
-
-        await awaitFinalityBlock(
-          config.FINALITY_BLOCK_AMOUNT,
-          provider?.rawProvider,
-        )
       }
 
       if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)

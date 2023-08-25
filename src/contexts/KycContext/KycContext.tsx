@@ -1,5 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
+import type { VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -451,16 +452,26 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
       }
 
-      setIsValidCredentials(await isClaimOfferExists(currentIdentity))
+      let _verifiableCredentials:
+        | VerifiableCredentials<QueryVariableName>
+        | undefined
 
-      const verifiableCredentials = await getVerifiableCredentials(
-        currentIdentity,
-      )
+      try {
+        await isClaimOfferExists(currentIdentity)
+
+        _verifiableCredentials = await getVerifiableCredentials(currentIdentity)
+      } catch (error) {
+        ErrorHandler.process(error)
+      }
 
       setKycDetails((prev: unknown) => ({
         ...(typeof prev === 'object' ? prev : {}),
-        ...verifiableCredentials?.body.credential.credentialSubject,
+        ...(_verifiableCredentials?.body.credential.credentialSubject
+          ? _verifiableCredentials?.body.credential.credentialSubject
+          : {}),
       }))
+
+      setIsValidCredentials(!!_verifiableCredentials?.id)
 
       setIsLoaded(true)
 

@@ -348,17 +348,25 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ): Promise<ZkpGen<QueryVariableName> | undefined> => {
       const currentZkpGen = _zkpGen ?? zkpGen
 
-      await currentZkpGen?.loadStatesDetails(querier)
+      const stateDetails = await currentZkpGen?.loadStatesDetails(querier)
       await currentZkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
+
+      if (!stateDetails?.coreStateDetails?.lastUpdateOperationIndex)
+        throw new TypeError('lastUpdateOperationIndex is not defined')
+
+      await currentZkpGen?.loadOperation(
+        querier,
+        stateDetails.coreStateDetails.lastUpdateOperationIndex,
+      )
 
       do {
         try {
-          if (!currentZkpGen?.coreStateDetails?.lastUpdateOperationIndex)
+          if (!stateDetails?.coreStateDetails?.lastUpdateOperationIndex)
             continue
 
           await currentZkpGen?.loadOperationProof(
             querier,
-            currentZkpGen.coreStateDetails.lastUpdateOperationIndex,
+            stateDetails.coreStateDetails.lastUpdateOperationIndex,
           )
 
           return currentZkpGen
