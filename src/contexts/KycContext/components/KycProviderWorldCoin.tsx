@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
-  setKycDetails: (details: unknown) => void
 }
 
 const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {

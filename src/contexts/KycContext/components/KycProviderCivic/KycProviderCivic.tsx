@@ -23,7 +23,6 @@ import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
-  setKycDetails: (details: unknown) => void
 }
 
 /**
@@ -103,7 +102,7 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
   return <></>
 }
 
-const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
+const KycProviderCivic: FC<Props> = ({ loginCb }) => {
   const [isModalShown, setIsModalShown] = useState(true)
   const { provider } = useWeb3Context()
 
@@ -174,7 +173,6 @@ const KycProviderCivic: FC<Props> = ({ loginCb, setKycDetails }) => {
         >
           <KycProviderCivicContent
             loginCb={loginCb}
-            setKycDetails={setKycDetails}
             handleSigned={handleSigned}
           />
         </GatewayProvider>
