@@ -1,13 +1,13 @@
 import { config, SUPPORTED_CHAINS } from '@config'
+import { type TransactionRequest } from '@ethersproject/providers'
+import { DID } from '@iden3/js-iden3-core'
+import type { ZKProof } from '@iden3/js-jwz'
 import type {
   SaveCredentialsRequestParams,
   StateInfo,
   W3CCredential,
   ZKPProofResponse,
-} from '@electr1xxxx/conector'
-import { type TransactionRequest } from '@ethersproject/providers'
-import { DID } from '@iden3/js-iden3-core'
-import type { ZKProof } from '@iden3/js-jwz'
+} from '@rarimo/rarime-connector'
 import { CircuitId } from '@rarimo/zkp-gen-iden3'
 import {
   createContext,

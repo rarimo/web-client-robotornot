@@ -7,7 +7,7 @@ import {
   type SnapConnector,
   type W3CCredential,
   type ZKPProofResponse,
-} from '@electr1xxxx/conector'
+} from '@rarimo/rarime-connector'
 import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
 
 /**

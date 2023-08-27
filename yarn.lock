@@ -660,13 +660,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electr1xxxx/conector@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@electr1xxxx/conector@npm:0.3.0"
-  checksum: be20ed54e9de159f90d3f4879f0a9458d93fa1585d71cae8f0da7706bb96ff4e5167ea05c38643c7ba79a3d1cfc4c1bf22b4c7623a9923001c5837f60dd9e3e5
-  languageName: node
-  linkType: hard
-
 "@emotion/is-prop-valid@npm:^0.8.2":
   version: 0.8.8
   resolution: "@emotion/is-prop-valid@npm:0.8.8"
@@ -1880,6 +1873,15 @@ __metadata:
     "@distributedlab/tools": ^1.0.0-rc.6
     "@rarimo/shared": ^2.0.0-rc.20
   checksum: b67748c1fc7e18e0e8a32beccef2620daee0f662655dcdc30edc18dce35d05e5e6fa7a1cccc4d4f9c715044e1318d4d6919681911b61aa021c02b9c3f00db41c
+  languageName: node
+  linkType: hard
+
+"@rarimo/rarime-connector@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@rarimo/rarime-connector@npm:0.1.0"
+  dependencies:
+    "@ethersproject/providers": 5.7.2
+  checksum: 1ecaf27a81d827d77942bb2a649353c88ab961450b5e50813cf6e965ac3049e9ccec083213a7726c4d66891f96d6e5e6d4db420301ee45ada56a2b370ff31af7
   languageName: node
   linkType: hard
 
@@ -9881,7 +9883,6 @@ __metadata:
     "@distributedlab/jac": 1.0.0-rc.6
     "@distributedlab/tools": 1.0.0-rc.6
     "@distributedlab/w3p": 1.0.0-rc.6
-    "@electr1xxxx/conector": ^0.3.0
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@esbuild-plugins/node-modules-polyfill": ^0.2.2
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -9892,6 +9893,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.20
     "@rarimo/client": ^2.0.0-rc.20
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.20
+    "@rarimo/rarime-connector": ^0.1.0
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.20
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.20
     "@typechain/ethers-v5": ^11.0.0
@@ -11949,11 +11951,11 @@ __metadata:
 
 "typescript@patch:typescript@^5.1.3#~builtin<compat/typescript>":
   version: 5.2.2
-  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=5da071"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 0f4da2f15e6f1245e49db15801dbee52f2bbfb267e1c39225afdab5afee1a72839cd86000e65ee9d7e4dfaff12239d28beaf5ee431357fcced15fb08583d72ca
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 

@@ -76,5 +76,31 @@
     },
     "type": "EVM",
     "icon": "ethereum"
+  },
+  "AVALANCE": {
+    "id": "43114",
+    "name": "Avalance",
+    "rpcUrl": "https://avax.meowrpc.com",
+    "explorerUrl": "https://snowtrace.io/",
+    "token": {
+      "name": "AVAX",
+      "symbol": "AVAX",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
+  },
+  "BSC": {
+    "id": "56",
+    "name": "Binance Smart Chain",
+    "rpcUrl": "https://bsc-dataseed.binance.org/",
+    "explorerUrl": "https://bscscan.com",
+    "token": {
+      "name": "BNB",
+      "symbol": "BNB",
+      "decimals": 18
+    },
+    "type": "EVM",
+    "icon": "ethereum"
   }
 }

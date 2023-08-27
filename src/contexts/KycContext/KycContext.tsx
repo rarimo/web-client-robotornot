@@ -1,6 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
-import { W3CCredential } from '@electr1xxxx/conector'
+import { W3CCredential } from '@rarimo/rarime-connector'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
