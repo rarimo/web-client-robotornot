@@ -249,6 +249,10 @@ const AuthConfirmation: FC<Props> = () => {
         name: chain,
         chainId: config.SUPPORTED_CHAINS_DETAILS[chain].id,
       })
+
+      gaSendCustomEvent(
+        `[${config.SUPPORTED_CHAINS_DETAILS[chain].id}] ${chain}`,
+      )
     },
     [trySwitchChain],
   )

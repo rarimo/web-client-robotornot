@@ -42,6 +42,8 @@ const AuthProvidersItem: FC<Props> = ({
     gaSendCustomEvent(GaCategories.ProviderSelection, {
       provider: supportedKycProvider,
     })
+
+    gaSendCustomEvent(supportedKycProvider)
   }, [
     connectProvider,
     isWalletRequired,
