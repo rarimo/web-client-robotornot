@@ -37,10 +37,10 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
-      ...(process.env.VITE_SENTRY_AUTH_TOKEN
+      ...(env.VITE_SENTRY_AUTH_TOKEN
         ? [
             sentryVitePlugin({
-              authToken: process.env.SENTRY_AUTH_TOKEN,
+              authToken: env.VITE_SENTRY_AUTH_TOKEN,
               org: 'dl-1be19f0cb',
               project: 'javascript-react',
             }),
