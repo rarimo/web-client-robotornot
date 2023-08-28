@@ -4,6 +4,7 @@ import '@/localization'
 import 'virtual:svg-icons-register'
 
 import { config } from '@config'
+import * as Sentry from '@sentry/react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactGA from 'react-ga4'
@@ -16,6 +17,23 @@ const root = createRoot(document.getElementById('root') as Element)
 initApi(config.API_URL)
 
 if (config.GA_ID) ReactGA.initialize(config.GA_ID)
+
+try {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [
+      new Sentry.BrowserTracing({
+        tracePropagationTargets: ['localhost', window.location.origin],
+      }),
+      new Sentry.Replay(),
+    ],
+    tracesSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+  })
+} catch (error) {
+  /* empty */
+}
 
 root.render(
   import.meta.env.DEV ? (

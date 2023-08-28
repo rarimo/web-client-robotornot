@@ -1,5 +1,6 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -36,6 +37,16 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
+      ...(process.env.VITE_SENTRY_AUTH_TOKEN
+        ? [
+            sentryVitePlugin({
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+              org: 'dl-1be19f0cb',
+              project: 'javascript-react',
+            }),
+          ]
+        : []),
+
       splitVendorChunkPlugin(),
       react(),
 

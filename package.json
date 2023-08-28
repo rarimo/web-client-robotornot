@@ -34,6 +34,8 @@
     "@rarimo/identity-gen-iden3": "^2.0.0-rc.20",
     "@rarimo/shared-zkp-iden3": "^2.0.0-rc.20",
     "@rarimo/zkp-gen-iden3": "^2.0.0-rc.20",
+    "@sentry/react": "^7.64.0",
+    "@sentry/vite-plugin": "latest",
     "@uauth/js": "^2.8.0",
     "@walletconnect/ethereum-provider": "^2.8.6",
     "@walletconnect/modal": "^2.5.9",

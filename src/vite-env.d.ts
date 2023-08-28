@@ -41,6 +41,8 @@ interface ImportMetaEnv {
 
   VITE_GA_ID: string
 
+  VITE_SENTRY_DSN: string
+
   VITE_SUPPORTED_CHAINS_DETAILS: string
 
   VITE_CIRCUITS_LOADING_TRIES_LIMIT: number
