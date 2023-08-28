@@ -196,10 +196,15 @@ const AuthConfirmation: FC<Props> = () => {
             BUS_EVENTS.warning,
             `The proof has expired. Please generate a new one`,
           )
-          navigate(RoutesPaths.authPreview)
-          return
+        } else {
+          bus.emit(
+            BUS_EVENTS.warning,
+            `Something went wrong. Please generate a new one`,
+          )
         }
       }
+
+      navigate(RoutesPaths.authPreview)
 
       ErrorHandler.process(error)
     }

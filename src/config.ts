@@ -90,7 +90,7 @@ export const config = {
 
   CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
   CLAIM_OFFER_MAX_TRIES_COUNT:
-    import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 10,
+    import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 5,
   KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
 
   CIRCUIT_URLS: {
