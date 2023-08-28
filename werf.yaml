@@ -20,8 +20,8 @@ shell:
     - yarn install
   setup:
     - cd /app
-    - ecport VITE_SENTRY_AUTH_TOKEN="{{ env "VITE_SENTRY_AUTH_TOKEN" }}"
-    - ecport VITE_SENTRY_DSN="{{ env "VITE_SENTRY_DSN" }}"
+    - export VITE_SENTRY_AUTH_TOKEN="{{ env "VITE_SENTRY_AUTH_TOKEN" }}"
+    - export VITE_SENTRY_DSN="{{ env "VITE_SENTRY_DSN" }}"
     - yarn build
     #- sh -c '[ -d /app/dist/files ] && echo "$FILE exist." || mkdir -p /app/dist/files'
     #- sh -c '[ -d /app/files ] && echo "$FILE exist." || mkdir -p /app/files'
