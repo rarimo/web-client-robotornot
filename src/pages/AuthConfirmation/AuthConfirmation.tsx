@@ -22,8 +22,9 @@ import {
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
+  sleep,
 } from '@/helpers'
-import { useIdentityVerifier } from '@/hooks/contracts'
+import { useIdentityVerifier, useLightweightStateV2 } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -43,6 +44,10 @@ const AuthConfirmation: FC<Props> = () => {
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
+  const { isIdentitiesStatesRootExists } = useLightweightStateV2(
+    config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`],
+  )
+
   const selectedChainToPublishDetails = useMemo(() => {
     return config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
   }, [selectedChainToPublish])
@@ -57,6 +62,37 @@ const AuthConfirmation: FC<Props> = () => {
         Boolean(config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${el}`]),
       ),
     [],
+  )
+
+  const handleTransitStateError = useCallback(
+    async (error: unknown) => {
+      try {
+        if (error instanceof Error && 'error' in error) {
+          const str = 'Identities states root already exists'
+          const currentError = error.error as RuntimeError
+          const errorString = currentError?.message
+
+          if (errorString?.includes(str)) return
+        }
+
+        await sleep(1000)
+
+        if (!zkpGen?.operation?.details?.stateRootHash)
+          throw new TypeError('State root hash is not defined')
+
+        if (
+          await isIdentitiesStatesRootExists(
+            zkpGen?.operation?.details?.stateRootHash,
+          )
+        )
+          return
+
+        throw error
+      } catch (error) {
+        ErrorHandler.process(error)
+      }
+    },
+    [isIdentitiesStatesRootExists, zkpGen?.operation?.details?.stateRootHash],
   )
 
   const transitState = useCallback(
@@ -90,22 +126,12 @@ const AuthConfirmation: FC<Props> = () => {
           provider?.rawProvider,
         )
       } catch (error) {
-        if (error instanceof Error && 'error' in error) {
-          const str = 'Identities states root already exists'
-          const currentError = error.error as RuntimeError
-          const errorString = currentError?.message
-
-          if (errorString?.includes(str)) {
-            return
-          }
-        }
-
-        throw error
+        await handleTransitStateError(error)
       }
 
       setIsStateTransiting(false)
     },
-    [zkpGen, provider, selectedChainToPublish],
+    [provider, zkpGen, selectedChainToPublish, handleTransitStateError],
   )
 
   const submitZkp = useCallback(async () => {

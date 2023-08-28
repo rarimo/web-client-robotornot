@@ -1,2 +1,2 @@
 export * from './use-identity-verifier'
-export * from './use-zkp-queries-storage-contract'
+export * from './use-lightweight-state-v2'
