@@ -1,18 +1,19 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
+import { FC, HTMLAttributes, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFilePicker } from 'use-file-picker'
 
 import { AppButton, Icon } from '@/common'
 import { useZkpContext } from '@/contexts'
-import { ICON_NAMES } from '@/enums'
+import { ICON_NAMES, RoutesPaths } from '@/enums'
 import { abbrCenter, ErrorHandler } from '@/helpers'
 
 const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const navigate = useNavigate()
 
-  const { identity, createIdentity, reset } = useZkpContext()
+  const { identity, verifiableCredentials, createIdentity, reset } =
+    useZkpContext()
   const [openFileSelector, { filesContent, clear }] = useFilePicker({
     accept: '.json',
   })
@@ -26,6 +27,14 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
     return URL.createObjectURL(blob)
   }, [identity?.privateKeyHex])
+
+  const handleBackRouting = useCallback(() => {
+    if (verifiableCredentials?.id) {
+      navigate(-1)
+    } else {
+      navigate(RoutesPaths.authProviders)
+    }
+  }, [navigate, verifiableCredentials?.id])
 
   useEffect(() => {
     if (!filesContent?.[0]?.content) return
@@ -50,7 +59,7 @@ const Profile: FC<HTMLAttributes<HTMLDivElement>> = () => {
         iconLeft={ICON_NAMES.chevronLeft}
         scheme='none'
         size='none'
-        onClick={() => navigate(-1)}
+        onClick={handleBackRouting}
       />
 
       <div className='profile__header'>
