@@ -28,8 +28,10 @@ try {
       new Sentry.Replay(),
     ],
     tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
+    replaysSessionSampleRate: 1.0,
     replaysOnErrorSampleRate: 1.0,
+
+    beforeSend: event => event,
   })
 } catch (error) {
   /* empty */

@@ -17,8 +17,6 @@ import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   awaitFinalityBlock,
-  bus,
-  BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
@@ -187,23 +185,6 @@ const AuthConfirmation: FC<Props> = () => {
 
       gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
-      if (error instanceof Error && 'error' in error) {
-        const currentError = error.error as RuntimeError
-        const errorString = currentError?.message
-
-        if (errorString?.includes('invalid signature')) {
-          bus.emit(
-            BUS_EVENTS.warning,
-            `The proof has expired. Please generate a new one`,
-          )
-        } else {
-          bus.emit(
-            BUS_EVENTS.warning,
-            `Something went wrong. Please generate a new one`,
-          )
-        }
-      }
-
       navigate(RoutesPaths.authPreview)
 
       ErrorHandler.process(error)

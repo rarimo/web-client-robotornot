@@ -36,6 +36,11 @@ interface ZkpContextValue {
   identity: Identity | undefined
   zkpGen: ZkpGen<QueryVariableName> | undefined
 
+  isIdentitySaved: {
+    get: boolean
+    set: (value: boolean) => void
+  }
+
   publishedChains: {
     get?: SUPPORTED_CHAINS[]
     set: (value: SUPPORTED_CHAINS[]) => void
@@ -82,6 +87,13 @@ export const zkpContext = createContext<ZkpContextValue>({
     },
   },
   verifiableCredentials: undefined,
+
+  isIdentitySaved: {
+    get: false,
+    set: () => {
+      throw new TypeError(`isIdentitySaved.set() not implemented`)
+    },
+  },
 
   selectedKycProvider: {
     get: undefined,
@@ -174,6 +186,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setSelectedKycProvider,
     removeSelectedKycProvider,
   ] = useLocalStorage<SUPPORTED_KYC_PROVIDERS>('selectedKycProvider', undefined)
+
+  const [isIdentitySaved, setIsIdentitySaved] = useLocalStorage<boolean>(
+    'isIdentitySaved',
+    false,
+  )
 
   const [isUserSubmittedZkp, setIsUserSubmittedZkp] = useLocalStorage<boolean>(
     'isZkpSubmitted',
@@ -571,6 +588,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           set: setPublishedChains,
         },
         verifiableCredentials,
+
+        isIdentitySaved: {
+          get: isIdentitySaved || false,
+          set: setIsIdentitySaved,
+        },
 
         selectedKycProvider: {
           get: selectedKycProvider,

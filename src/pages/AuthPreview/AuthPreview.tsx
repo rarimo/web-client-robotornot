@@ -22,7 +22,6 @@ import { useIdentityVerifier } from '@/hooks/contracts'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const AuthPreview: FC<Props> = () => {
-  const [isIdentitySaved, setIsIdentitySaved] = useState(false)
   const [isPending, setIsPending] = useState(false)
 
   const navigate = useNavigate()
@@ -37,6 +36,7 @@ const AuthPreview: FC<Props> = () => {
     selectedKycProvider,
 
     identity,
+    isIdentitySaved,
     verifiableCredentials,
     getZkProof,
   } = useZkpContext()
@@ -137,8 +137,8 @@ const AuthPreview: FC<Props> = () => {
                 download={`pk.json`}
                 text={`SAVE`}
                 href={exportLink}
-                onClick={() => setIsIdentitySaved(true)}
-                isDisabled={isIdentitySaved}
+                onClick={() => isIdentitySaved.set(true)}
+                isDisabled={isIdentitySaved.get}
               />
             </div>
           }
@@ -160,7 +160,7 @@ const AuthPreview: FC<Props> = () => {
           iconRight={ICON_NAMES.arrowRight}
           size='large'
           onClick={handleGenerateProof}
-          isDisabled={!provider?.address || !isIdentitySaved}
+          isDisabled={!provider?.address || !isIdentitySaved.get}
         />
       </div>
     ),
