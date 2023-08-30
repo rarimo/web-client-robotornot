@@ -7,6 +7,7 @@ import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
 import { ZkpGen } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
 import isEmpty from 'lodash/isEmpty'
+import log from 'loglevel'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -35,7 +36,7 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
+  const { identity, zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
     useZkpContext()
   const { provider, init } = useWeb3Context()
 
@@ -62,6 +63,24 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
+  const logAppStateDetails = useCallback(() => {
+    log.error({
+      did: identity?.idString,
+      coreStateDetails: zkpGen?.coreStateDetails,
+      targetStateDetails: zkpGen?.targetStateDetails,
+      merkleProof: zkpGen?.merkleProof,
+      operation: zkpGen?.operation,
+      operationProof: zkpGen?.operationProof,
+    })
+  }, [
+    identity?.idString,
+    zkpGen?.coreStateDetails,
+    zkpGen?.merkleProof,
+    zkpGen?.operation,
+    zkpGen?.operationProof,
+    zkpGen?.targetStateDetails,
+  ])
+
   const handleTransitStateError = useCallback(
     async (error: unknown) => {
       try {
@@ -87,10 +106,15 @@ const AuthConfirmation: FC<Props> = () => {
 
         throw error
       } catch (error) {
+        logAppStateDetails()
         ErrorHandler.process(error)
       }
     },
-    [isIdentitiesStatesRootExists, zkpGen?.operation?.details?.stateRootHash],
+    [
+      isIdentitiesStatesRootExists,
+      logAppStateDetails,
+      zkpGen?.operation?.details?.stateRootHash,
+    ],
   )
 
   const transitState = useCallback(
@@ -187,6 +211,7 @@ const AuthConfirmation: FC<Props> = () => {
     } catch (error) {
       navigate(RoutesPaths.authPreview)
 
+      logAppStateDetails()
       ErrorHandler.process(error)
     }
 
@@ -201,6 +226,7 @@ const AuthConfirmation: FC<Props> = () => {
     isUserSubmittedZkp,
     navigate,
     transitState,
+    logAppStateDetails,
   ])
 
   const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
