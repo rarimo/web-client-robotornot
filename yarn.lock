@@ -1387,13 +1387,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iden3/js-crypto@npm:^1.0.0-beta.1":
-  version: 1.0.1
-  resolution: "@iden3/js-crypto@npm:1.0.1"
-  checksum: ade7111c77804a8e652f3229e8480adefa100d590b890de095747b7cc7f268814d7f5a6e1b7141152ab5901b675dfe1a997e42b01abf154c52dae2214d53c09a
-  languageName: node
-  linkType: hard
-
 "@iden3/js-iden3-core@npm:1.0.0-beta.2":
   version: 1.0.0-beta.2
   resolution: "@iden3/js-iden3-core@npm:1.0.0-beta.2"
@@ -10075,7 +10068,7 @@ __metadata:
     "@distributedlab/w3p": 1.0.0-rc.6
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@esbuild-plugins/node-modules-polyfill": ^0.2.2
-    "@iden3/js-crypto": ^1.0.0-beta.1
+    "@iden3/js-crypto": 1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.15
     "@iden3/js-jwz": ^1.0.0-beta.2
