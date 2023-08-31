@@ -365,25 +365,18 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ): Promise<ZkpGen<QueryVariableName> | undefined> => {
       const currentZkpGen = _zkpGen ?? zkpGen
 
-      const stateDetails = await currentZkpGen?.loadStatesDetails(querier)
-      await currentZkpGen?.loadMerkleProof(querier, config.ISSUER_ID)
-
-      if (!stateDetails?.coreStateDetails?.lastUpdateOperationIndex)
-        throw new TypeError('lastUpdateOperationIndex is not defined')
-
-      await currentZkpGen?.loadOperation(
-        querier,
-        stateDetails.coreStateDetails.lastUpdateOperationIndex,
-      )
+      if (!currentZkpGen?.coreStateDetails?.lastUpdateOperationIndex)
+        throw new TypeError(
+          'coreStateDetails.lastUpdateOperationIndex is not defined',
+        )
 
       do {
         try {
-          if (!stateDetails?.coreStateDetails?.lastUpdateOperationIndex)
-            continue
+          if (!currentZkpGen.coreStateDetails.lastUpdateOperationIndex) continue
 
           await currentZkpGen?.loadOperationProof(
             querier,
-            stateDetails.coreStateDetails.lastUpdateOperationIndex,
+            currentZkpGen.coreStateDetails.lastUpdateOperationIndex,
           )
 
           return currentZkpGen
@@ -501,7 +494,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
         _zkpGen.setCircuits(wasm, zkey)
 
-        await _zkpGen.generateProof()
+        await _zkpGen.generateProof(querier)
 
         setZkpGen(await loadStatesDetails(_zkpGen))
 
@@ -516,7 +509,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       }
     } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
 
-    setZkProof(zkpGen?.subjectProof)
+    setZkProof(_zkpGen?.subjectProof)
 
     return _zkpGen
   }, [
@@ -524,7 +517,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     verifiableCredentials,
     provider?.address,
     setZkProof,
-    zkpGen?.subjectProof,
     loadStatesDetails,
   ])
 
