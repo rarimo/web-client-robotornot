@@ -130,11 +130,20 @@ const AuthConfirmation: FC<Props> = () => {
 
         if (!transitParams) throw new TypeError('Transit params is not defined')
 
+        if (
+          !config?.[
+            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
+          ]
+        )
+          throw new TypeError(
+            'Lightweight state contract address is not defined',
+          )
+
         await provider?.signAndSendTx?.(
           getTransitStateTxBody(
-            config?.[
+            config[
               `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-            ],
+            ] ?? '', // FIXME
             transitParams.newIdentitiesStatesRoot,
             transitParams.gistData,
             transitParams.proof,
