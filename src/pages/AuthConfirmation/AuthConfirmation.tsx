@@ -12,7 +12,14 @@ import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
+import {
+  Animation,
+  AppButton,
+  ChainIcon,
+  Dropdown,
+  Icon,
+  ProgressBar,
+} from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
@@ -214,17 +221,15 @@ const AuthConfirmation: FC<Props> = () => {
 
       isUserSubmittedZkp.set(true)
 
-      navigate(RoutesPaths.authSuccess)
-
       gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
       navigate(RoutesPaths.authPreview)
 
       logAppStateDetails()
       ErrorHandler.process(error)
-    }
 
-    setIsPending(false)
+      setIsPending(false)
+    }
   }, [
     zkpGen,
     zkProof.get,
@@ -324,6 +329,18 @@ const AuthConfirmation: FC<Props> = () => {
           <div className='auth-confirmation__loader-wrp'>
             <div className='auth-confirmation__loader-animation'>
               <Animation source={loaderJson} />
+
+              <ProgressBar
+                className={'auth-preview__progress-bar'}
+                checkpoints={[50, 100]}
+                checkpointIndex={
+                  isUserSubmittedZkp.get ? 1 : isStateTransiting ? undefined : 0
+                }
+                delay={2_000}
+                finishCb={() => {
+                  navigate(RoutesPaths.authSuccess)
+                }}
+              />
             </div>
             <span className='auth-confirmation__loader-title'>
               {isStateTransiting

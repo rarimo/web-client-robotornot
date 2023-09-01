@@ -4,6 +4,8 @@ import { AnimatePresence, motion, type MotionProps } from 'framer-motion'
 import { FC, HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
 import { useInterval } from 'react-use'
 
+import { sleep } from '@/helpers'
+
 type Props = HTMLAttributes<HTMLDivElement> & {
   delay: number
   checkpoints: number[] | undefined
@@ -52,28 +54,26 @@ const ProgressBar: FC<Props> = ({
     setProgress(checkpoints?.[checkpointIndex])
   }, [checkpointIndex, checkpoints, progress])
 
-  useEffect(() => {
-    if (progress >= 100) {
-      finishCb?.()
-    }
-  }, [finishCb, progress])
-
-  useEffect(() => {
-    if (!progressBarEl) return
-
-    progressBarEl?.current?.style?.setProperty(
-      '--progress-bar-progress-value',
-      `${progress}%`,
-    )
-  }, [progress])
-
   return (
     <AnimatePresence>
       <motion.div
         {...rest}
         ref={progressBarEl}
         className={['progress-bar', rest.className].join(' ')}
-      />
+      >
+        <motion.div
+          className='progress-bar__thumb'
+          animate={{
+            width: `${progress}%`,
+          }}
+          onAnimationComplete={async () => {
+            if (progress < 100) return
+
+            await sleep(500)
+            finishCb?.()
+          }}
+        />
+      </motion.div>
     </AnimatePresence>
   )
 }

@@ -8,6 +8,8 @@ import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   abbrCenter,
+  bus,
+  BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
@@ -35,6 +37,13 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const trySwitchAccount = useCallback(async () => {
     try {
       if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
+      if (localStorage.getItem('vc')) {
+        bus.emit(
+          BUS_EVENTS.warning,
+          `You're trying to switch wallet after pass kyc verification, please ensure you're using exact same wallet`,
+        )
+      }
 
       await switchAccount(provider.rawProvider as EthereumProvider)
     } catch (error) {

@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
+import type { ZKProof } from '@iden3/js-jwz'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -56,6 +57,10 @@ const AuthPreview: FC<Props> = () => {
     verificationErrorMessages,
   } = useKycContext()
 
+  const [isKycProgressComplete, setIsKycProgressComplete] = useState(
+    !!verifiableCredentials?.id,
+  )
+
   const exportLink = useMemo(() => {
     if (!identity?.privateKeyHex) return
 
@@ -67,6 +72,7 @@ const AuthPreview: FC<Props> = () => {
   }, [identity?.privateKeyHex])
 
   const handleGenerateProof = useCallback(async () => {
+    zkProof.set({} as ZKProof)
     setIsPending(true)
 
     if (!identity?.idBigIntString || !provider?.address)
@@ -105,6 +111,7 @@ const AuthPreview: FC<Props> = () => {
     isIdentityProved,
     isSenderAddressProved,
     provider?.address,
+    zkProof,
   ])
 
   const completeKyc = useCallback(async () => {
@@ -223,12 +230,14 @@ const AuthPreview: FC<Props> = () => {
       className={[
         'auth-preview',
         ...(isValidCredentials ? [] : ['auth-preview--invalid']),
-        ...(isPending || !isLoaded ? ['auth-preview--loading'] : []),
+        ...(isPending || !isKycProgressComplete
+          ? ['auth-preview--loading']
+          : []),
       ].join(' ')}
     >
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>
-          {verifiableCredentials && isLoaded
+          {verifiableCredentials && isKycProgressComplete
             ? isPending
               ? `Generating Zero-Knowledge Proof`
               : `Proof of Humanity`
@@ -238,7 +247,7 @@ const AuthPreview: FC<Props> = () => {
           ''
         ) : (
           <span className='auth-preview__header-subtitle'>
-            {verifiableCredentials && isLoaded
+            {verifiableCredentials && isKycProgressComplete
               ? isPending
                 ? `You won't reveal your personal data to any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
@@ -247,7 +256,7 @@ const AuthPreview: FC<Props> = () => {
         )}
       </div>
 
-      {isLoaded ? (
+      {isKycProgressComplete ? (
         isPending ? (
           <>
             <div className='auth-preview__card'>
@@ -260,7 +269,7 @@ const AuthPreview: FC<Props> = () => {
                   className={'auth-preview__progress-bar'}
                   checkpoints={[100]}
                   checkpointIndex={zkProof?.get?.pub_signals ? 0 : undefined}
-                  delay={1000}
+                  delay={2_000}
                   finishCb={() => {
                     navigate(RoutesPaths.authConfirmation)
                   }}
@@ -313,6 +322,9 @@ const AuthPreview: FC<Props> = () => {
                   : undefined
               }
               delay={500}
+              finishCb={() => {
+                setIsKycProgressComplete(true)
+              }}
             />
 
             <span className='auth-preview__loader-title'>
