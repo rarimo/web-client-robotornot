@@ -3,11 +3,18 @@ import './styles.scss'
 import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, CautionTip, Icon } from '@/common'
+import { Animation, AppButton, CautionTip, Icon, ProgressBar } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
@@ -17,6 +24,7 @@ import {
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
+import { useFakeProgress } from '@/hooks'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -45,13 +53,22 @@ const AuthPreview: FC<Props> = () => {
     KYC_PROVIDERS_DETAILS_MAP,
 
     isLoaded,
+    isKycFinished,
+
     isValidCredentials,
     selectedKycDetails,
-    // retryKyc,
 
     kycError,
     verificationErrorMessages,
   } = useKycContext()
+
+  const { progress: vcProgress, setCheckpointIndex: vcSetCheckpointIndex } =
+    useFakeProgress(100, [50, 100])
+
+  const {
+    progress: zkpProgress,
+    // setCheckpointIndex: zkpSetCheckpointIndex
+  } = useFakeProgress(1000, isPending ? [100] : undefined)
 
   const exportLink = useMemo(() => {
     if (!identity?.privateKeyHex) return
@@ -218,6 +235,21 @@ const AuthPreview: FC<Props> = () => {
     ],
   )
 
+  useEffect(() => {
+    if (isKycFinished && vcProgress <= 50) {
+      vcSetCheckpointIndex(0)
+    }
+
+    if (verifiableCredentials?.id && vcProgress <= 100) {
+      vcSetCheckpointIndex(1)
+    }
+  }, [
+    isKycFinished,
+    vcProgress,
+    vcSetCheckpointIndex,
+    verifiableCredentials?.id,
+  ])
+
   return (
     <div
       className={[
@@ -256,6 +288,11 @@ const AuthPreview: FC<Props> = () => {
                   <Animation source={loaderJson} />
                 </div>
 
+                <ProgressBar
+                  className={'auth-preview__progress-bar'}
+                  progress={zkpProgress}
+                />
+
                 <span className='auth-preview__loader-title'>
                   {`Please wait...`}
                 </span>
@@ -291,6 +328,11 @@ const AuthPreview: FC<Props> = () => {
                 <Icon name={ICON_NAMES.credentialsLoader} />
               </motion.div>
             </AnimatePresence>
+
+            <ProgressBar
+              className={'auth-preview__progress-bar'}
+              progress={vcProgress}
+            />
 
             <span className='auth-preview__loader-title'>
               {`Please wait...`}

@@ -187,7 +187,7 @@ Object.assign(config, {
       /* prettier-ignore */
       [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_QUERY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* prettier-ignore */
-      [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_VERIFIED_SBT_CONTRACT_ADDRESS_${curr}`] || '',
+      [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] || '',
     }),
     {},
   ) as ContractAddresses),
