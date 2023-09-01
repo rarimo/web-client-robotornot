@@ -197,9 +197,13 @@ Object.assign(config, _mapEnvCfg(import.meta.env))
 Object.assign(config, _mapEnvCfg(window.document.ENV))
 
 if (typeof config.SUPPORTED_CHAINS_DETAILS === 'string') {
-  config.SUPPORTED_CHAINS_DETAILS = JSON.parse(
-    config.SUPPORTED_CHAINS_DETAILS,
-  ) as Record<keyof typeof FALLBACK_SUPPORTED_CHAINS, Chain>
+  config.SUPPORTED_CHAINS_DETAILS = {
+    ...FALLBACK_SUPPORTED_CHAINS,
+    ...(JSON.parse(config.SUPPORTED_CHAINS_DETAILS) as Record<
+      keyof typeof FALLBACK_SUPPORTED_CHAINS,
+      Chain
+    >),
+  }
 }
 
 function _mapEnvCfg(env: ImportMetaEnv | typeof window.document.ENV): {

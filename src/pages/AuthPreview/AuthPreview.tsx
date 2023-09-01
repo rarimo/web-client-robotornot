@@ -3,14 +3,7 @@ import './styles.scss'
 import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
@@ -24,7 +17,6 @@ import {
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
-import { useFakeProgress } from '@/hooks'
 import { useIdentityVerifier } from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -46,6 +38,8 @@ const AuthPreview: FC<Props> = () => {
     identity,
     isIdentitySaved,
     verifiableCredentials,
+    zkProof,
+
     getZkProof,
   } = useZkpContext()
 
@@ -61,14 +55,6 @@ const AuthPreview: FC<Props> = () => {
     kycError,
     verificationErrorMessages,
   } = useKycContext()
-
-  const { progress: vcProgress, setCheckpointIndex: vcSetCheckpointIndex } =
-    useFakeProgress(100, [50, 100])
-
-  const {
-    progress: zkpProgress,
-    // setCheckpointIndex: zkpSetCheckpointIndex
-  } = useFakeProgress(1000, isPending ? [100] : undefined)
 
   const exportLink = useMemo(() => {
     if (!identity?.privateKeyHex) return
@@ -106,21 +92,18 @@ const AuthPreview: FC<Props> = () => {
       }
 
       await getZkProof()
-
-      navigate(RoutesPaths.authConfirmation)
     } catch (error) {
       ErrorHandler.process(error)
+
+      setIsPending(false)
     }
 
     gaSendCustomEvent(GaCategories.GenerateProof)
-
-    setIsPending(false)
   }, [
     getZkProof,
     identity?.idBigIntString,
     isIdentityProved,
     isSenderAddressProved,
-    navigate,
     provider?.address,
   ])
 
@@ -235,21 +218,6 @@ const AuthPreview: FC<Props> = () => {
     ],
   )
 
-  useEffect(() => {
-    if (isKycFinished && vcProgress <= 50) {
-      vcSetCheckpointIndex(0)
-    }
-
-    if (verifiableCredentials?.id && vcProgress <= 100) {
-      vcSetCheckpointIndex(1)
-    }
-  }, [
-    isKycFinished,
-    vcProgress,
-    vcSetCheckpointIndex,
-    verifiableCredentials?.id,
-  ])
-
   return (
     <div
       className={[
@@ -290,7 +258,12 @@ const AuthPreview: FC<Props> = () => {
 
                 <ProgressBar
                   className={'auth-preview__progress-bar'}
-                  progress={zkpProgress}
+                  checkpoints={[100]}
+                  checkpointIndex={zkProof?.get?.pub_signals ? 0 : undefined}
+                  delay={1000}
+                  finishCb={() => {
+                    navigate(RoutesPaths.authConfirmation)
+                  }}
                 />
 
                 <span className='auth-preview__loader-title'>
@@ -331,7 +304,15 @@ const AuthPreview: FC<Props> = () => {
 
             <ProgressBar
               className={'auth-preview__progress-bar'}
-              progress={vcProgress}
+              checkpoints={[50, 100]}
+              checkpointIndex={
+                isKycFinished
+                  ? verifiableCredentials?.id || isLoaded
+                    ? 1
+                    : 0
+                  : undefined
+              }
+              delay={500}
             />
 
             <span className='auth-preview__loader-title'>

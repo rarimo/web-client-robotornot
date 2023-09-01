@@ -197,7 +197,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     false,
   )
 
-  const [zkProof, setZkProof] = useLocalStorage<ZKProof>('zkps', undefined)
+  const [zkProof, setZkProof, removeZkProof] = useLocalStorage<ZKProof>(
+    'zkps',
+    undefined,
+  )
 
   const [storagePK, setStoragePK] = useLocalStorage('pkey', '')
 
@@ -522,7 +525,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const reset = useCallback(() => {
     setIdentity(undefined)
-    setZkProof(undefined)
+    removeZkProof()
     setVerifiableCredentials(undefined)
     setPublishedChains([])
     setSelectedKycProvider(undefined)
@@ -531,12 +534,12 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     localStorage.clear()
   }, [
+    removeZkProof,
     setIsUserSubmittedZkp,
     setPublishedChains,
     setSelectedKycProvider,
     setStoragePK,
     setVerifiableCredentials,
-    setZkProof,
   ])
 
   useEffectOnce(() => {
@@ -557,6 +560,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     if (isUserSubmittedZkp) {
       navigate(RoutesPaths.authSuccess)
     } else if (verifiableCredentials) {
+      removeZkProof()
       navigate(RoutesPaths.authPreview)
     } else {
       if (

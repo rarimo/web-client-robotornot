@@ -455,11 +455,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
       }
 
+      await sleep(5_000)
+
       setIsKycFinished(true)
 
       let _verifiableCredentials:
         | VerifiableCredentials<QueryVariableName>
         | undefined
+
+      await sleep(10_000)
 
       try {
         await isClaimOfferExists(currentIdentity)
