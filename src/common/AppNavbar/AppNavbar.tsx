@@ -1,10 +1,20 @@
 import './styles.scss'
 
 import { type EthereumProvider, PROVIDERS } from '@distributedlab/w3p'
-import { FC, HTMLAttributes, useCallback, useState } from 'react'
+import { type VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { useLocalStorage } from 'react-use'
 
 import { AppButton, AppLogo, Drawer, Dropdown } from '@/common'
 import { useWeb3Context } from '@/contexts'
+import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   abbrCenter,
@@ -24,6 +34,23 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isDropdownShown, setIsDropdownShown] = useState(false)
   const { provider, init } = useWeb3Context()
 
+  const [vc] = useLocalStorage<VerifiableCredentials<QueryVariableName> | null>(
+    'vc',
+    null,
+  )
+
+  const isWalletAccountValid = useMemo(() => {
+    if (!vc?.body?.credential?.credentialSubject) return true
+
+    return Boolean(
+      vc?.body?.credential?.credentialSubject &&
+        'address' in vc.body.credential.credentialSubject &&
+        typeof vc.body.credential.credentialSubject?.address === 'string' &&
+        vc?.body?.credential?.credentialSubject?.address?.toLowerCase() ===
+          provider?.address?.toLowerCase(),
+    )
+  }, [provider?.address, vc?.body.credential.credentialSubject])
+
   const connectProvider = useCallback(async () => {
     try {
       await init(PROVIDERS.Metamask)
@@ -38,10 +65,10 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     try {
       if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
 
-      if (localStorage.getItem('vc')) {
+      if (isWalletAccountValid) {
         bus.emit(
           BUS_EVENTS.warning,
-          `You're trying to switch wallet after pass kyc verification, please ensure you're using exact same wallet`,
+          `Looks like you're trying to switch your MetaMask address! Please use the same account that you've used during the verification process.`,
         )
       }
 
@@ -51,7 +78,16 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     setIsDropdownShown(false)
-  }, [provider?.rawProvider])
+  }, [isWalletAccountValid, provider?.rawProvider])
+
+  useEffect(() => {
+    if (isWalletAccountValid) return
+
+    bus.emit(
+      BUS_EVENTS.warning,
+      `Looks like you've switched your MetaMask address! Please use the same account that you've used during the verification process.`,
+    )
+  }, [isWalletAccountValid, provider?.address])
 
   return (
     <div className={`app-navbar ${className}`} {...rest}>
