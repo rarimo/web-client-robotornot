@@ -58,6 +58,8 @@ export const config = {
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
 
+  IS_STAGING: import.meta.env.VITE_IS_STAGING ?? false,
+
   RARIMO_CORE_RPC_API_URL: import.meta.env.VITE_RARIMO_CORE_RPC_API_URL,
   RARIMO_EVM_RPC_URL: import.meta.env.VITE_RARIMO_EVM_RPC_URL,
   STATE_V2_CONTRACT_ADDRESS: import.meta.env.VITE_STATE_V2_CONTRACT_ADDRESS,
@@ -147,6 +149,8 @@ export const config = {
   APP_NAME: string
   LOG_LEVEL: string
   BUILD_VERSION: string
+
+  IS_STAGING: boolean
 
   RARIMO_CORE_RPC_API_URL: string
   RARIMO_EVM_RPC_URL: string

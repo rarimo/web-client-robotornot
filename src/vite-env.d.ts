@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   VITE_APP_NAME: string
   VITE_APP_BUILD_VERSION: string
 
+  VITE_IS_STAGING: boolean
+
   VITE_RARIMO_CORE_RPC_API_URL: string
   VITE_RARIMO_EVM_RPC_URL: string
   VITE_STATE_V2_CONTRACT_ADDRESS: string

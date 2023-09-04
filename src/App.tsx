@@ -1,4 +1,3 @@
-import { config } from '@config'
 import { Chain, errors } from '@distributedlab/w3p'
 import {
   FC,
@@ -8,10 +7,12 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { Helmet } from 'react-helmet'
 import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 import { AppButton, AppNavbar, BasicModal, Loader } from '@/common'
+import { config } from '@/config'
 import { useWeb3Context, ZkpContextProvider } from '@/contexts'
 import {
   bus,
@@ -107,6 +108,44 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
   return (
     <ZkpContextProvider>
+      <Helmet>
+        <title>{`Prove Your Humanity | Rarimo`}</title>
+        <meta
+          name='description'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
+        />
+
+        {/*Facebook Meta Tags*/}
+        <meta property='og:url' content={window.location.origin} />
+        <meta property='og:type' content='website' />
+        <meta property='og:title' content='Prove Your Humanity | Rarimo' />
+        <meta
+          property='og:description'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
+        />
+        <meta
+          property='og:image'
+          content={`${window.location.origin}/branding/og-image.jpg`}
+        />
+        <meta property='og:locale' content='en_US' />
+
+        {/*Twitter Meta Tags*/}
+        <meta name='twitter:card' content='summary_large_image' />
+        <meta property='twitter:domain' content={window.location.origin} />
+        <meta property='twitter:url' content={window.location.origin} />
+        <meta name='twitter:title' content='Prove Your Humanity | Rarimo' />
+        <meta
+          name='twitter:description'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
+        />
+        <meta
+          name='twitter:image'
+          content={`${window.location.origin}/branding/og-image.jpg`}
+        />
+
+        {config.IS_STAGING ? <meta name='robots' content='noindex' /> : null}
+      </Helmet>
+
       <div id='app'>
         <AppNavbar />
 
