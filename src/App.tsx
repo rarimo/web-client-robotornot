@@ -112,7 +112,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
         <title>{`Prove Your Humanity | Rarimo`}</title>
         <meta
           name='description'
-          content='Prove your humanity using your identity provider of choice and claim a cool wearable in the metaverse with Rarimo.'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
         />
 
         {/*Facebook Meta Tags*/}
@@ -121,7 +121,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
         <meta property='og:title' content='Prove Your Humanity | Rarimo' />
         <meta
           property='og:description'
-          content='Prove your humanity using your identity provider of choice and claim a cool wearable in the metaverse with Rarimo.'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
         />
         <meta
           property='og:image'
@@ -136,7 +136,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
         <meta name='twitter:title' content='Prove Your Humanity | Rarimo' />
         <meta
           name='twitter:description'
-          content='Prove your humanity using your identity provider of choice and claim a cool wearable in the metaverse with Rarimo.'
+          content='Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.'
         />
         <meta
           name='twitter:image'
