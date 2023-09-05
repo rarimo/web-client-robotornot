@@ -45,7 +45,7 @@ stages:
   - build-and-publish
   - lint-and-test
   #- publish
-  #- deploy
+  - deploy
   - cleanup
 
 Build:
