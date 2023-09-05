@@ -26,7 +26,7 @@
     "@distributedlab/w3p": "1.0.0-rc.6",
     "@iden3/js-crypto": "1.0.0-beta.1",
     "@iden3/js-iden3-core": "1.0.0-beta.2",
-    "@iden3/js-jsonld-merklization": "^1.0.0-beta.15",
+    "@iden3/js-jsonld-merklization": "1.0.0-beta.14",
     "@iden3/js-jwz": "^1.0.0-beta.2",
     "@iden3/js-merkletree": "^1.0.0-beta.4",
     "@rarimo/auth-zkp-iden3": "^2.0.0-rc.21",
