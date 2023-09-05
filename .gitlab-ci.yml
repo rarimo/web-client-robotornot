@@ -16,7 +16,8 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
-  #DOMAIN: dapppad.com
+  DOMAIN_PRODUCTION: https://poh.rarimo.com
+  DOMAIN_STAGING: https://notarobot.mainnet-beta.rarimo.com
   GITHUB_REF: $CI_COMMIT_SHA
   DH_IMAGE_NAME: $CI_PROJECT_ROOT_NAMESPACE/$CI_PROJECT_NAME
   SERVICE: $CI_PROJECT_NAME
@@ -49,6 +50,8 @@ Build:
   stage: build-and-publish
   <<: *before_script_templ
   script:
+    - export VITE_ENVIRONMENT=staging
+    - export VITE_APP_DOMAIN=$DOMAIN_STAGING
     - . $(werf ci-env gitlab --as-file)
     - werf export web --tag $IMAGE_NAME
   except: [schedules]
@@ -60,6 +63,8 @@ Build Tag:
     - tags
   <<: *before_script_templ
   script:
+    - export VITE_ENVIRONMENT=production
+    - export VITE_APP_DOMAIN=$DOMAIN_PRODUCTION
     - . $(werf ci-env gitlab --as-file)
     - werf export web --tag $IMAGE_NAME_TAG
   except: [schedules]

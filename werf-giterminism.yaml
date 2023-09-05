@@ -1,4 +1,4 @@
 giterminismConfigVersion: 1
 config:
   goTemplateRendering:
-    allowEnvVariables: ["VITE_SENTRY_AUTH_TOKEN", "VITE_SENTRY_DSN"]
+    allowEnvVariables: ["VITE_SENTRY_AUTH_TOKEN", "VITE_SENTRY_DSN", "VITE_ENVIRONMENT", "VITE_APP_DOMAIN"]
