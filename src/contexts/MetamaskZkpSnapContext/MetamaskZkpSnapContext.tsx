@@ -98,7 +98,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   )
 
   const init = useCallback(async () => {
-    const snap = await enableSnap()
+    const snap = await enableSnap(defaultSnapOrigin)
     const connector = await snap.getConnector()
 
     setConnector(connector)
