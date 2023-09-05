@@ -16,6 +16,8 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
+  NAMESPACE_DEV: polygon
+  NAMESPACE_MAIN: galxe
   DOMAIN_PRODUCTION: https://poh.rarimo.com
   DOMAIN_STAGING: https://notarobot.mainnet-beta.rarimo.com
   GITHUB_REF: $CI_COMMIT_SHA
@@ -86,34 +88,34 @@ Lint and Test:
   except: [schedules]
   interruptible: true
 
-# Deploy to Staging:
-#   services:
-#       - docker:18-dind
-#   image: dtzar/helm-kubectl:latest
-#   tags:
-#     - tokend-deploy
-#   stage: deploy
-#   script:
-#     - mkdir ~/.kube/
-#     - echo ${k8sconfig} | base64 -d > config
-#     - mv config ~/.kube/
-#     - helm upgrade -i "webclient" ".helm" --set global.IngressDomain=stage.${DOMAIN} --set "image.repository=${REGISTRY}" --set "image.tag=${CI_COMMIT_SHA}" --create-namespace --namespace $CI_PROJECT_NAME-stage
-#   interruptible: true
+Deploy to Staging:
+  services:
+      - docker:18-dind
+  image: dtzar/helm-kubectl:latest
+  tags:
+    - tokend-deploy
+  stage: deploy
+  script:
+    - mkdir ~/.kube/
+    - echo ${k8sconfig_dev} | base64 -d > config
+    - mv config ~/.kube/
+    - kubectl set image deployment rarimo-web-new template=${REGISTRY}:${CI_COMMIT_SHA} -n ${NAMESPACE_DEV}
+  interruptible: true
 
-# Deploy to Production:
-#   services:
-#       - docker:18-dind
-#   image: dtzar/helm-kubectl:latest
-#   tags:
-#     - tokend-deploy
-#   stage: deploy
-#   script:
-#     - mkdir ~/.kube/
-#     - echo ${k8sconfig} | base64 -d > config
-#     - mv config ~/.kube/
-#     - helm upgrade -i "webclient" ".helm" --set global.IngressDomain=${DOMAIN} --set "image.repository=${REGISTRY}" --set "image.tag=${CI_COMMIT_TAG}" --create-namespace --namespace $CI_PROJECT_NAME-prod
-#   when: manual
-#   interruptible: true
+Deploy to Production:
+  services:
+      - docker:18-dind
+  image: dtzar/helm-kubectl:latest
+  tags:
+    - tokend-deploy
+  stage: deploy
+  script:
+    - mkdir ~/.kube/
+    - echo ${k8sconfig_main} | base64 -d > config
+    - mv config ~/.kube/
+    - kubectl set image deployment rarimo-web template=${REGISTRY}:${CI_COMMIT_TAG} -n ${NAMESPACE_MAIN}
+  when: manual
+  interruptible: true
 
 Cleanup:
   stage: cleanup
