@@ -59,9 +59,7 @@ export default defineConfig(({ mode }) => {
           tags: [
             {
               tag: 'title',
-              attrs: {
-                text: 'Prove Your Humanity | Rarimo',
-              },
+              children: 'Prove Your Humanity | Rarimo',
             },
             {
               tag: 'meta',
