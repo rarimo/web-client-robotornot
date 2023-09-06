@@ -104,7 +104,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     setConnector(connector)
 
     const _isMetamaskInstalled = await detectMetamaskInstalled()
-    const _isSnapInstalled = await detectSnapInstalled()
+    const _isSnapInstalled = await detectSnapInstalled(defaultSnapOrigin)
 
     setIsMetamaskInstalled(_isMetamaskInstalled)
     setIsSnapInstalled(_isSnapInstalled)
