@@ -36,8 +36,6 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
     try {
       await initWeb3()
-
-      document.title = config.APP_NAME
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }

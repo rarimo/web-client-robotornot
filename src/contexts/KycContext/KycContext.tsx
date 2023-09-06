@@ -278,9 +278,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const [isLoaded, setIsLoaded] = useState(!!verifiableCredentials)
 
-  const [isValidCredentials, setIsValidCredentials] = useState(
-    !!verifiableCredentials,
-  )
+  const [isValidCredentials, setIsValidCredentials] = useState(true)
 
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -455,15 +453,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         }
       }
 
-      await sleep(5_000)
-
       setIsKycFinished(true)
 
       let _verifiableCredentials:
         | VerifiableCredentials<QueryVariableName>
         | undefined
-
-      await sleep(10_000)
 
       try {
         await isClaimOfferExists(currentIdentity)
