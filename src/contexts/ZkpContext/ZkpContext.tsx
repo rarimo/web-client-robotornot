@@ -37,6 +37,11 @@ interface ZkpContextValue {
   identityIdString: string
   identityBigIntString: string
 
+  isIdentitySaved: {
+    get: boolean
+    set: (value: boolean) => void
+  }
+
   publishedChains: {
     get?: SUPPORTED_CHAINS[]
     set: (value: SUPPORTED_CHAINS[]) => void
@@ -88,6 +93,13 @@ export const zkpContext = createContext<ZkpContextValue>({
     },
   },
   verifiableCredentials: undefined,
+
+  isIdentitySaved: {
+    get: true,
+    set: () => {
+      throw new TypeError(`isIdentitySaved.set() not implemented`)
+    },
+  },
 
   selectedKycProvider: {
     get: undefined,
@@ -158,12 +170,20 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     removeSelectedKycProvider,
   ] = useLocalStorage<SUPPORTED_KYC_PROVIDERS>('selectedKycProvider', undefined)
 
+  const [isIdentitySaved, setIsIdentitySaved] = useLocalStorage<boolean>(
+    'isIdentitySaved',
+    false,
+  )
+
   const [isUserSubmittedZkp, setIsUserSubmittedZkp] = useLocalStorage<boolean>(
     'isZkpSubmitted',
     false,
   )
 
-  const [zkProof, setZkProof] = useLocalStorage<ZKProof>('zkps', undefined)
+  const [zkProof, setZkProof, removeZkProof] = useLocalStorage<ZKProof>(
+    'zkps',
+    undefined,
+  )
   const [statesMerkleProof, setStatesMerkleProof] =
     useState<StatesMerkleProof>()
   const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
@@ -303,7 +323,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const reset = useCallback(() => {
     setIdentityIdstring('')
-    setZkProof(undefined)
+    removeZkProof()
     setVerifiableCredentials(undefined)
     setPublishedChains([])
     setSelectedKycProvider(undefined)
@@ -312,11 +332,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     localStorage.clear()
   }, [
     setIdentityIdstring,
+    removeZkProof,
     setIsUserSubmittedZkp,
     setPublishedChains,
     setSelectedKycProvider,
     setVerifiableCredentials,
-    setZkProof,
   ])
 
   useEffectOnce(() => {
@@ -331,6 +351,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     if (isUserSubmittedZkp) {
       navigate(RoutesPaths.authSuccess)
     } else if (verifiableCredentials) {
+      removeZkProof()
       navigate(RoutesPaths.authPreview)
     } else {
       if (
@@ -355,6 +376,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           set: setPublishedChains,
         },
         verifiableCredentials,
+
+        isIdentitySaved: {
+          get: isIdentitySaved || true,
+          set: setIsIdentitySaved,
+        },
 
         selectedKycProvider: {
           get: selectedKycProvider,

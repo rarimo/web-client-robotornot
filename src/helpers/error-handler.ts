@@ -1,5 +1,6 @@
 import { UnauthorizedError } from '@distributedlab/jac'
 import { RuntimeError } from '@distributedlab/tools'
+import * as Sentry from '@sentry/react'
 import log from 'loglevel'
 
 import { errors } from '@/errors'
@@ -25,6 +26,7 @@ export class ErrorHandler {
   }
 
   static processWithoutFeedback(error: Error | unknown): void {
+    Sentry.captureException(error)
     log.error(error)
   }
 

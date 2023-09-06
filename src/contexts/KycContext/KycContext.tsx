@@ -96,7 +96,7 @@ interface KycContextValue {
   KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
   isLoaded: boolean
-
+  isKycFinished: boolean
   isValidCredentials: boolean
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
@@ -133,7 +133,7 @@ export const kycContext = createContext<KycContextValue>({
   KYC_PROVIDERS_DETAILS_MAP,
 
   isLoaded: false,
-
+  isKycFinished: false,
   isValidCredentials: false,
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
@@ -155,6 +155,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const { t } = useTranslation()
 
   const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
+  const [isKycFinished, setIsKycFinished] = useState(false)
 
   const {
     selectedKycProvider,
@@ -168,23 +169,22 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   } = useZkpContext()
 
   const kycDetails = useMemo<
-    Partial<
-      | {
-          address: string
-          civicGatekeeperNetworkId: number
-          gitcoinPassportScore: string
-          id: string
-          kycAdditionalData: string
-          provider: string
-          type: string
-          unstoppableDomain: string
-          worldcoinScore: string
-        } & QueryVariableName
-    >
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    | Partial<
+        | {
+            address: string
+            civicGatekeeperNetworkId: number
+            gitcoinPassportScore: string
+            id: string
+            kycAdditionalData: string
+            provider: string
+            type: string
+            unstoppableDomain: string
+            worldcoinScore: string
+          } & QueryVariableName
+      >
+    | undefined
   >(
-    () => verifiableCredentials?.credentialSubject ?? {},
+    () => verifiableCredentials?.credentialSubject,
     [verifiableCredentials?.credentialSubject],
   )
 
@@ -456,7 +456,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           }
         }
 
+        await sleep(5_000)
+
+        setIsKycFinished(true)
+
         let _verifiableCredentials: W3CCredential | undefined
+
+        await sleep(10_000)
 
         try {
           await isClaimOfferExists(currentIdentityIdString)
@@ -520,6 +526,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           KYC_PROVIDERS_DETAILS_MAP,
 
           isLoaded,
+          isKycFinished,
           isValidCredentials,
 
           login,

@@ -1,13 +1,25 @@
 import './styles.scss'
 
 import { type EthereumProvider, PROVIDERS } from '@distributedlab/w3p'
-import { FC, HTMLAttributes, useCallback, useState } from 'react'
+import { type VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { useLocalStorage } from 'react-use'
 
 import { AppButton, AppLogo, Drawer, Dropdown } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
+import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES } from '@/enums'
 import {
   abbrCenter,
+  bus,
+  BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
@@ -22,6 +34,23 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isDropdownShown, setIsDropdownShown] = useState(false)
   const { provider, init: initProvider } = useWeb3Context()
   const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
+
+  const [vc] = useLocalStorage<VerifiableCredentials<QueryVariableName> | null>(
+    'vc',
+    null,
+  )
+
+  const isWalletAccountValid = useMemo(() => {
+    if (!vc?.body?.credential?.credentialSubject) return true
+
+    return Boolean(
+      vc?.body?.credential?.credentialSubject &&
+        'address' in vc.body.credential.credentialSubject &&
+        typeof vc.body.credential.credentialSubject?.address === 'string' &&
+        vc?.body?.credential?.credentialSubject?.address?.toLowerCase() ===
+          provider?.address?.toLowerCase(),
+    )
+  }, [provider?.address, vc?.body.credential.credentialSubject])
 
   const connectProvider = useCallback(async () => {
     try {
@@ -45,13 +74,29 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     try {
       if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
 
+      if (isWalletAccountValid) {
+        bus.emit(
+          BUS_EVENTS.warning,
+          `Looks like you're trying to switch your MetaMask address! Please use the same account that you've used during the verification process.`,
+        )
+      }
+
       await switchAccount(provider.rawProvider as EthereumProvider)
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     setIsDropdownShown(false)
-  }, [provider?.rawProvider])
+  }, [isWalletAccountValid, provider?.rawProvider])
+
+  useEffect(() => {
+    if (isWalletAccountValid) return
+
+    bus.emit(
+      BUS_EVENTS.warning,
+      `Looks like you've switched your MetaMask address! Please use the same account that you've used during the verification process.`,
+    )
+  }, [isWalletAccountValid, provider?.address])
 
   return (
     <div className={`app-navbar ${className}`} {...rest}>

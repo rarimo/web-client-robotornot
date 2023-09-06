@@ -4,22 +4,32 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
 import { utils } from 'ethers'
+import log from 'loglevel'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, ChainIcon, Dropdown, Icon } from '@/common'
+import {
+  Animation,
+  AppButton,
+  ChainIcon,
+  Dropdown,
+  Icon,
+  ProgressBar,
+} from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   awaitFinalityBlock,
-  bus,
-  BUS_EVENTS,
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
+  sleep,
 } from '@/helpers'
-import { useIdentityVerifier } from '@/hooks/contracts'
+import {
+  useIdentityVerifier,
+  // useLightweightStateV2
+} from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -33,6 +43,7 @@ const AuthConfirmation: FC<Props> = () => {
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
   const {
+    identityIdString,
     zkProof,
     statesMerkleProof,
     transitStateTx,
@@ -43,6 +54,11 @@ const AuthConfirmation: FC<Props> = () => {
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
+
+  // const { isIdentitiesStatesRootExists } = useLightweightStateV2(
+  // eslint-disable-next-line max-len
+  //   config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`],
+  // )
 
   const selectedChainToPublishDetails = useMemo(() => {
     return config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
@@ -60,6 +76,44 @@ const AuthConfirmation: FC<Props> = () => {
     [],
   )
 
+  const logAppStateDetails = useCallback(() => {
+    log.error({
+      did: identityIdString,
+    })
+  }, [identityIdString])
+
+  const handleTransitStateError = useCallback(
+    async (error: unknown) => {
+      try {
+        if (error instanceof Error && 'error' in error) {
+          const str = 'Identities states root already exists'
+          const currentError = error.error as RuntimeError
+          const errorString = currentError?.message
+
+          if (errorString?.includes(str)) return
+        }
+
+        await sleep(1000)
+
+        // if (
+        //   await isIdentitiesStatesRootExists(
+        //     zkpGen?.operation?.details?.stateRootHash,
+        //   )
+        // )
+        //   return
+
+        throw error
+      } catch (error) {
+        logAppStateDetails()
+        ErrorHandler.process(error)
+      }
+    },
+    [
+      // isIdentitiesStatesRootExists,
+      logAppStateDetails,
+    ],
+  )
+
   const transitState = useCallback(async () => {
     if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
 
@@ -68,28 +122,18 @@ const AuthConfirmation: FC<Props> = () => {
     try {
       await provider?.signAndSendTx?.(transitStateTx)
 
+      gaSendCustomEvent(GaCategories.TransitState)
+
       await awaitFinalityBlock(
         config.FINALITY_BLOCK_AMOUNT,
         provider?.rawProvider,
       )
-
-      gaSendCustomEvent(GaCategories.TransitState)
     } catch (error) {
-      if (error instanceof Error && 'error' in error) {
-        const str = 'Identities states root already exists'
-        const currentError = error.error as RuntimeError
-        const errorString = currentError?.message
-
-        if (errorString?.includes(str)) {
-          return
-        }
-      }
-
-      throw error
+      await handleTransitStateError(error)
     }
 
     setIsStateTransiting(false)
-  }, [provider, transitStateTx])
+  }, [provider, transitStateTx, handleTransitStateError])
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
@@ -134,28 +178,15 @@ const AuthConfirmation: FC<Props> = () => {
 
       isUserSubmittedZkp.set(true)
 
-      navigate(RoutesPaths.authSuccess)
-
       gaSendCustomEvent(GaCategories.SubmitZkp)
     } catch (error) {
-      if (error instanceof Error && 'error' in error) {
-        const currentError = error.error as RuntimeError
-        const errorString = currentError?.message
+      navigate(RoutesPaths.authPreview)
 
-        if (errorString?.includes('invalid signature')) {
-          bus.emit(
-            BUS_EVENTS.warning,
-            `The proof has expired. Please generate a new one`,
-          )
-          navigate(RoutesPaths.authPreview)
-          return
-        }
-      }
-
+      logAppStateDetails()
       ErrorHandler.process(error)
-    }
 
-    setIsPending(false)
+      setIsPending(false)
+    }
   }, [
     transitStateTx,
     zkProof.get?.pub_signals,
@@ -173,6 +204,7 @@ const AuthConfirmation: FC<Props> = () => {
     isUserSubmittedZkp,
     navigate,
     transitState,
+    logAppStateDetails,
   ])
 
   const providerChainId = useMemo(() => provider?.chainId, [provider?.chainId])
@@ -233,6 +265,10 @@ const AuthConfirmation: FC<Props> = () => {
         name: chain,
         chainId: config.SUPPORTED_CHAINS_DETAILS[chain].id,
       })
+
+      gaSendCustomEvent(
+        `[${config.SUPPORTED_CHAINS_DETAILS[chain].id}] ${chain}`,
+      )
     },
     [trySwitchChain],
   )
@@ -257,6 +293,18 @@ const AuthConfirmation: FC<Props> = () => {
           <div className='auth-confirmation__loader-wrp'>
             <div className='auth-confirmation__loader-animation'>
               <Animation source={loaderJson} />
+
+              <ProgressBar
+                className={'auth-preview__progress-bar'}
+                checkpoints={[50, 100]}
+                checkpointIndex={
+                  isUserSubmittedZkp.get ? 1 : isStateTransiting ? undefined : 0
+                }
+                delay={2_000}
+                finishCb={() => {
+                  navigate(RoutesPaths.authSuccess)
+                }}
+              />
             </div>
             <span className='auth-confirmation__loader-title'>
               {isStateTransiting

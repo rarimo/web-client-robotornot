@@ -9,6 +9,12 @@ import packageJson from '../package.json'
 
 export type SUPPORTED_CHAINS = keyof typeof FALLBACK_SUPPORTED_CHAINS
 
+type ContractAddresses = {
+  [k in
+    | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
+    | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
+}
+
 export const FALLBACK_CIRCUIT_URLS = {
   auth: {
     wasm: `${window.location.origin}/circuits/auth/circuit.wasm`,
@@ -65,24 +71,6 @@ export const config = {
 
   FINALITY_BLOCK_AMOUNT: import.meta.env.VITE_FINALITY_BLOCK_AMOUNT || 10,
 
-  ...(Object.keys(FALLBACK_SUPPORTED_CHAINS).reduce(
-    (acc, curr) => ({
-      ...acc,
-      /* eslint-disable max-len */
-      /* prettier-ignore */
-      [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
-      /* prettier-ignore */
-      [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]:
-        import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] ||
-        '',
-    }),
-    {},
-  ) as {
-    [k in
-      | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
-      | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
-  }),
-
   DEFAULT_CHAIN: import.meta.env.VITE_DEFAULT_CHAIN as SUPPORTED_CHAINS,
 
   EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
@@ -90,7 +78,7 @@ export const config = {
 
   CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
   CLAIM_OFFER_MAX_TRIES_COUNT:
-    import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 10,
+    import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 5,
   KYC_VERIFICATION_DELAY: import.meta.env.VITE_KYC_VERIFICATION_DELAY || 3000,
 
   CIRCUIT_URLS: {
@@ -154,10 +142,69 @@ export const config = {
 
   CIRCUITS_LOADING_TRIES_LIMIT:
     import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
-} as const
+} as {
+  API_URL: string
+  APP_NAME: string
+  LOG_LEVEL: string
+  BUILD_VERSION: string
+
+  RARIMO_CORE_RPC_API_URL: string
+  RARIMO_EVM_RPC_URL: string
+  STATE_V2_CONTRACT_ADDRESS: string
+
+  UNSTOPPABLE_DOMAINS_CLIENT_ID: string
+
+  WORLDCOIN_APP_ID: string
+  AUTH_BJJ_CREDENTIAL_HASH: string
+  ISSUER_ID: string
+
+  FINALITY_BLOCK_AMOUNT: number
+
+  DEFAULT_CHAIN: SUPPORTED_CHAINS
+
+  EXTERNAL_PLATFORM_REDIRECT_URL: string
+
+  CLAIM_OFFER_DELAY: number
+  CLAIM_OFFER_MAX_TRIES_COUNT: number
+  KYC_VERIFICATION_DELAY: number
+
+  CIRCUIT_URLS: typeof FALLBACK_CIRCUIT_URLS
+
+  GA_ID: string
+
+  SUPPORTED_CHAINS_DETAILS: Record<
+    keyof typeof FALLBACK_SUPPORTED_CHAINS,
+    Chain
+  >
+  CIRCUITS_LOADING_TRIES_LIMIT: number
+} & Partial<ContractAddresses>
+
+Object.assign(config, {
+  ...(Object.keys(config.SUPPORTED_CHAINS_DETAILS).reduce(
+    (acc, curr) => ({
+      ...acc,
+      /* eslint-disable max-len */
+      /* prettier-ignore */
+      [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
+      /* prettier-ignore */
+      [`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${curr}`] || '',
+    }),
+    {},
+  ) as ContractAddresses),
+})
 
 Object.assign(config, _mapEnvCfg(import.meta.env))
 Object.assign(config, _mapEnvCfg(window.document.ENV))
+
+if (typeof config.SUPPORTED_CHAINS_DETAILS === 'string') {
+  config.SUPPORTED_CHAINS_DETAILS = {
+    ...FALLBACK_SUPPORTED_CHAINS,
+    ...(JSON.parse(config.SUPPORTED_CHAINS_DETAILS) as Record<
+      keyof typeof FALLBACK_SUPPORTED_CHAINS,
+      Chain
+    >),
+  }
+}
 
 function _mapEnvCfg(env: ImportMetaEnv | typeof window.document.ENV): {
   [k: string]: string | boolean | undefined

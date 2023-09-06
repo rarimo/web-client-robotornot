@@ -6,7 +6,7 @@ import { FC, HTMLAttributes, useCallback } from 'react'
 import { Icon } from '@/common'
 import { useKycContext, useWeb3Context } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { bus, BUS_EVENTS, GaCategories, gaSendCustomEvent } from '@/helpers'
+import { GaCategories, gaSendCustomEvent } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   supportedKycProvider: SUPPORTED_KYC_PROVIDERS
@@ -26,10 +26,6 @@ const AuthProvidersItem: FC<Props> = ({
 
   const connectProvider = useCallback(async () => {
     await init(PROVIDERS.Metamask)
-    bus.emit(BUS_EVENTS.info, {
-      title: 'Wallet connected',
-      message: 'You have successfully connected your wallet',
-    })
   }, [init])
 
   const handleLogin = useCallback(async () => {
@@ -42,6 +38,8 @@ const AuthProvidersItem: FC<Props> = ({
     gaSendCustomEvent(GaCategories.ProviderSelection, {
       provider: supportedKycProvider,
     })
+
+    gaSendCustomEvent(supportedKycProvider)
   }, [
     connectProvider,
     isWalletRequired,

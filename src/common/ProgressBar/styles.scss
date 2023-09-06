@@ -1,0 +1,19 @@
+.progress-bar {
+  --progressbar-track: rgba(0, 0, 0, 0.05);
+  --progressbar-thumb: var(--success-main);
+
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: toRem(4);
+  background: var(--progressbar-track);
+}
+
+.progress-bar__thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--progressbar-thumb);
+  transition: width 0.25s ease-in-out;
+}

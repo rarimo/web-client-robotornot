@@ -1,11 +1,13 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite'
 import { checker } from 'vite-plugin-checker'
+import { createHtmlPlugin } from 'vite-plugin-html'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -19,9 +21,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   // const isProduction = env.VITE_ENVIRONMENT === 'production'
+  const isStaging = env.VITE_ENVIRONMENT === 'staging'
   // const isDevelopment = env.VITE_ENVIRONMENT === 'development'
   const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
   // const buildVersion = env.VITE_APP_BUILD_VERSION
+
+  const APP_DOMAIN = env.VITE_APP_DOMAIN || `http://localhost:${env.VITE_PORT}`
 
   return {
     ...(env.VITE_PORT
@@ -36,8 +41,139 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'static',
     plugins: [
+      ...(env.VITE_SENTRY_AUTH_TOKEN
+        ? [
+            sentryVitePlugin({
+              authToken: env.VITE_SENTRY_AUTH_TOKEN,
+              org: 'dl-1be19f0cb',
+              project: 'javascript-react',
+            }),
+          ]
+        : []),
+
       splitVendorChunkPlugin(),
       react(),
+
+      createHtmlPlugin({
+        inject: {
+          tags: [
+            {
+              tag: 'title',
+              attrs: {
+                text: 'Prove Your Humanity | Rarimo',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'description',
+                content:
+                  'Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.',
+              },
+            },
+
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:url',
+                content: APP_DOMAIN,
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:type',
+                content: 'website',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:title',
+                content: 'Prove Your Humanity | Rarimo',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:description',
+                content:
+                  'Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:image',
+                content: `${APP_DOMAIN}/branding/og-image.jpg`,
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                property: 'og:locale',
+                content: 'en_US',
+              },
+            },
+
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:card',
+                content: 'summary_large_image',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:domain',
+                content: APP_DOMAIN,
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:url',
+                content: APP_DOMAIN,
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:title',
+                content: 'Prove Your Humanity | Rarimo',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:description',
+                content:
+                  'Prove your humanity using your identity provider of choice and get access to on-chain rewards with Rarimo.',
+              },
+            },
+            {
+              tag: 'meta',
+              attrs: {
+                name: 'twitter:image',
+                content: `${APP_DOMAIN}/branding/og-image.jpg`,
+              },
+            },
+
+            ...(isStaging
+              ? [
+                  {
+                    tag: 'meta',
+                    attrs: {
+                      name: 'robots',
+                      content: 'noindex',
+                    },
+                  },
+                ]
+              : []),
+          ],
+        },
+      }),
 
       tsconfigPaths(),
       createSvgIconsPlugin({

@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   VITE_PORT: string
   VITE_API_URL: string
   VITE_APP_NAME: string
+  VITE_APP_BUILD_VERSION: string
 
   VITE_RARIMO_CORE_RPC_API_URL: string
   VITE_RARIMO_EVM_RPC_URL: string
@@ -40,6 +41,8 @@ interface ImportMetaEnv {
   VITE_MTP_V2_ZKEY_URL: string
 
   VITE_GA_ID: string
+
+  VITE_SENTRY_DSN: string
 
   VITE_SUPPORTED_CHAINS_DETAILS: string
 

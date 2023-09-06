@@ -2,12 +2,13 @@ import './styles.scss'
 
 import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
+import type { ZKProof } from '@iden3/js-jwz'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
-import { Animation, AppButton, Icon } from '@/common'
+import { Animation, AppButton, Icon, ProgressBar } from '@/common'
 import {
   useKycContext,
   useMetamaskZkpSnapContext,
@@ -43,7 +44,10 @@ const AuthPreview: FC<Props> = () => {
     identityBigIntString,
 
     selectedKycProvider,
+
     verifiableCredentials,
+    zkProof,
+
     getZkProof,
   } = useZkpContext()
 
@@ -51,15 +55,21 @@ const AuthPreview: FC<Props> = () => {
     KYC_PROVIDERS_DETAILS_MAP,
 
     isLoaded,
+    isKycFinished,
+
     isValidCredentials,
     selectedKycDetails,
-    // retryKyc,
 
     kycError,
     verificationErrorMessages,
   } = useKycContext()
 
+  const [isKycProgressComplete, setIsKycProgressComplete] = useState(
+    !!verifiableCredentials?.id,
+  )
+
   const handleGenerateProof = useCallback(async () => {
+    zkProof.set({} as ZKProof)
     setIsPending(true)
 
     try {
@@ -85,22 +95,20 @@ const AuthPreview: FC<Props> = () => {
       }
 
       await getZkProof()
-
-      navigate(RoutesPaths.authConfirmation)
     } catch (error) {
       ErrorHandler.process(error)
+
+      setIsPending(false)
     }
 
     gaSendCustomEvent(GaCategories.GenerateProof)
-
-    setIsPending(false)
   }, [
     getZkProof,
     identityBigIntString,
     isIdentityProved,
     isSenderAddressProved,
-    navigate,
     provider?.address,
+    zkProof,
   ])
 
   const completeKyc = useCallback(async () => {
@@ -200,12 +208,14 @@ const AuthPreview: FC<Props> = () => {
       className={[
         'auth-preview',
         ...(isValidCredentials ? [] : ['auth-preview--invalid']),
-        ...(isPending || !isLoaded ? ['auth-preview--loading'] : []),
+        ...(isPending || !isKycProgressComplete
+          ? ['auth-preview--loading']
+          : []),
       ].join(' ')}
     >
       <div className='auth-preview__header'>
         <h2 className='auth-preview__header-title'>
-          {verifiableCredentials && isLoaded
+          {verifiableCredentials && isKycProgressComplete
             ? isPending
               ? `Generating Zero-Knowledge Proof`
               : `Proof of Humanity`
@@ -215,7 +225,7 @@ const AuthPreview: FC<Props> = () => {
           ''
         ) : (
           <span className='auth-preview__header-subtitle'>
-            {verifiableCredentials && isLoaded
+            {verifiableCredentials && isKycProgressComplete
               ? isPending
                 ? `You won't reveal your personal data to any party`
                 : `Save your (DiD) Profile to ensure uninterrupted verification across sessions and devices. Next, generate your ZKP proof for credential authentication.`
@@ -224,7 +234,7 @@ const AuthPreview: FC<Props> = () => {
         )}
       </div>
 
-      {isLoaded ? (
+      {isKycProgressComplete ? (
         isPending ? (
           <>
             <div className='auth-preview__card'>
@@ -232,6 +242,16 @@ const AuthPreview: FC<Props> = () => {
                 <div className='auth-preview__loader-animation'>
                   <Animation source={loaderJson} />
                 </div>
+
+                <ProgressBar
+                  className={'auth-preview__progress-bar'}
+                  checkpoints={[100]}
+                  checkpointIndex={zkProof?.get?.pub_signals ? 0 : undefined}
+                  delay={2_000}
+                  finishCb={() => {
+                    navigate(RoutesPaths.authConfirmation)
+                  }}
+                />
 
                 <span className='auth-preview__loader-title'>
                   {`Please wait...`}
@@ -268,6 +288,22 @@ const AuthPreview: FC<Props> = () => {
                 <Icon name={ICON_NAMES.credentialsLoader} />
               </motion.div>
             </AnimatePresence>
+
+            <ProgressBar
+              className={'auth-preview__progress-bar'}
+              checkpoints={[50, 100]}
+              checkpointIndex={
+                isKycFinished
+                  ? verifiableCredentials?.id || isLoaded
+                    ? 1
+                    : 0
+                  : undefined
+              }
+              delay={500}
+              finishCb={() => {
+                setIsKycProgressComplete(true)
+              }}
+            />
 
             <span className='auth-preview__loader-title'>
               {`Please wait...`}
