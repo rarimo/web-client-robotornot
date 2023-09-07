@@ -233,10 +233,10 @@ const AuthPreview: FC<Props> = () => {
   )
 
   useEffect(() => {
-    if (!kycError?.message) return
+    if (!kycError?.message || !isLoaded) return
 
     setIsKycProgressComplete(true)
-  }, [kycError?.message])
+  }, [isLoaded, kycError?.message])
 
   return (
     <div
