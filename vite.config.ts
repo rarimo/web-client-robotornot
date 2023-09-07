@@ -29,29 +29,33 @@ export default defineConfig(({ mode }) => {
   const APP_DOMAIN = env.VITE_APP_DOMAIN || `http://localhost:${env.VITE_PORT}`
 
   return {
-    ...(env.VITE_PORT
-      ? {
-          server: {
-            port: Number(env.VITE_PORT),
-          },
-        }
-      : {}),
+    ...(env.VITE_PORT && {
+      server: {
+        port: Number(env.VITE_PORT),
+      },
+    }),
     define: {
       'process.env': {},
     },
     publicDir: 'static',
     plugins: [
-      ...(env.VITE_SENTRY_AUTH_TOKEN
+      splitVendorChunkPlugin(),
+
+      // FIXME
+      ...(env.VITE_SENTRY_AUTH_TOKEN && APP_DOMAIN.includes('localhost')
         ? [
             sentryVitePlugin({
               authToken: env.VITE_SENTRY_AUTH_TOKEN,
               org: 'dl-1be19f0cb',
               project: 'javascript-react',
+              telemetry: false,
+              sourcemaps: {
+                ignore: ['node_modules', 'dist', 'static'],
+              },
             }),
           ]
         : []),
 
-      splitVendorChunkPlugin(),
       react(),
 
       createHtmlPlugin({
