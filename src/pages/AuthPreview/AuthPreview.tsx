@@ -4,7 +4,14 @@ import { config } from '@config'
 import { HTTP_STATUS_CODES } from '@distributedlab/fetcher'
 import type { ZKProof } from '@iden3/js-jwz'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import loaderJson from '@/assets/animations/loader.json'
@@ -224,6 +231,12 @@ const AuthPreview: FC<Props> = () => {
       verificationErrorMessages,
     ],
   )
+
+  useEffect(() => {
+    if (!kycError?.message) return
+
+    setIsKycProgressComplete(true)
+  }, [kycError?.message])
 
   return (
     <div
