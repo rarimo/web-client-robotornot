@@ -1367,6 +1367,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iden3/js-crypto@npm:1.0.0-beta.0":
+  version: 1.0.0-beta.0
+  resolution: "@iden3/js-crypto@npm:1.0.0-beta.0"
+  dependencies:
+    blake-hash: ^2.0.0
+    ffjavascript: ^0.2.57
+  checksum: cfb601db873c10abcb5140290e6ae661f75d05e605ef6487ea2c2de50b609f6894b716d8b6fc6afa19743e328fc77a0c60a304e7a2e279cd0e5c5c1329fdf080
+  languageName: node
+  linkType: hard
+
 "@iden3/js-crypto@npm:1.0.0-beta.1":
   version: 1.0.0-beta.1
   resolution: "@iden3/js-crypto@npm:1.0.0-beta.1"
@@ -1377,10 +1387,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iden3/js-crypto@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@iden3/js-crypto@npm:1.0.1"
-  checksum: ade7111c77804a8e652f3229e8480adefa100d590b890de095747b7cc7f268814d7f5a6e1b7141152ab5901b675dfe1a997e42b01abf154c52dae2214d53c09a
+"@iden3/js-iden3-core@npm:1.0.0-beta.0":
+  version: 1.0.0-beta.0
+  resolution: "@iden3/js-iden3-core@npm:1.0.0-beta.0"
+  dependencies:
+    "@iden3/js-crypto": 1.0.0-beta.0
+    base58-js: ^1.0.4
+    cross-sha256: ^1.2.0
+  checksum: 7c09e4e4dab7c9432f06e494a44f48013627c496b85cbf5d23d2936aa8b30e7a58367974b8376fc59e2063fb521eaffaca24d739f979b9f4f37cdd6041fd8d72
   languageName: node
   linkType: hard
 
@@ -1392,17 +1406,6 @@ __metadata:
     base58-js: ^1.0.4
     cross-sha256: ^1.2.0
   checksum: 7f2631dc5c8b4e88b759815aee976245e4c16b09dc40849a23cc9fef9b973b08a98c3ea934042c23b29c557a5a4b91b4b0e037938e5a2b634b2946dd0b2671ee
-  languageName: node
-  linkType: hard
-
-"@iden3/js-iden3-core@npm:1.0.2":
-  version: 1.0.2
-  resolution: "@iden3/js-iden3-core@npm:1.0.2"
-  dependencies:
-    "@iden3/js-crypto": 1.0.1
-    base58-js: ^1.0.4
-    cross-sha256: ^1.2.0
-  checksum: e68b8bfb42e1ebca3958b81ef37ef0fe74d8e90cf651cb6c5db4748eedfbf15195c8f370076cc9ca0816a492066ec1cf67c3d64ff556f8b8e16fd2fda54e7ac8
   languageName: node
   linkType: hard
 
@@ -1420,19 +1423,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iden3/js-jwz@npm:^1.0.0-beta.2":
-  version: 1.0.2
-  resolution: "@iden3/js-jwz@npm:1.0.2"
+"@iden3/js-jwz@npm:1.0.0-beta.2":
+  version: 1.0.0-beta.2
+  resolution: "@iden3/js-jwz@npm:1.0.0-beta.2"
   dependencies:
-    "@iden3/js-crypto": 1.0.1
-    "@iden3/js-iden3-core": 1.0.2
-    "@iden3/js-merkletree": 1.0.1
+    "@iden3/js-crypto": 1.0.0-beta.0
+    "@iden3/js-iden3-core": 1.0.0-beta.0
+    "@iden3/js-merkletree": 1.0.0-beta.0
     base58-js: ^1.0.0
     cross-sha256: ^1.2.0
     ffjavascript: ^0.2.57
     rfc4648: ^1.5.2
     snarkjs: 0.5.0
-  checksum: fdc7ff02eaa0db412027008e0690d2a7b52cd17a8328cf7a1a6076ba819ead099b4c27a84d8c1fdd3c40f3f5e5a155751c53a5fc55bef20a0d640351cdec4da6
+  checksum: 271923bfc32de6a0fb5e8c1c5297e6b5cf160134f1b28ecd31c8bce777e86b18f616e87c9d6d979aa67f858530dc217d6c12bd84037280f9631100b77bbb4fbb
+  languageName: node
+  linkType: hard
+
+"@iden3/js-merkletree@npm:1.0.0-beta.0":
+  version: 1.0.0-beta.0
+  resolution: "@iden3/js-merkletree@npm:1.0.0-beta.0"
+  dependencies:
+    "@iden3/js-crypto": 1.0.0-beta.0
+  checksum: 9062ed7bf190df357f4e786415592182ef0d40ce39c92ad01784e57c5526487cd72386b1508ab0241278729c47e6b34dc488b428a9f036702757fa45ef404e3c
   languageName: node
   linkType: hard
 
@@ -1446,13 +1458,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iden3/js-merkletree@npm:1.0.1, @iden3/js-merkletree@npm:^1.0.0-beta.4":
-  version: 1.0.1
-  resolution: "@iden3/js-merkletree@npm:1.0.1"
+"@iden3/js-merkletree@npm:1.0.0-beta.4":
+  version: 1.0.0-beta.4
+  resolution: "@iden3/js-merkletree@npm:1.0.0-beta.4"
   dependencies:
-    "@iden3/js-crypto": 1.0.1
+    "@iden3/js-crypto": 1.0.0-beta.1
     idb-keyval: ^6.2.0
-  checksum: c9fa19066a4bdb42a45a407e8a73550a5ff00529644abbbf7606976c6b38dee8a6585162cf348cacd4233e816fe43c2bac8e95cb2aba4155b51052681290e26b
+  checksum: 58962431de2f7fcaf0bf4c1d15cfb23d618d2507e662031d4904faa261c7c87f85d3c4d3e8e279e50e1f2b3c2e59a166727407a3c307d287c91d681565ee2260
   languageName: node
   linkType: hard
 
@@ -2024,9 +2036,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/bundler-plugin-core@npm:2.7.0":
-  version: 2.7.0
-  resolution: "@sentry/bundler-plugin-core@npm:2.7.0"
+"@sentry/bundler-plugin-core@npm:2.7.1":
+  version: 2.7.1
+  resolution: "@sentry/bundler-plugin-core@npm:2.7.1"
   dependencies:
     "@sentry/cli": ^2.20.1
     "@sentry/node": ^7.60.0
@@ -2036,13 +2048,13 @@ __metadata:
     glob: 9.3.2
     magic-string: 0.27.0
     unplugin: 1.0.1
-  checksum: 2dca62cf4d7b6047a747bad1fec284d1ff4583104175e52b67e912d03ee7e14863af0f5816f9c5d61de1fd54149c1df0712f5f634513097d2bcb617e3693c590
+  checksum: 43371c0b3e0a3dfe0c43ff6f88b6c2318c339a7d0d9351b3dd4783a34ea8a71dfcbffcb45e8ce1ea7b829c14931c2f2e02562e724482d27bb085d5841750a4ab
   languageName: node
   linkType: hard
 
 "@sentry/cli@npm:^2.20.1":
-  version: 2.20.6
-  resolution: "@sentry/cli@npm:2.20.6"
+  version: 2.20.7
+  resolution: "@sentry/cli@npm:2.20.7"
   dependencies:
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
@@ -2051,7 +2063,7 @@ __metadata:
     which: ^2.0.2
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: 6e694bd875233b18f320da336001aaa3c46118fb23c2b80e450f2b3d8597bdc2ef0bed8f5dde64d81c02078b58ae29b2cfac5376e752460216a32850df36de48
+  checksum: 415c5287dbc3ae92f07b22f80c145d30548f396f5c7008f571d4d360c03f71aae95c096990f7656c6ed4893197bf21f7efe2add50d1838fb9a64b7b6693d384e
   languageName: node
   linkType: hard
 
@@ -2119,6 +2131,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/rollup-plugin@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "@sentry/rollup-plugin@npm:2.7.1"
+  dependencies:
+    "@sentry/bundler-plugin-core": 2.7.1
+    unplugin: 1.0.1
+  peerDependencies:
+    rollup: ">=3.2.0"
+  checksum: b4edcbc3b7479844a5c8674c1929924b3f1e155638b8ff8ee7ad169030165f56e0d109089b995f3c66ceb0afeb0b1c2ae6d5926fc477941a1bc442fb540c9b4c
+  languageName: node
+  linkType: hard
+
 "@sentry/types@npm:7.63.0":
   version: 7.63.0
   resolution: "@sentry/types@npm:7.63.0"
@@ -2150,16 +2174,6 @@ __metadata:
     "@sentry/types": 7.68.0
     tslib: ^2.4.1 || ^1.9.3
   checksum: fd80eb9379ffb208864906b693e599d01a9229f523cf6516c261abe37316afd9dedd83a5690355e4823290164099e129957bf7dc3891ab724ac6e00b56908cc9
-  languageName: node
-  linkType: hard
-
-"@sentry/vite-plugin@npm:2.7.0":
-  version: 2.7.0
-  resolution: "@sentry/vite-plugin@npm:2.7.0"
-  dependencies:
-    "@sentry/bundler-plugin-core": 2.7.0
-    unplugin: 1.0.1
-  checksum: b661548164e065d8f8317691604ece6be17f6be67d9eb9c02ea5c78f74e52c763a9cdaaafc765614d4dc7ea1d9c607c567bc7595e3e042255e749eafc44cc241
   languageName: node
   linkType: hard
 
@@ -4169,9 +4183,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001517":
-  version: 1.0.30001528
-  resolution: "caniuse-lite@npm:1.0.30001528"
-  checksum: 7b6a71d41de1ce2b95f5851e7074050b7600157acf02c5701d9650a1faf824e368163f4ede5e269d4ea44fe33e00fe60673cb86f40cac35bd02a9a9a4ef7f162
+  version: 1.0.30001529
+  resolution: "caniuse-lite@npm:1.0.30001529"
+  checksum: 26a7d42fff3a7e33db543af6b434aceb08c799e5e00795a54296b99b2fdddb7f31a0040600d3fc2ca4b1e6cf7e4ead46cc87ac53751ea8dab47ef355f6809511
   languageName: node
   linkType: hard
 
@@ -5316,9 +5330,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.477":
-  version: 1.4.510
-  resolution: "electron-to-chromium@npm:1.4.510"
-  checksum: c129dbd5735876fbd25b541cc6fd138914ba8c2189f0c30e2145b645d79d67fcb22f64dc28801ec847e8e71418f89318bd8f0ab02d464979bec2668a06dc4268
+  version: 1.4.512
+  resolution: "electron-to-chromium@npm:1.4.512"
+  checksum: 880fe8036653f9215b983ade7739655ee13cd20129cf0489def224d2641a010388e40e5806170d9118d02167b813b1f1beb4d8b40a4048cbad2cdf73ae95eb09
   languageName: node
   linkType: hard
 
@@ -10390,15 +10404,15 @@ __metadata:
     "@iden3/js-crypto": 1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jsonld-merklization": 1.0.0-beta.14
-    "@iden3/js-jwz": ^1.0.0-beta.2
-    "@iden3/js-merkletree": ^1.0.0-beta.4
+    "@iden3/js-jwz": 1.0.0-beta.2
+    "@iden3/js-merkletree": 1.0.0-beta.4
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.23
     "@rarimo/client": ^2.0.0-rc.23
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.23
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.23
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.23
     "@sentry/react": 7.63.0
-    "@sentry/vite-plugin": 2.7.0
+    "@sentry/rollup-plugin": ^2.7.1
     "@typechain/ethers-v5": ^11.0.0
     "@types/lodash": ^4.14.195
     "@types/node": ^20.3.1
