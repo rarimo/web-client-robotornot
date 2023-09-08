@@ -1,6 +1,6 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
-import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { sentryRollupPlugin } from '@sentry/rollup-plugin'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -40,21 +40,6 @@ export default defineConfig(({ mode }) => {
     publicDir: 'static',
     plugins: [
       splitVendorChunkPlugin(),
-
-      // FIXME
-      ...(env.VITE_SENTRY_AUTH_TOKEN && APP_DOMAIN.includes('localhost')
-        ? [
-            sentryVitePlugin({
-              authToken: env.VITE_SENTRY_AUTH_TOKEN,
-              org: 'dl-1be19f0cb',
-              project: 'javascript-react',
-              telemetry: false,
-              sourcemaps: {
-                ignore: ['node_modules', 'dist', 'static'],
-              },
-            }),
-          ]
-        : []),
 
       react(),
 
@@ -275,15 +260,27 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
-      sourcemap: true,
+      // sourcemap: true,
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin
           // used during production bundling
           nodePolyfills(),
+
+          ...(env.VITE_SENTRY_AUTH_TOKEN
+            ? [
+                sentryRollupPlugin({
+                  authToken: env.VITE_SENTRY_AUTH_TOKEN,
+                  org: 'dl-1be19f0cb',
+                  project: 'javascript-react',
+                }),
+              ]
+            : []),
         ],
 
         output: {
+          sourcemap: true,
+
           manualChunks: {
             'js-merkletree': ['@iden3/js-merkletree'],
             'js-jsonld-merklization': ['@iden3/js-jsonld-merklization'],
