@@ -6,7 +6,7 @@
   },
   "errors": {
     "default": "Something went wrong",
-    "slow-connection": "Looks like you have a slow connection. Please try again"
+    "slow-connection": "ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again"
   },
   "notifications": {
     "default-title-success": "Success",
