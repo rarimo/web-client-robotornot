@@ -45,8 +45,6 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
       if (!isSnapInstalled) {
         await initZkpSnap()
       }
-
-      document.title = config.APP_NAME
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }

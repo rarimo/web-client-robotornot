@@ -1,6 +1,6 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
-import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { sentryRollupPlugin } from '@sentry/rollup-plugin'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -29,29 +29,18 @@ export default defineConfig(({ mode }) => {
   const APP_DOMAIN = env.VITE_APP_DOMAIN || `http://localhost:${env.VITE_PORT}`
 
   return {
-    ...(env.VITE_PORT
-      ? {
-          server: {
-            port: Number(env.VITE_PORT),
-          },
-        }
-      : {}),
+    ...(env.VITE_PORT && {
+      server: {
+        port: Number(env.VITE_PORT),
+      },
+    }),
     define: {
       'process.env': {},
     },
     publicDir: 'static',
     plugins: [
-      ...(env.VITE_SENTRY_AUTH_TOKEN
-        ? [
-            sentryVitePlugin({
-              authToken: env.VITE_SENTRY_AUTH_TOKEN,
-              org: 'dl-1be19f0cb',
-              project: 'javascript-react',
-            }),
-          ]
-        : []),
-
       splitVendorChunkPlugin(),
+
       react(),
 
       createHtmlPlugin({
@@ -59,9 +48,7 @@ export default defineConfig(({ mode }) => {
           tags: [
             {
               tag: 'title',
-              attrs: {
-                text: 'Prove Your Humanity | Rarimo',
-              },
+              children: 'Prove Your Humanity | Rarimo',
             },
             {
               tag: 'meta',
@@ -254,9 +241,9 @@ export default defineConfig(({ mode }) => {
           __dirname,
           'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
         ),
-        '@rarimo/connector': path.resolve(
+        '@rarimo/rarime-connector': path.resolve(
           __dirname,
-          'node_modules/@rarimo/connector/dist/index.js',
+          'node_modules/@rarimo/rarime-connector/dist/index.js',
         ),
       },
     },
@@ -277,15 +264,27 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
-      sourcemap: true,
+      // sourcemap: true,
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin
           // used during production bundling
           nodePolyfills(),
+
+          ...(env.VITE_SENTRY_AUTH_TOKEN
+            ? [
+                sentryRollupPlugin({
+                  authToken: env.VITE_SENTRY_AUTH_TOKEN,
+                  org: 'dl-1be19f0cb',
+                  project: 'javascript-react',
+                }),
+              ]
+            : []),
         ],
 
         output: {
+          sourcemap: true,
+
           manualChunks: {
             'js-merkletree': ['@iden3/js-merkletree'],
             'js-jsonld-merklization': ['@iden3/js-jsonld-merklization'],
@@ -294,7 +293,7 @@ export default defineConfig(({ mode }) => {
             'js-iden3-core': ['@iden3/js-iden3-core'],
             'near-api-js': ['near-api-js'],
             'ethereum-gateway-react': ['@civic/ethereum-gateway-react'],
-            'rarimo-connector': ['@rarimo/connector'],
+            'rarime-connector': ['@rarimo/rarime-connector'],
             snarkjs: ['snarkjs'],
             uauth: ['@uauth/js'],
           },
