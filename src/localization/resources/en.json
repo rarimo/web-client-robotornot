@@ -5,7 +5,8 @@
     "field-error_maxLength": "This field must contain maximum {{maxLength}} symbols"
   },
   "errors": {
-    "default": "Something went wrong"
+    "default": "Something went wrong",
+    "slow-connection": "Looks like you have a slow connection. Please try again"
   },
   "notifications": {
     "default-title-success": "Success",

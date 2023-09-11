@@ -46,6 +46,12 @@ export class ErrorHandler {
         case errors.ProviderUserRejectedRequest:
           errorMessage = ''
           break
+        case errors.ProviderInternalError:
+          if (error.message.toLowerCase().includes('timed out')) {
+            errorMessage = i18n.t('errors.slow-connection')
+            msgType = 'warning'
+          }
+          break
         default: {
           if ('error' in error) {
             const currentError = error.error as RuntimeError

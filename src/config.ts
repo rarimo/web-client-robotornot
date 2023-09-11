@@ -142,6 +142,9 @@ export const config = {
 
   CIRCUITS_LOADING_TRIES_LIMIT:
     import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
+
+  SNAP_ORIGIN:
+    import.meta.env.VITE_SNAP_ORIGIN || 'local:http://localhost:8081',
 } as {
   API_URL: string
   APP_NAME: string
@@ -177,6 +180,7 @@ export const config = {
     Chain
   >
   CIRCUITS_LOADING_TRIES_LIMIT: number
+  SNAP_ORIGIN: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

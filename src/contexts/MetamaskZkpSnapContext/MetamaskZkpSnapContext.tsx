@@ -1,3 +1,4 @@
+import { config } from '@config'
 import {
   type CreateProofRequestParams,
   enableSnap,
@@ -14,8 +15,7 @@ import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
  * The snap origin to use.
  * Will default to the local hosted snap if no value is provided in environment.
  */
-export const defaultSnapOrigin =
-  process.env.SNAP_ORIGIN ?? `local:http://localhost:8081`
+export const defaultSnapOrigin = config.SNAP_ORIGIN
 
 interface MetamaskZkpSnapContextValue {
   isMetamaskInstalled: boolean
