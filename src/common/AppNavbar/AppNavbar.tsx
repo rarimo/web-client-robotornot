@@ -70,12 +70,13 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     try {
       if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
 
-      if (isWalletAccountValid) {
-        bus.emit(
-          BUS_EVENTS.warning,
-          `Looks like you're trying to switch your MetaMask address! Please use the same account that you've used during the verification process.`,
-        )
-      }
+      // if (vc?.body?.credential?.credentialSubject && isWalletAccountValid) {
+      //   bus.emit(
+      //     BUS_EVENTS.warning,
+      // eslint-disable-next-line max-len
+      //     `Looks like you're trying to switch your MetaMask address! Please use the same account that you've used during the verification process.`,
+      //   )
+      // }
 
       await switchAccount(provider.rawProvider as EthereumProvider)
     } catch (error) {
@@ -83,7 +84,11 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     setIsDropdownShown(false)
-  }, [isWalletAccountValid, provider?.rawProvider])
+  }, [
+    // isWalletAccountValid,
+    provider?.rawProvider,
+    // vc?.body?.credential?.credentialSubject,
+  ])
 
   useEffect(() => {
     if (isWalletAccountValid) return
