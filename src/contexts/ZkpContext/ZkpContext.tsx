@@ -24,6 +24,8 @@ import { api, querier } from '@/api'
 import { useWeb3Context } from '@/contexts'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
+  bus,
+  BUS_EVENTS,
   GaCategories,
   gaSendCustomEvent,
   pureFileBytesLoading,
@@ -322,6 +324,15 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           return currentAuthZkp?.getVerifiableCredentials('IdentityProviders')
         } catch (error) {
           if (error instanceof FileEmptyError) {
+            if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
+              bus.emit(
+                BUS_EVENTS.warning,
+                `Looks like your connection speed is too slow`,
+              )
+
+              throw error
+            }
+
             triesCount++
             await sleep(500)
           } else {
@@ -504,6 +515,15 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         break
       } catch (error) {
         if (error instanceof FileEmptyError) {
+          if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
+            bus.emit(
+              BUS_EVENTS.warning,
+              `Looks like your connection speed is too slow`,
+            )
+
+            throw error
+          }
+
           triesCount++
           await sleep(500)
         } else {
