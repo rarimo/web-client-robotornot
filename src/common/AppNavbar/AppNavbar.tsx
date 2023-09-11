@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { type EthereumProvider, PROVIDERS } from '@distributedlab/w3p'
-import { type VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
+import { W3CCredential } from '@rarimo/rarime-connector'
 import {
   FC,
   HTMLAttributes,
@@ -14,7 +14,6 @@ import { useLocalStorage } from 'react-use'
 
 import { AppButton, AppLogo, Drawer, Dropdown } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
-import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES } from '@/enums'
 import {
   abbrCenter,
@@ -35,22 +34,19 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const { provider, init: initProvider } = useWeb3Context()
   const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
-  const [vc] = useLocalStorage<VerifiableCredentials<QueryVariableName> | null>(
-    'vc',
-    null,
-  )
+  const [vc] = useLocalStorage<W3CCredential | null>('vc', null)
 
   const isWalletAccountValid = useMemo(() => {
-    if (!vc?.body?.credential?.credentialSubject) return true
+    if (!vc?.credentialSubject) return true
 
     return Boolean(
-      vc?.body?.credential?.credentialSubject &&
-        'address' in vc.body.credential.credentialSubject &&
-        typeof vc.body.credential.credentialSubject?.address === 'string' &&
-        vc?.body?.credential?.credentialSubject?.address?.toLowerCase() ===
+      vc?.credentialSubject &&
+        'address' in vc.credentialSubject &&
+        typeof vc.credentialSubject?.address === 'string' &&
+        vc?.credentialSubject?.address?.toLowerCase() ===
           provider?.address?.toLowerCase(),
     )
-  }, [provider?.address, vc?.body.credential.credentialSubject])
+  }, [provider?.address, vc?.credentialSubject])
 
   const connectProvider = useCallback(async () => {
     try {
