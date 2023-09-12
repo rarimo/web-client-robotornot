@@ -893,9 +893,9 @@ __metadata:
   linkType: hard
 
 "@eslint-community/regexpp@npm:^4.4.0, @eslint-community/regexpp@npm:^4.6.1":
-  version: 4.8.0
-  resolution: "@eslint-community/regexpp@npm:4.8.0"
-  checksum: 601e6d033d556e98e8c929905bef335f20d7389762812df4d0f709d9b4d2631610dda975fb272e23b5b68e24a163b3851b114c8080a0a19fb4c141a1eff6305b
+  version: 4.8.1
+  resolution: "@eslint-community/regexpp@npm:4.8.1"
+  checksum: 82d62c845ef42b810f268cfdc84d803a2da01735fb52e902fd34bdc09f92464a094fd8e4802839874b000b2f73f67c972859e813ba705233515d3e954f234bf2
   languageName: node
   linkType: hard
 
@@ -1851,58 +1851,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.23"
+"@rarimo/auth-zkp-iden3@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/auth-zkp-iden3@npm:2.0.0-rc.24"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.23
-    "@rarimo/provider": ^2.0.0-rc.23
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.23
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
+    "@rarimo/provider": ^2.0.0-rc.24
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: 3e6937fa6da89f69b57059210ebc2961949329fb04ce5042cd2fb2d532adc16a6539be89397b800a41adf8885cbe4009f45e0e2effc55e94dd7ec3160cff9d70
+  checksum: cca55bb0e81e325cdc64b751e00d4115ee2acc54205c02a815d6f5d2c27b26cfed48954817e44ca1b4d01232146e4a9102a036ae5c5db24d93624c7aa2ca5e53
   languageName: node
   linkType: hard
 
-"@rarimo/client@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/client@npm:2.0.0-rc.23"
+"@rarimo/client@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/client@npm:2.0.0-rc.24"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.31.0
     "@cosmjs/stargate": ^0.31.0
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/reactivity": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.23
-  checksum: 2c5f5fb6f2658a4b1a4926dce1bc299cc569d8478dd8f8bdc10cd4d8637af772d54a024ef2d921fcfe575c3002b555ae4f6e901b4767289c696699b40ec9ce38
+    "@rarimo/shared": ^2.0.0-rc.24
+  checksum: be4df3355e8bd33a80fa2ffe575b00a8c4a57d9aeb325f345051ddb5ee8670651c5226d46404a896edffe4edfa28e51cdefa60c3d80617a58acb0183b3e65cd7
   languageName: node
   linkType: hard
 
-"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.23"
+"@rarimo/identity-gen-iden3@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/identity-gen-iden3@npm:2.0.0-rc.24"
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
     "@iden3/js-iden3-core": 1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: afd4ea64d0d2cc50a4d8b4c5d036caa753d6a75164b8185ef5f6485e36a2a39f6e4a9482fb75e4c46885effa20814b68172862588795fea913f374ea33b1d512
+  checksum: 1075330cc83ce25b9c1b7fec93246582bfc8b9b15f3b98207638e80e9847b3a629cc5fabba39142269d00622fb3011831b47636b36a53e9ee3130c957faeebb1
   languageName: node
   linkType: hard
 
-"@rarimo/provider@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/provider@npm:2.0.0-rc.23"
+"@rarimo/provider@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/provider@npm:2.0.0-rc.24"
   dependencies:
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/shared": ^2.0.0-rc.23
-  checksum: 3715dfb4c8f1a29334688be7bb6bd75044b9a17155c4e7953abbd76eb379e6f243ba6e338ac65cae41d36fe609835fe27ac4d785aca62e7a8311274a507382c5
+    "@rarimo/shared": ^2.0.0-rc.24
+  checksum: baead5f5c3667b53772444f85f67689bdabe4aef07df13007daa977bc62d80e9079d9c3a3803a59e826a7a346e9394811a7b1ee136018da4fa75c118c2407ccf
   languageName: node
   linkType: hard
 
@@ -1915,38 +1915,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.23"
+"@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/shared-zkp-iden3@npm:2.0.0-rc.24"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
-    "@rarimo/client": ^2.0.0-rc.23
+    "@rarimo/client": ^2.0.0-rc.24
     tslib: ^2.5.0
-  checksum: dc54888c4a90cc751723888bb2afc2aef24b9f692b0499492ba41877e1fa59e0f3506d9cf9118627c27c18b4e8dfb104901349290734c0b16d54c3876b60d3ac
+  checksum: cde61e78549e182fa427864dd3b3e2b7495ebfc35717a1d07fd3fce2125b45d77604644ad5bfbcf0e070356a0cf9938b2e18f944c5e329b40da3aac25b37001c
   languageName: node
   linkType: hard
 
-"@rarimo/shared@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/shared@npm:2.0.0-rc.23"
+"@rarimo/shared@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/shared@npm:2.0.0-rc.24"
   dependencies:
     "@distributedlab/jac": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-  checksum: 60be02114fba1e6124eef64a12faa881f89118d1f580c7fb6991cd5c2360750cae908c38a636d3052df194b75476773a1168cdd651f9f1d7c8173160303be8a3
+  checksum: 9341146ed1592a0ba821665de0f5cabb19c4856fb0ac63094ad7cea04f98211ee0e956af901050715152562173cf57804b85b680da9ad4618de3fe177be40b4f
   languageName: node
   linkType: hard
 
-"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.23":
-  version: 2.0.0-rc.23
-  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.23"
+"@rarimo/zkp-gen-iden3@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "@rarimo/zkp-gen-iden3@npm:2.0.0-rc.24"
   dependencies:
     "@distributedlab/fetcher": ^1.0.0-rc.6
     "@distributedlab/tools": ^1.0.0-rc.6
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.23
-    "@rarimo/client": ^2.0.0-rc.23
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.23
-    "@rarimo/shared": ^2.0.0-rc.23
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.23
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
+    "@rarimo/client": ^2.0.0-rc.24
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
+    "@rarimo/shared": ^2.0.0-rc.24
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     tslib: ^2.5.0
   peerDependencies:
     "@iden3/js-crypto": ^1.0.0-beta.1
@@ -1954,7 +1954,7 @@ __metadata:
     "@iden3/js-jsonld-merklization": ^1.0.0-beta.14
     "@iden3/js-jwz": ^1.0.0-beta.2
     "@iden3/js-merkletree": ^1.0.0-beta.4
-  checksum: fbebde52396c792df9c1b0cecb8ff4eae0138f515ba66167385df33a6a201c548792ad50603078cddfa5d4f41965aa1ece21791185757cef84e792d98ebd4911
+  checksum: a87873811a529bb00215e1a249f4e84624a5caae34c95b04ddb0863020b2017a5000eed75b2cc1c2f90ed105f9766299dc5b5d71d111eed0e8f144e440b04f08
   languageName: node
   linkType: hard
 
@@ -2196,8 +2196,8 @@ __metadata:
   linkType: hard
 
 "@solana/web3.js@npm:^1.73.2":
-  version: 1.78.4
-  resolution: "@solana/web3.js@npm:1.78.4"
+  version: 1.78.5
+  resolution: "@solana/web3.js@npm:1.78.5"
   dependencies:
     "@babel/runtime": ^7.22.6
     "@noble/curves": ^1.0.0
@@ -2214,7 +2214,7 @@ __metadata:
     node-fetch: ^2.6.12
     rpc-websockets: ^7.5.1
     superstruct: ^0.14.2
-  checksum: e1c44c6cbec87cdfd4d6d23b4241b746e14ed3a9ca73d596693758d91ac825cecf579345da3b0b7bb5e54b6794791bc0eac02cadf11f1ec79e859b6536f26f11
+  checksum: 66fe4ddcc073d0c539e23a2aae3ba23c081a11f5ebc8216dd18e0c6770f20e419c635a50529faa59baeec9722cd521a3502abc7cdf3b3d5f31b32066e0415c24
   languageName: node
   linkType: hard
 
@@ -2959,34 +2959,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/modal-core@npm:2.6.1":
-  version: 2.6.1
-  resolution: "@walletconnect/modal-core@npm:2.6.1"
+"@walletconnect/modal-core@npm:2.6.2":
+  version: 2.6.2
+  resolution: "@walletconnect/modal-core@npm:2.6.2"
   dependencies:
-    valtio: 1.11.0
-  checksum: 3c1dcb865cc0737bb0e77b7103bde7167e64a8790c628427814b825dafa133c7cb3baf5184314de35a2dbd743a3b0978ef4abc86c3bb63d051f8368e3bdba67a
+    valtio: 1.11.2
+  checksum: 94daceba50c323b06ecbeac2968d9f0972f327359c6118887c6526cd64006249b12f64322d71bc6c4a2b928436ecc89cf3d3af706511fcdc264c1f4b34a2dd5d
   languageName: node
   linkType: hard
 
-"@walletconnect/modal-ui@npm:2.6.1":
-  version: 2.6.1
-  resolution: "@walletconnect/modal-ui@npm:2.6.1"
+"@walletconnect/modal-ui@npm:2.6.2":
+  version: 2.6.2
+  resolution: "@walletconnect/modal-ui@npm:2.6.2"
   dependencies:
-    "@walletconnect/modal-core": 2.6.1
-    lit: 2.7.6
+    "@walletconnect/modal-core": 2.6.2
+    lit: 2.8.0
     motion: 10.16.2
     qrcode: 1.5.3
-  checksum: 34408c784659564ef57fe59227f5f0a307ec34dc9e73c6c7b72e4c03054024ffbbf1d4ed73425a2606c978aaa3518629eba61adf3fc31263d80a4c13cf1c77d2
+  checksum: cd1ec0205eb491e529670599d3dd26f6782d7c5a99d5594bf6949a8c760c1c5f4eb6ed72b8662450774fe4e2dd47678f2c05145c8f2494bd7153446ddf4bd7ed
   languageName: node
   linkType: hard
 
 "@walletconnect/modal@npm:^2.5.9":
-  version: 2.6.1
-  resolution: "@walletconnect/modal@npm:2.6.1"
+  version: 2.6.2
+  resolution: "@walletconnect/modal@npm:2.6.2"
   dependencies:
-    "@walletconnect/modal-core": 2.6.1
-    "@walletconnect/modal-ui": 2.6.1
-  checksum: f48107abe4594b3a6849a4eae1a3fb9fb37ded25ef390c084e9098ceed58ace1bcb723abfa15027b462d75226a907bbbfc1d48e1414f882b5d7f83903da617bb
+    "@walletconnect/modal-core": 2.6.2
+    "@walletconnect/modal-ui": 2.6.2
+  checksum: 68b354d49960b96d22de0e47a3801df27c01a3e96ec5fbde3ca6df1344ca2b20668b0c4d58fe1803f5670ac7b7b4c6f5b7b405e354f5f9eaff5cca147c13de9c
   languageName: node
   linkType: hard
 
@@ -4192,9 +4192,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001517":
-  version: 1.0.30001532
-  resolution: "caniuse-lite@npm:1.0.30001532"
-  checksum: 613abeb15e03dde307d543195a7860f7ba7450c9c9262d45642b2c8fbe097914fa060d68c8647f9d443947b1f62b09d891858bde7d2cac94fae8133a0b518b28
+  version: 1.0.30001533
+  resolution: "caniuse-lite@npm:1.0.30001533"
+  checksum: 1ffb2d69f817ee5f13351cb01c26a98ac61515809a6ce355305df3fbc6de6391a58466c1dcad1f322231b1ddc59bdda9bc52b9480cac100c3ff2f5782e859eb1
   languageName: node
   linkType: hard
 
@@ -5339,9 +5339,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.477":
-  version: 1.4.513
-  resolution: "electron-to-chromium@npm:1.4.513"
-  checksum: 613b66da177dcf5abca2441c502cde4b4fb247665dc049c54d1fe3b79fc3a5a3ecae92faf97d3147af0fec9c50bf90db09e8ca3f0953a5ec2fdb472d6d6253c2
+  version: 1.4.515
+  resolution: "electron-to-chromium@npm:1.4.515"
+  checksum: ac5e901f0c39bd5bff52e8d8a4243c5b0c0abb4366df96c56480902ddcd2ce74e3fe389171092a887fd09c0444fb47951351cf0d2ae530c251716bd8ed57111f
   languageName: node
   linkType: hard
 
@@ -8429,7 +8429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.7.0, lit-html@npm:^2.8.0":
+"lit-html@npm:^2.8.0":
   version: 2.8.0
   resolution: "lit-html@npm:2.8.0"
   dependencies:
@@ -8438,14 +8438,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.7.6":
-  version: 2.7.6
-  resolution: "lit@npm:2.7.6"
+"lit@npm:2.8.0":
+  version: 2.8.0
+  resolution: "lit@npm:2.8.0"
   dependencies:
     "@lit/reactive-element": ^1.6.0
     lit-element: ^3.3.0
-    lit-html: ^2.7.0
-  checksum: 984a7fb9c0fa387f20177a07de22ea1c9cdc01a7dc7cb1c400d1df5b43a8956908460482a3259ea173555c6f0f13457d2ddc5c84d4c365007afd86e7ca58b384
+    lit-html: ^2.8.0
+  checksum: 2480e733f7d022d3ecba91abc58a20968f0ca8f5fa30b3341ecf4bcf4845e674ad27b721a5ae53529cafc6ca603c015b80d0979ceb7a711e268ef20bb6bc7527
   languageName: node
   linkType: hard
 
@@ -10415,12 +10415,12 @@ __metadata:
     "@iden3/js-jsonld-merklization": 1.0.0-beta.14
     "@iden3/js-jwz": 1.0.0-beta.2
     "@iden3/js-merkletree": 1.0.0-beta.4
-    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.23
-    "@rarimo/client": ^2.0.0-rc.23
-    "@rarimo/identity-gen-iden3": ^2.0.0-rc.23
+    "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
+    "@rarimo/client": ^2.0.0-rc.24
+    "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
     "@rarimo/rarime-connector": ^0.1.0
-    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.23
-    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.23
+    "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
+    "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
     "@sentry/rollup-plugin": ^2.7.1
     "@typechain/ethers-v5": ^11.0.0
@@ -12784,11 +12784,11 @@ __metadata:
   linkType: hard
 
 "uuid@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "uuid@npm:9.0.0"
+  version: 9.0.1
+  resolution: "uuid@npm:9.0.1"
   bin:
     uuid: dist/bin/uuid
-  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
+  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
   languageName: node
   linkType: hard
 
@@ -12802,22 +12802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"valtio@npm:1.11.0":
-  version: 1.11.0
-  resolution: "valtio@npm:1.11.0"
-  dependencies:
-    proxy-compare: 2.5.1
-    use-sync-external-store: 1.2.0
-  peerDependencies:
-    react: ">=16.8"
-  peerDependenciesMeta:
-    react:
-      optional: true
-  checksum: 77e42f5841054ba3e41b456fbb96b679eaeb6d9dbb46b7ce9aee6acf1352de73969858dea837a706c969ca908155d6cb97966e33be10b69b097744dd99b5174a
-  languageName: node
-  linkType: hard
-
-"valtio@npm:^1.10.6":
+"valtio@npm:1.11.2, valtio@npm:^1.10.6":
   version: 1.11.2
   resolution: "valtio@npm:1.11.2"
   dependencies:
