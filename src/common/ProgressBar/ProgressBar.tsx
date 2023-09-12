@@ -34,7 +34,8 @@ const ProgressBar: FC<Props> = ({
 
   useInterval(
     () => {
-      if (!border) return
+      /* stop progress until checkpoint will be set to 100 outside */
+      if (!border || progress >= 98) return
 
       if (progress <= border) {
         setProgress(prev => prev + 1)
