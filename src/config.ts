@@ -53,6 +53,8 @@ export const META_CIRCUIT_URLS = {
 Object.assign(META_CIRCUIT_URLS, _mapEnvCfg(window.document.ENV))
 
 export const config = {
+  ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT,
+
   API_URL: import.meta.env.VITE_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
@@ -146,6 +148,8 @@ export const config = {
   SNAP_ORIGIN:
     import.meta.env.VITE_SNAP_ORIGIN || 'local:http://localhost:8081',
 } as {
+  ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
+
   API_URL: string
   APP_NAME: string
   LOG_LEVEL: string
