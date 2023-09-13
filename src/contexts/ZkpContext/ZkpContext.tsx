@@ -327,7 +327,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
             if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
               bus.emit(
                 BUS_EVENTS.warning,
-                `Looks like your connection speed is too slow`,
+                `ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again`,
               )
 
               throw error
@@ -518,7 +518,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
             bus.emit(
               BUS_EVENTS.warning,
-              `Looks like your connection speed is too slow`,
+              `ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again`,
             )
 
             throw error
