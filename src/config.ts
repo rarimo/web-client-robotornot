@@ -145,6 +145,7 @@ export const config = {
 
   SNAP_ORIGIN:
     import.meta.env.VITE_SNAP_ORIGIN || 'local:http://localhost:8081',
+  SNAP_VERSION: import.meta.env.VITE_SNAP_ORIGIN || '0.1.0',
 } as {
   API_URL: string
   APP_NAME: string
@@ -181,6 +182,7 @@ export const config = {
   >
   CIRCUITS_LOADING_TRIES_LIMIT: number
   SNAP_ORIGIN: string
+  SNAP_VERSION: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

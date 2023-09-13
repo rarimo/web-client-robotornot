@@ -15,7 +15,6 @@ import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
  * The snap origin to use.
  * Will default to the local hosted snap if no value is provided in environment.
  */
-export const defaultSnapOrigin = config.SNAP_ORIGIN
 
 interface MetamaskZkpSnapContextValue {
   isMetamaskInstalled: boolean
@@ -98,13 +97,16 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   )
 
   const init = useCallback(async () => {
-    const snap = await enableSnap(defaultSnapOrigin)
+    const snap = await enableSnap(config.SNAP_ORIGIN, config.SNAP_VERSION)
     const connector = await snap.getConnector()
 
     setConnector(connector)
 
     const _isMetamaskInstalled = await detectMetamaskInstalled()
-    const _isSnapInstalled = await detectSnapInstalled(defaultSnapOrigin)
+    const _isSnapInstalled = await detectSnapInstalled(
+      config.SNAP_ORIGIN,
+      config.SNAP_VERSION,
+    )
 
     setIsMetamaskInstalled(_isMetamaskInstalled)
     setIsSnapInstalled(_isSnapInstalled)
