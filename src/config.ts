@@ -147,7 +147,7 @@ export const config = {
 
   SNAP_ORIGIN:
     import.meta.env.VITE_SNAP_ORIGIN || 'local:http://localhost:8081',
-  SNAP_VERSION: import.meta.env.VITE_SNAP_ORIGIN || '0.1.0',
+  SNAP_VERSION: import.meta.env.VITE_SNAP_VERSION || '0.1.0',
 } as {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
