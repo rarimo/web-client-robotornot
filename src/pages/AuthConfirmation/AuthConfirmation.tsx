@@ -28,6 +28,7 @@ import {
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
+  increaseGasLimit,
   sleep,
 } from '@/helpers'
 import { useIdentityVerifier, useLightweightStateV2 } from '@/hooks/contracts'
@@ -180,6 +181,9 @@ const AuthConfirmation: FC<Props> = () => {
         await transitState(zkpGen)
       }
 
+      if (!provider?.address || !provider?.rawProvider)
+        throw new TypeError('Provider is not defined')
+
       if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
         throw new TypeError('ZKP is not defined')
 
@@ -189,29 +193,37 @@ const AuthConfirmation: FC<Props> = () => {
 
       if (!zkpParams) throw new TypeError('ZKP params is not defined')
 
-      const txBody = getProveIdentityTxBody(
-        {
-          issuerId: config.ISSUER_ID,
-          // StateInfo.hash
-          issuerState: zkpGen.coreStateDetails.hash,
-          // StateInfo.createdAtTimestamp
-          createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
-          merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
-        },
-        zkpParams?.pub_signals?.map?.(el => BigInt(el)),
-        [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
-        [
-          [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
-          [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
-        ],
-        [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
-      )
-
-      await provider?.signAndSendTx?.({
+      const txBody = {
         to: config?.[
           `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],
+        ...getProveIdentityTxBody(
+          {
+            issuerId: config.ISSUER_ID,
+            // StateInfo.hash
+            issuerState: zkpGen.coreStateDetails.hash,
+            // StateInfo.createdAtTimestamp
+            createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
+            merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
+          },
+          zkpParams?.pub_signals?.map?.(el => BigInt(el)),
+          [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
+          [
+            [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
+            [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
+          ],
+          [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
+        ),
+      }
+
+      await provider?.signAndSendTx?.({
         ...txBody,
+        gasLimit: await increaseGasLimit(
+          provider?.address,
+          provider?.rawProvider,
+          txBody,
+          1.5,
+        ),
       })
 
       publishedChains.set([
