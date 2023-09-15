@@ -24,6 +24,7 @@ import {
   ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
+  increaseGasLimit,
   sleep,
 } from '@/helpers'
 import {
@@ -143,32 +144,43 @@ const AuthConfirmation: FC<Props> = () => {
         await transitState()
       }
 
+      if (!provider?.address || !provider?.rawProvider)
+        throw new TypeError('Provider is not defined')
+
       if (!zkProof.get?.pub_signals)
         throw new TypeError(`Pub signals is not defined`)
 
-      const txBody = getProveIdentityTxBody(
-        {
-          issuerId: statesMerkleProof.issuerId,
-          issuerState: statesMerkleProof.state.hash,
-          createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
-          merkleProof: statesMerkleProof.merkleProof.map(el =>
-            utils.arrayify(el),
-          ),
-        },
-        zkProof.get.pub_signals.map?.(el => BigInt(el)),
-        [zkProof?.get?.proof.pi_a[0], zkProof?.get?.proof.pi_a[1]],
-        [
-          [zkProof?.get?.proof.pi_b[0][1], zkProof?.get?.proof.pi_b[0][0]],
-          [zkProof?.get?.proof.pi_b[1][1], zkProof?.get?.proof.pi_b[1][0]],
-        ],
-        [zkProof?.get?.proof.pi_c[0], zkProof?.get?.proof.pi_c[1]],
-      )
-
-      await provider?.signAndSendTx?.({
+      const txBody = {
         to: config?.[
           `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChainToPublish}`
         ],
+        ...getProveIdentityTxBody(
+          {
+            issuerId: statesMerkleProof.issuerId,
+            issuerState: statesMerkleProof.state.hash,
+            createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
+            merkleProof: statesMerkleProof.merkleProof.map(el =>
+              utils.arrayify(el),
+            ),
+          },
+          zkProof.get.pub_signals.map?.(el => BigInt(el)),
+          [zkProof?.get?.proof.pi_a[0], zkProof?.get?.proof.pi_a[1]],
+          [
+            [zkProof?.get?.proof.pi_b[0][1], zkProof?.get?.proof.pi_b[0][0]],
+            [zkProof?.get?.proof.pi_b[1][1], zkProof?.get?.proof.pi_b[1][0]],
+          ],
+          [zkProof?.get?.proof.pi_c[0], zkProof?.get?.proof.pi_c[1]],
+        ),
+      }
+
+      await provider?.signAndSendTx?.({
         ...txBody,
+        gasLimit: await increaseGasLimit(
+          provider?.address,
+          provider?.rawProvider,
+          txBody,
+          1.5,
+        ),
       })
 
       publishedChains.set([

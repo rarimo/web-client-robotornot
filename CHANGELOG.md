@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2023-09-13
+#### Added
+- Auth Providers page:
+  - Civic kyc provider
+  - Gitcoin kyc provider
+  - UD kyc provider
+  - Worldcoin kyc provider
+- Kyc details and ZKP gen page
+  - Saving PK
+  - Generating ZKP
+- ZKP submit page
+  - transiting state
+  - prove zkp (submit proof) (with increased gas limit)
+  - checking core and target states
+- ZKP context
+  - generating proof
+  - getting credentials
+  - creating identity
+  - check claim offer status
+- Kyc context
+  - working with (Civic, Gitcoin, UD, Worldcoin) kyc providers
+  - parse kyc details
+  - verifying kyc for claim issuing
+- Web3 provider context
+  - working with wallets (metamask)
+
 ## [1.0.0] - 2023-06-25
 #### Added
 - Fields
@@ -70,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Under the hood changes
 - Initiated and setup project
 
-[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0...main
+[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.0.0...main
+[2.0.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0...2.0.0
 [1.0.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0-rc.1...1.0.0
 [1.0.0-rc.1]: https://gitlab.com/distributed_lab/frontend/react-template/compare/1.0.0-rc.0...1.0.0-rc.1
 [1.0.0-rc.0]: https://gitlab.com/distributed_lab/frontend/react-template/tags/1.0.0-rc.0

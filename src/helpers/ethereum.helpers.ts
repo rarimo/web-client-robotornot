@@ -1,4 +1,7 @@
+import { BN, DECIMALS } from '@distributedlab/tools'
 import { EthereumProvider, RawProvider } from '@distributedlab/w3p'
+import type { TransactionRequest } from '@ethersproject/abstract-provider'
+import type { Deferrable } from '@ethersproject/properties'
 import { providers } from 'ethers'
 
 import { sleep } from '@/helpers/promise.helpers'
@@ -35,4 +38,24 @@ export const awaitFinalityBlock = async (
     await sleep(10_000)
     currentBlock = await web3Provider?.getBlockNumber()
   } while (!currentBlock || currentBlock < finalityBlock)
+}
+
+export async function increaseGasLimit(
+  addressFrom: string,
+  rawProvider: RawProvider,
+  txBody: Deferrable<TransactionRequest>,
+  multiplier: string | number,
+) {
+  const provider = new providers.Web3Provider(
+    rawProvider as providers.ExternalProvider,
+  )
+
+  const estimatedGas = await provider.estimateGas({
+    ...txBody,
+    from: addressFrom,
+  })
+
+  return BN.fromBigInt(estimatedGas?.toString(), DECIMALS.WEI).mul(
+    BN.fromRaw(multiplier, DECIMALS.WEI),
+  ).value
 }
