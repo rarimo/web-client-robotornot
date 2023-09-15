@@ -5,7 +5,8 @@
     "field-error_maxLength": "This field must contain maximum {{maxLength}} symbols"
   },
   "errors": {
-    "default": "Something went wrong"
+    "default": "Something went wrong",
+    "slow-connection": "ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again"
   },
   "notifications": {
     "default-title-success": "Success",

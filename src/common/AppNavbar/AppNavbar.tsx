@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { type EthereumProvider, PROVIDERS } from '@distributedlab/w3p'
-import { type VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
+import { W3CCredential } from '@rarimo/rarime-connector'
 import {
   FC,
   HTMLAttributes,
@@ -13,9 +13,8 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { AppButton, AppLogo, Drawer, Dropdown } from '@/common'
-import { useWeb3Context } from '@/contexts'
-import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
-import { ICON_NAMES, RoutesPaths } from '@/enums'
+import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import {
   abbrCenter,
   bus,
@@ -32,34 +31,40 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   const [isDrawerShown, setIsDrawerShown] = useState(false)
   const [isDropdownShown, setIsDropdownShown] = useState(false)
-  const { provider, init } = useWeb3Context()
+  const { provider, init: initProvider } = useWeb3Context()
+  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
-  const [vc] = useLocalStorage<VerifiableCredentials<QueryVariableName> | null>(
-    'vc',
-    null,
-  )
+  const [vc] = useLocalStorage<W3CCredential | null>('vc', null)
 
   const isWalletAccountValid = useMemo(() => {
-    if (!vc?.body?.credential?.credentialSubject) return true
+    if (!vc?.credentialSubject) return true
 
     return Boolean(
-      vc?.body?.credential?.credentialSubject &&
-        'address' in vc.body.credential.credentialSubject &&
-        typeof vc.body.credential.credentialSubject?.address === 'string' &&
-        vc?.body?.credential?.credentialSubject?.address?.toLowerCase() ===
+      vc?.credentialSubject &&
+        'address' in vc.credentialSubject &&
+        typeof vc.credentialSubject?.address === 'string' &&
+        vc?.credentialSubject?.address?.toLowerCase() ===
           provider?.address?.toLowerCase(),
     )
-  }, [provider?.address, vc?.body.credential.credentialSubject])
+  }, [provider?.address, vc?.credentialSubject])
 
   const connectProvider = useCallback(async () => {
     try {
-      await init(PROVIDERS.Metamask)
+      await initProvider(PROVIDERS.Metamask)
+
+      const { isSnapInstalled } = await initZkpSnap()
+
+      if (!isSnapInstalled) {
+        await initZkpSnap()
+
+        await initZkpSnap()
+      }
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     gaSendCustomEvent(GaCategories.WalletConnection, { location: `Navbar` })
-  }, [init])
+  }, [initZkpSnap, initProvider])
 
   const trySwitchAccount = useCallback(async () => {
     try {
@@ -116,17 +121,21 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
                 className='navbar__connection-btn'
                 scheme='flat'
                 text={
-                  !provider?.isConnected
+                  !provider?.isConnected || !isSnapInstalled
                     ? `CONNECT METAMASK`
                     : abbrCenter(provider?.address ?? '')
                 }
                 iconLeft={ICON_NAMES.metamask}
+                iconRight={
+                  provider?.isConnected && isSnapInstalled
+                    ? ICON_NAMES.chevronDown
+                    : undefined
+                }
                 onClick={
-                  provider?.isConnected
+                  provider?.isConnected && isSnapInstalled
                     ? () => setIsDropdownShown(prev => !prev)
                     : connectProvider
                 }
-                isDisabled={provider?.isConnected}
               />
             }
           >
@@ -141,14 +150,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
               />
             </div>
           </Dropdown>
-
-          <AppButton
-            className='navbar__account-link'
-            iconLeft={ICON_NAMES.user}
-            scheme='flat'
-            size='large'
-            routePath={RoutesPaths.profile}
-          />
         </div>
       </Drawer>
 
@@ -162,16 +163,18 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
               className='navbar__connection-btn'
               scheme='flat'
               text={
-                !provider?.isConnected
+                !provider?.isConnected || !isSnapInstalled
                   ? `CONNECT METAMASK`
                   : abbrCenter(provider?.address ?? '')
               }
               iconLeft={ICON_NAMES.metamask}
               iconRight={
-                provider?.isConnected ? ICON_NAMES.chevronDown : undefined
+                provider?.isConnected && isSnapInstalled
+                  ? ICON_NAMES.chevronDown
+                  : undefined
               }
               onClick={
-                provider?.isConnected
+                provider?.isConnected && isSnapInstalled
                   ? () => setIsDropdownShown(prev => !prev)
                   : connectProvider
               }
@@ -189,14 +192,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
             />
           </div>
         </Dropdown>
-
-        <AppButton
-          className='navbar__account-link'
-          iconLeft={ICON_NAMES.user}
-          scheme='flat'
-          size='large'
-          routePath={RoutesPaths.profile}
-        />
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
-import type { VerifiableCredentials } from '@rarimo/auth-zkp-iden3'
+import { W3CCredential } from '@rarimo/rarime-connector'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -160,7 +160,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const {
     selectedKycProvider,
 
-    identity,
+    identityIdString,
     verifiableCredentials,
 
     createIdentity,
@@ -184,8 +184,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       >
     | undefined
   >(
-    () => verifiableCredentials?.body?.credential?.credentialSubject,
-    [verifiableCredentials?.body?.credential?.credentialSubject],
+    () => verifiableCredentials?.credentialSubject,
+    [verifiableCredentials?.credentialSubject],
   )
 
   const selectedKycDetails = useMemo((): [string, string][] => {
@@ -429,57 +429,62 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!selectedKycProvider.get) return
 
-      let currentIdentity = identity
+      let currentIdentityIdString = identityIdString
 
-      if (!currentIdentity?.idString) {
-        currentIdentity = await createIdentity()
+      if (!currentIdentityIdString) {
+        currentIdentityIdString = (await createIdentity()) ?? ''
       }
 
-      if (!currentIdentity?.idString) return
-
-      if (!(await isClaimOfferExists(currentIdentity, 1))) {
-        try {
-          await verifyKyc(currentIdentity.idString, response)
-        } catch (error) {
-          setKycError(error as JsonApiError)
-
-          ErrorHandler.processWithoutFeedback(error)
-
-          setIsValidCredentials(false)
-
-          setIsLoaded(true)
-
-          return
-        }
-      }
-
-      setIsKycFinished(true)
-
-      let _verifiableCredentials:
-        | VerifiableCredentials<QueryVariableName>
-        | undefined
+      if (!currentIdentityIdString) return
 
       try {
-        await isClaimOfferExists(currentIdentity)
+        if (!(await isClaimOfferExists(currentIdentityIdString, 1))) {
+          try {
+            await verifyKyc(currentIdentityIdString, response)
+          } catch (error) {
+            setKycError(error as JsonApiError)
 
-        _verifiableCredentials = await getVerifiableCredentials(currentIdentity)
+            ErrorHandler.processWithoutFeedback(error)
+
+            setIsValidCredentials(false)
+
+            setIsLoaded(true)
+
+            return
+          }
+        }
+
+        setIsKycFinished(true)
+
+        let _verifiableCredentials: W3CCredential | undefined
+
+        try {
+          await isClaimOfferExists(currentIdentityIdString)
+
+          _verifiableCredentials = await getVerifiableCredentials(
+            currentIdentityIdString,
+          )
+        } catch (error) {
+          ErrorHandler.process(error)
+        }
+
+        setIsValidCredentials(!!_verifiableCredentials?.id)
+
+        setIsLoaded(true)
       } catch (error) {
-        ErrorHandler.process(error)
+        ErrorHandler.processWithoutFeedback(error)
+        navigate(RoutesPaths.authProviders)
       }
-
-      setIsValidCredentials(!!_verifiableCredentials?.id)
-
-      setIsLoaded(true)
 
       return
     },
     [
       createIdentity,
       getVerifiableCredentials,
-      identity,
+      identityIdString,
       isClaimOfferExists,
       navigate,
-      selectedKycProvider?.get,
+      selectedKycProvider.get,
       verifyKyc,
     ],
   )

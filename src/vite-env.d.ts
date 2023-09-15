@@ -47,6 +47,9 @@ interface ImportMetaEnv {
   VITE_SUPPORTED_CHAINS_DETAILS: string
 
   VITE_CIRCUITS_LOADING_TRIES_LIMIT: number
+
+  VITE_SNAP_ORIGIN: string
+  VITE_SNAP_VERSION: string
 }
 
 interface Document {

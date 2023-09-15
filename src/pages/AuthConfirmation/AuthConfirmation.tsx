@@ -3,10 +3,7 @@ import './styles.scss'
 import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
-import { getTransitStateTxBody } from '@rarimo/shared-zkp-iden3'
-import { ZkpGen } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
-import isEmpty from 'lodash/isEmpty'
 import log from 'loglevel'
 import { FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -21,7 +18,6 @@ import {
   ProgressBar,
 } from '@/common'
 import { useWeb3Context, useZkpContext } from '@/contexts'
-import { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, RoutesPaths } from '@/enums'
 import {
   awaitFinalityBlock,
@@ -31,7 +27,10 @@ import {
   increaseGasLimit,
   sleep,
 } from '@/helpers'
-import { useIdentityVerifier, useLightweightStateV2 } from '@/hooks/contracts'
+import {
+  useIdentityVerifier,
+  // useLightweightStateV2
+} from '@/hooks/contracts'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -44,16 +43,23 @@ const AuthConfirmation: FC<Props> = () => {
   const navigate = useNavigate()
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
-  const { identity, zkpGen, zkProof, publishedChains, isUserSubmittedZkp } =
-    useZkpContext()
+  const {
+    identityIdString,
+    zkProof,
+    statesMerkleProof,
+    transitStateTx,
+    publishedChains,
+    isUserSubmittedZkp,
+  } = useZkpContext()
   const { provider, init } = useWeb3Context()
 
   const [selectedChainToPublish, setSelectedChainToPublish] =
     useState<SUPPORTED_CHAINS>(config.DEFAULT_CHAIN)
 
-  const { isIdentitiesStatesRootExists } = useLightweightStateV2(
-    config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`],
-  )
+  // const { isIdentitiesStatesRootExists } = useLightweightStateV2(
+  // eslint-disable-next-line max-len
+  //   config?.[`LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`],
+  // )
 
   const selectedChainToPublishDetails = useMemo(() => {
     return config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish]
@@ -73,21 +79,9 @@ const AuthConfirmation: FC<Props> = () => {
 
   const logAppStateDetails = useCallback(() => {
     log.error({
-      did: identity?.idString,
-      coreStateDetails: zkpGen?.coreStateDetails,
-      targetStateDetails: zkpGen?.targetStateDetails,
-      merkleProof: zkpGen?.merkleProof,
-      operation: zkpGen?.operation,
-      operationProof: zkpGen?.operationProof,
+      did: identityIdString,
     })
-  }, [
-    identity?.idString,
-    zkpGen?.coreStateDetails,
-    zkpGen?.merkleProof,
-    zkpGen?.operation,
-    zkpGen?.operationProof,
-    zkpGen?.targetStateDetails,
-  ])
+  }, [identityIdString])
 
   const handleTransitStateError = useCallback(
     async (error: unknown) => {
@@ -102,15 +96,12 @@ const AuthConfirmation: FC<Props> = () => {
 
         await sleep(1000)
 
-        if (!zkpGen?.operation?.details?.stateRootHash)
-          throw new TypeError('State root hash is not defined')
-
-        if (
-          await isIdentitiesStatesRootExists(
-            zkpGen?.operation?.details?.stateRootHash,
-          )
-        )
-          return
+        // if (
+        //   await isIdentitiesStatesRootExists(
+        //     zkpGen?.operation?.details?.stateRootHash,
+        //   )
+        // )
+        //   return
 
         throw error
       } catch (error) {
@@ -119,79 +110,45 @@ const AuthConfirmation: FC<Props> = () => {
       }
     },
     [
-      isIdentitiesStatesRootExists,
+      // isIdentitiesStatesRootExists,
       logAppStateDetails,
-      zkpGen?.operation?.details?.stateRootHash,
     ],
   )
 
-  const transitState = useCallback(
-    async (_zkpGen?: ZkpGen<QueryVariableName>) => {
-      if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+  const transitState = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
 
-      setIsStateTransiting(true)
+    setIsStateTransiting(true)
 
-      try {
-        const currZkpGen = _zkpGen || zkpGen
+    try {
+      await provider?.signAndSendTx?.(transitStateTx)
 
-        const transitParams = await currZkpGen?.loadParamsForTransitState()
+      gaSendCustomEvent(GaCategories.TransitState)
 
-        if (!transitParams) throw new TypeError('Transit params is not defined')
+      await awaitFinalityBlock(
+        config.FINALITY_BLOCK_AMOUNT,
+        provider?.rawProvider,
+      )
+    } catch (error) {
+      await handleTransitStateError(error)
+    }
 
-        if (
-          !config?.[
-            `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-          ]
-        )
-          throw new TypeError(
-            'Lightweight state contract address is not defined',
-          )
-
-        await provider?.signAndSendTx?.(
-          getTransitStateTxBody(
-            config[
-              `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${selectedChainToPublish}`
-            ] ?? '', // FIXME
-            transitParams.newIdentitiesStatesRoot,
-            transitParams.gistData,
-            transitParams.proof,
-          ),
-        )
-
-        gaSendCustomEvent(GaCategories.TransitState)
-
-        await awaitFinalityBlock(
-          config.FINALITY_BLOCK_AMOUNT,
-          provider?.rawProvider,
-        )
-      } catch (error) {
-        await handleTransitStateError(error)
-      }
-
-      setIsStateTransiting(false)
-    },
-    [provider, zkpGen, selectedChainToPublish, handleTransitStateError],
-  )
+    setIsStateTransiting(false)
+  }, [provider, transitStateTx, handleTransitStateError])
 
   const submitZkp = useCallback(async () => {
     setIsPending(true)
 
     try {
-      if (!zkpGen?.isStatesActual) {
-        await transitState(zkpGen)
+      if (transitStateTx?.data) {
+        await transitState()
       }
 
       if (!provider?.address || !provider?.rawProvider)
         throw new TypeError('Provider is not defined')
 
-      if (!zkpGen || !zkpGen.coreStateDetails || !zkpGen.merkleProof)
-        throw new TypeError('ZKP is not defined')
-
-      const zkpParams = isEmpty(zkpGen?.subjectProof)
-        ? zkProof.get
-        : zkpGen?.subjectProof
-
-      if (!zkpParams) throw new TypeError('ZKP params is not defined')
+      if (!zkProof.get?.pub_signals)
+        throw new TypeError(`Pub signals is not defined`)
 
       const txBody = {
         to: config?.[
@@ -199,20 +156,20 @@ const AuthConfirmation: FC<Props> = () => {
         ],
         ...getProveIdentityTxBody(
           {
-            issuerId: config.ISSUER_ID,
-            // StateInfo.hash
-            issuerState: zkpGen.coreStateDetails.hash,
-            // StateInfo.createdAtTimestamp
-            createdAtTimestamp: zkpGen.coreStateDetails.createdAtTimestamp,
-            merkleProof: zkpGen.merkleProof.proof.map(el => utils.arrayify(el)),
+            issuerId: statesMerkleProof.issuerId,
+            issuerState: statesMerkleProof.state.hash,
+            createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
+            merkleProof: statesMerkleProof.merkleProof.map(el =>
+              utils.arrayify(el),
+            ),
           },
-          zkpParams?.pub_signals?.map?.(el => BigInt(el)),
-          [zkpParams?.proof.pi_a[0], zkpParams?.proof.pi_a[1]],
+          zkProof.get.pub_signals.map?.(el => BigInt(el)),
+          [zkProof?.get?.proof.pi_a[0], zkProof?.get?.proof.pi_a[1]],
           [
-            [zkpParams?.proof.pi_b[0][1], zkpParams?.proof.pi_b[0][0]],
-            [zkpParams?.proof.pi_b[1][1], zkpParams?.proof.pi_b[1][0]],
+            [zkProof?.get?.proof.pi_b[0][1], zkProof?.get?.proof.pi_b[0][0]],
+            [zkProof?.get?.proof.pi_b[1][1], zkProof?.get?.proof.pi_b[1][0]],
           ],
-          [zkpParams?.proof.pi_c[0], zkpParams?.proof.pi_c[1]],
+          [zkProof?.get?.proof.pi_c[0], zkProof?.get?.proof.pi_c[1]],
         ),
       }
 
@@ -243,9 +200,16 @@ const AuthConfirmation: FC<Props> = () => {
       setIsPending(false)
     }
   }, [
-    zkpGen,
-    zkProof.get,
+    transitStateTx,
+    zkProof.get?.pub_signals,
+    zkProof.get?.proof.pi_a,
+    zkProof.get?.proof.pi_b,
+    zkProof.get?.proof.pi_c,
     getProveIdentityTxBody,
+    statesMerkleProof.issuerId,
+    statesMerkleProof.state.hash,
+    statesMerkleProof.state.createdAtTimestamp,
+    statesMerkleProof.merkleProof,
     provider,
     selectedChainToPublish,
     publishedChains,

@@ -53,6 +53,8 @@ export const META_CIRCUIT_URLS = {
 Object.assign(META_CIRCUIT_URLS, _mapEnvCfg(window.document.ENV))
 
 export const config = {
+  ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT,
+
   API_URL: import.meta.env.VITE_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
@@ -142,7 +144,13 @@ export const config = {
 
   CIRCUITS_LOADING_TRIES_LIMIT:
     import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
+
+  SNAP_ORIGIN:
+    import.meta.env.VITE_SNAP_ORIGIN || 'local:http://localhost:8081',
+  SNAP_VERSION: import.meta.env.VITE_SNAP_VERSION || '0.1.0',
 } as {
+  ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
+
   API_URL: string
   APP_NAME: string
   LOG_LEVEL: string
@@ -177,6 +185,8 @@ export const config = {
     Chain
   >
   CIRCUITS_LOADING_TRIES_LIMIT: number
+  SNAP_ORIGIN: string
+  SNAP_VERSION: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

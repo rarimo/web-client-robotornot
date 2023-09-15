@@ -116,6 +116,8 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
     }
   }, [provider?.rawProvider])
 
+  const isProduction = useMemo(() => config.ENVIRONMENT === 'production', [])
+
   const [gatekeeperNetwork, setGatekeeperNetwork] = useState<string>()
 
   useEffectOnce(() => {
@@ -127,6 +129,23 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
   const handleSigned = useCallback(() => {
     setIsModalShown(false)
   }, [])
+
+  if (isProduction) {
+    return (
+      <GatewayProvider
+        wallet={wallet}
+        gatekeeperNetwork={GATEKEEPER_NETWORK_MAP.uniqness}
+        options={{
+          autoShowModal: true,
+        }}
+      >
+        <KycProviderCivicContent
+          loginCb={loginCb}
+          handleSigned={handleSigned}
+        />
+      </GatewayProvider>
+    )
+  }
 
   return (
     <BasicModal
@@ -163,7 +182,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
         </button>
       </div>
 
-      {gatekeeperNetwork ? (
+      {gatekeeperNetwork && (
         <GatewayProvider
           wallet={wallet}
           gatekeeperNetwork={gatekeeperNetwork}
@@ -176,8 +195,6 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
             handleSigned={handleSigned}
           />
         </GatewayProvider>
-      ) : (
-        <></>
       )}
     </BasicModal>
   )

@@ -9,6 +9,7 @@ import {
 
 import App from '@/App'
 import { Web3ProviderContextProvider } from '@/contexts'
+import MetamaskZkpSnapContextProvider from '@/contexts/MetamaskZkpSnapContext'
 import { RoutesPaths } from '@/enums'
 import { AuthLayout } from '@/layouts'
 
@@ -17,7 +18,6 @@ export const AppRoutes = () => {
   const AuthPreview = lazy(() => import('@/pages/AuthPreview'))
   const AuthConfirmation = lazy(() => import('@/pages/AuthConfirmation'))
   const AuthSuccess = lazy(() => import('@/pages/AuthSuccess'))
-  const Profile = lazy(() => import('@/pages/Profile'))
 
   const router = createBrowserRouter([
     {
@@ -25,11 +25,13 @@ export const AppRoutes = () => {
       element: (
         <Suspense fallback={<></>}>
           <Web3ProviderContextProvider>
-            <App>
-              <AnimatePresence>
-                <Outlet />
-              </AnimatePresence>
-            </App>
+            <MetamaskZkpSnapContextProvider>
+              <App>
+                <AnimatePresence>
+                  <Outlet />
+                </AnimatePresence>
+              </App>
+            </MetamaskZkpSnapContextProvider>
           </Web3ProviderContextProvider>
         </Suspense>
       ),
@@ -56,10 +58,6 @@ export const AppRoutes = () => {
               element: <AuthSuccess />,
             },
           ],
-        },
-        {
-          path: RoutesPaths.profile,
-          element: <Profile />,
         },
         {
           path: '/',

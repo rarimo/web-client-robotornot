@@ -1,14 +1,14 @@
 import { config, SUPPORTED_CHAINS } from '@config'
-import { FetcherError, HTTP_STATUS_CODES } from '@distributedlab/fetcher'
+import { type TransactionRequest } from '@ethersproject/providers'
+import { DID } from '@iden3/js-iden3-core'
 import type { ZKProof } from '@iden3/js-jwz'
-import {
-  AuthZkp,
-  ClaimOffer,
-  VerifiableCredentials,
-} from '@rarimo/auth-zkp-iden3'
-import { Identity } from '@rarimo/identity-gen-iden3'
-import { FileEmptyError } from '@rarimo/shared-zkp-iden3'
-import { CircuitId, ZkpGen, ZkpOperators } from '@rarimo/zkp-gen-iden3'
+import type {
+  SaveCredentialsRequestParams,
+  StateInfo,
+  W3CCredential,
+  ZKPProofResponse,
+} from '@rarimo/rarime-connector'
+import { CircuitId } from '@rarimo/zkp-gen-iden3'
 import {
   createContext,
   FC,
@@ -17,26 +17,25 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffectOnce, useLocalStorage } from 'react-use'
 
-import { api, querier } from '@/api'
-import { useWeb3Context } from '@/contexts'
+import { api } from '@/api'
+import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import {
-  bus,
-  BUS_EVENTS,
-  GaCategories,
-  gaSendCustomEvent,
-  pureFileBytesLoading,
-  sleep,
-} from '@/helpers'
+import { GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 
 export type QueryVariableName = { isNatural: number }
 
+export type StatesMerkleProof = {
+  issuerId: string
+  state: StateInfo
+  merkleProof: string[]
+}
+
 interface ZkpContextValue {
-  identity: Identity | undefined
-  zkpGen: ZkpGen<QueryVariableName> | undefined
+  identityIdString: string
+  identityBigIntString: string
 
   isIdentitySaved: {
     get: boolean
@@ -48,7 +47,7 @@ interface ZkpContextValue {
     set: (value: SUPPORTED_CHAINS[]) => void
   }
 
-  verifiableCredentials?: VerifiableCredentials<QueryVariableName>
+  verifiableCredentials?: W3CCredential
 
   selectedKycProvider: {
     get?: SUPPORTED_KYC_PROVIDERS
@@ -64,24 +63,29 @@ interface ZkpContextValue {
     get?: ZKProof
     set: (value: ZKProof) => void
   }
+  statesMerkleProof: StatesMerkleProof
+  transitStateTx: TransactionRequest
 
   isClaimOfferExists: (
-    _identity?: Identity,
+    _identityIdString?: string,
     triesLimit?: number,
   ) => Promise<boolean>
-  getClaimOffer: (_identity?: Identity) => Promise<ClaimOffer>
-  createIdentity: (privateKeyHex?: string) => Promise<Identity>
+  getClaimOffer: (
+    _identityIdString?: string,
+  ) => Promise<SaveCredentialsRequestParams>
+  createIdentity: () => Promise<string | undefined>
   getVerifiableCredentials: (
-    identity?: Identity,
-  ) => Promise<VerifiableCredentials<QueryVariableName> | undefined>
-  getZkProof: () => Promise<ZkpGen<QueryVariableName>>
+    _identityIdString?: string,
+  ) => Promise<W3CCredential | undefined>
+  getZkProof: () => Promise<ZKPProofResponse | undefined>
 
   reset: () => void
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
-  identity: new Identity(),
-  zkpGen: undefined,
+  identityIdString: '',
+  identityBigIntString: '',
+
   publishedChains: {
     get: [],
     set: () => {
@@ -91,7 +95,7 @@ export const zkpContext = createContext<ZkpContextValue>({
   verifiableCredentials: undefined,
 
   isIdentitySaved: {
-    get: false,
+    get: true,
     set: () => {
       throw new TypeError(`isIdentitySaved.set() not implemented`)
     },
@@ -123,27 +127,21 @@ export const zkpContext = createContext<ZkpContextValue>({
       )
     },
   },
+  statesMerkleProof: {} as StatesMerkleProof,
+  transitStateTx: {} as TransactionRequest,
 
-  getClaimOffer: async (_identity?: Identity) => {
-    throw new TypeError(
-      `getClaimOffer() not implemented for ${_identity?.idString}`,
-    )
+  getClaimOffer: async () => {
+    throw new TypeError(`getClaimOffer() not implemented`)
   },
 
-  isClaimOfferExists: async (_identity?: Identity, triesLimit?: number) => {
-    throw new TypeError(
-      `isClaimOfferExists() not implemented for ${_identity?.idString} and ${triesLimit}`,
-    )
+  isClaimOfferExists: async () => {
+    throw new TypeError(`isClaimOfferExists() not implemented`)
   },
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
-  getVerifiableCredentials: async (currentIdentity?: Identity) => {
-    throw new TypeError(
-      `getVerifiableCredentials() not implemented${
-        currentIdentity?.idString ? ` for ${currentIdentity?.idString}` : ''
-      }`,
-    )
+  getVerifiableCredentials: async () => {
+    throw new TypeError(`getVerifiableCredentials() not implemented`)
   },
   getZkProof: async () => {
     throw new TypeError(`getZkProof() not implemented`)
@@ -156,27 +154,10 @@ export const zkpContext = createContext<ZkpContextValue>({
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-AuthZkp.setConfig({
-  RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
-  STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-  ISSUER_API_URL: config.API_URL,
-
-  ...(config?.CIRCUIT_URLS?.auth?.wasm
-    ? {
-        CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
-      }
-    : {}),
-
-  ...(config?.CIRCUIT_URLS?.auth?.zkey
-    ? {
-        CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
-      }
-    : {}),
-})
-
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
+  const zkpSnap = useMetamaskZkpSnapContext()
+
   const navigate = useNavigate()
-  const location = useLocation()
 
   // FIXME
   const [searchParams] = useSearchParams()
@@ -203,69 +184,65 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     'zkps',
     undefined,
   )
+  const [statesMerkleProof, setStatesMerkleProof] =
+    useState<StatesMerkleProof>()
+  const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
 
-  const [storagePK, setStoragePK] = useLocalStorage('pkey', '')
+  const [verifiableCredentials, setVerifiableCredentials] =
+    useLocalStorage<W3CCredential>('vc', undefined)
 
-  const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<
-    VerifiableCredentials<QueryVariableName>
-  >('vc', undefined)
+  const [identityIdString, setIdentityIdstring] = useLocalStorage<string>(
+    'did',
+    '',
+  )
 
-  const [identity, setIdentity] = useState<Identity>()
+  const identityBigIntString = useMemo(() => {
+    return identityIdString
+      ? DID.parse(`did:iden3:${identityIdString}`).id.bigInt().toString()
+      : ''
+  }, [identityIdString])
 
   const [publishedChains, setPublishedChains] = useLocalStorage<
     SUPPORTED_CHAINS[]
   >('submittedChains', [])
 
-  const authZkp = useMemo<AuthZkp<QueryVariableName> | undefined>(() => {
-    if (!identity) return undefined
+  const createIdentity = useCallback(async () => {
+    if (identityIdString) return identityIdString
 
-    return new AuthZkp<QueryVariableName>(identity)
-  }, [identity])
+    const _identityIdString = await zkpSnap.createIdentity()
 
-  const [zkpGen, setZkpGen] = useState<ZkpGen<QueryVariableName>>()
+    if (!_identityIdString) throw new Error('Identity has not created')
 
-  const createIdentity = useCallback(
-    async (privateKeyHex?: string) => {
-      Identity.setConfig({
-        AUTH_BJJ_CREDENTIAL_HASH: config.AUTH_BJJ_CREDENTIAL_HASH,
-      })
+    setIdentityIdstring(_identityIdString)
 
-      const newIdentity = await Identity.create(privateKeyHex)
-
-      setIdentity(newIdentity)
-
-      if (storagePK !== newIdentity.privateKeyHex) {
-        setStoragePK(newIdentity.privateKeyHex)
-      }
-
-      return newIdentity
-    },
-    [setStoragePK, storagePK],
-  )
+    return _identityIdString
+  }, [identityIdString, setIdentityIdstring, zkpSnap])
 
   const getClaimOffer = useCallback(
-    async (_identity?: Identity) => {
-      const { data } = await api.get<ClaimOffer>(
-        `/integrations/issuer/v1/public/claims/offers/${
-          _identity?.idString ?? identity?.idString
-        }/IdentityProviders`,
+    async (_identityIdString?: string) => {
+      const currIdentityIdString = _identityIdString ?? identityIdString
+
+      const { data } = await api.get<SaveCredentialsRequestParams>(
+        `/integrations/issuer/v1/public/claims/offers/${currIdentityIdString}/IdentityProviders`,
       )
 
       return data
     },
-    [identity?.idString],
+    [identityIdString],
   )
 
   const isClaimOfferExists = useCallback(
     async (
-      _identity?: Identity,
+      _identityIdString?: string,
       triesLimit = config.CLAIM_OFFER_MAX_TRIES_COUNT,
     ) => {
+      const currIdentityIdString = _identityIdString ?? identityIdString
+
       let tryCounter = 0
 
       while (tryCounter < triesLimit) {
         try {
-          await getClaimOffer(_identity)
+          await getClaimOffer(currIdentityIdString)
 
           return true
         } catch (error) {
@@ -278,86 +255,29 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       return false
     },
-    [getClaimOffer],
-  )
-
-  const loadVerifiableCredentials = useCallback(
-    async (_identity?: Identity) => {
-      let currentAuthZkp = authZkp
-      const currentIdentity = _identity ?? identity
-
-      if (!currentIdentity) throw new TypeError('Identity is not defined')
-
-      if (!authZkp) {
-        AuthZkp.setConfig({
-          RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
-          STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-          ISSUER_API_URL: config.API_URL,
-
-          ...(config?.CIRCUIT_URLS?.auth?.wasm
-            ? {
-                CIRCUIT_WASM_URL: config.CIRCUIT_URLS.auth.wasm,
-              }
-            : {}),
-
-          ...(config?.CIRCUIT_URLS?.auth?.zkey
-            ? {
-                CIRCUIT_FINAL_KEY_URL: config.CIRCUIT_URLS.auth.zkey,
-              }
-            : {}),
-        })
-
-        currentAuthZkp = new AuthZkp<QueryVariableName>(currentIdentity)
-      }
-
-      let triesCount = 0
-
-      do {
-        try {
-          const [wasm, zkey] = await Promise.all([
-            pureFileBytesLoading(AuthZkp.config.CIRCUIT_WASM_URL),
-            pureFileBytesLoading(AuthZkp.config.CIRCUIT_FINAL_KEY_URL),
-          ])
-
-          currentAuthZkp?.setCircuits(wasm, zkey)
-
-          return currentAuthZkp?.getVerifiableCredentials('IdentityProviders')
-        } catch (error) {
-          if (error instanceof FileEmptyError) {
-            if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
-              bus.emit(
-                BUS_EVENTS.warning,
-                `ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again`,
-              )
-
-              throw error
-            }
-
-            triesCount++
-            await sleep(500)
-          } else {
-            throw error
-          }
-        }
-      } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
-    },
-    [authZkp, identity],
+    [getClaimOffer, identityIdString],
   )
 
   const getVerifiableCredentials = useCallback(
-    async (
-      _identity?: Identity,
-    ): Promise<VerifiableCredentials<QueryVariableName> | undefined> => {
-      const currentIdentity = _identity ?? identity
+    async (_identityIdString?: string): Promise<W3CCredential | undefined> => {
+      const currentIdentityIdString = _identityIdString ?? identityIdString
 
-      const vc: VerifiableCredentials<QueryVariableName> | undefined =
-        verifiableCredentials &&
-        currentIdentity?.idString &&
-        verifiableCredentials?.body?.credential?.credentialSubject?.id.includes(
-          currentIdentity?.idString,
+      let vc: W3CCredential | undefined = verifiableCredentials
+
+      if (
+        !(
+          currentIdentityIdString &&
+          vc?.credentialSubject?.id &&
+          typeof vc?.credentialSubject?.id === 'string' &&
+          vc?.credentialSubject?.id?.includes?.(currentIdentityIdString)
         )
-          ? verifiableCredentials
-          : await loadVerifiableCredentials(currentIdentity)
+      ) {
+        vc = (
+          await zkpSnap.getVerifiableCredentials(
+            await getClaimOffer(currentIdentityIdString),
+          )
+        )?.[0]
+      }
 
       setVerifiableCredentials(vc)
 
@@ -366,209 +286,60 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       return vc
     },
     [
-      identity,
-      loadVerifiableCredentials,
+      getClaimOffer,
+      identityIdString,
       setVerifiableCredentials,
       verifiableCredentials,
+      zkpSnap,
     ],
   )
 
-  const loadStatesDetails = useCallback(
-    async (
-      _zkpGen?: ZkpGen<QueryVariableName>,
-    ): Promise<ZkpGen<QueryVariableName> | undefined> => {
-      const currentZkpGen = _zkpGen ?? zkpGen
-
-      if (!currentZkpGen?.coreStateDetails?.lastUpdateOperationIndex)
-        throw new TypeError(
-          'coreStateDetails.lastUpdateOperationIndex is not defined',
-        )
-
-      do {
-        try {
-          if (!currentZkpGen.coreStateDetails.lastUpdateOperationIndex) continue
-
-          await currentZkpGen?.loadOperationProof(
-            querier,
-            currentZkpGen.coreStateDetails.lastUpdateOperationIndex,
-          )
-
-          return currentZkpGen
-        } catch (error) {
-          if (
-            error instanceof FetcherError &&
-            error.response.status === HTTP_STATUS_CODES.BAD_REQUEST
-          ) {
-            /* empty */
-          } else {
-            throw error
-          }
-        }
-
-        await sleep(30 * 1000)
-      } while (!currentZkpGen?.operationProof)
-    },
-    [zkpGen],
-  )
-
   const getZkProof = useCallback(async (): Promise<
-    ZkpGen<QueryVariableName>
+    ZKPProofResponse | undefined
   > => {
-    if (!identity || !verifiableCredentials)
-      throw new TypeError('identity/verifiableCredentials is not defined')
-
-    let triesCount = 0
-
-    ZkpGen.setConfig({
-      CORE_CHAIN_RPC_URL_OR_RAW_PROVIDER: config.RARIMO_EVM_RPC_URL,
-      TARGET_CHAIN_RPC_URL_OR_RAW_PROVIDER:
-        config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].rpcUrl,
-      STATE_V2_ADDRESS: config.STATE_V2_CONTRACT_ADDRESS,
-      LIGHTWEIGHT_STATE_V2_ADDRESS:
-        config?.[
-          `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`
-        ],
-      ISSUER_API_URL: config.API_URL,
-
-      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.wasm
-        ? {
-            CIRCUIT_SIG_V2_ON_CHAIN_WASM_URL:
-              config.CIRCUIT_URLS.sigV2OnChain.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.sigV2OnChain?.zkey
-        ? {
-            CIRCUIT_SIG_V2_ON_CHAIN_FINAL_KEY_URL:
-              config.CIRCUIT_URLS.sigV2OnChain.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.sigV2?.wasm
-        ? {
-            CIRCUIT_SIG_V2_WASM_URL: config.CIRCUIT_URLS.sigV2.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.sigV2?.zkey
-        ? {
-            CIRCUIT_SIG_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.sigV2.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.wasm
-        ? {
-            CIRCUIT_MTP_V2_ON_CHAIN_WASM_URL:
-              config.CIRCUIT_URLS.mtpV2OnChain.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.mtpV2OnChain?.zkey
-        ? {
-            CIRCUIT_MTP_V2_ON_CHAIN_FINAL_KEY_URL:
-              config.CIRCUIT_URLS.mtpV2OnChain.zkey,
-          }
-        : {}),
-
-      ...(config?.CIRCUIT_URLS?.mtpV2?.wasm
-        ? {
-            CIRCUIT_MTP_V2_WASM_URL: config.CIRCUIT_URLS.mtpV2.wasm,
-          }
-        : {}),
-      ...(config?.CIRCUIT_URLS?.mtpV2?.zkey
-        ? {
-            CIRCUIT_MTP_V2_FINAL_KEY_URL: config.CIRCUIT_URLS.mtpV2.zkey,
-          }
-        : {}),
-    })
-
-    const _zkpGen = new ZkpGen<QueryVariableName>({
-      requestId: '1',
-      identity: identity,
-      verifiableCredentials: verifiableCredentials,
-
-      challenge: String(provider?.address).substring(2),
+    const zkProofResponse = await zkpSnap.createProof({
+      circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+      accountAddress: provider?.address,
 
       query: {
-        variableName: 'isNatural',
-        operator: ZkpOperators.Equals,
-        value: ['1'],
-        circuitId: CircuitId.AtomicQueryMTPV2OnChain,
-        issuerId: config.ISSUER_ID,
+        allowedIssuers: ['*'],
+        credentialSubject: {
+          isNatural: {
+            $eq: 1,
+          },
+        },
+        type: 'IdentityProviders',
       },
     })
 
-    do {
-      try {
-        const [wasm, zkey] = await Promise.all([
-          pureFileBytesLoading(
-            _zkpGen.circuitFilesUrlsMap[_zkpGen.query.circuitId].wasm,
-          ),
-          pureFileBytesLoading(
-            _zkpGen.circuitFilesUrlsMap[_zkpGen.query.circuitId].zkey,
-          ),
-        ])
+    setZkProof(zkProofResponse?.zkpProof)
 
-        _zkpGen.setCircuits(wasm, zkey)
+    setStatesMerkleProof(zkProofResponse?.statesMerkleData)
 
-        await _zkpGen.generateProof(querier)
+    setTransitStateTx(zkProofResponse?.updateStateTx)
 
-        setZkpGen(await loadStatesDetails(_zkpGen))
-
-        break
-      } catch (error) {
-        if (error instanceof FileEmptyError) {
-          if (triesCount >= config.CIRCUITS_LOADING_TRIES_LIMIT) {
-            bus.emit(
-              BUS_EVENTS.warning,
-              `ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again`,
-            )
-
-            throw error
-          }
-
-          triesCount++
-          await sleep(500)
-        } else {
-          throw error
-        }
-      }
-    } while (triesCount < config.CIRCUITS_LOADING_TRIES_LIMIT)
-
-    setZkProof(_zkpGen?.subjectProof)
-
-    return _zkpGen
-  }, [
-    identity,
-    verifiableCredentials,
-    provider?.address,
-    setZkProof,
-    loadStatesDetails,
-  ])
+    return zkProofResponse
+  }, [zkpSnap, provider?.address, setZkProof])
 
   const reset = useCallback(() => {
-    setIdentity(undefined)
+    setIdentityIdstring('')
     removeZkProof()
     setVerifiableCredentials(undefined)
     setPublishedChains([])
     setSelectedKycProvider(undefined)
     setIsUserSubmittedZkp(false)
-    setStoragePK('')
 
     localStorage.clear()
   }, [
+    setIdentityIdstring,
     removeZkProof,
     setIsUserSubmittedZkp,
     setPublishedChains,
     setSelectedKycProvider,
-    setStoragePK,
     setVerifiableCredentials,
   ])
 
   useEffectOnce(() => {
-    if (storagePK) {
-      createIdentity(storagePK)
-    }
-
-    if (location.pathname === RoutesPaths.profile) return
-
     if (
       selectedKycProvider &&
       !verifiableCredentials &&
@@ -597,8 +368,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   return (
     <zkpContext.Provider
       value={{
-        identity,
-        zkpGen,
+        identityIdString: identityIdString ?? '',
+        identityBigIntString,
+
         publishedChains: {
           get: publishedChains,
           set: setPublishedChains,
@@ -606,7 +378,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         verifiableCredentials,
 
         isIdentitySaved: {
-          get: isIdentitySaved || false,
+          get: isIdentitySaved || true,
           set: setIsIdentitySaved,
         },
 
@@ -624,6 +396,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           get: zkProof,
           set: setZkProof,
         },
+        statesMerkleProof: statesMerkleProof ?? ({} as StatesMerkleProof),
+        transitStateTx: transitStateTx ?? {},
 
         getClaimOffer,
         isClaimOfferExists,

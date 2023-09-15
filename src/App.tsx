@@ -1,3 +1,4 @@
+import { config } from '@config'
 import { Chain, errors } from '@distributedlab/w3p'
 import {
   FC,
@@ -11,8 +12,11 @@ import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 import { AppButton, AppNavbar, BasicModal, Loader } from '@/common'
-import { config } from '@/config'
-import { useWeb3Context, ZkpContextProvider } from '@/contexts'
+import {
+  useMetamaskZkpSnapContext,
+  useWeb3Context,
+  ZkpContextProvider,
+} from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -30,18 +34,23 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const location = useLocation()
   const { showToast } = useNotification()
   const { provider, isValidChain, init: initWeb3 } = useWeb3Context()
+  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
   const init = useCallback(async () => {
     if (provider?.address) return
 
     try {
       await initWeb3()
+
+      if (!isSnapInstalled) {
+        await initZkpSnap()
+      }
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3, provider?.address])
+  }, [initWeb3, initZkpSnap, isSnapInstalled, provider?.address])
 
   useEffect(() => {
     const showSuccessToast = (payload: unknown) => showToast('success', payload)
