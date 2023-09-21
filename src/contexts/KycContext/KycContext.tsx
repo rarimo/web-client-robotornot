@@ -77,13 +77,13 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
     link: 'https://unstoppabledomains.com/auth',
-    isWalletRequired: false,
+    isWalletRequired: true,
   },
   [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
     name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
     link: 'https://worldcoin.org/download-app',
-    isWalletRequired: false,
+    isWalletRequired: true,
   },
 }
 
