@@ -22,7 +22,7 @@ const AuthProvidersItem: FC<Props> = ({
   isWalletRequired,
 }) => {
   const { login } = useKycContext()
-  const { provider, init } = useWeb3Context()
+  const { provider, init, isValidChain } = useWeb3Context()
 
   const connectProvider = useCallback(async () => {
     await init(PROVIDERS.Metamask)
@@ -33,6 +33,8 @@ const AuthProvidersItem: FC<Props> = ({
       await connectProvider()
     }
 
+    if (!isValidChain) return
+
     await login(supportedKycProvider)
 
     gaSendCustomEvent(GaCategories.ProviderSelection, {
@@ -42,6 +44,7 @@ const AuthProvidersItem: FC<Props> = ({
     gaSendCustomEvent(supportedKycProvider)
   }, [
     connectProvider,
+    isValidChain,
     isWalletRequired,
     login,
     provider?.isConnected,
