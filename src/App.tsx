@@ -34,23 +34,23 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const location = useLocation()
   const { showToast } = useNotification()
   const { provider, isValidChain, init: initWeb3 } = useWeb3Context()
-  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
+  const { isMetamaskInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
 
   const init = useCallback(async () => {
     if (provider?.address) return
 
     try {
-      await initWeb3()
+      const { isMetamaskInstalled } = await initZkpSnap()
 
-      if (!isSnapInstalled) {
-        await initZkpSnap()
+      if (isMetamaskInstalled) {
+        await initWeb3()
       }
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3, initZkpSnap, isSnapInstalled, provider?.address])
+  }, [initWeb3, initZkpSnap, provider?.address])
 
   useEffect(() => {
     const showSuccessToast = (payload: unknown) => showToast('success', payload)
@@ -112,6 +112,15 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     gaSendCustomEvent(GaCategories.PageView, { pathname: location.pathname })
   }, [location])
 
+  useEffect(() => {
+    if (isAppInitialized && !isMetamaskInstalled) {
+      bus.emit(
+        BUS_EVENTS.warning,
+        'MetaMask wallet was not found. Please install the extension in your browser.',
+      )
+    }
+  }, [isAppInitialized, isMetamaskInstalled])
+
   return (
     <ZkpContextProvider>
       <div id='app'>
@@ -123,7 +132,12 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
       </div>
 
       <BasicModal
-        isShown={Boolean(provider?.isConnected && !isValidChain)}
+        isShown={Boolean(
+          isMetamaskInstalled &&
+            isAppInitialized &&
+            provider?.isConnected &&
+            !isValidChain,
+        )}
         updateIsShown={() => {
           /* empty */
         }}
