@@ -112,15 +112,6 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     gaSendCustomEvent(GaCategories.PageView, { pathname: location.pathname })
   }, [location])
 
-  useEffect(() => {
-    if (isAppInitialized && !isMetamaskInstalled) {
-      bus.emit(
-        BUS_EVENTS.warning,
-        'MetaMask wallet was not found. Please install the extension in your browser.',
-      )
-    }
-  }, [isAppInitialized, isMetamaskInstalled])
-
   return (
     <ZkpContextProvider>
       <div id='app'>

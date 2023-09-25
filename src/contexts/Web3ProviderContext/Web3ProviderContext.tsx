@@ -20,6 +20,7 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
+import { bus, BUS_EVENTS } from '@/helpers'
 import {
   // useNotification,
   useProvider,
@@ -146,6 +147,13 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         })
 
         await providerDetector.init()
+
+        if (!providerDetector.providers?.metamask) {
+          bus.emit(
+            BUS_EVENTS.warning,
+            'MetaMask wallet was not found. Please install the extension in your browser.',
+          )
+        }
 
         Provider.setChainsDetails(
           Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
