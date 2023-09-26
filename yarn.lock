@@ -305,27 +305,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civic/common-gateway-react@npm:0.11.1":
-  version: 0.11.1
-  resolution: "@civic/common-gateway-react@npm:0.11.1"
+"@civic/common-gateway-react@npm:0.11.0":
+  version: 0.11.0
+  resolution: "@civic/common-gateway-react@npm:0.11.0"
   dependencies:
     fetch-retry: ^5.0.6
     iframe-resizer-react: ^1.1.0
-    ramda: ^0.28.0
+    ramda: ^0.27.1
     styled-components: ^5.3.1
     uuid: ^9.0.0
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: d624228a0eb43f6af33ff8f44e06cf5a6efc814e049fcb1f4ac97e2db498b58b572683e82e326f7c4d1298c1ec933827a56b0c204179af99ce0a2f2a95ded23d
+  checksum: 69312ba1c0d0ee9462ecf5db982f731fe45eea5f96e5a75f4eca5af8dd99306980981cff60269c955e2e759aff9a78fc8e49712fac06dd6cc80fd48b3180e00a
   languageName: node
   linkType: hard
 
-"@civic/ethereum-gateway-react@npm:^0.13.4":
-  version: 0.13.5
-  resolution: "@civic/ethereum-gateway-react@npm:0.13.5"
+"@civic/ethereum-gateway-react@npm:0.13.4":
+  version: 0.13.4
+  resolution: "@civic/ethereum-gateway-react@npm:0.13.4"
   dependencies:
-    "@civic/common-gateway-react": 0.11.1
+    "@civic/common-gateway-react": 0.11.0
     "@ethersproject/abstract-signer": ^5.6.0
     "@ethersproject/providers": ^5.6.2
     "@identity.com/gateway-eth-ts": 0.8.1-alpha.0
@@ -336,7 +336,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 1c806f1e34b559f0603cf5a0dcf033e633669e58c8628d730118196e3a861f08cb2901d41d23678a5766064698f956210dbc8f47c84e6fb95a0c133156ba0bd0
+  checksum: 04992c7dfe6bfe21e465cf99f33f1e8a3ed3755464b8ed825cc27d0b2ea6c7fb84967aa8bd0d9987bef4e86595c37b6450870ff9a797274d276fe3ca37f1ff85
   languageName: node
   linkType: hard
 
@@ -2635,13 +2635,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*, @types/react@npm:^18.2.14":
-  version: 18.2.22
-  resolution: "@types/react@npm:18.2.22"
+  version: 18.2.23
+  resolution: "@types/react@npm:18.2.23"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 44289523dabaadcd3fd85689abb98f9ebcc8492d7e978348d1c986138acef4801030b279e89a19e38a6319e294bcea77559e37e0c803e4bacf2b8ae3a56ba587
+  checksum: efb9d1ed1940c0e7ba08a21ffba5e266d8dbbb8fe618cfb97bc902dfc96385fdd8189e3f7f64b4aa13134f8e61947d60560deb23be151253c3a97b0d070897ca
   languageName: node
   linkType: hard
 
@@ -10332,6 +10332,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ramda@npm:^0.27.1":
+  version: 0.27.2
+  resolution: "ramda@npm:0.27.2"
+  checksum: 28d6735dd1eea1a796c56cf6111f3673c6105bbd736e521cdd7826c46a18eeff337c2dba4668f6eed990d539b9961fd6db19aa46ccc1530ba67a396c0a9f580d
+  languageName: node
+  linkType: hard
+
 "ramda@npm:^0.28.0":
   version: 0.28.0
   resolution: "ramda@npm:0.28.0"
@@ -10460,7 +10467,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-template@workspace:."
   dependencies:
-    "@civic/ethereum-gateway-react": ^0.13.4
+    "@civic/ethereum-gateway-react": 0.13.4
     "@distributedlab/jac": 1.0.0-rc.6
     "@distributedlab/tools": 1.0.0-rc.6
     "@distributedlab/w3p": 1.0.0-rc.6
@@ -13564,13 +13571,13 @@ __metadata:
   linkType: hard
 
 "yup@npm:^1.1.1":
-  version: 1.3.0
-  resolution: "yup@npm:1.3.0"
+  version: 1.3.1
+  resolution: "yup@npm:1.3.1"
   dependencies:
     property-expr: ^2.0.5
     tiny-case: ^1.0.3
     toposort: ^2.0.2
     type-fest: ^2.19.0
-  checksum: ab10e58b749785570af878409e87524c84d3836e27d4513ff8f55d777e87191539f4d5310dba8f57cfa6668d658f55bce966ca2ec46ee85a2be05c2fa9510f2c
+  checksum: 55193e1e8a697894e3b56931d70f9ddb574c26da4d81db0aafdb54550bd70668ae3e51df8bb56ecd4fef19336ccb5cdb0561d6435d2b58a55da6324a7f972a64
   languageName: node
   linkType: hard
