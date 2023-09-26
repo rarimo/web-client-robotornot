@@ -4,7 +4,11 @@ import { PROVIDERS } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useCallback } from 'react'
 
 import { Icon } from '@/common'
-import { useKycContext, useWeb3Context } from '@/contexts'
+import {
+  useKycContext,
+  useMetamaskZkpSnapContext,
+  useWeb3Context,
+} from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import { GaCategories, gaSendCustomEvent } from '@/helpers'
 
@@ -23,10 +27,12 @@ const AuthProvidersItem: FC<Props> = ({
 }) => {
   const { login } = useKycContext()
   const { provider, init, isValidChain } = useWeb3Context()
+  const { connectOrInstallSnap } = useMetamaskZkpSnapContext()
 
   const connectProvider = useCallback(async () => {
     await init(PROVIDERS.Metamask)
-  }, [init])
+    await connectOrInstallSnap()
+  }, [connectOrInstallSnap, init])
 
   const handleLogin = useCallback(async () => {
     if (!provider?.isConnected && isWalletRequired) {

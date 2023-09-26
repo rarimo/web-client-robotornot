@@ -90,7 +90,9 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
    * or return the existing one
    */
   const createIdentity = useCallback(async () => {
-    return (await connector?.createIdentity())?.split(':')?.[2]
+    if (!connector) throw new TypeError('Connector is not defined')
+
+    return (await connector.createIdentity())?.split(':')?.[2]
   }, [connector])
 
   /**
@@ -98,14 +100,18 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
    */
   const getVerifiableCredentials = useCallback(
     async (params: SaveCredentialsRequestParams) => {
-      return connector?.saveCredentials?.(params)
+      if (!connector) throw new TypeError('Connector is not defined')
+
+      return connector.saveCredentials?.(params)
     },
     [connector],
   )
 
   const createProof = useCallback(
     async (params: CreateProofRequestParams) => {
-      return connector?.createProof(params)
+      if (!connector) throw new TypeError('Connector is not defined')
+
+      return connector.createProof(params)
     },
     [connector],
   )
