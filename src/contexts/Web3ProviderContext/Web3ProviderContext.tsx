@@ -3,7 +3,6 @@ import {
   MetamaskProvider,
   Provider,
   ProviderDetector,
-  // type ProviderEventPayload,
   ProviderInstance,
   ProviderProxyConstructor,
   PROVIDERS,
@@ -15,16 +14,12 @@ import {
   memo,
   useCallback,
   useMemo,
-  // useState,
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
 import { bus, BUS_EVENTS } from '@/helpers'
-import {
-  // useNotification,
-  useProvider,
-} from '@/hooks'
+import { useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
   provider?: ReturnType<typeof useProvider>
@@ -78,9 +73,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerType: undefined,
   })
 
-  // const [currentTxToastId, setCurrentTxToastId] = useState<string | number>()
-  // const { showTxToast, removeToast } = useNotification()
-
   const provider = useProvider()
 
   const isValidChain = useMemo(() => {
@@ -91,30 +83,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
       String(provider.chainId)
     )
   }, [provider.chainId])
-
-  // const handleTxSent = useMemo(
-  //   () => (e?: ProviderEventPayload) => {
-  //     setCurrentTxToastId(
-  //       showTxToast('pending', {
-  //         txHash: e?.txHash,
-  //       }),
-  //     )
-  //   },
-  //   [showTxToast],
-  // )
-
-  // const handleTxConfirmed = useMemo(
-  //   () => (e?: ProviderEventPayload) => {
-  //     if (currentTxToastId) {
-  //       removeToast(currentTxToastId)
-  //     }
-  //
-  //     showTxToast('success', {
-  //       txResponse: e?.txResponse,
-  //     })
-  //   },
-  //   [currentTxToastId, removeToast, showTxToast],
-  // )
 
   const disconnect = useCallback(async () => {
     try {
@@ -128,15 +96,9 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
   const listeners = useMemo(
     () => ({
-      // onTxSent: handleTxSent,
-      // onTxConfirmed: handleTxConfirmed,
       onDisconnect: disconnect,
     }),
-    [
-      disconnect,
-      // handleTxConfirmed,
-      // handleTxSent
-    ],
+    [disconnect],
   )
 
   const init = useCallback(
@@ -147,13 +109,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         })
 
         await providerDetector.init()
-
-        if (!providerDetector.providers?.metamask) {
-          bus.emit(
-            BUS_EVENTS.warning,
-            'MetaMask wallet was not found. Please install the extension in your browser.',
-          )
-        }
 
         Provider.setChainsDetails(
           Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
@@ -169,6 +124,22 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
 
         if (!currentProviderType) return
 
+        const NAMED_PROVIDERS = {
+          [PROVIDERS.Metamask]: 'Metamask',
+          [PROVIDERS.Coinbase]: 'Coinbase',
+          [PROVIDERS.Near]: 'Near',
+          [PROVIDERS.Phantom]: 'Phantom',
+          [PROVIDERS.Solflare]: 'Solflare',
+          [PROVIDERS.Fallback]: '',
+        }
+
+        if (!providerDetector.getProvider(currentProviderType)) {
+          bus.emit(
+            BUS_EVENTS.warning,
+            `${NAMED_PROVIDERS[currentProviderType]} wallet was not found. Please install the extension in your browser.`,
+          )
+        }
+
         const initializedProvider = await provider.init(
           SUPPORTED_PROVIDERS_MAP[
             currentProviderType
@@ -183,9 +154,11 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
           await initializedProvider?.connect?.()
         }
       } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (error.error instanceof errors.ProviderUserRejectedRequest) {
+        if (
+          error instanceof Error &&
+          'error' in error &&
+          error.error instanceof errors.ProviderUserRejectedRequest
+        ) {
           await disconnect()
         }
 

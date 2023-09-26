@@ -34,23 +34,40 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const location = useLocation()
   const { showToast } = useNotification()
   const { provider, isValidChain, init: initWeb3 } = useWeb3Context()
-  const { isMetamaskInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
+  const {
+    checkMetamaskExists,
+    isMetamaskInstalled,
+    checkSnapExists,
+    connectOrInstallSnap,
+  } = useMetamaskZkpSnapContext()
 
   const init = useCallback(async () => {
     if (provider?.address) return
 
     try {
-      const { isMetamaskInstalled } = await initZkpSnap()
-
-      if (isMetamaskInstalled) {
+      if (await checkMetamaskExists()) {
+        /**
+         * We not pass providerType here,
+         * because only want to check is user was connected before
+         */
         await initWeb3()
+
+        if (await checkSnapExists()) {
+          await connectOrInstallSnap()
+        }
       }
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
 
     setIsAppInitialized(true)
-  }, [initWeb3, initZkpSnap, provider?.address])
+  }, [
+    provider?.address,
+    checkMetamaskExists,
+    initWeb3,
+    checkSnapExists,
+    connectOrInstallSnap,
+  ])
 
   useEffect(() => {
     const showSuccessToast = (payload: unknown) => showToast('success', payload)

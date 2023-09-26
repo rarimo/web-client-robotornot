@@ -32,7 +32,12 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isDrawerShown, setIsDrawerShown] = useState(false)
   const [isDropdownShown, setIsDropdownShown] = useState(false)
   const { provider, init: initProvider } = useWeb3Context()
-  const { isSnapInstalled, init: initZkpSnap } = useMetamaskZkpSnapContext()
+  const {
+    isSnapInstalled,
+    isMetamaskInstalled,
+    connectOrInstallSnap,
+    checkSnapStatus,
+  } = useMetamaskZkpSnapContext()
 
   const [vc] = useLocalStorage<W3CCredential | null>('vc', null)
 
@@ -49,34 +54,23 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [provider?.address, vc?.credentialSubject])
 
   const connectProvider = useCallback(async () => {
+    if (!isMetamaskInstalled) return
+
     try {
       await initProvider(PROVIDERS.Metamask)
+      await connectOrInstallSnap()
 
-      const { isSnapInstalled } = await initZkpSnap()
-
-      if (!isSnapInstalled) {
-        await initZkpSnap()
-
-        await initZkpSnap()
-      }
+      await checkSnapStatus()
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     gaSendCustomEvent(GaCategories.WalletConnection, { location: `Navbar` })
-  }, [initZkpSnap, initProvider])
+  }, [isMetamaskInstalled, initProvider, connectOrInstallSnap, checkSnapStatus])
 
   const trySwitchAccount = useCallback(async () => {
     try {
       if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
-
-      // if (vc?.body?.credential?.credentialSubject && isWalletAccountValid) {
-      //   bus.emit(
-      //     BUS_EVENTS.warning,
-      // eslint-disable-next-line max-len
-      //     `Looks like you're trying to switch your MetaMask address! Please use the same account that you've used during the verification process.`,
-      //   )
-      // }
 
       await switchAccount(provider.rawProvider as EthereumProvider)
     } catch (error) {
@@ -84,11 +78,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     setIsDropdownShown(false)
-  }, [
-    // isWalletAccountValid,
-    provider?.rawProvider,
-    // vc?.body?.credential?.credentialSubject,
-  ])
+  }, [provider?.rawProvider])
 
   useEffect(() => {
     if (isWalletAccountValid) return

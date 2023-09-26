@@ -29,10 +29,14 @@ interface MetamaskZkpSnapContextValue {
   createProof: (
     params: CreateProofRequestParams,
   ) => Promise<ZKPProofResponse | undefined>
-  init: () => Promise<{
+  checkMetamaskExists: () => Promise<boolean>
+  checkSnapExists: () => Promise<boolean>
+  checkSnapStatus: () => Promise<{
     isMetamaskInstalled: boolean
     isSnapInstalled: boolean
   }>
+
+  connectOrInstallSnap: () => Promise<void>
 }
 
 export const MetamaskZkpSnapContext =
@@ -53,7 +57,17 @@ export const MetamaskZkpSnapContext =
     createProof: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
-    init: () => {
+    checkMetamaskExists: () => {
+      throw new Error('MetamaskZkpSnapContext not initialized')
+    },
+    checkSnapExists: () => {
+      throw new Error('MetamaskZkpSnapContext not initialized')
+    },
+    checkSnapStatus: () => {
+      throw new Error('MetamaskZkpSnapContext not initialized')
+    },
+
+    connectOrInstallSnap: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
   })
@@ -96,18 +110,34 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [connector],
   )
 
-  const init = useCallback(async () => {
+  const checkMetamaskExists = useCallback(async () => {
     const _isMetamaskInstalled = await detectMetamaskInstalled()
+
+    setIsMetamaskInstalled(_isMetamaskInstalled)
+
+    return _isMetamaskInstalled
+  }, [])
+
+  const checkSnapExists = useCallback(async () => {
     const _isSnapInstalled = await detectSnapInstalled(
       config.SNAP_ORIGIN,
       config.SNAP_VERSION,
     )
 
-    if (!_isSnapInstalled) {
-      const snap = await enableSnap(config.SNAP_ORIGIN, config.SNAP_VERSION)
-      const connector = await snap.getConnector()
-      setConnector(connector)
-    }
+    setIsSnapInstalled(_isSnapInstalled)
+
+    return _isSnapInstalled
+  }, [])
+
+  const connectOrInstallSnap = useCallback(async () => {
+    const snap = await enableSnap(config.SNAP_ORIGIN, config.SNAP_VERSION)
+    const connector = await snap.getConnector()
+    setConnector(connector)
+  }, [])
+
+  const checkSnapStatus = useCallback(async () => {
+    const _isMetamaskInstalled = await checkMetamaskExists()
+    const _isSnapInstalled = await checkSnapExists()
 
     setIsMetamaskInstalled(_isMetamaskInstalled)
     setIsSnapInstalled(_isSnapInstalled)
@@ -116,7 +146,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       isMetamaskInstalled: _isMetamaskInstalled,
       isSnapInstalled: _isSnapInstalled,
     }
-  }, [])
+  }, [checkMetamaskExists, checkSnapExists])
 
   return (
     <MetamaskZkpSnapContext.Provider
@@ -129,7 +159,12 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         createIdentity,
         getVerifiableCredentials,
         createProof,
-        init,
+
+        checkMetamaskExists,
+        checkSnapExists,
+        checkSnapStatus,
+
+        connectOrInstallSnap,
       }}
     >
       {children}
