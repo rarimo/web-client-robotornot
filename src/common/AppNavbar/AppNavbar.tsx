@@ -32,12 +32,8 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isDrawerShown, setIsDrawerShown] = useState(false)
   const [isDropdownShown, setIsDropdownShown] = useState(false)
   const { provider, init: initProvider } = useWeb3Context()
-  const {
-    isSnapInstalled,
-    isMetamaskInstalled,
-    connectOrInstallSnap,
-    checkSnapStatus,
-  } = useMetamaskZkpSnapContext()
+  const { isSnapInstalled, connectOrInstallSnap, checkSnapStatus } =
+    useMetamaskZkpSnapContext()
 
   const [vc] = useLocalStorage<W3CCredential | null>('vc', null)
 
@@ -54,8 +50,6 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [provider?.address, vc?.credentialSubject])
 
   const connectProvider = useCallback(async () => {
-    if (!isMetamaskInstalled) return
-
     try {
       await initProvider(PROVIDERS.Metamask)
       await connectOrInstallSnap()
@@ -66,7 +60,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
 
     gaSendCustomEvent(GaCategories.WalletConnection, { location: `Navbar` })
-  }, [isMetamaskInstalled, initProvider, connectOrInstallSnap, checkSnapStatus])
+  }, [initProvider, connectOrInstallSnap, checkSnapStatus])
 
   const trySwitchAccount = useCallback(async () => {
     try {

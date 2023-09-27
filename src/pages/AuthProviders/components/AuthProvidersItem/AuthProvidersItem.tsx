@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { PROVIDERS } from '@distributedlab/w3p'
-import { FC, HTMLAttributes, useCallback } from 'react'
+import { FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { Icon } from '@/common'
 import {
@@ -10,7 +10,7 @@ import {
   useWeb3Context,
 } from '@/contexts'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { GaCategories, gaSendCustomEvent } from '@/helpers'
+import { ErrorHandler, GaCategories, gaSendCustomEvent } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   supportedKycProvider: SUPPORTED_KYC_PROVIDERS
@@ -25,13 +25,23 @@ const AuthProvidersItem: FC<Props> = ({
   supportedKycProvider,
   isWalletRequired,
 }) => {
+  const [isPending, setIsPending] = useState(false)
+
   const { login } = useKycContext()
   const { provider, init, isValidChain } = useWeb3Context()
   const { connectOrInstallSnap } = useMetamaskZkpSnapContext()
 
   const connectProvider = useCallback(async () => {
-    await init(PROVIDERS.Metamask)
-    await connectOrInstallSnap()
+    setIsPending(true)
+
+    try {
+      await init(PROVIDERS.Metamask)
+      await connectOrInstallSnap()
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
+    }
+
+    setIsPending(false)
   }, [connectOrInstallSnap, init])
 
   const handleLogin = useCallback(async () => {
@@ -58,7 +68,12 @@ const AuthProvidersItem: FC<Props> = ({
   ])
 
   return (
-    <div className='auth-providers-item'>
+    <div
+      className={[
+        'auth-providers-item',
+        ...(isPending ? ['auth-providers-item--disabled'] : []),
+      ].join(' ')}
+    >
       <Icon className='auth-providers-item__icon' name={iconName} />
       <h5 className='auth-providers-item__name'>{name}</h5>
       <Icon

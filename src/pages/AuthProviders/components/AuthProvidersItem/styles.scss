@@ -6,6 +6,11 @@
   background: var(--background-secondary-main);
   padding: toRem(18) toRem(24);
   border: toRem(1) solid var(--border-primary-main);
+
+  &--disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
 }
 
 .auth-providers-item__icon {
