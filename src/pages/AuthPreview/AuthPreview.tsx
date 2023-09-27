@@ -87,15 +87,20 @@ const AuthPreview: FC<Props> = () => {
 
       const isAddressProved = await isSenderAddressProved(provider.address)
 
-      if (isDIDProved || isAddressProved) {
-        bus.emit(
-          BUS_EVENTS.warning,
-          `${isDIDProved ? 'Identity' : ''} has already been proven, ${
-            isAddressProved
-              ? 'and sender address has already been used to prove the another identity'
-              : ''
-          }`,
-        )
+      let provedMsg = ''
+
+      if (isDIDProved && isAddressProved) {
+        provedMsg =
+          'Identity has already been proven and sender address has already been used to prove the another identity'
+      } else if (isDIDProved && !isAddressProved) {
+        provedMsg = 'Identity has already been proven'
+      } else if (!isDIDProved && isAddressProved) {
+        provedMsg =
+          'Sender address has already been used to prove the another identity'
+      }
+
+      if (provedMsg) {
+        bus.emit(BUS_EVENTS.warning, provedMsg)
 
         setIsPending(false)
         return
@@ -177,7 +182,7 @@ const AuthPreview: FC<Props> = () => {
           </div>
           <span className='auth-preview__card-error-title'>
             {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-              ? `Provider already used`
+              ? `This KYC provider / Address was already claimed by another identity`
               : verificationErrorMessages}
           </span>
           <span className='auth-preview__card-error-message'>

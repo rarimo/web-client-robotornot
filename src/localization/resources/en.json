@@ -57,7 +57,7 @@
     "invalid-signature": "Invalid signature",
     "nonce-not-found": "Nonce not found",
     "not-likely-human": "Not likely human",
-    "score-too-low": "Score too low, should be at least 15",
+    "score-too-low": "Score is too low, should be at least 15",
     "invalid-gateway-token": "Invalid gateway token"
   }
 }
