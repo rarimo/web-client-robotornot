@@ -91,12 +91,12 @@ const AuthPreview: FC<Props> = () => {
 
       if (isDIDProved && isAddressProved) {
         provedMsg =
-          'Identity has already been proven and sender address has already been used to prove the another identity'
+          'Your identity has been verified as human, and the wallet address is already linked to it.'
       } else if (isDIDProved && !isAddressProved) {
-        provedMsg = 'Identity has already been proven'
+        provedMsg = 'Identity verification already completed'
       } else if (!isDIDProved && isAddressProved) {
         provedMsg =
-          'Sender address has already been used to prove the another identity'
+          'The wallet address you entered is associated with another identity. Please use a different wallet address.'
       }
 
       if (provedMsg) {

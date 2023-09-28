@@ -136,7 +136,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         if (!providerDetector.getProvider(currentProviderType)) {
           bus.emit(
             BUS_EVENTS.warning,
-            `${NAMED_PROVIDERS[currentProviderType]} wallet was not found. Please install the extension in your browser.`,
+            `${NAMED_PROVIDERS[currentProviderType]} wallet not detected. Please install the browser extension to proceed.`,
           )
         }
 

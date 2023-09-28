@@ -79,7 +79,7 @@ const AppNavbar: FC<HTMLAttributes<HTMLDivElement>> = ({
 
     bus.emit(
       BUS_EVENTS.warning,
-      `Looks like you've switched your MetaMask address! Please use the same account that you've used during the verification process.`,
+      `Your MetaMask address has changed. Please use the account you verified with.`,
     )
   }, [isWalletAccountValid, provider?.address])
 

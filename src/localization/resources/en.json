@@ -6,7 +6,7 @@
   },
   "errors": {
     "default": "Something went wrong",
-    "slow-connection": "ZK-circuits download timed out. It may have happened due to slow internet connection. Please try again"
+    "slow-connection": "ZK-circuit download failed. Possible slow internet connection. Please retry."
   },
   "notifications": {
     "default-title-success": "Success",
@@ -57,7 +57,7 @@
     "invalid-signature": "Invalid signature",
     "nonce-not-found": "Nonce not found",
     "not-likely-human": "Not likely human",
-    "score-too-low": "Score is too low, should be at least 15",
+    "score-too-low": "Your Gitcoin Passport Score is below the required threshold. It needs to be at least 15.",
     "invalid-gateway-token": "Invalid gateway token"
   }
 }
