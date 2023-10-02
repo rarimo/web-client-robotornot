@@ -13,12 +13,32 @@ html {
 }
 
 /* stylelint-disable-next-line */
-body, #app, #root {
+body, #root {
   display: flex;
   flex-direction: column;
   flex: 1;
-  background: var(--background-primary-main);
   color: var(--text-primary-main);
+}
+
+body {
+  background: url("/images/cells-bg.png") center center / contain;
+}
+
+#root {
+  background: url("/images/app-bg.png") no-repeat center right / contain;
+
+  &:before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(var(--background-primary-main-rgb), 0.5);
+    opacity: 0.5;
+    filter: blur(#{toRem(2)});
+  }
 }
 
 input,
@@ -135,14 +155,11 @@ a {
 .app__main {
   display: flex;
   flex-direction: column;
-  align-items: center;
   flex: 1;
-  padding: toRem(36) var(--app-padding-right) 0 var(--app-padding-left);
+  padding: 0 var(--app-padding-right) 0 var(--app-padding-left);
 
   & > * {
-    max-width: toRem(642);
-    width: 100%;
-    margin: 0 auto;
+    flex: 1;
   }
 
   @include respond-to(xsmall) {

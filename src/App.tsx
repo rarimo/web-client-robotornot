@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
-import { AppButton, AppNavbar, BasicModal, Loader } from '@/common'
+import { AppButton, AppFooter, AppNavbar, BasicModal, Loader } from '@/common'
 import {
   useMetamaskZkpSnapContext,
   useWeb3Context,
@@ -131,13 +131,13 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
   return (
     <ZkpContextProvider>
-      <div id='app'>
-        <AppNavbar />
+      <AppNavbar />
 
-        <div className='app__main'>
-          {isAppInitialized ? children : <Loader />}
-        </div>
+      <div className='app__main'>
+        {isAppInitialized ? children : <Loader />}
       </div>
+
+      <AppFooter />
 
       <BasicModal
         isShown={Boolean(

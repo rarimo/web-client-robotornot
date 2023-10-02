@@ -8,27 +8,27 @@ import {
 } from 'react-router-dom'
 
 import App from '@/App'
-import { Web3ProviderContextProvider } from '@/contexts'
+import { KycContextProvider, Web3ProviderContextProvider } from '@/contexts'
 import MetamaskZkpSnapContextProvider from '@/contexts/MetamaskZkpSnapContext'
 import { RoutesPaths } from '@/enums'
-import { AuthLayout } from '@/layouts'
 
 export const AppRoutes = () => {
-  const AuthProviders = lazy(() => import('@/pages/AuthProviders'))
-  const AuthPreview = lazy(() => import('@/pages/AuthPreview'))
-  const AuthConfirmation = lazy(() => import('@/pages/AuthConfirmation'))
-  const AuthSuccess = lazy(() => import('@/pages/AuthSuccess'))
+  const MainPage = lazy(() => import('src/pages/MainPage'))
 
   const router = createBrowserRouter([
     {
-      path: RoutesPaths.app,
+      path: RoutesPaths.App,
       element: (
         <Suspense fallback={<></>}>
           <Web3ProviderContextProvider>
             <MetamaskZkpSnapContextProvider>
               <App>
                 <AnimatePresence>
-                  <Outlet />
+                  <KycContextProvider>
+                    <AnimatePresence>
+                      <Outlet />
+                    </AnimatePresence>
+                  </KycContextProvider>
                 </AnimatePresence>
               </App>
             </MetamaskZkpSnapContextProvider>
@@ -37,35 +37,17 @@ export const AppRoutes = () => {
       ),
       children: [
         {
-          path: RoutesPaths.auth,
-          element: <AuthLayout />,
-          children: [
-            {
-              index: true,
-              path: RoutesPaths.authProviders,
-              element: <AuthProviders />,
-            },
-            {
-              path: RoutesPaths.authPreview,
-              element: <AuthPreview />,
-            },
-            {
-              path: RoutesPaths.authConfirmation,
-              element: <AuthConfirmation />,
-            },
-            {
-              path: RoutesPaths.authSuccess,
-              element: <AuthSuccess />,
-            },
-          ],
+          path: RoutesPaths.Main,
+          element: <MainPage />,
         },
+
         {
           path: '/',
-          element: <Navigate replace to={RoutesPaths.authProviders} />,
+          element: <Navigate replace to={RoutesPaths.Main} />,
         },
         {
           path: '*',
-          element: <Navigate replace to={RoutesPaths.authProviders} />,
+          element: <Navigate replace to={RoutesPaths.Main} />,
         },
       ],
     },

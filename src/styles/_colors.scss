@@ -3,13 +3,22 @@ $white-rgb: hexToRGB($white);
 $black: #000000;
 $black-rgb: hexToRGB($black);
 
-$background-primary-light: #fbfbfb;
-$background-primary-main: #fbfbfb;
-$background-primary-dark: #fbfbfb;
+$background-primary-light: $white;
+$background-primary-main: $white;
+$background-primary-dark: $white;
 
-$background-secondary-light: #ffffff;
-$background-secondary-main: #ffffff;
-$background-secondary-dark: #ffffff;
+
+$background-primary-light-rgb: hexToRGB($white);
+$background-primary-main-rgb: hexToRGB($white);
+$background-primary-dark-rgb: hexToRGB($white);
+
+$background-secondary-light: $white;
+$background-secondary-main: $white;
+$background-secondary-dark: $white;
+
+$background-secondary-light-rgb: hexToRGB($white);
+$background-secondary-main-rgb: hexToRGB($white);
+$background-secondary-dark-rgb: hexToRGB($white);
 
 /* status colors */
 

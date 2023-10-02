@@ -14,9 +14,17 @@
   --background-primary-main: #{$background-primary-main};
   --background-primary-dark: #{$background-primary-dark};
 
+  --background-primary-light-rgb: #{$background-primary-light-rgb};
+  --background-primary-main-rgb: #{$background-primary-main-rgb};
+  --background-primary-dark-rgb: #{$background-primary-dark-rgb};
+
   --background-secondary-light: #{$background-secondary-light};
   --background-secondary-main: #{$background-secondary-main};
   --background-secondary-dark: #{$background-secondary-dark};
+
+  --background-secondary-light-rgb: #{$background-secondary-light-rgb};
+  --background-secondary-main-rgb: #{$background-secondary-main-rgb};
+  --background-secondary-dark-rgb: #{$background-secondary-dark-rgb};
 
   /* status colors */
   --success-light: #{$success-light};

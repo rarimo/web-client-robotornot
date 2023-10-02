@@ -339,31 +339,31 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setVerifiableCredentials,
   ])
 
-  useEffectOnce(() => {
-    if (
-      selectedKycProvider &&
-      !verifiableCredentials &&
-      !searchParams.get('id_token')
-    ) {
-      removeSelectedKycProvider()
-    }
-
-    if (isUserSubmittedZkp) {
-      navigate(RoutesPaths.authSuccess)
-    } else if (verifiableCredentials) {
-      removeZkProof()
-      navigate(RoutesPaths.authPreview)
-    } else {
-      if (
-        selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ||
-        // FIXME
-        searchParams.get('id_token')
-      )
-        return
-
-      navigate(RoutesPaths.authProviders)
-    }
-  })
+  // useEffectOnce(() => {
+  //   if (
+  //     selectedKycProvider &&
+  //     !verifiableCredentials &&
+  //     !searchParams.get('id_token')
+  //   ) {
+  //     removeSelectedKycProvider()
+  //   }
+  //
+  //   if (isUserSubmittedZkp) {
+  //     navigate(RoutesPaths.authSuccess)
+  //   } else if (verifiableCredentials) {
+  //     removeZkProof()
+  //     navigate(RoutesPaths.authPreview)
+  //   } else {
+  //     if (
+  //       selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ||
+  //       // FIXME
+  //       searchParams.get('id_token')
+  //     )
+  //       return
+  //
+  //     navigate(RoutesPaths.authProviders)
+  //   }
+  // })
 
   return (
     <zkpContext.Provider
