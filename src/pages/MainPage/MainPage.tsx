@@ -22,26 +22,20 @@ import { ICON_NAMES } from '@/enums'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const WalletConnectionStep = lazy(() => import('./components/WalletConnection'))
-const SnapConnectionStep = lazy(() => import('./components/SnapConnection'))
-const IdentityCreationStep = lazy(() => import('./components/IdentityCreation'))
-const KycProvidersStep = lazy(() => import('./components/KycProviders'))
-const KycProvidersLoaderStep = lazy(
-  () => import('./components/KycProvidersLoader'),
-)
-const ProofGeneratingStep = lazy(() => import('./components/ProofGenerating'))
-const ProofGeneratingLoaderStep = lazy(
-  () => import('./components/ProofGeneratingLoader/ProofGeneratingLoader'),
-)
-const ProofSubmittingStep = lazy(
-  () => import('./components/ProofSubmitting/ProofSubmitting'),
-)
-const ProofSubmittingLoaderStep = lazy(
-  () => import('./components/ProofSubmittingLoader/ProofSubmittingLoader'),
-)
-const ProofSubmittedStep = lazy(
-  () => import('./components/ProofSubmitted/ProofSubmitted'),
-)
+/* prettier-ignore-start */
+/* eslint-disable */
+const WalletConnectionStep = lazy(() =>      import('./components/1_WalletConnection'))
+const SnapConnectionStep = lazy(() =>        import('./components/2_SnapConnection'))
+const IdentityCreationStep = lazy(() =>      import('./components/3_IdentityCreation'))
+const KycProvidersStep = lazy(() =>          import('./components/4_KycProviders'))
+const KycProvidersLoaderStep = lazy(() =>    import('./components/5_KycProvidersLoader'))
+const ProofGeneratingStep = lazy(() =>       import('./components/6_ProofGenerating'))
+const ProofGeneratingLoaderStep = lazy(() => import('./components/7_ProofGeneratingLoader'))
+const ProofSubmittingStep = lazy(() =>       import('./components/8_ProofSubmitting'))
+const ProofSubmittingLoaderStep = lazy(() => import('./components/9_ProofSubmittingLoader'))
+const ProofSubmittedStep = lazy(() =>        import('./components/10_ProofSubmitted'))
+/* eslint-enable */
+/* prettier-ignore-end */
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
