@@ -1,19 +1,41 @@
 .main-page {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-gap: toRem(24);
+  display: flex;
 }
 
 .main-page__content {
+  position: relative;
   background: rgba(var(--background-secondary-main-rgb), 0.9);
   border: toRem(1) solid var(--background-secondary-main);
   border-radius: toRem(16);
   backdrop-filter: blur(#{toRem(18)});
+  flex: 1;
 }
 
 .main-page__extra {
+  position: relative;
   border-radius: toRem(16);
   border: toRem(1) solid rgba(var(--background-secondary-main-rgb), 1);
-  background: linear-gradient(197deg, rgba(var(--background-secondary-main-rgb), 0.6) -3.59%, rgba(255, 255, 255, 0.32) 103.93%);
+  background: linear-gradient(197deg, rgba(var(--background-secondary-main-rgb), 0.6) -3.59%,
+    rgba(var(--background-secondary-main-rgb), 0.32) 103.93%);
   backdrop-filter: blur(#{toRem(18)});
 }
+
+.main-page__content-extra-toggler-wrp {
+  position: absolute;
+  top: toRem(24);
+  right: toRem(24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: toRem(1) solid #EBECEF;
+
+  @include static-icon-size(36);
+}
+
+.main-page__content-extra-toggler-icon {
+  color: var(--text-primary-main);
+
+  @include static-icon-size(20);
+}
+

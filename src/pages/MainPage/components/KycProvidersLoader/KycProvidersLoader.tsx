@@ -9,7 +9,7 @@ import { KycProvidersItem } from './components'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
-const KycProviders: FC<Props> = ({ className, ...rest }) => {
+const KycProvidersLoader: FC<Props> = ({ className, ...rest }) => {
   const { KYC_PROVIDERS_DETAILS_MAP } = useKycContext()
 
   return (
@@ -30,4 +30,4 @@ const KycProviders: FC<Props> = ({ className, ...rest }) => {
   )
 }
 
-export default KycProviders
+export default KycProvidersLoader
