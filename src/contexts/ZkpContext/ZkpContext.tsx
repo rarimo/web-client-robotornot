@@ -306,6 +306,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getZkProof = useCallback(async (): Promise<
     ZKPProofResponse | undefined
   > => {
+    setIsZKPRequestPending(true)
+
     const zkProofResponse = await zkpSnap.createProof({
       circuitId: CircuitId.AtomicQueryMTPV2OnChain,
       accountAddress: provider?.address,
@@ -326,6 +328,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setStatesMerkleProof(zkProofResponse?.statesMerkleData)
 
     setTransitStateTx(zkProofResponse?.updateStateTx)
+
+    setIsZKPRequestPending(false)
 
     return zkProofResponse
   }, [zkpSnap, provider?.address, setZkProof])

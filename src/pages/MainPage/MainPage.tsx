@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { AnimatePresence, motion, Variants } from 'framer-motion'
+import isEmpty from 'lodash/isEmpty'
 import {
   type FC,
   HTMLAttributes,
@@ -87,7 +88,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
     if (isZKPRequestPending)      return <ProofGeneratingLoaderStep className='main-page__step' />
 
-    if (!zkProof.get)                 return <ProofGeneratingStep className='main-page__step' />
+    if (isEmpty(zkProof.get))     return <ProofGeneratingStep className='main-page__step' />
 
     if (isProveRequestPending)    return <ProofSubmittingLoaderStep className='main-page__step' />
 
