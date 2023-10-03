@@ -152,6 +152,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const [selectedKycProvider, setSelectedKycProvider] =
+    useState<SUPPORTED_KYC_PROVIDERS>()
+
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
 
@@ -159,8 +162,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [isKycFinished, setIsKycFinished] = useState(false)
 
   const {
-    selectedKycProvider,
-
     identityIdString,
     verifiableCredentials,
 
@@ -190,7 +191,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   )
 
   const selectedKycDetails = useMemo((): [string, string][] => {
-    if (!selectedKycProvider.get) return []
+    if (!selectedKycProvider) return []
 
     const unstoppablePartialDetails = kycDetails as unknown as UserInfo
 
@@ -274,8 +275,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       ],
     }
 
-    return kycDetailsMap[selectedKycProvider.get]
-  }, [kycDetails, selectedKycProvider?.get, t])
+    return kycDetailsMap[selectedKycProvider]
+  }, [kycDetails, selectedKycProvider, t])
 
   const [isVCRequestPending, setIsVCRequestPending] = useState(false)
   const [isVCRequestFailed, setIsVCRequestFailed] = useState(false)
@@ -304,11 +305,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const login = useCallback(
     async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
-      if (supportedKycProvider === selectedKycProvider?.get) {
+      if (supportedKycProvider === selectedKycProvider) {
         retryKyc()
-      } else {
-        selectedKycProvider.set(supportedKycProvider)
+
+        return
       }
+
+      setSelectedKycProvider(supportedKycProvider)
     },
     [retryKyc, selectedKycProvider],
   )
@@ -348,7 +351,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       if (!currentAuthKycResponse)
         throw new TypeError('authKycResponse is undefined')
 
-      if (!selectedKycProvider.get)
+      if (!selectedKycProvider)
         throw new TypeError('selectedKycProviderName is undefined')
 
       const VERIFY_KYC_DATA_MAP = {
@@ -389,22 +392,19 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
             type: 'verification_id'
             id: 'string'
           }
-      >(
-        `/integrations/kyc-service/v1/public/verify/${selectedKycProvider.get}`,
-        {
-          body: {
-            data: {
-              type: 'verify',
-              attributes: {
-                identity_id: identityIdString,
-                provider_data: {
-                  ...VERIFY_KYC_DATA_MAP[selectedKycProvider.get],
-                },
+      >(`/integrations/kyc-service/v1/public/verify/${selectedKycProvider}`, {
+        body: {
+          data: {
+            type: 'verify',
+            attributes: {
+              identity_id: identityIdString,
+              provider_data: {
+                ...VERIFY_KYC_DATA_MAP[selectedKycProvider],
               },
             },
           },
         },
-      )
+      })
 
       if (!data) return
 
@@ -412,11 +412,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         await handleVerificationChecking(data.id)
       }
     },
-    [
-      authorizedKycResponse,
-      handleVerificationChecking,
-      selectedKycProvider?.get,
-    ],
+    [authorizedKycResponse, handleVerificationChecking, selectedKycProvider],
   )
 
   const handleKycProviderComponentLogin = useCallback(
@@ -426,7 +422,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       setAuthorizedKycResponse(response)
 
-      if (!selectedKycProvider.get) return
+      if (!selectedKycProvider) return
 
       let currentIdentityIdString = identityIdString
 
@@ -469,7 +465,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       getVerifiableCredentials,
       identityIdString,
       isClaimOfferExists,
-      selectedKycProvider.get,
+      selectedKycProvider,
       verifyKyc,
     ],
   )
@@ -521,23 +517,23 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         <></>
       ) : (
         <>
-          {selectedKycProvider?.get ===
+          {selectedKycProvider ===
           SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
             <KycProviderUnstoppableDomains
               key={refreshKey}
               loginCb={handleKycProviderComponentLogin}
             />
-          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
             <KycProviderWorldCoin
               key={refreshKey}
               loginCb={handleKycProviderComponentLogin}
             />
-          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
             <KycProviderCivic
               key={refreshKey}
               loginCb={handleKycProviderComponentLogin}
             />
-          ) : selectedKycProvider?.get === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
             <KycProviderGitCoin
               key={refreshKey}
               loginCb={handleKycProviderComponentLogin}

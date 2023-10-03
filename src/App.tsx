@@ -117,9 +117,11 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
       } catch (error) {
         if (error instanceof errors.ProviderChainNotFoundError) {
           await tryAddChain(chain)
-        } else {
-          throw error
+
+          return
         }
+
+        throw error
       }
     },
     [provider, tryAddChain],

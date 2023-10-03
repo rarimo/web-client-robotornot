@@ -1,4 +1,5 @@
 import { config, SUPPORTED_CHAINS } from '@config'
+import { RuntimeError } from '@distributedlab/tools'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
 import type { ZKProof } from '@iden3/js-jwz'
@@ -9,6 +10,8 @@ import type {
   ZKPProofResponse,
 } from '@rarimo/rarime-connector'
 import { CircuitId } from '@rarimo/zkp-gen-iden3'
+import { utils } from 'ethers'
+import log from 'loglevel'
 import {
   createContext,
   FC,
@@ -17,13 +20,18 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
-import { RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import {
+  awaitFinalityBlock,
+  ErrorHandler,
+  GaCategories,
+  gaSendCustomEvent,
+  increaseGasLimit,
+  sleep,
+} from '@/helpers'
+import { useIdentityVerifier } from '@/hooks/contracts'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -36,39 +44,11 @@ export type StatesMerkleProof = {
 interface ZkpContextValue {
   identityIdString: string
   identityBigIntString: string
-
   isZKPRequestPending: boolean
-
   isProveRequestPending: boolean
-
-  isIdentitySaved: {
-    get: boolean
-    set: (value: boolean) => void
-  }
-
-  publishedChains: {
-    get?: SUPPORTED_CHAINS[]
-    set: (value: SUPPORTED_CHAINS[]) => void
-  }
-
   verifiableCredentials?: W3CCredential
-
-  selectedKycProvider: {
-    get?: SUPPORTED_KYC_PROVIDERS
-    set: (value: SUPPORTED_KYC_PROVIDERS) => void
-  }
-
-  isUserSubmittedZkp: {
-    get?: boolean
-    set: (value: boolean) => void
-  }
-
-  zkProof: {
-    get?: ZKProof
-    set: (value: ZKProof) => void
-  }
-  statesMerkleProof: StatesMerkleProof
-  transitStateTx: TransactionRequest
+  isUserSubmittedZkp: boolean
+  zkProof?: ZKProof
 
   isClaimOfferExists: (
     _identityIdString?: string,
@@ -82,58 +62,18 @@ interface ZkpContextValue {
     _identityIdString?: string,
   ) => Promise<W3CCredential | undefined>
   getZkProof: () => Promise<ZKPProofResponse | undefined>
-
-  reset: () => void
+  submitZkp: (selectedChain: SUPPORTED_CHAINS) => Promise<void>
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
   identityIdString: '',
   identityBigIntString: '',
 
-  publishedChains: {
-    get: [],
-    set: () => {
-      throw new TypeError(`publishedChains.set() not implemented`)
-    },
-  },
   verifiableCredentials: undefined,
 
   isZKPRequestPending: false,
   isProveRequestPending: false,
-  isIdentitySaved: {
-    get: true,
-    set: () => {
-      throw new TypeError(`isIdentitySaved.set() not implemented`)
-    },
-  },
-  isUserSubmittedZkp: {
-    get: false,
-    set: (value: boolean) => {
-      throw new TypeError(
-        `isUserSubmittedZkp.set() not implemented for ${value}`,
-      )
-    },
-  },
-
-  selectedKycProvider: {
-    get: undefined,
-    set: (value: SUPPORTED_KYC_PROVIDERS) => {
-      throw new TypeError(
-        `selectedKycProvider.set() not implemented for ${value}`,
-      )
-    },
-  },
-
-  zkProof: {
-    get: undefined,
-    set: (value: ZKProof) => {
-      throw new TypeError(
-        `zkProof.set() not implemented for ${JSON.stringify(value)}`,
-      )
-    },
-  },
-  statesMerkleProof: {} as StatesMerkleProof,
-  transitStateTx: {} as TransactionRequest,
+  isUserSubmittedZkp: false,
 
   getClaimOffer: async () => {
     throw new TypeError(`getClaimOffer() not implemented`)
@@ -151,69 +91,38 @@ export const zkpContext = createContext<ZkpContextValue>({
   getZkProof: async () => {
     throw new TypeError(`getZkProof() not implemented`)
   },
-
-  reset: () => {
-    throw new TypeError(`reset() not implemented`)
+  submitZkp: async () => {
+    throw new TypeError(`submitZkp() not implemented`)
   },
 })
 
 type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
-  const zkpSnap = useMetamaskZkpSnapContext()
-
+  /* prettier-ignore-start */
+  /* eslint-disable */
   const [isZKPRequestPending, setIsZKPRequestPending] = useState(false)
-
   const [isProveRequestPending, setIsProveRequestPending] = useState(false)
+  const [isUserSubmittedZkp, setIsUserSubmittedZkp] = useState(false)
 
-  const navigate = useNavigate()
-
-  // FIXME
-  const [searchParams] = useSearchParams()
+  const [zkProof, setZkProof] = useState<ZKProof>()
+  const [statesMerkleProof, setStatesMerkleProof] = useState<StatesMerkleProof>()
+  const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
+  const [verifiableCredentials, setVerifiableCredentials] = useState<W3CCredential>()
+  const [identityIdString, setIdentityIdString] = useState('')
+  /* eslint-enable */
+  /* prettier-ignore-end */
 
   const { provider } = useWeb3Context()
+  const zkpSnap = useMetamaskZkpSnapContext()
 
-  const [
-    selectedKycProvider,
-    setSelectedKycProvider,
-    removeSelectedKycProvider,
-  ] = useLocalStorage<SUPPORTED_KYC_PROVIDERS>('selectedKycProvider', undefined)
-
-  const [isIdentitySaved, setIsIdentitySaved] = useLocalStorage<boolean>(
-    'isIdentitySaved',
-    false,
-  )
-
-  const [isUserSubmittedZkp, setIsUserSubmittedZkp] = useLocalStorage<boolean>(
-    'isZkpSubmitted',
-    false,
-  )
-
-  const [zkProof, setZkProof, removeZkProof] = useLocalStorage<ZKProof>(
-    'zkps',
-    undefined,
-  )
-  const [statesMerkleProof, setStatesMerkleProof] =
-    useState<StatesMerkleProof>()
-  const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
-
-  const [verifiableCredentials, setVerifiableCredentials] =
-    useLocalStorage<W3CCredential>('vc', undefined)
-
-  const [identityIdString, setIdentityIdstring] = useLocalStorage<string>(
-    'did',
-    '',
-  )
+  const { getProveIdentityTxBody } = useIdentityVerifier()
 
   const identityBigIntString = useMemo(() => {
-    return identityIdString
-      ? DID.parse(`did:iden3:${identityIdString}`).id.bigInt().toString()
-      : ''
-  }, [identityIdString])
+    if (!identityIdString) return ''
 
-  const [publishedChains, setPublishedChains] = useLocalStorage<
-    SUPPORTED_CHAINS[]
-  >('submittedChains', [])
+    return DID.parse(`did:iden3:${identityIdString}`).id.bigInt().toString()
+  }, [identityIdString])
 
   const createIdentity = useCallback(async () => {
     if (identityIdString) return identityIdString
@@ -222,10 +131,14 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     if (!_identityIdString) throw new Error('Identity has not created')
 
-    setIdentityIdstring(_identityIdString)
+    setIdentityIdString(_identityIdString)
 
     return _identityIdString
-  }, [identityIdString, setIdentityIdstring, zkpSnap])
+  }, [identityIdString, setIdentityIdString, zkpSnap])
+
+  /**
+   * GETTING VERIFIABLE CREDENTIALS
+   */
 
   const getClaimOffer = useCallback(
     async (_identityIdString?: string) => {
@@ -303,6 +216,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ],
   )
 
+  /**
+   * GENERATING PROOF
+   */
+
   const getZkProof = useCallback(async (): Promise<
     ZKPProofResponse | undefined
   > => {
@@ -334,93 +251,146 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     return zkProofResponse
   }, [zkpSnap, provider?.address, setZkProof])
 
-  const reset = useCallback(() => {
-    setIdentityIdstring('')
-    removeZkProof()
-    setVerifiableCredentials(undefined)
-    setPublishedChains([])
-    setSelectedKycProvider(undefined)
-    setIsUserSubmittedZkp(false)
+  /**
+   * SUBMITTING PROOF
+   */
 
-    localStorage.clear()
-  }, [
-    setIdentityIdstring,
-    removeZkProof,
-    setIsUserSubmittedZkp,
-    setPublishedChains,
-    setSelectedKycProvider,
-    setVerifiableCredentials,
-  ])
+  const logAppStateDetails = useCallback(() => {
+    log.error({
+      did: identityIdString,
+    })
+  }, [identityIdString])
 
-  // useEffectOnce(() => {
-  //   if (
-  //     selectedKycProvider &&
-  //     !verifiableCredentials &&
-  //     !searchParams.get('id_token')
-  //   ) {
-  //     removeSelectedKycProvider()
-  //   }
-  //
-  //   if (isUserSubmittedZkp) {
-  //     navigate(RoutesPaths.authSuccess)
-  //   } else if (verifiableCredentials) {
-  //     removeZkProof()
-  //     navigate(RoutesPaths.authPreview)
-  //   } else {
-  //     if (
-  //       selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ||
-  //       // FIXME
-  //       searchParams.get('id_token')
-  //     )
-  //       return
-  //
-  //     navigate(RoutesPaths.authProviders)
-  //   }
-  // })
+  const handleTransitStateError = useCallback(
+    async (error: unknown) => {
+      if (error instanceof Error && 'error' in error) {
+        const str = 'Identities states root already exists'
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message
+
+        if (errorString?.includes(str)) return
+      }
+
+      await sleep(1000)
+
+      logAppStateDetails()
+
+      throw error
+    },
+    [logAppStateDetails],
+  )
+
+  const transitState = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
+    if (!transitStateTx?.data)
+      throw new TypeError('Transit state tx is not defined')
+
+    try {
+      await provider?.signAndSendTx?.(transitStateTx)
+
+      gaSendCustomEvent(GaCategories.TransitState)
+
+      await awaitFinalityBlock(
+        config.FINALITY_BLOCK_AMOUNT,
+        provider?.rawProvider,
+      )
+    } catch (error) {
+      await handleTransitStateError(error)
+    }
+  }, [provider, transitStateTx, handleTransitStateError])
+
+  const submitZkp = useCallback(
+    async (selectedChain: SUPPORTED_CHAINS) => {
+      setIsProveRequestPending(true)
+
+      try {
+        if (transitStateTx?.data) {
+          await transitState()
+        }
+
+        if (!provider?.address || !provider?.rawProvider)
+          throw new TypeError('Provider is not defined')
+
+        if (!zkProof?.pub_signals)
+          throw new TypeError(`Pub signals is not defined`)
+
+        if (!statesMerkleProof)
+          throw new TypeError(`States merkle proof is not defined`)
+
+        const txBody = {
+          to: config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChain}`],
+          ...getProveIdentityTxBody(
+            {
+              issuerId: statesMerkleProof.issuerId,
+              issuerState: statesMerkleProof.state.hash,
+              createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
+              merkleProof: statesMerkleProof.merkleProof.map(el =>
+                utils.arrayify(el),
+              ),
+            },
+            zkProof.pub_signals.map?.(el => BigInt(el)),
+            [zkProof?.proof.pi_a[0], zkProof?.proof.pi_a[1]],
+            [
+              [zkProof?.proof.pi_b[0][1], zkProof?.proof.pi_b[0][0]],
+              [zkProof?.proof.pi_b[1][1], zkProof?.proof.pi_b[1][0]],
+            ],
+            [zkProof?.proof.pi_c[0], zkProof?.proof.pi_c[1]],
+          ),
+        }
+
+        await provider?.signAndSendTx?.({
+          ...txBody,
+          gasLimit: await increaseGasLimit(
+            provider?.address,
+            provider?.rawProvider,
+            txBody,
+            1.5,
+          ),
+        })
+
+        setIsUserSubmittedZkp(true)
+
+        gaSendCustomEvent(GaCategories.SubmitZkp)
+      } catch (error) {
+        logAppStateDetails()
+        ErrorHandler.process(error)
+      }
+
+      setIsProveRequestPending(false)
+    },
+    [
+      transitStateTx?.data,
+      provider,
+      zkProof?.pub_signals,
+      zkProof?.proof.pi_a,
+      zkProof?.proof.pi_b,
+      zkProof?.proof.pi_c,
+      statesMerkleProof,
+      getProveIdentityTxBody,
+      setIsUserSubmittedZkp,
+      transitState,
+      logAppStateDetails,
+    ],
+  )
 
   return (
     <zkpContext.Provider
       value={{
-        identityIdString: identityIdString ?? '',
+        identityIdString,
         identityBigIntString,
-
-        publishedChains: {
-          get: publishedChains,
-          set: setPublishedChains,
-        },
         verifiableCredentials,
-
         isZKPRequestPending,
         isProveRequestPending,
-        isIdentitySaved: {
-          get: isIdentitySaved || true,
-          set: setIsIdentitySaved,
-        },
+        isUserSubmittedZkp,
+        zkProof,
 
-        selectedKycProvider: {
-          get: selectedKycProvider,
-          set: setSelectedKycProvider,
-        },
-
-        isUserSubmittedZkp: {
-          get: isUserSubmittedZkp,
-          set: setIsUserSubmittedZkp,
-        },
-
-        zkProof: {
-          get: zkProof,
-          set: setZkProof,
-        },
-        statesMerkleProof: statesMerkleProof ?? ({} as StatesMerkleProof),
-        transitStateTx: transitStateTx ?? {},
-
-        getClaimOffer,
         isClaimOfferExists,
+        getClaimOffer,
         createIdentity,
         getVerifiableCredentials,
         getZkProof,
-
-        reset,
+        submitZkp,
       }}
       {...rest}
     >

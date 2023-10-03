@@ -64,11 +64,10 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const {
     identityIdString,
     verifiableCredentials,
-    zkProof,
-
     isZKPRequestPending,
     isProveRequestPending,
     isUserSubmittedZkp,
+    zkProof,
   } = useZkpContext()
   const { isVCRequestPending } = useKycContext()
 
@@ -76,23 +75,34 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     /* prettier-ignore-start */
     /* eslint-disable */
     if (!provider?.isConnected || !isValidChain)
-                                  return <WalletConnectionStep className='main-page__step' />
+      return <WalletConnectionStep className='main-page__step' />
 
-    if (!isSnapInstalled)         return <SnapConnectionStep className='main-page__step' />
+    if (!isSnapInstalled)
+      return <SnapConnectionStep className='main-page__step' />
 
-    if (!identityIdString)        return <IdentityCreationStep className='main-page__step' />
+    if (!identityIdString)
+      return <IdentityCreationStep className='main-page__step' />
 
-    if (isVCRequestPending)       return <KycProvidersLoaderStep className='main-page__step' />
+    // TODO: group this
+    if (isVCRequestPending)
+      return <KycProvidersLoaderStep className='main-page__step' />
 
-    if (!verifiableCredentials)   return <KycProvidersStep className='main-page__step' />
+    if (!verifiableCredentials)
+      return <KycProvidersStep className='main-page__step' />
 
-    if (isZKPRequestPending)      return <ProofGeneratingLoaderStep className='main-page__step' />
+    // TODO: group this
+    if (isZKPRequestPending)
+      return <ProofGeneratingLoaderStep className='main-page__step' />
 
-    if (isEmpty(zkProof.get))     return <ProofGeneratingStep className='main-page__step' />
+    if (!zkProof)
+      return <ProofGeneratingStep className='main-page__step' />
 
-    if (isProveRequestPending)    return <ProofSubmittingLoaderStep className='main-page__step' />
+    // TODO: group this
+    if (isProveRequestPending)
+      return <ProofSubmittingLoaderStep className='main-page__step' />
 
-    if (!isUserSubmittedZkp.get)  return <ProofSubmittingStep className='main-page__step' />
+    if (!isUserSubmittedZkp)
+      return <ProofSubmittingStep className='main-page__step' />
 
     return <ProofSubmittedStep className='main-page__step' />
     /* eslint-enable */
@@ -101,7 +111,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     identityIdString,
     isProveRequestPending,
     isSnapInstalled,
-    isUserSubmittedZkp.get,
+    isUserSubmittedZkp,
     isVCRequestPending,
     isValidChain,
     isZKPRequestPending,
@@ -138,6 +148,32 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     ),
     [ExtraToggler],
   )
+
+  // useEffectOnce(() => {
+  //   if (
+  //     selectedKycProvider &&
+  //     !verifiableCredentials &&
+  //     !searchParams.get('id_token')
+  //   ) {
+  //     removeSelectedKycProvider()
+  //   }
+  //
+  //   if (isUserSubmittedZkp) {
+  //     navigate(RoutesPaths.authSuccess)
+  //   } else if (verifiableCredentials) {
+  //     removeZkProof()
+  //     navigate(RoutesPaths.authPreview)
+  //   } else {
+  //     if (
+  //       selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ||
+  //       // FIXME
+  //       searchParams.get('id_token')
+  //     )
+  //       return
+  //
+  //     navigate(RoutesPaths.authProviders)
+  //   }
+  // })
 
   // TODO: add steps indicator
   return (

@@ -1,7 +1,6 @@
 import './styles.scss'
 
 import { config } from '@config'
-import { ZKProof } from '@iden3/js-jwz'
 import { type FC, HTMLAttributes, useCallback, useState } from 'react'
 
 import { AppButton } from '@/common'
@@ -21,14 +20,13 @@ const ProofGenerating: FC<Props> = ({ className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
 
   const { provider } = useWeb3Context()
-  const { identityBigIntString, zkProof, getZkProof } = useZkpContext()
+  const { identityBigIntString, getZkProof } = useZkpContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
     config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
   )
 
   const handleGenerateProof = useCallback(async () => {
-    zkProof.set({} as ZKProof)
     setIsPending(true)
 
     try {
@@ -71,7 +69,6 @@ const ProofGenerating: FC<Props> = ({ className, ...rest }) => {
     isIdentityProved,
     isSenderAddressProved,
     provider?.address,
-    zkProof,
   ])
 
   return (
