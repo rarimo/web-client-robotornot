@@ -61,7 +61,7 @@ const AuthPreview: FC<Props> = () => {
   const {
     KYC_PROVIDERS_DETAILS_MAP,
 
-    isLoaded,
+    isVCRequestPending,
     isKycFinished,
 
     isValidCredentials,
@@ -216,10 +216,10 @@ const AuthPreview: FC<Props> = () => {
   )
 
   useEffect(() => {
-    if (!kycError?.message || !isLoaded) return
+    if (!kycError?.message || !isVCRequestPending) return
 
     setIsKycProgressComplete(true)
-  }, [isLoaded, kycError?.message])
+  }, [isVCRequestPending, kycError?.message])
 
   return (
     <div
@@ -312,7 +312,7 @@ const AuthPreview: FC<Props> = () => {
               checkpoints={[50, 100]}
               checkpointIndex={
                 isKycFinished
-                  ? verifiableCredentials?.id || isLoaded
+                  ? verifiableCredentials?.id || isVCRequestPending
                     ? 1
                     : 0
                   : undefined

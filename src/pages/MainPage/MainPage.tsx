@@ -33,6 +33,15 @@ const ProofGeneratingStep = lazy(() => import('./components/ProofGenerating'))
 const ProofGeneratingLoaderStep = lazy(
   () => import('./components/ProofGeneratingLoader/ProofGeneratingLoader'),
 )
+const ProofSubmittingStep = lazy(
+  () => import('./components/ProofSubmitting/ProofSubmitting'),
+)
+const ProofSubmittingLoaderStep = lazy(
+  () => import('./components/ProofSubmittingLoader/ProofSubmittingLoader'),
+)
+const ProofSubmittedStep = lazy(
+  () => import('./components/ProofSubmitted/ProofSubmitted'),
+)
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -67,7 +76,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
     if (isProveRequestPending) return <ProofSubmittingLoaderStep />
 
-    if (!isUserSubmittedZkp) return <ProofSubmittingStep />
+    if (!isUserSubmittedZkp.get) return <ProofSubmittingStep />
 
     return <ProofSubmittedStep />
   }, [

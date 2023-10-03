@@ -37,6 +37,10 @@ interface ZkpContextValue {
   identityIdString: string
   identityBigIntString: string
 
+  isZKPRequestPending: boolean
+
+  isProveRequestPending: boolean
+
   isIdentitySaved: {
     get: boolean
     set: (value: boolean) => void
@@ -94,10 +98,20 @@ export const zkpContext = createContext<ZkpContextValue>({
   },
   verifiableCredentials: undefined,
 
+  isZKPRequestPending: false,
+  isProveRequestPending: false,
   isIdentitySaved: {
     get: true,
     set: () => {
       throw new TypeError(`isIdentitySaved.set() not implemented`)
+    },
+  },
+  isUserSubmittedZkp: {
+    get: false,
+    set: (value: boolean) => {
+      throw new TypeError(
+        `isUserSubmittedZkp.set() not implemented for ${value}`,
+      )
     },
   },
 
@@ -106,15 +120,6 @@ export const zkpContext = createContext<ZkpContextValue>({
     set: (value: SUPPORTED_KYC_PROVIDERS) => {
       throw new TypeError(
         `selectedKycProvider.set() not implemented for ${value}`,
-      )
-    },
-  },
-
-  isUserSubmittedZkp: {
-    get: false,
-    set: (value: boolean) => {
-      throw new TypeError(
-        `isUserSubmittedZkp.set() not implemented for ${value}`,
       )
     },
   },
@@ -156,6 +161,10 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const zkpSnap = useMetamaskZkpSnapContext()
+
+  const [isZKPRequestPending, setIsZKPRequestPending] = useState(false)
+
+  const [isProveRequestPending, setIsProveRequestPending] = useState(false)
 
   const navigate = useNavigate()
 
@@ -377,6 +386,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         },
         verifiableCredentials,
 
+        isZKPRequestPending,
+        isProveRequestPending,
         isIdentitySaved: {
           get: isIdentitySaved || true,
           set: setIsIdentitySaved,

@@ -95,9 +95,9 @@ interface KycContextValue {
 
   KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
-  isLoaded: boolean
   isKycFinished: boolean
   isValidCredentials: boolean
+  isVCRequestPending: boolean
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
   verifyKyc: (identityIdString: string) => Promise<void>
@@ -132,9 +132,9 @@ export const kycContext = createContext<KycContextValue>({
 
   KYC_PROVIDERS_DETAILS_MAP,
 
-  isLoaded: false,
   isKycFinished: false,
   isValidCredentials: false,
+  isVCRequestPending: false,
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
     throw new TypeError(`login not implemented for ${supportedKycProvider}`)
@@ -276,7 +276,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     return kycDetailsMap[selectedKycProvider.get]
   }, [kycDetails, selectedKycProvider?.get, t])
 
-  const [isLoaded, setIsLoaded] = useState(!!verifiableCredentials)
+  const [isVCRequestPending, setIsVCRequestPending] = useState(false)
 
   const [isValidCredentials, setIsValidCredentials] = useState(true)
 
@@ -300,7 +300,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const navigate = useNavigate()
 
   const retryKyc = useCallback(() => {
-    setIsLoaded(false)
+    setIsVCRequestPending(false)
     setRefreshKey(prev => prev + 1)
   }, [])
 
@@ -448,7 +448,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
             setIsValidCredentials(false)
 
-            setIsLoaded(true)
+            setIsVCRequestPending(true)
 
             return
           }
@@ -470,7 +470,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         setIsValidCredentials(!!_verifiableCredentials?.id)
 
-        setIsLoaded(true)
+        setIsVCRequestPending(true)
       } catch (error) {
         ErrorHandler.processWithoutFeedback(error)
         navigate(RoutesPaths.authProviders)
@@ -519,9 +519,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
           KYC_PROVIDERS_DETAILS_MAP,
 
-          isLoaded,
           isKycFinished,
           isValidCredentials,
+          isVCRequestPending,
 
           login,
           verifyKyc,
