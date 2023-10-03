@@ -1,6 +1,5 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
-import { W3CCredential } from '@rarimo/rarime-connector'
 import type { UserInfo } from '@uauth/js/build/types'
 import {
   createContext,
@@ -13,13 +12,13 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
-import { ICON_NAMES, RoutesPaths, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
   abbrCenter,
   ErrorHandler,
@@ -95,9 +94,10 @@ interface KycContextValue {
 
   KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
-  isKycFinished: boolean
-  isValidCredentials: boolean
   isVCRequestPending: boolean
+  isVCRequestFailed: boolean
+
+  isKycFinished: boolean
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
   verifyKyc: (identityIdString: string) => Promise<void>
@@ -132,9 +132,10 @@ export const kycContext = createContext<KycContextValue>({
 
   KYC_PROVIDERS_DETAILS_MAP,
 
-  isKycFinished: false,
-  isValidCredentials: false,
   isVCRequestPending: false,
+  isVCRequestFailed: false,
+
+  isKycFinished: false,
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
     throw new TypeError(`login not implemented for ${supportedKycProvider}`)
@@ -277,8 +278,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [kycDetails, selectedKycProvider?.get, t])
 
   const [isVCRequestPending, setIsVCRequestPending] = useState(false)
-
-  const [isValidCredentials, setIsValidCredentials] = useState(true)
+  const [isVCRequestFailed, setIsVCRequestFailed] = useState(false)
 
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -297,10 +297,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
   }, [kycError, t])
 
-  const navigate = useNavigate()
-
   const retryKyc = useCallback(() => {
-    setIsVCRequestPending(false)
+    setIsVCRequestPending(true)
     setRefreshKey(prev => prev + 1)
   }, [])
 
@@ -423,9 +421,10 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const handleKycProviderComponentLogin = useCallback(
     async (response: unknown) => {
-      setAuthorizedKycResponse(response)
+      setIsVCRequestPending(true)
+      setIsVCRequestFailed(false)
 
-      navigate(RoutesPaths.authPreview)
+      setAuthorizedKycResponse(response)
 
       if (!selectedKycProvider.get) return
 
@@ -446,9 +445,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
             ErrorHandler.processWithoutFeedback(error)
 
-            setIsValidCredentials(false)
-
-            setIsVCRequestPending(true)
+            setIsVCRequestFailed(true)
 
             return
           }
@@ -456,26 +453,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         setIsKycFinished(true)
 
-        let _verifiableCredentials: W3CCredential | undefined
+        await isClaimOfferExists(currentIdentityIdString)
 
-        try {
-          await isClaimOfferExists(currentIdentityIdString)
-
-          _verifiableCredentials = await getVerifiableCredentials(
-            currentIdentityIdString,
-          )
-        } catch (error) {
-          ErrorHandler.process(error)
-        }
-
-        setIsValidCredentials(!!_verifiableCredentials?.id)
-
-        setIsVCRequestPending(true)
+        await getVerifiableCredentials(currentIdentityIdString)
       } catch (error) {
         ErrorHandler.processWithoutFeedback(error)
-        navigate(RoutesPaths.authProviders)
+        setIsVCRequestFailed(true)
       }
 
+      setIsVCRequestPending(false)
       return
     },
     [
@@ -483,7 +469,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       getVerifiableCredentials,
       identityIdString,
       isClaimOfferExists,
-      navigate,
       selectedKycProvider.get,
       verifyKyc,
     ],
@@ -519,9 +504,10 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
           KYC_PROVIDERS_DETAILS_MAP,
 
-          isKycFinished,
-          isValidCredentials,
           isVCRequestPending,
+          isVCRequestFailed,
+
+          isKycFinished,
 
           login,
           verifyKyc,

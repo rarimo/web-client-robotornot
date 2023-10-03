@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, Variants } from 'framer-motion'
 import {
   type FC,
   HTMLAttributes,
@@ -37,10 +37,28 @@ const ProofSubmittedStep        = lazy(() => import('./components/10_ProofSubmit
 /* eslint-enable */
 /* prettier-ignore-end */
 
-const MainPage: FC<Props> = ({ className, ...rest }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+const togglerAnimationVariants: Variants = {
+  shown: { overflow: 'hidden', scale: 1 },
+  hidden: { overflow: 'hidden', scale: 0 },
+}
 
-  const { provider } = useWeb3Context()
+const sidebarAnimationVariants: Variants = {
+  open: {
+    width: '33%',
+    overflowX: 'hidden',
+    marginLeft: '24px',
+  },
+  collapsed: {
+    width: 0,
+    overflowX: 'hidden',
+    marginLeft: '0',
+  },
+}
+
+const MainPage: FC<Props> = ({ className, ...rest }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
+  const { provider, isValidChain } = useWeb3Context()
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
   const {
     identityIdString,
@@ -54,31 +72,37 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const { isVCRequestPending } = useKycContext()
 
   const CurrentStep = useMemo(() => {
-    if (!provider?.isConnected) return <WalletConnectionStep />
+    /* prettier-ignore-start */
+    /* eslint-disable */
+    if (!provider?.isConnected || !isValidChain)
+                                  return <WalletConnectionStep className='main-page__step' />
 
-    if (!isSnapInstalled) return <SnapConnectionStep />
+    if (!isSnapInstalled)         return <SnapConnectionStep className='main-page__step' />
 
-    if (!identityIdString) return <IdentityCreationStep />
+    if (!identityIdString)        return <IdentityCreationStep className='main-page__step' />
 
-    if (isVCRequestPending) return <KycProvidersLoaderStep />
+    if (isVCRequestPending)       return <KycProvidersLoaderStep className='main-page__step' />
 
-    if (!verifiableCredentials) return <KycProvidersStep />
+    if (!verifiableCredentials)   return <KycProvidersStep className='main-page__step' />
 
-    if (isZKPRequestPending) return <ProofGeneratingLoaderStep />
+    if (isZKPRequestPending)      return <ProofGeneratingLoaderStep className='main-page__step' />
 
-    if (!zkProof) return <ProofGeneratingStep />
+    if (!zkProof.get)                 return <ProofGeneratingStep className='main-page__step' />
 
-    if (isProveRequestPending) return <ProofSubmittingLoaderStep />
+    if (isProveRequestPending)    return <ProofSubmittingLoaderStep className='main-page__step' />
 
-    if (!isUserSubmittedZkp.get) return <ProofSubmittingStep />
+    if (!isUserSubmittedZkp.get)  return <ProofSubmittingStep className='main-page__step' />
 
-    return <ProofSubmittedStep />
+    return <ProofSubmittedStep className='main-page__step' />
+    /* eslint-enable */
+    /* prettier-ignore-end */
   }, [
     identityIdString,
     isProveRequestPending,
     isSnapInstalled,
-    isUserSubmittedZkp,
+    isUserSubmittedZkp.get,
     isVCRequestPending,
+    isValidChain,
     isZKPRequestPending,
     provider?.isConnected,
     verifiableCredentials,
@@ -86,8 +110,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   ])
 
   const sidebarUuid = useMemo(() => uuidv4(), [])
-  // TODO: add big initialization method,
-  //  which is checks connected wallet status
 
   const ExtraToggler = useCallback(
     (type: 'expand' | 'collapse') => (
@@ -97,10 +119,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         initial='hidden'
         animate='shown'
         exit='hidden'
-        variants={{
-          shown: { overflow: 'hidden', scale: 1 },
-          hidden: { overflow: 'hidden', scale: 0 },
-        }}
+        variants={togglerAnimationVariants}
         transition={{ duration: '0.5', ease: 'easeInOut' }}
       >
         <Icon
@@ -138,18 +157,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
             initial='collapsed'
             animate='open'
             exit='collapsed'
-            variants={{
-              open: {
-                width: '33%',
-                overflowX: 'hidden',
-                marginLeft: '24px',
-              },
-              collapsed: {
-                width: 0,
-                overflowX: 'hidden',
-                marginLeft: '0',
-              },
-            }}
+            variants={sidebarAnimationVariants}
             transition={{ duration: '0.75', ease: 'backInOut' }}
           >
             {ExtraContent}

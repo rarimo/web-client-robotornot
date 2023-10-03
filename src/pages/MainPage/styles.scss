@@ -3,6 +3,7 @@
 }
 
 .main-page__content {
+  display: flex;
   position: relative;
   background: rgba(var(--background-secondary-main-rgb), 0.9);
   border: toRem(1) solid var(--background-secondary-main);
@@ -37,5 +38,13 @@
   color: var(--text-primary-main);
 
   @include static-icon-size(20);
+}
+
+.main-page__step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: toRem(56);
+  font: 1;
 }
 

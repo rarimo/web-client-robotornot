@@ -64,7 +64,7 @@ const AuthPreview: FC<Props> = () => {
     isVCRequestPending,
     isKycFinished,
 
-    isValidCredentials,
+    isVCRequestFailed,
     selectedKycDetails,
 
     kycError,
@@ -225,7 +225,7 @@ const AuthPreview: FC<Props> = () => {
     <div
       className={[
         'auth-preview',
-        ...(isValidCredentials ? [] : ['auth-preview--invalid']),
+        ...(!isVCRequestFailed ? [] : ['auth-preview--invalid']),
         ...(isPending || !isKycProgressComplete
           ? ['auth-preview--loading']
           : []),
@@ -280,7 +280,7 @@ const AuthPreview: FC<Props> = () => {
               </div>
             </div>
           </>
-        ) : isValidCredentials ? (
+        ) : !isVCRequestFailed ? (
           ValidCredentialsPreview
         ) : (
           InvalidCredentialsMessage
