@@ -24,16 +24,16 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 /* prettier-ignore-start */
 /* eslint-disable */
-const WalletConnectionStep = lazy(() =>      import('./components/1_WalletConnection'))
-const SnapConnectionStep = lazy(() =>        import('./components/2_SnapConnection'))
-const IdentityCreationStep = lazy(() =>      import('./components/3_IdentityCreation'))
-const KycProvidersStep = lazy(() =>          import('./components/4_KycProviders'))
-const KycProvidersLoaderStep = lazy(() =>    import('./components/5_KycProvidersLoader'))
-const ProofGeneratingStep = lazy(() =>       import('./components/6_ProofGenerating'))
+const WalletConnectionStep      = lazy(() => import('./components/1_WalletConnection'))
+const SnapConnectionStep        = lazy(() => import('./components/2_SnapConnection'))
+const IdentityCreationStep      = lazy(() => import('./components/3_IdentityCreation'))
+const KycProvidersStep          = lazy(() => import('./components/4_KycProviders'))
+const KycProvidersLoaderStep    = lazy(() => import('./components/5_KycProvidersLoader'))
+const ProofGeneratingStep       = lazy(() => import('./components/6_ProofGenerating'))
 const ProofGeneratingLoaderStep = lazy(() => import('./components/7_ProofGeneratingLoader'))
-const ProofSubmittingStep = lazy(() =>       import('./components/8_ProofSubmitting'))
+const ProofSubmittingStep       = lazy(() => import('./components/8_ProofSubmitting'))
 const ProofSubmittingLoaderStep = lazy(() => import('./components/9_ProofSubmittingLoader'))
-const ProofSubmittedStep = lazy(() =>        import('./components/10_ProofSubmitted'))
+const ProofSubmittedStep        = lazy(() => import('./components/10_ProofSubmitted'))
 /* eslint-enable */
 /* prettier-ignore-end */
 
