@@ -1,7 +1,6 @@
 import './styles.scss'
 
 import { AnimatePresence, motion, Variants } from 'framer-motion'
-import isEmpty from 'lodash/isEmpty'
 import {
   type FC,
   HTMLAttributes,
