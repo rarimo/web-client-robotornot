@@ -1,0 +1,8 @@
+.wallet-connection {
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-connection__title {
+  margin: toRem(32) 0 toRem(40);
+}

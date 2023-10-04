@@ -56,7 +56,7 @@ const sidebarAnimationVariants: Variants = {
 }
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const { provider, isValidChain } = useWeb3Context()
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
@@ -71,8 +71,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const { isVCRequestPending } = useKycContext()
 
   const CurrentStep = useMemo(() => {
-    /* prettier-ignore-start */
-    /* eslint-disable */
     if (!provider?.isConnected || !isValidChain)
       return <WalletConnectionStep className='main-page__step' />
 
@@ -93,8 +91,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     if (isZKPRequestPending)
       return <ProofGeneratingLoaderStep className='main-page__step' />
 
-    if (!zkProof)
-      return <ProofGeneratingStep className='main-page__step' />
+    if (!zkProof) return <ProofGeneratingStep className='main-page__step' />
 
     // TODO: group this
     if (isProveRequestPending)
@@ -104,8 +101,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
       return <ProofSubmittingStep className='main-page__step' />
 
     return <ProofSubmittedStep className='main-page__step' />
-    /* eslint-enable */
-    /* prettier-ignore-end */
   }, [
     identityIdString,
     isProveRequestPending,
