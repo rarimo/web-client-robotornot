@@ -207,7 +207,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     setCurrentStep(Steps.ProofGeneratingLoaderStep)
   }, [])
 
-  const handlePRoofGeneratingStepError = useCallback((error: Error) => {
+  const handleProofGeneratingStepError = useCallback((error: Error) => {
     ErrorHandler.processWithoutFeedback(error)
 
     setCurrentStep(Steps.ProofGeneratingStep)
@@ -272,7 +272,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         <ProofGeneratingStep
           className='main-page__step'
           nextStepCb={handleProofGeneratingStepFinish}
-          onErrorCb={handlePRoofGeneratingStepError}
+          onErrorCb={handleProofGeneratingStepError}
         />
       ),
       [Steps.ProofGeneratingLoaderStep]: (
@@ -306,7 +306,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     handleKycProvidersLoaderStepFinish,
     handleKycProvidersStepError,
     handleKycProvidersStepFinish,
-    handlePRoofGeneratingStepError,
+    handleProofGeneratingStepError,
     handleProofGeneratingLoaderStepFinish,
     handleProofGeneratingStepFinish,
     handleProofSubmittedStepFinish,

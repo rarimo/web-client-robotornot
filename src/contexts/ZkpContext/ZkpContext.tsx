@@ -26,7 +26,6 @@ import { api } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import {
   awaitFinalityBlock,
-  ErrorHandler,
   GaCategories,
   gaSendCustomEvent,
   increaseGasLimit,
@@ -355,7 +354,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         gaSendCustomEvent(GaCategories.SubmitZkp)
       } catch (error) {
         logAppStateDetails()
-        ErrorHandler.process(error)
+        throw error
       }
 
       setIsProveRequestPending(false)

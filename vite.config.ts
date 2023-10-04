@@ -206,45 +206,22 @@ export default defineConfig(({ mode }) => {
         '@config': `${root}/config.ts`,
         '@static': `${root}/../static`,
 
-        // ethers: path.resolve(
-        //   __dirname,
-        //   'node_modules/ethers/dist/ethers.esm.js',
-        // ),
         util: path.resolve(__dirname, 'node_modules/util/util.js'),
         ejc: path.resolve(__dirname, 'node_modules/ejs/ejs.min.js'),
-        snarkjs: path.resolve(
-          __dirname,
-          'node_modules/snarkjs/build/snarkjs.min.js',
-        ),
-        '@iden3/js-iden3-core': path.resolve(
-          __dirname,
-          'node_modules/@iden3/js-iden3-core/dist/esm/index.js',
-        ),
-        '@iden3/js-jwz': path.resolve(
-          __dirname,
-          'node_modules/@iden3/js-jwz/dist/esm_esbuild/index.js',
-        ),
-        '@iden3/js-crypto': path.resolve(
-          __dirname,
-          'node_modules/@iden3/js-crypto/dist/esm_esbuild/index.js',
-        ),
-        '@iden3/js-jsonld-merklization': path.resolve(
-          __dirname,
-          'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js',
-        ),
+
+        /* prettier-ignore-start */
+        /* eslint-disable */
+        '@iden3/js-iden3-core': path.resolve(__dirname, 'node_modules/@iden3/js-iden3-core/dist/esm/index.js'),
+        '@iden3/js-jwz': path.resolve(__dirname, 'node_modules/@iden3/js-jwz/dist/esm_esbuild/index.js'),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
-        '@iden3/js-merkletree': path.resolve(
-          __dirname,
-          'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js',
-        ),
-        '@civic/ethereum-gateway-react': path.resolve(
-          __dirname,
-          'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js',
-        ),
-        '@rarimo/rarime-connector': path.resolve(
-          __dirname,
-          'node_modules/@rarimo/rarime-connector/dist/index.js',
-        ),
+        '@civic/ethereum-gateway-react': path.resolve(__dirname, 'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js'),
+        '@rarimo/rarime-connector': path.resolve(__dirname, 'node_modules/@rarimo/rarime-connector/dist/index.js'),
+        snarkjs: path.resolve(__dirname, 'node_modules/snarkjs/build/snarkjs.min.js'),
+        '@iden3/js-crypto': path.resolve(__dirname, 'node_modules/@iden3/js-crypto/dist/esm_esbuild/index.js'),
+        '@iden3/js-jsonld-merklization': path.resolve(__dirname, 'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js'),
+        '@iden3/js-merkletree': path.resolve(__dirname, 'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js'),
+        /* eslint-enable */
+        /* prettier-ignore-end */
       },
     },
     optimizeDeps: {

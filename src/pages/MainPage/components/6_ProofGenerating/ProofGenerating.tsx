@@ -72,7 +72,8 @@ const ProofGenerating: FC<StepProps> = ({
       nextStepCb()
 
       if (config.ENVIRONMENT !== 'dev') {
-        if (await checkIsIdentityProved()) return
+        if (await checkIsIdentityProved())
+          throw new TypeError(`Identity already proved`)
       }
 
       await getZkProof()
