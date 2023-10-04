@@ -28,16 +28,36 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 /* prettier-ignore-start */
 /* eslint-disable */
-const WalletConnectionStep      = lazy(() => import('./components/1_WalletConnection'))
-const SnapConnectionStep        = lazy(() => import('./components/2_SnapConnection'))
-const IdentityCreationStep      = lazy(() => import('./components/3_IdentityCreation'))
-const KycProvidersStep          = lazy(() => import('./components/4_KycProviders'))
-const KycProvidersLoaderStep    = lazy(() => import('./components/5_KycProvidersLoader'))
-const ProofGeneratingStep       = lazy(() => import('./components/6_ProofGenerating'))
-const ProofGeneratingLoaderStep = lazy(() => import('./components/7_ProofGeneratingLoader'))
-const ProofSubmittingStep       = lazy(() => import('./components/8_ProofSubmitting'))
-const ProofSubmittingLoaderStep = lazy(() => import('./components/9_ProofSubmittingLoader'))
-const ProofSubmittedStep        = lazy(() => import('./components/10_ProofSubmitted'))
+const WalletConnectionStep           = lazy(() => import('./components/1_WalletConnection'))
+const WalletConnectionSidebarContent = lazy(() => import('./components/1_WalletConnection/components/SidebarContent'))
+
+const SnapConnectionStep             = lazy(() => import('./components/2_SnapConnection'))
+const SnapConnectionSidebarContent = lazy(() => import('./components/2_SnapConnection/components/SidebarContent'))
+
+const IdentityCreationStep           = lazy(() => import('./components/3_IdentityCreation'))
+const IdentityCreationSidebarContent = lazy(() => import('./components/3_IdentityCreation/components/SidebarContent'))
+
+const KycProvidersStep               = lazy(() => import('./components/4_KycProviders'))
+const KycProvidersSidebarContent = lazy(() => import('./components/4_KycProviders/components/SidebarContent'))
+
+const KycProvidersLoaderStep         = lazy(() => import('./components/5_KycProvidersLoader'))
+const KycProvidersLoaderSidebarContent = lazy(() => import('./components/5_KycProvidersLoader/components/SidebarContent'))
+
+const ProofGeneratingStep            = lazy(() => import('./components/6_ProofGenerating'))
+const ProofGeneratingSidebarContent = lazy(() => import('./components/6_ProofGenerating/components/SidebarContent'))
+
+const ProofGeneratingLoaderStep      = lazy(() => import('./components/7_ProofGeneratingLoader'))
+const ProofGeneratingLoaderSidebarContent = lazy(() => import('./components/7_ProofGeneratingLoader/components/SidebarContent'))
+
+const ProofSubmittingStep            = lazy(() => import('./components/8_ProofSubmitting'))
+const ProofSubmittingSidebarContent = lazy(() => import('./components/8_ProofSubmitting/components/SidebarContent'))
+
+const ProofSubmittingLoaderStep      = lazy(() => import('./components/9_ProofSubmittingLoader'))
+const ProofSubmittingLoaderSidebarContent = lazy(() => import('./components/9_ProofSubmittingLoader/components/SidebarContent'))
+
+const ProofSubmittedStep             = lazy(() => import('./components/10_ProofSubmitted'))
+const ProofSubmittedSidebarContent = lazy(() => import('./components/10_ProofSubmitted/components/SidebarContent'))
+
 
 enum Steps {
   WalletConnectionStep      = 'WALLET_CONNECTION_STEP',
@@ -130,35 +150,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   ])
 
   const sidebarUuid = useMemo(() => uuidv4(), [])
-
-  const SidebarToggler = useCallback(
-    (type: 'expand' | 'collapse') => (
-      <motion.button
-        className='main-page__content-sidebar-toggler-wrp'
-        onClick={() => setIsSidebarOpen(prev => !prev)}
-        initial='hidden'
-        animate='shown'
-        exit='hidden'
-        variants={togglerAnimationVariants}
-        transition={{ duration: '0.5', ease: 'easeInOut' }}
-      >
-        <Icon
-          className='main-page__content-sidebar-toggler-icon'
-          name={type === 'expand' ? ICON_NAMES.sidebar : ICON_NAMES.collapse}
-        />
-      </motion.button>
-    ),
-    [],
-  )
-
-  const SidebarContent = useMemo(
-    () => (
-      <div className='main-page__sidebar-content'>
-        {SidebarToggler('collapse')}
-      </div>
-    ),
-    [SidebarToggler],
-  )
 
   const init = useCallback(async () => {
     try {
@@ -316,6 +307,71 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     handleSnapConnectionStepFinish,
     handleWalletConnectionStepFinish,
   ])
+
+  const STEPS_SIDEBAR_CONTENT: Record<Steps, ReactElement> = useMemo(() => {
+    return {
+      [Steps.WalletConnectionStep]: (
+        <WalletConnectionSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.SnapConnectionStep]: (
+        <SnapConnectionSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.IdentityCreationStep]: (
+        <IdentityCreationSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.KycProvidersStep]: (
+        <KycProvidersSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.KycProvidersLoaderStep]: (
+        <KycProvidersLoaderSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.ProofGeneratingStep]: (
+        <ProofGeneratingSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.ProofGeneratingLoaderStep]: (
+        <ProofGeneratingLoaderSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.ProofSubmittingStep]: (
+        <ProofSubmittingSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.ProofSubmittingLoaderStep]: (
+        <ProofSubmittingLoaderSidebarContent className='main-page__sidebar-content' />
+      ),
+      [Steps.ProofSubmittedStep]: (
+        <ProofSubmittedSidebarContent className='main-page__sidebar-content' />
+      ),
+    }
+  }, [])
+
+  const SidebarToggler = useCallback(
+    (type: 'expand' | 'collapse') => (
+      <motion.button
+        className='main-page__content-sidebar-toggler-wrp'
+        onClick={() => setIsSidebarOpen(prev => !prev)}
+        initial='hidden'
+        animate='shown'
+        exit='hidden'
+        variants={togglerAnimationVariants}
+        transition={{ duration: '0.5', ease: 'easeInOut' }}
+      >
+        <Icon
+          className='main-page__content-sidebar-toggler-icon'
+          name={type === 'expand' ? ICON_NAMES.sidebar : ICON_NAMES.collapse}
+        />
+      </motion.button>
+    ),
+    [],
+  )
+
+  const SidebarContent = useMemo(
+    () => (
+      <div className='main-page__sidebar-content'>
+        {currentStep && STEPS_SIDEBAR_CONTENT[currentStep]}
+        {SidebarToggler('collapse')}
+      </div>
+    ),
+    [STEPS_SIDEBAR_CONTENT, SidebarToggler, currentStep],
+  )
 
   useEffectOnce(() => {
     init()
