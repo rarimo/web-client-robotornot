@@ -9,9 +9,10 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useEffectOnce } from 'react-use'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Icon } from '@/common'
+import { ErrorMessage, Icon, Loader } from '@/common'
 import {
   useKycContext,
   useMetamaskZkpSnapContext,
@@ -19,6 +20,7 @@ import {
   useZkpContext,
 } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
+import { ErrorHandler } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -56,6 +58,9 @@ const sidebarAnimationVariants: Variants = {
 }
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoadFailed, setIsLoadFailed] = useState(false)
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const { provider, isValidChain } = useWeb3Context()
@@ -67,6 +72,8 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     isProveRequestPending,
     isUserSubmittedZkp,
     zkProof,
+
+    createIdentity,
   } = useZkpContext()
   const { isVCRequestPending } = useKycContext()
 
@@ -143,6 +150,27 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     [ExtraToggler],
   )
 
+  const init = useCallback(async () => {
+    try {
+      if (verifiableCredentials) {
+        /**
+         * As createIdentity() method is return existing identity or create new,
+         * we can detect created one by checking verifiable credentials
+         */
+        await createIdentity()
+      }
+    } catch (error) {
+      ErrorHandler.processWithoutFeedback(error)
+      setIsLoadFailed(true)
+    }
+
+    setIsLoaded(true)
+  }, [createIdentity, verifiableCredentials])
+
+  useEffectOnce(() => {
+    init()
+  })
+
   // useEffectOnce(() => {
   //   if (
   //     selectedKycProvider &&
@@ -172,29 +200,39 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   // TODO: add steps indicator
   return (
     <div className={['main-page', className].join(' ')} {...rest}>
-      <div className='main-page__content'>
-        <AnimatePresence>{CurrentStep}</AnimatePresence>
+      {isLoaded ? (
+        isLoadFailed ? (
+          <ErrorMessage message={`Ooops... something went wrong`} />
+        ) : (
+          <>
+            <div className='main-page__content'>
+              <AnimatePresence>{CurrentStep}</AnimatePresence>
 
-        <AnimatePresence>
-          {!isSidebarOpen && ExtraToggler('expand')}
-        </AnimatePresence>
-      </div>
+              <AnimatePresence>
+                {!isSidebarOpen && ExtraToggler('expand')}
+              </AnimatePresence>
+            </div>
 
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            className='main-page__extra'
-            key={`collapse-${sidebarUuid}`}
-            initial='collapsed'
-            animate='open'
-            exit='collapsed'
-            variants={sidebarAnimationVariants}
-            transition={{ duration: '0.75', ease: 'backInOut' }}
-          >
-            {ExtraContent}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <AnimatePresence>
+              {isSidebarOpen && (
+                <motion.div
+                  className='main-page__extra'
+                  key={`collapse-${sidebarUuid}`}
+                  initial='collapsed'
+                  animate='open'
+                  exit='collapsed'
+                  variants={sidebarAnimationVariants}
+                  transition={{ duration: '0.75', ease: 'backInOut' }}
+                >
+                  {ExtraContent}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )
+      ) : (
+        <Loader />
+      )}
     </div>
   )
 }

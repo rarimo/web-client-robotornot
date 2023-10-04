@@ -20,6 +20,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useLocalStorage } from 'react-use'
 
 import { api } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
@@ -108,7 +109,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [zkProof, setZkProof] = useState<ZKProof>()
   const [statesMerkleProof, setStatesMerkleProof] = useState<StatesMerkleProof>()
   const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
-  const [verifiableCredentials, setVerifiableCredentials] = useState<W3CCredential>()
+  const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<W3CCredential>('vc', undefined)
   const [identityIdString, setIdentityIdString] = useState('')
   /* eslint-enable */
   /* prettier-ignore-end */
