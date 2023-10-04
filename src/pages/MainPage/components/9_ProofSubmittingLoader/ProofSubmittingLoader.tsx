@@ -1,10 +1,23 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes } from 'react'
+import { type FC, useEffect } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { useZkpContext } from '@/contexts'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-const ProofSubmittingLoader: FC<Props> = ({ className, ...rest }) => {
+const ProofSubmittingLoader: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  ...rest
+}) => {
+  const { isUserSubmittedZkp } = useZkpContext()
+
+  useEffect(() => {
+    if (!isUserSubmittedZkp) return
+
+    nextStepCb()
+  }, [isUserSubmittedZkp, nextStepCb])
+
   return (
     <div className={['proof-submitting-loader', className].join(' ')} {...rest}>
       {`ProofSubmittingLoader`}

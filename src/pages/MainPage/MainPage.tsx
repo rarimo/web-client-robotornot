@@ -5,7 +5,9 @@ import {
   type FC,
   HTMLAttributes,
   lazy,
+  type ReactElement,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -36,6 +38,19 @@ const ProofGeneratingLoaderStep = lazy(() => import('./components/7_ProofGenerat
 const ProofSubmittingStep       = lazy(() => import('./components/8_ProofSubmitting'))
 const ProofSubmittingLoaderStep = lazy(() => import('./components/9_ProofSubmittingLoader'))
 const ProofSubmittedStep        = lazy(() => import('./components/10_ProofSubmitted'))
+
+enum Steps {
+  WalletConnectionStep      = 'WALLET_CONNECTION_STEP',
+  SnapConnectionStep        = 'SNAP_CONNECTION_STEP',
+  IdentityCreationStep      = 'IDENTITY_CREATION_STEP',
+  KycProvidersStep          = 'KYC_PROVIDERS_STEP',
+  KycProvidersLoaderStep    = 'KYC_PROVIDERS_LOADER_STEP',
+  ProofGeneratingStep       = 'PROOF_GENERATING_STEP',
+  ProofGeneratingLoaderStep = 'PROOF_GENERATING_LOADER_STEP',
+  ProofSubmittingStep       = 'PROOF_SUBMITTING_STEP',
+  ProofSubmittingLoaderStep = 'PROOF_SUBMITTING_LOADER_STEP',
+  ProofSubmittedStep        = 'PROOF_SUBMITTED_STEP',
+}
 /* eslint-enable */
 /* prettier-ignore-end */
 
@@ -58,8 +73,11 @@ const sidebarAnimationVariants: Variants = {
 }
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
+  const [currentStep, setCurrentStep] = useState<Steps>()
+
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLoadFailed, setIsLoadFailed] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
@@ -77,37 +95,27 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   } = useZkpContext()
   const { isVCRequestPending } = useKycContext()
 
-  const CurrentStep = useMemo(() => {
+  const detectStartStep = useCallback(() => {
     if (!provider?.isConnected || !isValidChain)
-      return <WalletConnectionStep className='main-page__step' />
+      return Steps.WalletConnectionStep
 
-    if (!isSnapInstalled)
-      return <SnapConnectionStep className='main-page__step' />
+    if (!isSnapInstalled) return Steps.SnapConnectionStep
 
-    if (!identityIdString)
-      return <IdentityCreationStep className='main-page__step' />
+    if (!identityIdString) return Steps.IdentityCreationStep
 
-    // TODO: group this
-    if (isVCRequestPending)
-      return <KycProvidersLoaderStep className='main-page__step' />
+    if (isVCRequestPending) return Steps.KycProvidersLoaderStep
 
-    if (!verifiableCredentials)
-      return <KycProvidersStep className='main-page__step' />
+    if (!verifiableCredentials) return Steps.KycProvidersStep
 
-    // TODO: group this
-    if (isZKPRequestPending)
-      return <ProofGeneratingLoaderStep className='main-page__step' />
+    if (isZKPRequestPending) return Steps.ProofGeneratingLoaderStep
 
-    if (!zkProof) return <ProofGeneratingStep className='main-page__step' />
+    if (!zkProof) return Steps.ProofGeneratingStep
 
-    // TODO: group this
-    if (isProveRequestPending)
-      return <ProofSubmittingLoaderStep className='main-page__step' />
+    if (isProveRequestPending) return Steps.ProofSubmittingLoaderStep
 
-    if (!isUserSubmittedZkp)
-      return <ProofSubmittingStep className='main-page__step' />
+    if (!isUserSubmittedZkp) return Steps.ProofSubmittingStep
 
-    return <ProofSubmittedStep className='main-page__step' />
+    return Steps.ProofSubmittedStep
   }, [
     identityIdString,
     isProveRequestPending,
@@ -123,10 +131,10 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
   const sidebarUuid = useMemo(() => uuidv4(), [])
 
-  const ExtraToggler = useCallback(
+  const SidebarToggler = useCallback(
     (type: 'expand' | 'collapse') => (
       <motion.button
-        className='main-page__content-extra-toggler-wrp'
+        className='main-page__content-sidebar-toggler-wrp'
         onClick={() => setIsSidebarOpen(prev => !prev)}
         initial='hidden'
         animate='shown'
@@ -135,7 +143,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         transition={{ duration: '0.5', ease: 'easeInOut' }}
       >
         <Icon
-          className='main-page__content-extra-toggler-icon'
+          className='main-page__content-sidebar-toggler-icon'
           name={type === 'expand' ? ICON_NAMES.sidebar : ICON_NAMES.collapse}
         />
       </motion.button>
@@ -143,11 +151,13 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     [],
   )
 
-  const ExtraContent = useMemo(
+  const SidebarContent = useMemo(
     () => (
-      <div className='main-page__extra-content'>{ExtraToggler('collapse')}</div>
+      <div className='main-page__sidebar-content'>
+        {SidebarToggler('collapse')}
+      </div>
     ),
-    [ExtraToggler],
+    [SidebarToggler],
   )
 
   const init = useCallback(async () => {
@@ -167,35 +177,157 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     setIsLoaded(true)
   }, [createIdentity, isSnapInstalled, verifiableCredentials])
 
+  const handleWalletConnectionStepFinish = useCallback(() => {
+    setCurrentStep(Steps.SnapConnectionStep)
+  }, [])
+
+  const handleSnapConnectionStepFinish = useCallback(() => {
+    setCurrentStep(Steps.IdentityCreationStep)
+  }, [])
+
+  const handleIdentityCreationStepFinish = useCallback(() => {
+    setCurrentStep(Steps.KycProvidersStep)
+  }, [])
+
+  const handleKycProvidersStepFinish = useCallback(() => {
+    setCurrentStep(Steps.KycProvidersLoaderStep)
+  }, [])
+
+  const handleKycProvidersStepError = useCallback((error: Error) => {
+    ErrorHandler.processWithoutFeedback(error)
+
+    setCurrentStep(Steps.KycProvidersStep)
+  }, [])
+
+  const handleKycProvidersLoaderStepFinish = useCallback(() => {
+    setCurrentStep(Steps.ProofGeneratingStep)
+  }, [])
+
+  const handleProofGeneratingStepFinish = useCallback(() => {
+    setCurrentStep(Steps.ProofGeneratingLoaderStep)
+  }, [])
+
+  const handlePRoofGeneratingStepError = useCallback((error: Error) => {
+    ErrorHandler.processWithoutFeedback(error)
+
+    setCurrentStep(Steps.ProofGeneratingStep)
+  }, [])
+
+  const handleProofGeneratingLoaderStepFinish = useCallback(() => {
+    setCurrentStep(Steps.ProofSubmittingStep)
+  }, [])
+
+  const handleProofSubmittingStepFinish = useCallback(() => {
+    setCurrentStep(Steps.ProofSubmittingLoaderStep)
+  }, [])
+
+  const handleProofSubmittingStepError = useCallback((error: Error) => {
+    ErrorHandler.processWithoutFeedback(error)
+
+    setCurrentStep(Steps.ProofSubmittingStep)
+  }, [])
+
+  const handleProofSubmittingLoaderStepFinish = useCallback(() => {
+    setCurrentStep(Steps.ProofSubmittedStep)
+  }, [])
+
+  const handleProofSubmittedStepFinish = useCallback(() => {
+    /* empty */
+  }, [])
+
+  const STEPS_COMPONENTS: Record<Steps, ReactElement> = useMemo(() => {
+    return {
+      [Steps.WalletConnectionStep]: (
+        <WalletConnectionStep
+          className='main-page__step'
+          nextStepCb={handleWalletConnectionStepFinish}
+        />
+      ),
+      [Steps.SnapConnectionStep]: (
+        <SnapConnectionStep
+          className='main-page__step'
+          nextStepCb={handleSnapConnectionStepFinish}
+        />
+      ),
+      [Steps.IdentityCreationStep]: (
+        <IdentityCreationStep
+          className='main-page__step'
+          nextStepCb={handleIdentityCreationStepFinish}
+        />
+      ),
+      [Steps.KycProvidersStep]: (
+        <KycProvidersStep
+          className='main-page__step'
+          nextStepCb={handleKycProvidersStepFinish}
+          onErrorCb={handleKycProvidersStepError}
+        />
+      ),
+      [Steps.KycProvidersLoaderStep]: (
+        <KycProvidersLoaderStep
+          className='main-page__step'
+          nextStepCb={handleKycProvidersLoaderStepFinish}
+        />
+      ),
+      [Steps.ProofGeneratingStep]: (
+        <ProofGeneratingStep
+          className='main-page__step'
+          nextStepCb={handleProofGeneratingStepFinish}
+          onErrorCb={handlePRoofGeneratingStepError}
+        />
+      ),
+      [Steps.ProofGeneratingLoaderStep]: (
+        <ProofGeneratingLoaderStep
+          className='main-page__step'
+          nextStepCb={handleProofGeneratingLoaderStepFinish}
+        />
+      ),
+      [Steps.ProofSubmittingStep]: (
+        <ProofSubmittingStep
+          className='main-page__step'
+          nextStepCb={handleProofSubmittingStepFinish}
+          onErrorCb={handleProofSubmittingStepError}
+        />
+      ),
+      [Steps.ProofSubmittingLoaderStep]: (
+        <ProofSubmittingLoaderStep
+          className='main-page__step'
+          nextStepCb={handleProofSubmittingLoaderStepFinish}
+        />
+      ),
+      [Steps.ProofSubmittedStep]: (
+        <ProofSubmittedStep
+          className='main-page__step'
+          nextStepCb={handleProofSubmittedStepFinish}
+        />
+      ),
+    }
+  }, [
+    handleIdentityCreationStepFinish,
+    handleKycProvidersLoaderStepFinish,
+    handleKycProvidersStepError,
+    handleKycProvidersStepFinish,
+    handlePRoofGeneratingStepError,
+    handleProofGeneratingLoaderStepFinish,
+    handleProofGeneratingStepFinish,
+    handleProofSubmittedStepFinish,
+    handleProofSubmittingLoaderStepFinish,
+    handleProofSubmittingStepError,
+    handleProofSubmittingStepFinish,
+    handleSnapConnectionStepFinish,
+    handleWalletConnectionStepFinish,
+  ])
+
   useEffectOnce(() => {
     init()
   })
 
-  // useEffectOnce(() => {
-  //   if (
-  //     selectedKycProvider &&
-  //     !verifiableCredentials &&
-  //     !searchParams.get('id_token')
-  //   ) {
-  //     removeSelectedKycProvider()
-  //   }
-  //
-  //   if (isUserSubmittedZkp) {
-  //     navigate(RoutesPaths.authSuccess)
-  //   } else if (verifiableCredentials) {
-  //     removeZkProof()
-  //     navigate(RoutesPaths.authPreview)
-  //   } else {
-  //     if (
-  //       selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ||
-  //       // FIXME
-  //       searchParams.get('id_token')
-  //     )
-  //       return
-  //
-  //     navigate(RoutesPaths.authProviders)
-  //   }
-  // })
+  useEffect(() => {
+    if (!isLoaded || isInitialized) return
+
+    setCurrentStep(detectStartStep())
+
+    setIsInitialized(true)
+  }, [detectStartStep, isInitialized, isLoaded])
 
   // TODO: add steps indicator
   return (
@@ -206,17 +338,19 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         ) : (
           <>
             <div className='main-page__content'>
-              <AnimatePresence>{CurrentStep}</AnimatePresence>
+              <AnimatePresence>
+                {currentStep && STEPS_COMPONENTS[currentStep]}
+              </AnimatePresence>
 
               <AnimatePresence>
-                {!isSidebarOpen && ExtraToggler('expand')}
+                {!isSidebarOpen && SidebarToggler('expand')}
               </AnimatePresence>
             </div>
 
             <AnimatePresence>
               {isSidebarOpen && (
                 <motion.div
-                  className='main-page__extra'
+                  className='main-page__sidebar'
                   key={`collapse-${sidebarUuid}`}
                   initial='collapsed'
                   animate='open'
@@ -224,7 +358,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
                   variants={sidebarAnimationVariants}
                   transition={{ duration: '0.75', ease: 'backInOut' }}
                 >
-                  {ExtraContent}
+                  {SidebarContent}
                 </motion.div>
               )}
             </AnimatePresence>

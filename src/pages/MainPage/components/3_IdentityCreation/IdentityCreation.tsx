@@ -1,18 +1,21 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const IdentityCreation: FC<Props> = ({ className, ...rest }) => {
+const IdentityCreation: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  ...rest
+}) => {
   const [isPending, setIsPending] = useState(false)
 
-  const { createIdentity } = useZkpContext()
+  const { identityIdString, createIdentity } = useZkpContext()
 
   const requestCreateIdentity = useCallback(async () => {
     setIsPending(true)
@@ -25,6 +28,12 @@ const IdentityCreation: FC<Props> = ({ className, ...rest }) => {
 
     setIsPending(false)
   }, [createIdentity])
+
+  useEffect(() => {
+    if (!identityIdString) return
+
+    nextStepCb()
+  }, [identityIdString, nextStepCb])
 
   return (
     <div className={['identity-creation', className].join(' ')} {...rest}>

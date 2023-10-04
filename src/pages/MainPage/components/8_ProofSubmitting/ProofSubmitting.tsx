@@ -1,16 +1,20 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
-import { type FC, HTMLAttributes, useCallback, useState } from 'react'
+import { type FC, useCallback, useState } from 'react'
 
 import { AppButton } from '@/common'
 import { useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const ProofSubmitting: FC<Props> = ({ className, ...rest }) => {
+const ProofSubmitting: FC<StepProps> = ({
+  nextStepCb,
+  onErrorCb,
+  className,
+  ...rest
+}) => {
   const [isPending, setIsPending] = useState(false)
   const [selectedChainToPublish] = useState<SUPPORTED_CHAINS>(
     config.DEFAULT_CHAIN,
@@ -21,14 +25,17 @@ const ProofSubmitting: FC<Props> = ({ className, ...rest }) => {
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
 
+    nextStepCb()
+
     try {
       await submitZkp(selectedChainToPublish)
     } catch (error) {
       ErrorHandler.process(error)
+      onErrorCb?.(error as Error)
     }
 
     setIsPending(false)
-  }, [selectedChainToPublish, submitZkp])
+  }, [nextStepCb, onErrorCb, selectedChainToPublish, submitZkp])
 
   return (
     <div className={['proof-submitting', className].join(' ')} {...rest}>

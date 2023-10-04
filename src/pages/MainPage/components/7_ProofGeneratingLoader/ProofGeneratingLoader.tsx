@@ -1,10 +1,24 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes } from 'react'
+import isEmpty from 'lodash/isEmpty'
+import { type FC, useEffect } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { useZkpContext } from '@/contexts'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-const ProofGeneratingLoader: FC<Props> = ({ className, ...rest }) => {
+const ProofGeneratingLoader: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  ...rest
+}) => {
+  const { zkProof } = useZkpContext()
+
+  useEffect(() => {
+    if (!zkProof || isEmpty(zkProof)) return
+
+    nextStepCb()
+  }, [nextStepCb, zkProof])
+
   return (
     <div className={['proof-generating-loader', className].join(' ')} {...rest}>
       {`proof-generating-loader`}

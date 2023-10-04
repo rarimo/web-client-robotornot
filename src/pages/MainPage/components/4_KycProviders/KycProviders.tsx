@@ -1,16 +1,20 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes, useCallback, useState } from 'react'
+import { type FC, useCallback, useState } from 'react'
 
 import { useKycContext } from '@/contexts'
 import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import { ErrorHandler, GaCategories, gaSendCustomEvent } from '@/helpers'
+import { StepProps } from '@/pages/MainPage/components/types'
 
 import { KycProvidersItem } from './components'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const KycProviders: FC<Props> = ({ className, ...rest }) => {
+const KycProviders: FC<StepProps> = ({
+  nextStepCb,
+  onErrorCb,
+  className,
+  ...rest
+}) => {
   const { KYC_PROVIDERS_DETAILS_MAP } = useKycContext()
 
   const [isPending, setIsPending] = useState(false)
@@ -22,6 +26,8 @@ const KycProviders: FC<Props> = ({ className, ...rest }) => {
       setIsPending(true)
 
       try {
+        nextStepCb()
+
         await login(kycProvider)
 
         gaSendCustomEvent(GaCategories.ProviderSelection, {
@@ -31,11 +37,12 @@ const KycProviders: FC<Props> = ({ className, ...rest }) => {
         gaSendCustomEvent(kycProvider)
       } catch (error) {
         ErrorHandler.process(error)
+        onErrorCb?.(error as Error)
       }
 
       setIsPending(false)
     },
-    [login],
+    [login, nextStepCb, onErrorCb],
   )
 
   return (

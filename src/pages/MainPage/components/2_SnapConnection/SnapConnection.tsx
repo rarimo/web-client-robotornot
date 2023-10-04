@@ -1,16 +1,16 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes, useCallback } from 'react'
+import { type FC, useCallback, useEffect } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { useMetamaskZkpSnapContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const SnapConnection: FC<Props> = ({ className, ...rest }) => {
-  const { connectOrInstallSnap, checkSnapStatus } = useMetamaskZkpSnapContext()
+const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
+  const { connectOrInstallSnap, checkSnapStatus, isSnapInstalled } =
+    useMetamaskZkpSnapContext()
 
   const installSnap = useCallback(async () => {
     try {
@@ -20,6 +20,12 @@ const SnapConnection: FC<Props> = ({ className, ...rest }) => {
       ErrorHandler.processWithoutFeedback(error)
     }
   }, [checkSnapStatus, connectOrInstallSnap])
+
+  useEffect(() => {
+    if (!isSnapInstalled) return
+
+    nextStepCb()
+  }, [isSnapInstalled, nextStepCb])
 
   return (
     <div className={['snap-connection', className].join(' ')} {...rest}>

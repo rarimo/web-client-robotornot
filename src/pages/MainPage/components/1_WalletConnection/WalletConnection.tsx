@@ -2,16 +2,19 @@ import './styles.scss'
 
 import { config } from '@config'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
-import { type FC, HTMLAttributes, useCallback, useMemo } from 'react'
+import { type FC, useCallback, useEffect, useMemo } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const WalletConnection: FC<Props> = ({ className, ...rest }) => {
+const WalletConnection: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  ...rest
+}) => {
   const { provider, isValidChain, init } = useWeb3Context()
 
   const Title = useMemo(
@@ -63,6 +66,12 @@ const WalletConnection: FC<Props> = ({ className, ...rest }) => {
     },
     [provider, requestAddChain],
   )
+
+  useEffect(() => {
+    if (!provider?.isConnected || !isValidChain) return
+
+    nextStepCb()
+  }, [isValidChain, nextStepCb, provider?.isConnected])
 
   return (
     <div className={['wallet-connection', className].join(' ')} {...rest}>

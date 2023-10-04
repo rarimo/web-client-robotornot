@@ -1,10 +1,24 @@
 import './styles.scss'
 
-import { type FC, HTMLAttributes } from 'react'
+import isEmpty from 'lodash/isEmpty'
+import { type FC, useEffect } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { useZkpContext } from '@/contexts'
+import { StepProps } from '@/pages/MainPage/components/types'
 
-const KycProvidersLoader: FC<Props> = ({ className, ...rest }) => {
+const KycProvidersLoader: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  ...rest
+}) => {
+  const { verifiableCredentials } = useZkpContext()
+
+  useEffect(() => {
+    if (!verifiableCredentials || isEmpty(verifiableCredentials)) return
+
+    nextStepCb()
+  }, [nextStepCb, verifiableCredentials])
+
   return (
     <div className={['kyc-providers', className].join(' ')} {...rest}>
       {'Loading...'}

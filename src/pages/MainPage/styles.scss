@@ -12,7 +12,7 @@
   flex: 1;
 }
 
-.main-page__extra {
+.main-page__sidebar {
   position: relative;
   border-radius: toRem(16);
   border: toRem(1) solid rgba(var(--background-secondary-main-rgb), 1);
@@ -21,7 +21,7 @@
   backdrop-filter: blur(#{toRem(18)});
 }
 
-.main-page__content-extra-toggler-wrp {
+.main-page__content-sidebar-toggler-wrp {
   position: absolute;
   top: toRem(24);
   right: toRem(24);
@@ -34,7 +34,7 @@
   @include static-icon-size(36);
 }
 
-.main-page__content-extra-toggler-icon {
+.main-page__content-sidebar-toggler-icon {
   color: var(--text-primary-main);
 
   @include static-icon-size(20);
