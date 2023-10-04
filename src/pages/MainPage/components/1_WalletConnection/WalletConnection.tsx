@@ -1,7 +1,8 @@
 import './styles.scss'
 
-import { PROVIDERS } from '@distributedlab/w3p'
-import { type FC, HTMLAttributes, useCallback } from 'react'
+import { config } from '@config'
+import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
+import { type FC, HTMLAttributes, useCallback, useMemo } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { useWeb3Context } from '@/contexts'
@@ -11,7 +12,21 @@ import { ErrorHandler } from '@/helpers'
 type Props = HTMLAttributes<HTMLDivElement>
 
 const WalletConnection: FC<Props> = ({ className, ...rest }) => {
-  const { init } = useWeb3Context()
+  const { provider, isValidChain, init } = useWeb3Context()
+
+  const Title = useMemo(
+    () =>
+      !provider?.isConnected ? (
+        <>{`Wants to know if you are a human`}</>
+      ) : isValidChain ? (
+        <></>
+      ) : (
+        <>{`Please switch to ${
+          config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].name
+        } chain in MetaMask`}</>
+      ),
+    [isValidChain, provider?.isConnected],
+  )
 
   const connectProvider = useCallback(async () => {
     try {
@@ -20,6 +35,34 @@ const WalletConnection: FC<Props> = ({ className, ...rest }) => {
       ErrorHandler.processWithoutFeedback(error)
     }
   }, [init])
+
+  const requestAddChain = useCallback(
+    async (chain: Chain) => {
+      try {
+        await provider?.addChain?.(chain)
+      } catch (error) {
+        ErrorHandler.processWithoutFeedback(error)
+      }
+    },
+    [provider],
+  )
+
+  const requestSwitchChain = useCallback(
+    async (chain: Chain) => {
+      try {
+        await provider?.switchChain?.(Number(chain.id))
+      } catch (error) {
+        if (error instanceof errors.ProviderChainNotFoundError) {
+          await requestAddChain(chain)
+
+          return
+        }
+
+        throw error
+      }
+    },
+    [provider, requestAddChain],
+  )
 
   return (
     <div className={['wallet-connection', className].join(' ')} {...rest}>
@@ -38,17 +81,31 @@ const WalletConnection: FC<Props> = ({ className, ...rest }) => {
         <div className='app__badge-item'></div>
       </div>
 
-      <h2 className='wallet-connection__title'>
-        {`Wants to know if you are a human`}
-      </h2>
+      <h2 className='wallet-connection__title'>{Title}</h2>
 
       <div className='app__step-actions'>
-        <AppButton
-          iconLeft={ICON_NAMES.metamask}
-          onClick={connectProvider}
-          text={`Connect metamask`}
-          modification='border-circle'
-        />
+        {provider?.isConnected ? (
+          isValidChain ? (
+            <></>
+          ) : (
+            <AppButton
+              text={`Switch chain`}
+              modification='border-circle'
+              onClick={() =>
+                requestSwitchChain(
+                  config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+                )
+              }
+            />
+          )
+        ) : (
+          <AppButton
+            iconLeft={ICON_NAMES.metamask}
+            text={`Connect metamask`}
+            modification='border-circle'
+            onClick={connectProvider}
+          />
+        )}
 
         <div className='app__step-actions-tip'>
           <span className='app__step-actions-tip-text'>

@@ -61,7 +61,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLoadFailed, setIsLoadFailed] = useState(false)
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const { provider, isValidChain } = useWeb3Context()
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
