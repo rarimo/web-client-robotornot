@@ -152,7 +152,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
   const init = useCallback(async () => {
     try {
-      if (verifiableCredentials) {
+      if (verifiableCredentials && isSnapInstalled) {
         /**
          * As createIdentity() method is return existing identity or create new,
          * we can detect created one by checking verifiable credentials
@@ -165,7 +165,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     }
 
     setIsLoaded(true)
-  }, [createIdentity, verifiableCredentials])
+  }, [createIdentity, isSnapInstalled, verifiableCredentials])
 
   useEffectOnce(() => {
     init()
