@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { useKycContext } from '@/contexts'
 import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
@@ -22,13 +22,13 @@ const KycProviders: FC<StepProps> = ({
 
   const { login } = useKycContext()
 
+  const { isVCRequestPending } = useKycContext()
+
   const handleLogin = useCallback(
     async (kycProvider: SUPPORTED_KYC_PROVIDERS) => {
       setIsPending(true)
 
       try {
-        nextStepCb()
-
         await login(kycProvider)
 
         gaSendCustomEvent(GaCategories.ProviderSelection, {
@@ -43,8 +43,14 @@ const KycProviders: FC<StepProps> = ({
 
       setIsPending(false)
     },
-    [login, nextStepCb, onErrorCb],
+    [login, onErrorCb],
   )
+
+  useEffect(() => {
+    if (!isVCRequestPending) return
+
+    nextStepCb()
+  }, [isVCRequestPending, nextStepCb])
 
   return (
     <motion.div className={['kyc-providers', className].join(' ')} {...rest}>

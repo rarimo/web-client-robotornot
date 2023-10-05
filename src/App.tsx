@@ -10,11 +10,7 @@ import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 import { AppFooter, AppNavbar, Loader } from '@/common'
-import {
-  useMetamaskZkpSnapContext,
-  useWeb3Context,
-  ZkpContextProvider,
-} from '@/contexts'
+import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -98,7 +94,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   }, [location])
 
   return (
-    <ZkpContextProvider>
+    <>
       <AppNavbar />
 
       <div className='app__main'>
@@ -107,7 +103,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
       <AppFooter />
       <ToastContainer />
-    </ZkpContextProvider>
+    </>
   )
 }
 

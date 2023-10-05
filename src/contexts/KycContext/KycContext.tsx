@@ -299,7 +299,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [kycError, t])
 
   const retryKyc = useCallback(() => {
-    setIsVCRequestPending(true)
     setRefreshKey(prev => prev + 1)
   }, [])
 
