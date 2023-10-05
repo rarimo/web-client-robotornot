@@ -1,10 +1,11 @@
-import { FC, HTMLAttributes } from 'react'
+import { motion } from 'framer-motion'
+import { FC } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { SidebarProps } from '@/pages/MainPage/components/types'
 
-const SidebarContent: FC<Props> = ({ className, ...rest }) => {
+const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   return (
-    <div
+    <motion.div
       className={[
         'sidebar-content',
         'app__step-sidebar-content',
@@ -23,7 +24,7 @@ const SidebarContent: FC<Props> = ({ className, ...rest }) => {
       <p className='app__step-sidebar-content-text'>
         {`Zero-Knowledge Proofs (ZKPs) have been a theoretical concept in cryptography since the 1980s. However, their widespread practical use and adoption in identity systems have predominantly emerged in the 2020s. In a sense, you're part of a historic moment.`}
       </p>
-    </div>
+    </motion.div>
   )
 }
 

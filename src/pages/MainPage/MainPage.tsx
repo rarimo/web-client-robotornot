@@ -28,35 +28,35 @@ type Props = HTMLAttributes<HTMLDivElement>
 
 /* prettier-ignore-start */
 /* eslint-disable */
-const WalletConnectionStep           = lazy(() => import('./components/1_WalletConnection'))
-const WalletConnectionSidebarContent = lazy(() => import('./components/1_WalletConnection/components/SidebarContent'))
+const WalletConnectionStep                = lazy(() => import('./components/1_WalletConnection'))
+const WalletConnectionSidebarContent      = lazy(() => import('./components/1_WalletConnection/components/SidebarContent'))
 
-const SnapConnectionStep             = lazy(() => import('./components/2_SnapConnection'))
-const SnapConnectionSidebarContent = lazy(() => import('./components/2_SnapConnection/components/SidebarContent'))
+const SnapConnectionStep                  = lazy(() => import('./components/2_SnapConnection'))
+const SnapConnectionSidebarContent        = lazy(() => import('./components/2_SnapConnection/components/SidebarContent'))
 
-const IdentityCreationStep           = lazy(() => import('./components/3_IdentityCreation'))
-const IdentityCreationSidebarContent = lazy(() => import('./components/3_IdentityCreation/components/SidebarContent'))
+const IdentityCreationStep                = lazy(() => import('./components/3_IdentityCreation'))
+const IdentityCreationSidebarContent      = lazy(() => import('./components/3_IdentityCreation/components/SidebarContent'))
 
-const KycProvidersStep               = lazy(() => import('./components/4_KycProviders'))
-const KycProvidersSidebarContent = lazy(() => import('./components/4_KycProviders/components/SidebarContent'))
+const KycProvidersStep                    = lazy(() => import('./components/4_KycProviders'))
+const KycProvidersSidebarContent          = lazy(() => import('./components/4_KycProviders/components/SidebarContent'))
 
-const KycProvidersLoaderStep         = lazy(() => import('./components/5_KycProvidersLoader'))
-const KycProvidersLoaderSidebarContent = lazy(() => import('./components/5_KycProvidersLoader/components/SidebarContent'))
+const KycProvidersLoaderStep              = lazy(() => import('./components/5_KycProvidersLoader'))
+const KycProvidersLoaderSidebarContent    = lazy(() => import('./components/5_KycProvidersLoader/components/SidebarContent'))
 
-const ProofGeneratingStep            = lazy(() => import('./components/6_ProofGenerating'))
-const ProofGeneratingSidebarContent = lazy(() => import('./components/6_ProofGenerating/components/SidebarContent'))
+const ProofGeneratingStep                 = lazy(() => import('./components/6_ProofGenerating'))
+const ProofGeneratingSidebarContent       = lazy(() => import('./components/6_ProofGenerating/components/SidebarContent'))
 
-const ProofGeneratingLoaderStep      = lazy(() => import('./components/7_ProofGeneratingLoader'))
+const ProofGeneratingLoaderStep           = lazy(() => import('./components/7_ProofGeneratingLoader'))
 const ProofGeneratingLoaderSidebarContent = lazy(() => import('./components/7_ProofGeneratingLoader/components/SidebarContent'))
 
-const ProofSubmittingStep            = lazy(() => import('./components/8_ProofSubmitting'))
-const ProofSubmittingSidebarContent = lazy(() => import('./components/8_ProofSubmitting/components/SidebarContent'))
+const ProofSubmittingStep                 = lazy(() => import('./components/8_ProofSubmitting'))
+const ProofSubmittingSidebarContent       = lazy(() => import('./components/8_ProofSubmitting/components/SidebarContent'))
 
-const ProofSubmittingLoaderStep      = lazy(() => import('./components/9_ProofSubmittingLoader'))
+const ProofSubmittingLoaderStep           = lazy(() => import('./components/9_ProofSubmittingLoader'))
 const ProofSubmittingLoaderSidebarContent = lazy(() => import('./components/9_ProofSubmittingLoader/components/SidebarContent'))
 
-const ProofSubmittedStep             = lazy(() => import('./components/10_ProofSubmitted'))
-const ProofSubmittedSidebarContent = lazy(() => import('./components/10_ProofSubmitted/components/SidebarContent'))
+const ProofSubmittedStep                  = lazy(() => import('./components/10_ProofSubmitted'))
+const ProofSubmittedSidebarContent        = lazy(() => import('./components/10_ProofSubmitted/components/SidebarContent'))
 
 enum Steps {
   WalletConnectionStep      = 'WALLET_CONNECTION_STEP',
@@ -102,19 +102,37 @@ const sidebarAnimationVariants: Variants = {
   },
 }
 
-const stepAnimationVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    x: '-10%',
+const sidebarContentAnimationProps = {
+  variants: {
+    shown: {
+      opacity: 1,
+      x: '0',
+    },
+    hidden: {
+      opacity: 0,
+      x: '10%',
+    },
   },
-  shown: {
-    opacity: 1,
-    x: '0',
+  initial: 'hidden',
+  animate: 'shown',
+  exit: 'hidden',
+  transition: {
+    duration: '0.5',
+    ease: 'easeInOut',
   },
 }
 
 const stepAnimationProps = {
-  variants: stepAnimationVariants,
+  variants: {
+    hidden: {
+      opacity: 0,
+      x: '-10%',
+    },
+    shown: {
+      opacity: 1,
+      x: '0',
+    },
+  },
   initial: 'hidden',
   animate: 'shown',
   exit: 'hidden',
@@ -366,34 +384,74 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const STEPS_SIDEBAR_CONTENT: Record<Steps, ReactElement> = useMemo(() => {
     return {
       [Steps.WalletConnectionStep]: (
-        <WalletConnectionSidebarContent className='main-page__sidebar-content' />
+        <WalletConnectionSidebarContent
+          key={Steps.WalletConnectionStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.SnapConnectionStep]: (
-        <SnapConnectionSidebarContent className='main-page__sidebar-content' />
+        <SnapConnectionSidebarContent
+          key={Steps.SnapConnectionStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.IdentityCreationStep]: (
-        <IdentityCreationSidebarContent className='main-page__sidebar-content' />
+        <IdentityCreationSidebarContent
+          key={Steps.IdentityCreationStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.KycProvidersStep]: (
-        <KycProvidersSidebarContent className='main-page__sidebar-content' />
+        <KycProvidersSidebarContent
+          key={Steps.KycProvidersStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.KycProvidersLoaderStep]: (
-        <KycProvidersLoaderSidebarContent className='main-page__sidebar-content' />
+        <KycProvidersLoaderSidebarContent
+          key={Steps.KycProvidersLoaderStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.ProofGeneratingStep]: (
-        <ProofGeneratingSidebarContent className='main-page__sidebar-content' />
+        <ProofGeneratingSidebarContent
+          key={Steps.ProofGeneratingStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.ProofGeneratingLoaderStep]: (
-        <ProofGeneratingLoaderSidebarContent className='main-page__sidebar-content' />
+        <ProofGeneratingLoaderSidebarContent
+          key={Steps.ProofGeneratingLoaderStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.ProofSubmittingStep]: (
-        <ProofSubmittingSidebarContent className='main-page__sidebar-content' />
+        <ProofSubmittingSidebarContent
+          key={Steps.ProofSubmittingStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.ProofSubmittingLoaderStep]: (
-        <ProofSubmittingLoaderSidebarContent className='main-page__sidebar-content' />
+        <ProofSubmittingLoaderSidebarContent
+          key={Steps.ProofSubmittingLoaderStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
       [Steps.ProofSubmittedStep]: (
-        <ProofSubmittedSidebarContent className='main-page__sidebar-content' />
+        <ProofSubmittedSidebarContent
+          key={Steps.ProofSubmittedStep}
+          className='main-page__sidebar-content'
+          {...sidebarContentAnimationProps}
+        />
       ),
     }
   }, [])
@@ -421,8 +479,11 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   const SidebarContent = useMemo(
     () => (
       <div className='main-page__sidebar-content'>
-        {currentStep && STEPS_SIDEBAR_CONTENT[currentStep]}
-        {SidebarToggler('collapse')}
+        <AnimatePresence mode='wait' initial={false}>
+          {currentStep && STEPS_SIDEBAR_CONTENT[currentStep]}
+        </AnimatePresence>
+
+        <AnimatePresence>{SidebarToggler('collapse')}</AnimatePresence>
       </div>
     ),
     [STEPS_SIDEBAR_CONTENT, SidebarToggler, currentStep],

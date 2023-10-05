@@ -6,3 +6,5 @@ export type StepProps = HTMLAttributes<HTMLDivElement> &
     nextStepCb: () => void
     onErrorCb?: (error: Error) => void
   }
+
+export type SidebarProps = HTMLAttributes<HTMLDivElement> & MotionProps

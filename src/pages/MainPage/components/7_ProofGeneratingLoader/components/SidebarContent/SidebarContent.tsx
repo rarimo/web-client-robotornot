@@ -1,12 +1,12 @@
-import { FC, HTMLAttributes } from 'react'
+import { motion } from 'framer-motion'
+import { FC } from 'react'
 
 import { AppButton } from '@/common'
+import { SidebarProps } from '@/pages/MainPage/components/types'
 
-type Props = HTMLAttributes<HTMLDivElement>
-
-const SidebarContent: FC<Props> = ({ className, ...rest }) => {
+const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   return (
-    <div
+    <motion.div
       className={[
         'sidebar-content',
         'app__step-sidebar-content',
@@ -38,7 +38,7 @@ const SidebarContent: FC<Props> = ({ className, ...rest }) => {
           size='small'
         />
       </div>
-    </div>
+    </motion.div>
   )
 }
 

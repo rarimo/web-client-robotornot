@@ -1,10 +1,11 @@
-import { FC, HTMLAttributes } from 'react'
+import { motion } from 'framer-motion'
+import { FC } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { SidebarProps } from '@/pages/MainPage/components/types'
 
-const SidebarContent: FC<Props> = ({ className, ...rest }) => {
+const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   return (
-    <div
+    <motion.div
       className={[
         'sidebar-content',
         'app__step-sidebar-content',
@@ -13,7 +14,7 @@ const SidebarContent: FC<Props> = ({ className, ...rest }) => {
       {...rest}
     >
       {`Proof Submitting Loader Sidebar Content`}
-    </div>
+    </motion.div>
   )
 }
 
