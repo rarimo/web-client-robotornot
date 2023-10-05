@@ -68,6 +68,7 @@ const KycProviders: FC<StepProps> = ({
             iconName={KYC_PROVIDERS_DETAILS_MAP[provider].iconName}
             handleLogin={handleLogin}
             isDisabled={isPending}
+            tooltipMsg={KYC_PROVIDERS_DETAILS_MAP[provider].tooltipElement}
           />
         ))}
       </div>

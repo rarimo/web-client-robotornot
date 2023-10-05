@@ -13,6 +13,7 @@ const AppTooltip: FC<Props> = ({
   msgContent,
   className,
   children,
+  style,
   ...rest
 }) => {
   const uuid = useMemo(() => uuidv4(), [])
@@ -27,7 +28,9 @@ const AppTooltip: FC<Props> = ({
         {children}
       </div>
 
-      <Tooltip id={uuid}>{msgContent}</Tooltip>
+      <Tooltip id={uuid} style={style}>
+        {msgContent}
+      </Tooltip>
     </>
   )
 }

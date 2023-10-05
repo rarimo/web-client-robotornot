@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, ReactElement } from 'react'
 
 import { AppTooltip, Icon } from '@/common'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
@@ -12,9 +12,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   handleLogin: (kycProvider: SUPPORTED_KYC_PROVIDERS) => void
   isDisabled?: boolean
+  tooltipMsg?: string | ReactElement
 }
 
 const KycProvidersItem: FC<Props> = ({
+  tooltipMsg,
   iconName,
   name,
   supportedKycProvider,
@@ -31,14 +33,17 @@ const KycProvidersItem: FC<Props> = ({
       <Icon className='kyc-providers-item__icon' name={iconName} />
       <h5 className='kyc-providers-item__name'>{name}</h5>
 
-      <div className='kyc-providers-item__icon-wrp'>
-        <AppTooltip msgContent={'lorem ipsum dolor sit amet'}>
-          <Icon
-            className='kyc-providers-item__icon kyc-providers-item__icon--decor'
-            name={ICON_NAMES.informationCircle}
-          />
-        </AppTooltip>
-      </div>
+      {tooltipMsg && (
+        <div className='kyc-providers-item__icon-wrp'>
+          {/*FIXME*/}
+          <AppTooltip style={{ maxWidth: `320px` }} msgContent={tooltipMsg}>
+            <Icon
+              className='kyc-providers-item__icon kyc-providers-item__icon--decor'
+              name={ICON_NAMES.informationCircle}
+            />
+          </AppTooltip>
+        </div>
+      )}
 
       <button
         className='kyc-providers-item__button'

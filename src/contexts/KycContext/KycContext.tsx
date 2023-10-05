@@ -7,6 +7,7 @@ import {
   HTMLAttributes,
   lazy,
   memo,
+  ReactElement,
   useCallback,
   useMemo,
   useState,
@@ -53,6 +54,8 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
 
     completeKycCb?: () => void
     completeKycMessage?: string
+
+    tooltipElement: ReactElement | string
   }
 > = {
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
@@ -60,6 +63,14 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     iconName: ICON_NAMES.providerCivic,
     link: 'https://getpass.civic.com/',
     isWalletRequired: true,
+    tooltipElement: (
+      <span className='app__kyc-provider-item-tooltip'>
+        <b>{`Civic: `}</b>
+        <span>
+          {`A real-time biometric verification service that performs user liveness checks through camera scans`}
+        </span>
+      </span>
+    ),
   },
   [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
     name: 'Gitcoin Passport',
@@ -71,18 +82,42 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
       window.open('https://passport.gitcoin.co/', '_blank')
     },
     completeKycMessage: 'Complete your Gitcoin Passport',
+    tooltipElement: (
+      <span className='app__kyc-provider-item-tooltip'>
+        <b>{`Gitcoin Passport: `}</b>
+        <span>
+          {`An identity system based on Stamps. Users need to achieve a profile score beyond a 15% threshold.`}
+        </span>
+      </span>
+    ),
   },
   [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
     link: 'https://unstoppabledomains.com/auth',
     isWalletRequired: true,
+    tooltipElement: (
+      <span className='app__kyc-provider-item-tooltip'>
+        <b>{`Unstoppable Domains: `}</b>
+        <span>
+          {`An ownership-based identity service. Users receive credentials upon purchasing specific on-chain domains such as .eth, .polygon, .x.`}
+        </span>
+      </span>
+    ),
   },
   [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
     name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
     link: 'https://worldcoin.org/download-app',
     isWalletRequired: true,
+    tooltipElement: (
+      <span className='app__kyc-provider-item-tooltip'>
+        <b>{`WordCoin: `}</b>
+        <span>
+          {`Through WorldID, identities are established using “The Orb,” which scans users' irises. This offers a high-security method for establishing an on-chain identity.`}
+        </span>
+      </span>
+    ),
   },
 }
 
