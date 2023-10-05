@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config } from '@config'
+import { motion } from 'framer-motion'
 import { type FC, useEffect, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
@@ -32,9 +33,9 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   }, [count, isManualRedirected, nextStepCb])
 
   return (
-    <div className={['proof-submitted', className].join(' ')} {...rest}>
+    <motion.div className={['proof-submitted', className].join(' ')} {...rest}>
       {`SUCCESS`}
-    </div>
+    </motion.div>
   )
 }
 

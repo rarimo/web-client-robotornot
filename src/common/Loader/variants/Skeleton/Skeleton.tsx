@@ -6,7 +6,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   scheme?: 'thin' | 'medium' | 'circle'
 }
 
-const Skeleton: FC<Props> = ({ scheme, ...rest }) => {
+const Skeleton: FC<Props> = ({ scheme = 'medium', ...rest }) => {
   return (
     <div className={['skeleton', `skeleton--${scheme}`].join(' ')} {...rest} />
   )

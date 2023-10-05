@@ -1,6 +1,6 @@
 import './styles.scss'
 
-import { AnimatePresence, motion, Variants } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, motion, Variants } from 'framer-motion'
 import {
   type FC,
   HTMLAttributes,
@@ -22,7 +22,7 @@ import {
   useZkpContext,
 } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
-import { ErrorHandler } from '@/helpers'
+import { ErrorHandler, sleep } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -58,7 +58,6 @@ const ProofSubmittingLoaderSidebarContent = lazy(() => import('./components/9_Pr
 const ProofSubmittedStep             = lazy(() => import('./components/10_ProofSubmitted'))
 const ProofSubmittedSidebarContent = lazy(() => import('./components/10_ProofSubmitted/components/SidebarContent'))
 
-
 enum Steps {
   WalletConnectionStep      = 'WALLET_CONNECTION_STEP',
   SnapConnectionStep        = 'SNAP_CONNECTION_STEP',
@@ -79,9 +78,20 @@ const togglerAnimationVariants: Variants = {
   hidden: { overflow: 'hidden', scale: 0 },
 }
 
+const mainContentAnimationVariants: Variants = {
+  open: {
+    width: '100%',
+    overflowX: 'hidden',
+  },
+  collapsed: {
+    width: '66.6%',
+    overflowX: 'hidden',
+  },
+}
+
 const sidebarAnimationVariants: Variants = {
   open: {
-    width: '33%',
+    width: '33.3%',
     overflowX: 'hidden',
     marginLeft: '24px',
   },
@@ -89,6 +99,28 @@ const sidebarAnimationVariants: Variants = {
     width: 0,
     overflowX: 'hidden',
     marginLeft: '0',
+  },
+}
+
+const stepAnimationVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: '-10%',
+  },
+  shown: {
+    opacity: 1,
+    x: '0',
+  },
+}
+
+const stepAnimationProps = {
+  variants: stepAnimationVariants,
+  initial: 'hidden',
+  animate: 'shown',
+  exit: 'hidden',
+  transition: {
+    duration: '0.5',
+    ease: 'backInOut',
   },
 }
 
@@ -150,6 +182,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
   ])
 
   const sidebarUuid = useMemo(() => uuidv4(), [])
+  const mainContentUuid = useMemo(() => uuidv4(), [])
 
   const init = useCallback(async () => {
     try {
@@ -160,6 +193,8 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
          */
         await createIdentity()
       }
+
+      await sleep(1_000)
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
       setIsLoadFailed(true)
@@ -230,65 +265,85 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     return {
       [Steps.WalletConnectionStep]: (
         <WalletConnectionStep
+          key={Steps.WalletConnectionStep}
           className='main-page__step'
           nextStepCb={handleWalletConnectionStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.SnapConnectionStep]: (
         <SnapConnectionStep
+          key={Steps.SnapConnectionStep}
           className='main-page__step'
           nextStepCb={handleSnapConnectionStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.IdentityCreationStep]: (
         <IdentityCreationStep
+          key={Steps.IdentityCreationStep}
           className='main-page__step'
           nextStepCb={handleIdentityCreationStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.KycProvidersStep]: (
         <KycProvidersStep
+          key={Steps.KycProvidersStep}
           className='main-page__step'
           nextStepCb={handleKycProvidersStepFinish}
           onErrorCb={handleKycProvidersStepError}
+          {...stepAnimationProps}
         />
       ),
       [Steps.KycProvidersLoaderStep]: (
         <KycProvidersLoaderStep
+          key={Steps.KycProvidersLoaderStep}
           className='main-page__step'
           nextStepCb={handleKycProvidersLoaderStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.ProofGeneratingStep]: (
         <ProofGeneratingStep
+          key={Steps.ProofGeneratingStep}
           className='main-page__step'
           nextStepCb={handleProofGeneratingStepFinish}
           onErrorCb={handleProofGeneratingStepError}
+          {...stepAnimationProps}
         />
       ),
       [Steps.ProofGeneratingLoaderStep]: (
         <ProofGeneratingLoaderStep
+          key={Steps.ProofGeneratingLoaderStep}
           className='main-page__step'
           nextStepCb={handleProofGeneratingLoaderStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.ProofSubmittingStep]: (
         <ProofSubmittingStep
+          key={Steps.ProofSubmittingStep}
           className='main-page__step'
           nextStepCb={handleProofSubmittingStepFinish}
           onErrorCb={handleProofSubmittingStepError}
+          {...stepAnimationProps}
         />
       ),
       [Steps.ProofSubmittingLoaderStep]: (
         <ProofSubmittingLoaderStep
+          key={Steps.ProofSubmittingLoaderStep}
           className='main-page__step'
           nextStepCb={handleProofSubmittingLoaderStepFinish}
+          {...stepAnimationProps}
         />
       ),
       [Steps.ProofSubmittedStep]: (
         <ProofSubmittedStep
+          key={Steps.ProofSubmittedStep}
           className='main-page__step'
           nextStepCb={handleProofSubmittedStepFinish}
+          {...stepAnimationProps}
         />
       ),
     }
@@ -352,7 +407,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         animate='shown'
         exit='hidden'
         variants={togglerAnimationVariants}
-        transition={{ duration: '0.5', ease: 'easeInOut' }}
+        transition={{ duration: '0.5' }}
       >
         <Icon
           className='main-page__content-sidebar-toggler-icon'
@@ -392,36 +447,53 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
         isLoadFailed ? (
           <ErrorMessage message={`Ooops... something went wrong`} />
         ) : (
-          <>
-            <div className='main-page__content'>
-              <AnimatePresence>
+          <LayoutGroup>
+            <motion.div
+              className='main-page__content'
+              key={mainContentUuid}
+              variants={mainContentAnimationVariants}
+              initial='open'
+              animate='collapsed'
+              exit='open'
+              transition={{
+                duration: '0.75',
+                ease: 'backInOut',
+              }}
+            >
+              <AnimatePresence mode='wait' initial={false}>
                 {currentStep && STEPS_COMPONENTS[currentStep]}
               </AnimatePresence>
 
               <AnimatePresence>
                 {!isSidebarOpen && SidebarToggler('expand')}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             <AnimatePresence>
               {isSidebarOpen && (
                 <motion.div
                   className='main-page__sidebar'
-                  key={`collapse-${sidebarUuid}`}
+                  key={sidebarUuid}
+                  variants={sidebarAnimationVariants}
                   initial='collapsed'
                   animate='open'
                   exit='collapsed'
-                  variants={sidebarAnimationVariants}
-                  transition={{ duration: '0.75', ease: 'backInOut' }}
+                  transition={{
+                    duration: '0.75',
+                    delay: 0.5,
+                    ease: 'backInOut',
+                  }}
                 >
                   {SidebarContent}
                 </motion.div>
               )}
             </AnimatePresence>
-          </>
+          </LayoutGroup>
         )
       ) : (
-        <Loader />
+        <div className='main-page__loader-wrp main-page__content'>
+          <Loader className='main-page__loader' />
+        </div>
       )}
     </div>
   )

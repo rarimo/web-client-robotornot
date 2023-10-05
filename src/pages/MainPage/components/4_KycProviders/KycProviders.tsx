@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useState } from 'react'
 
 import { useKycContext } from '@/contexts'
@@ -46,7 +47,7 @@ const KycProviders: FC<StepProps> = ({
   )
 
   return (
-    <div className={['kyc-providers', className].join(' ')} {...rest}>
+    <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
       <h2 className='kyc-providers__title'>
         {`Add identity management to your wallet`}
       </h2>
@@ -64,7 +65,7 @@ const KycProviders: FC<StepProps> = ({
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

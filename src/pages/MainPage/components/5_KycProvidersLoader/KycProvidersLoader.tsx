@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import isEmpty from 'lodash/isEmpty'
 import { type FC, useEffect } from 'react'
 
@@ -20,9 +21,9 @@ const KycProvidersLoader: FC<StepProps> = ({
   }, [nextStepCb, verifiableCredentials])
 
   return (
-    <div className={['kyc-providers', className].join(' ')} {...rest}>
+    <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
       {'Loading...'}
-    </div>
+    </motion.div>
   )
 }
 

@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useState } from 'react'
 
 import { AppButton } from '@/common'
@@ -38,7 +39,7 @@ const ProofSubmitting: FC<StepProps> = ({
   }, [nextStepCb, onErrorCb, selectedChainToPublish, submitZkp])
 
   return (
-    <div className={['proof-submitting', className].join(' ')} {...rest}>
+    <motion.div className={['proof-submitting', className].join(' ')} {...rest}>
       <AppButton
         iconLeft={ICON_NAMES.metamask}
         text={`Submit Proof`}
@@ -46,7 +47,7 @@ const ProofSubmitting: FC<StepProps> = ({
         onClick={requestSubmitZkp}
         isDisabled={isPending}
       />
-    </div>
+    </motion.div>
   )
 }
 

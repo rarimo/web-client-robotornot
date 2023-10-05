@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import { type FC, useEffect } from 'react'
 
 import { useZkpContext } from '@/contexts'
@@ -19,9 +20,12 @@ const ProofSubmittingLoader: FC<StepProps> = ({
   }, [isUserSubmittedZkp, nextStepCb])
 
   return (
-    <div className={['proof-submitting-loader', className].join(' ')} {...rest}>
+    <motion.div
+      className={['proof-submitting-loader', className].join(' ')}
+      {...rest}
+    >
       {`ProofSubmittingLoader`}
-    </div>
+    </motion.div>
   )
 }
 

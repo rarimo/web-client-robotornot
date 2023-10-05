@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect } from 'react'
 
 import { AppButton, Icon } from '@/common'
@@ -28,7 +29,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   }, [isSnapInstalled, nextStepCb])
 
   return (
-    <div className={['snap-connection', className].join(' ')} {...rest}>
+    <motion.div className={['snap-connection', className].join(' ')} {...rest}>
       <div className='app__badge snap-connection__badge'>
         <div className='app__badge-item'>
           <Icon
@@ -71,7 +72,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

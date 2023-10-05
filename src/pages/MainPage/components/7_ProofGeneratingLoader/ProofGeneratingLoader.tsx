@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import isEmpty from 'lodash/isEmpty'
 import { type FC, useEffect } from 'react'
 
@@ -20,9 +21,12 @@ const ProofGeneratingLoader: FC<StepProps> = ({
   }, [nextStepCb, zkProof])
 
   return (
-    <div className={['proof-generating-loader', className].join(' ')} {...rest}>
+    <motion.div
+      className={['proof-generating-loader', className].join(' ')}
+      {...rest}
+    >
       {`proof-generating-loader`}
-    </div>
+    </motion.div>
   )
 }
 

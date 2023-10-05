@@ -1,6 +1,7 @@
 import './styles.scss'
 
 import { config } from '@config'
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useState } from 'react'
 
 import { AppButton } from '@/common'
@@ -87,14 +88,14 @@ const ProofGenerating: FC<StepProps> = ({
   }, [checkIsIdentityProved, getZkProof, nextStepCb, onErrorCb])
 
   return (
-    <div className={['proof-generating', className].join(' ')} {...rest}>
+    <motion.div className={['proof-generating', className].join(' ')} {...rest}>
       <AppButton
         text={`Generate proof`}
         modification='border-circle'
         onClick={handleGenerateProof}
         isDisabled={isPending}
       />
-    </div>
+    </motion.div>
   )
 }
 
