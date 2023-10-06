@@ -113,7 +113,10 @@ $media-breakpoints: (
   position: relative;
   display: flex;
   align-items: center;
+  border-radius: toRem(12);
   background: var(--background-secondary-main);
+  box-shadow: toRem(0) toRem(5) toRem(14) toRem(0) rgba(0, 0, 0, 0.04),
+    toRem(0) toRem(1) toRem(1) toRem(0) rgba(0, 0, 0, 0.05),
+    toRem(0) toRem(6) toRem(24) toRem(0) rgba(0, 0, 0, 0.03);
   padding: toRem(24);
-  border: toRem(1) solid var(--border-primary-main);
 }

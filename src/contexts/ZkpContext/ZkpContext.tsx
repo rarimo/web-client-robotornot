@@ -1,5 +1,6 @@
 import { config, SUPPORTED_CHAINS } from '@config'
 import { RuntimeError } from '@distributedlab/tools'
+import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
 import type { ZKProof } from '@iden3/js-jwz'
@@ -50,6 +51,8 @@ interface ZkpContextValue {
   isUserSubmittedZkp: boolean
   zkProof?: ZKProof
 
+  txSubmitExplorerLink: string
+
   isClaimOfferExists: (
     _identityIdString?: string,
     triesLimit?: number,
@@ -68,6 +71,8 @@ interface ZkpContextValue {
 export const zkpContext = createContext<ZkpContextValue>({
   identityIdString: '',
   identityBigIntString: '',
+
+  txSubmitExplorerLink: '',
 
   verifiableCredentials: undefined,
 
@@ -110,6 +115,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
   const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<W3CCredential>('vc', undefined)
   const [identityIdString, setIdentityIdString] = useState('')
+  const [txSubmitHash, setTxSubmitHash] = useState('')
   /* eslint-enable */
   /* prettier-ignore-end */
 
@@ -123,6 +129,17 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     return DID.parse(`did:iden3:${identityIdString}`).id.bigInt().toString()
   }, [identityIdString])
+
+  const txSubmitExplorerLink = useMemo(() => {
+    if (!txSubmitHash || !provider?.getTxUrl) return ''
+
+    const explorerTxUrl = provider.getTxUrl(
+      config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
+      txSubmitHash,
+    )
+
+    return explorerTxUrl || ''
+  }, [provider, txSubmitHash])
 
   const createIdentity = useCallback(async () => {
     if (identityIdString) return identityIdString
@@ -339,7 +356,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           ),
         }
 
-        await provider?.signAndSendTx?.({
+        const txReceipt = (await provider?.signAndSendTx?.({
           ...txBody,
           gasLimit: await increaseGasLimit(
             provider?.address,
@@ -347,7 +364,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
             txBody,
             1.5,
           ),
-        })
+        })) as EthTransactionResponse
+
+        setTxSubmitHash(txReceipt?.transactionHash)
 
         setIsUserSubmittedZkp(true)
 
@@ -384,6 +403,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         isProveRequestPending,
         isUserSubmittedZkp,
         zkProof,
+
+        txSubmitExplorerLink,
 
         isClaimOfferExists,
         getClaimOffer,

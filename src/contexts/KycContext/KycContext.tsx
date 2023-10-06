@@ -122,6 +122,8 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
 }
 
 interface KycContextValue {
+  selectedKycProvider?: SUPPORTED_KYC_PROVIDERS
+
   authorizedKycResponse: unknown | undefined
   selectedKycDetails: [string, string][]
   kycError?: JsonApiError
@@ -527,6 +529,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       <kycContext.Provider
         {...rest}
         value={{
+          selectedKycProvider,
+
           authorizedKycResponse,
           selectedKycDetails,
           kycError,

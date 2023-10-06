@@ -21,9 +21,9 @@ $background-secondary-dark-rgb: hexToRGB($background-secondary-dark);
 
 /* status colors */
 
-$success-light: #3044fe1a;
-$success-main: #3044fe;
-$success-dark: #3044fe;
+$success-light: #d6f4de;
+$success-main: #2ca74b;
+$success-dark: #2ca74b;
 
 $error-light: #fff2f2;
 $error-main: #dd2e2e;
@@ -78,9 +78,9 @@ $text-secondary-invert-dark: rgba(#fffbfe, 0.5);
 
 /* border colors */
 
-$border-primary-light: rgba(0, 0, 0, 0.1);
-$border-primary-main: rgba(0, 0, 0, 0.1);
-$border-primary-dark: rgba(0, 0, 0, 0.1);
+$border-primary-light: #ebecef;
+$border-primary-main: #ebecef;
+$border-primary-dark: #ebecef;
 
 $border-secondary-light: #e0e0ec;
 $border-secondary-main: #c4c4d0;

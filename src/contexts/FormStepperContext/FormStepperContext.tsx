@@ -165,7 +165,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const stepsProgress = useMemo(() => {
     const steps = Object.values(Steps)
 
-    return (steps.findIndex(step => step === currentStep) / steps.length) * 100
+    return (
+      ((steps.findIndex(step => step === currentStep) + 1) / steps.length) * 100
+    )
   }, [currentStep])
 
   const detectStartStep = useCallback(() => {
@@ -478,7 +480,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    setCurrentStep(detectStartStep())
+    // setCurrentStep(detectStartStep())
+    setCurrentStep(Steps.ProofSubmittedStep)
 
     setIsInitialized(true)
   }, [detectStartStep, isInitialized, isLoaded])
