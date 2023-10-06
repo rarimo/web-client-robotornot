@@ -4,8 +4,8 @@ import { config } from '@config'
 import { motion } from 'framer-motion'
 import { type FC, useCallback, useState } from 'react'
 
-import { AppButton } from '@/common'
-import { useWeb3Context, useZkpContext } from '@/contexts'
+import { AppButton, Loader } from '@/common'
+import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -26,6 +26,7 @@ const ProofGenerating: FC<StepProps> = ({
 
   const { provider } = useWeb3Context()
   const { identityBigIntString, getZkProof } = useZkpContext()
+  const { isVCRequestPending } = useKycContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
     config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
@@ -89,11 +90,12 @@ const ProofGenerating: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-generating', className].join(' ')} {...rest}>
+      {isVCRequestPending && <Loader />}
       <AppButton
         text={`Generate proof`}
         modification='border-circle'
         onClick={handleGenerateProof}
-        isDisabled={isPending}
+        isDisabled={isPending || isVCRequestPending}
       />
     </motion.div>
   )
