@@ -83,8 +83,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
           <ErrorMessage message={`Ooops... something went wrong`} />
         ) : (
           <LayoutGroup>
-            <h3>{stepsProgress}</h3>
-
             <motion.div
               className='main-page__content'
               key={mainContentUuid}
@@ -97,6 +95,17 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
                 ease: 'backInOut',
               }}
             >
+              <motion.div
+                className='main-page__steps-indicator'
+                animate={{
+                  width: `${stepsProgress}%`,
+                }}
+                transition={{
+                  duration: '0.5',
+                  ease: 'backInOut',
+                }}
+              />
+
               <AnimatePresence mode='wait' initial={false}>
                 {StepComponent}
               </AnimatePresence>
