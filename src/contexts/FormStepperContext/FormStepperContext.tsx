@@ -3,6 +3,7 @@ import {
   FC,
   HTMLAttributes,
   lazy,
+  memo,
   ReactElement,
   useCallback,
   useEffect,
@@ -480,8 +481,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    // setCurrentStep(detectStartStep())
-    setCurrentStep(Steps.ProofSubmittedStep)
+    setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
   }, [detectStartStep, isInitialized, isLoaded])
@@ -508,4 +508,4 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   )
 }
 
-export default FormStepperContextProvider
+export default memo(FormStepperContextProvider)

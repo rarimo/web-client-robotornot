@@ -6,7 +6,6 @@ import { type FC, useCallback, useState } from 'react'
 
 import { AppButton } from '@/common'
 import { useZkpContext } from '@/contexts'
-import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
@@ -40,9 +39,29 @@ const ProofSubmitting: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-submitting', className].join(' ')} {...rest}>
+      <div className='proof-submitting__flow'>
+        <div className='proof-submitting__flow-item'>
+          <div className='proof-submitting__flow-item-icon' />
+        </div>
+        {/*TODO: replace by motion.path*/}
+        <div className='proof-submitting__flow-line' />
+        <div className='proof-submitting__flow-item'>
+          <div className='proof-submitting__flow-item-icon' />
+        </div>
+        <div className='proof-submitting__flow-line' />
+        <div className='proof-submitting__flow-item'>
+          <div className='proof-submitting__flow-item-icon' />
+        </div>
+      </div>
+
+      <h2 className='proof-submitting__title'>{`Share proof with Galxe`}</h2>
+
+      <span className='proof-submitting__subtitle'>
+        {`Submitting a proof via blockchain`}
+      </span>
+
       <AppButton
-        iconLeft={ICON_NAMES.metamask}
-        text={`Submit Proof`}
+        text={`Share`}
         modification='border-circle'
         onClick={requestSubmitZkp}
         isDisabled={isPending}
