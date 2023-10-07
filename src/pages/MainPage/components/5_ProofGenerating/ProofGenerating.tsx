@@ -4,7 +4,7 @@ import { config } from '@config'
 import { motion } from 'framer-motion'
 import { type FC, useCallback, useState } from 'react'
 
-import { AppButton, Loader } from '@/common'
+import { AppButton, ProgressLoader } from '@/common'
 import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
 import {
   bus,
@@ -25,8 +25,9 @@ const ProofGenerating: FC<StepProps> = ({
   const [isPending, setIsPending] = useState(false)
 
   const { provider } = useWeb3Context()
-  const { identityBigIntString, getZkProof } = useZkpContext()
-  const { isVCRequestPending } = useKycContext()
+  const { identityBigIntString, verifiableCredentials, getZkProof } =
+    useZkpContext()
+  const { isVCRequestPending, isKycFinished } = useKycContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
     config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
@@ -90,7 +91,16 @@ const ProofGenerating: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-generating', className].join(' ')} {...rest}>
-      {isVCRequestPending && <Loader />}
+      <ProgressLoader
+        className='proof-generating__progress'
+        checkpoints={[50, 100]}
+        checkpointIndex={
+          isKycFinished ? (verifiableCredentials ? 1 : 0) : undefined
+        }
+        delay={500}
+        variant='skeleton'
+      />
+      <h2 className='proof-generating__title'>{`Proof of Human`}</h2>
       <AppButton
         text={`Generate proof`}
         modification='border-circle'

@@ -1,0 +1,46 @@
+.progress-loader-skeleton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  gap: toRem(8);
+
+  @include card;
+
+  @include static-icon-size(168);
+}
+
+.progress-loader-skeleton__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--primary-main);
+  margin-bottom: toRem(8);
+
+  @include static-icon-size(48);
+}
+
+.progress-loader-skeleton__icon {
+  color: var(--text-primary-invert-main);
+
+  @include static-icon-size(48);
+}
+
+.progress-loader-skeleton__item {
+  align-self: center;
+
+  &:nth-child(2) {
+    width: 75%;
+    margin-bottom: toRem(4);
+  }
+
+  &:nth-child(3) {
+    width: 99%;
+  }
+
+  &:nth-child(4) {
+    width: 95%;
+  }
+}
