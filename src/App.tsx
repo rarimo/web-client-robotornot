@@ -9,7 +9,7 @@ import {
 import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
-import { AppFooter, AppNavbar, Loader } from '@/common'
+import { AppFooter, AppNavbar, Loader, WordsFindGame } from '@/common'
 import {
   useMetamaskZkpSnapContext,
   useWeb3Context,
@@ -23,6 +23,17 @@ import {
   gaSendCustomEvent,
 } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
+const words = [
+  'bitcoin',
+  'luna',
+  'car',
+  'rarimo',
+  'moon',
+  'doge',
+  'coin',
+  'ether',
+  'play',
+]
 
 const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   useViewportSizes()
@@ -100,7 +111,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   return (
     <ZkpContextProvider>
       <AppNavbar />
-
+      <WordsFindGame words={words} rows={10} cols={10} />
       <div className='app__main'>
         {isAppInitialized ? children : <Loader />}
       </div>
