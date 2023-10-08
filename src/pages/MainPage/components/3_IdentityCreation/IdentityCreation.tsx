@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
@@ -36,7 +37,10 @@ const IdentityCreation: FC<StepProps> = ({
   }, [identityIdString, nextStepCb])
 
   return (
-    <div className={['identity-creation', className].join(' ')} {...rest}>
+    <motion.div
+      className={['identity-creation', className].join(' ')}
+      {...rest}
+    >
       <h2 className='identity-creation identity-creation__title'>{`Welcome!`}</h2>
 
       <span className='app__step-subtitle identity-creation__subtitle'>
@@ -65,7 +69,7 @@ const IdentityCreation: FC<StepProps> = ({
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

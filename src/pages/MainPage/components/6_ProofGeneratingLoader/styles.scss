@@ -1,0 +1,13 @@
+.proof-generating-loader {
+  align-items: center;
+  gap: toRem(16);
+}
+
+.proof-generating-loader__title {
+  text-align: center;
+  font-size: toRem(32);
+}
+
+.proof-generating-loader__subtitle {
+  text-align: center;
+}

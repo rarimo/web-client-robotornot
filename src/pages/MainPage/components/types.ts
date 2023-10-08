@@ -1,6 +1,10 @@
+import { MotionProps } from 'framer-motion'
 import { HTMLAttributes } from 'react'
 
-export interface StepProps extends HTMLAttributes<HTMLDivElement> {
-  nextStepCb: () => void
-  onErrorCb?: (error: Error) => void
-}
+export type StepProps = HTMLAttributes<HTMLDivElement> &
+  MotionProps & {
+    nextStepCb: () => void
+    onErrorCb?: (error: Error) => void
+  }
+
+export type SidebarProps = HTMLAttributes<HTMLDivElement> & MotionProps

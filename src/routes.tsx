@@ -8,7 +8,12 @@ import {
 } from 'react-router-dom'
 
 import App from '@/App'
-import { KycContextProvider, Web3ProviderContextProvider } from '@/contexts'
+import {
+  KycContextProvider,
+  Web3ProviderContextProvider,
+  ZkpContextProvider,
+} from '@/contexts'
+import FormStepperContextProvider from '@/contexts/FormStepperContext'
 import MetamaskZkpSnapContextProvider from '@/contexts/MetamaskZkpSnapContext'
 import { RoutesPaths } from '@/enums'
 
@@ -24,11 +29,13 @@ export const AppRoutes = () => {
             <MetamaskZkpSnapContextProvider>
               <App>
                 <AnimatePresence>
-                  <KycContextProvider>
-                    <AnimatePresence>
-                      <Outlet />
-                    </AnimatePresence>
-                  </KycContextProvider>
+                  <ZkpContextProvider>
+                    <KycContextProvider>
+                      <AnimatePresence>
+                        <Outlet />
+                      </AnimatePresence>
+                    </KycContextProvider>
+                  </ZkpContextProvider>
                 </AnimatePresence>
               </App>
             </MetamaskZkpSnapContextProvider>
@@ -38,7 +45,11 @@ export const AppRoutes = () => {
       children: [
         {
           path: RoutesPaths.Main,
-          element: <MainPage />,
+          element: (
+            <FormStepperContextProvider>
+              <MainPage />
+            </FormStepperContextProvider>
+          ),
         },
 
         {

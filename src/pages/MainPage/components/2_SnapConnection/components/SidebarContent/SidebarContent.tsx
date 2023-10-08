@@ -1,10 +1,11 @@
-import { FC, HTMLAttributes } from 'react'
+import { motion } from 'framer-motion'
+import { FC } from 'react'
 
-type Props = HTMLAttributes<HTMLDivElement>
+import { SidebarProps } from '@/pages/MainPage/components/types'
 
-const SidebarContent: FC<Props> = ({ className, ...rest }) => {
+const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   return (
-    <div
+    <motion.div
       className={[
         'sidebar-content',
         'app__step-sidebar-content',
@@ -29,7 +30,7 @@ const SidebarContent: FC<Props> = ({ className, ...rest }) => {
       <p className='app__step-sidebar-content-text'>
         {`Is not that cool? Same wallet for managing your Crypto and identity`}
       </p>
-    </div>
+    </motion.div>
   )
 }
 

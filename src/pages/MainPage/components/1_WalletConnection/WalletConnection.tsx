@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
+import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useMemo } from 'react'
 
 import { AppButton, Icon } from '@/common'
@@ -74,7 +75,10 @@ const WalletConnection: FC<StepProps> = ({
   }, [isValidChain, nextStepCb, provider?.isConnected])
 
   return (
-    <div className={['wallet-connection', className].join(' ')} {...rest}>
+    <motion.div
+      className={['wallet-connection', className].join(' ')}
+      {...rest}
+    >
       <div className='app__badge'>
         <div className='app__badge-item'>
           <Icon className='app__badge-item-icon' name={ICON_NAMES.metamask} />
@@ -130,7 +134,7 @@ const WalletConnection: FC<StepProps> = ({
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

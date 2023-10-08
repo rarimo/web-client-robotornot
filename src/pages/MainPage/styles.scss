@@ -3,12 +3,27 @@
 }
 
 .main-page__content {
+  overflow: hidden;
   display: flex;
   position: relative;
   background: rgba(var(--background-secondary-main-rgb), 0.9);
   border: toRem(1) solid var(--background-secondary-main);
   border-radius: toRem(16);
   backdrop-filter: blur(#{toRem(18)});
+  flex: 1;
+}
+
+.main-page__step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: toRem(56);
+  padding-right: toRem(56);
   flex: 1;
 }
 
@@ -46,11 +61,14 @@
   @include static-icon-size(20);
 }
 
-.main-page__step {
+.main-page__loader-wrp {
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  padding-left: toRem(56);
+  align-items: center;
   flex: 1;
 }
 
+.main-page__steps-indicator {
+  background: var(--primary-main);
+  height: toRem(2);
+}

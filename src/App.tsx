@@ -10,11 +10,7 @@ import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 import { AppFooter, AppNavbar, Loader, WordsFindGame } from '@/common'
-import {
-  useMetamaskZkpSnapContext,
-  useWeb3Context,
-  ZkpContextProvider,
-} from '@/contexts'
+import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -109,7 +105,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   }, [location])
 
   return (
-    <ZkpContextProvider>
+    <>
       <AppNavbar />
       <WordsFindGame words={words} rows={10} cols={10} />
       <div className='app__main'>
@@ -118,7 +114,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
       <AppFooter />
       <ToastContainer />
-    </ZkpContextProvider>
+    </>
   )
 }
 

@@ -1,0 +1,26 @@
+.progress-loader-pulse {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  @include card;
+
+  @include static-icon-size(168);
+}
+
+.progress-loader-pulse__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--primary-main);
+
+  @include static-icon-size(70);
+}
+
+.progress-loader-pulse__icon {
+  color: var(--text-primary-invert-main);
+
+  @include static-icon-size(36);
+}

@@ -18,12 +18,19 @@
   }
 }
 
+.kyc-providers-item__icon-wrp {
+  $local-z-index: 1;
+
+  margin-left: auto;
+  cursor: pointer;
+  z-index: $local-z-index;
+}
+
 .kyc-providers-item__icon {
   @include static-icon-size(48);
 
   &--decor {
-    margin-left: auto;
-    color: var(--text-secondary-main);
+    color: var(--text-primary-main);
 
     @include static-icon-size(20);
   }
