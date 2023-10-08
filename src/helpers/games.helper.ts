@@ -108,10 +108,20 @@ export const checkExistsCord = (
   return false
 }
 
-export const isVerticalMove = (prevState: Cell, state: Cell) => {
-  return prevState.row !== state.row && prevState.row !== -1
-}
-
-export const isHorizontalMove = (prevState: Cell, state: Cell) => {
-  return prevState.col !== state.col && prevState.col !== -1
+export const mouseMoveAlign = (prevState: Cell, state: Cell) => {
+  if (prevState.col === -1 && prevState.row === -1) return 'default'
+  if (prevState.row !== state.row) {
+    if (prevState.row > state.row) {
+      return 'left'
+    } else {
+      return 'right'
+    }
+  } else if (prevState.col !== state.col) {
+    if (prevState.col > state.col) {
+      return 'up'
+    } else {
+      return 'down'
+    }
+  }
+  return 'default'
 }

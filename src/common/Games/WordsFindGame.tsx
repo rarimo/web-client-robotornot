@@ -12,12 +12,7 @@ import {
   SQUARE_SIZE,
   whiteColor,
 } from '@/consts'
-import {
-  checkExistsCord,
-  createWordMatrix,
-  isHorizontalMove,
-  isVerticalMove,
-} from '@/helpers'
+import { checkExistsCord, createWordMatrix, mouseMoveAlign } from '@/helpers'
 
 type Props = {
   words: string[]
@@ -51,6 +46,9 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
   let successfulCords: Cell[] = []
   let prevState = { col: -1, row: -1 }
   let state: Cell
+
+  const isHorizontalValue = ['left', 'right']
+  const isVerticalValue = ['up', 'down']
 
   const width = useMemo(() => {
     return 2 * DEFAULT_PADDING + (SQUARE_PADDING + SQUARE_SIZE) * cols
@@ -133,17 +131,22 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
       return
     } else if (!checkExistsCord(row, col, successfulCords)) {
       ctx.fillStyle = greenColor
+      const direction = mouseMoveAlign(prevState, state)
       ctx.fillRect(
-        isVerticalMove(prevState, state)
-          ? DEFAULT_PADDING + row * SQUARE_SIZE + (row - 1) * SQUARE_PADDING
+        isHorizontalValue.includes(direction)
+          ? DEFAULT_PADDING +
+              row * SQUARE_SIZE +
+              (row + (direction === 'right' ? -1 : 0)) * SQUARE_PADDING
           : DEFAULT_PADDING + row * SQUARE_SIZE + row * SQUARE_PADDING,
-        isHorizontalMove(prevState, state)
-          ? DEFAULT_PADDING + col * SQUARE_SIZE + (col - 1) * SQUARE_PADDING
+        isVerticalValue.includes(direction)
+          ? DEFAULT_PADDING +
+              col * SQUARE_SIZE +
+              (col + (direction === 'down' ? -1 : 0)) * SQUARE_PADDING
           : DEFAULT_PADDING + col * SQUARE_SIZE + col * SQUARE_PADDING,
-        isVerticalMove(prevState, state)
+        isHorizontalValue.includes(direction)
           ? SQUARE_SIZE + SQUARE_PADDING
           : SQUARE_SIZE,
-        isHorizontalMove(prevState, state)
+        isVerticalValue.includes(direction)
           ? SQUARE_SIZE + SQUARE_PADDING
           : SQUARE_SIZE,
       )
