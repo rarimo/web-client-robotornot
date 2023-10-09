@@ -4,6 +4,7 @@ import { AnimatePresence, motion, type MotionProps } from 'framer-motion'
 import { FC, HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
 import { useInterval } from 'react-use'
 
+import { ICON_NAMES } from '@/enums'
 import { sleep } from '@/helpers'
 
 import { ProgressLoaderPulse, ProgressLoaderSkeleton } from './components'
@@ -14,6 +15,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   checkpointIndex: number | undefined
   finishCb?: () => void
   variant?: 'pulse' | 'skeleton'
+  iconNameOrImgUrl?: ICON_NAMES | string
 } & MotionProps
 
 const ProgressLoader: FC<Props> = ({
@@ -22,6 +24,7 @@ const ProgressLoader: FC<Props> = ({
   checkpointIndex,
   finishCb,
   variant = 'pulse',
+  iconNameOrImgUrl,
   ...rest
 }) => {
   const progressBarEl = useRef<HTMLDivElement>(null)
@@ -39,6 +42,7 @@ const ProgressLoader: FC<Props> = ({
 
   const border = useMemo(
     () =>
+      // FIXME
       typeof checkpointIndex !== 'undefined'
         ? checkpoints?.[checkpointIndex + 1]
         : checkpoints?.[0],
@@ -83,6 +87,7 @@ const ProgressLoader: FC<Props> = ({
             await sleep(500)
             finishCb?.()
           }}
+          iconNameOrImgUrl={iconNameOrImgUrl}
         />
 
         <span className='progress-loader__progress'>{`${progress}%`}</span>

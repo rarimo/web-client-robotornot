@@ -3,12 +3,12 @@ $civic-brand-color: #ff6b4e;
 .kyc-provider-civic__modal {
   --basic-modal-max-width: #{toRem(500)};
 
-  width: clamp(toRem(100), 100%, var(--basic-modal-max-width));
   padding: 0;
 }
 
 .kyc-provider-civic__modal-body {
   display: flex;
+  justify-content: center;
   align-items: center;
   width: 100%;
   padding: toRem(8);

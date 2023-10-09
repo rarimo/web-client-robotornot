@@ -27,7 +27,12 @@ const ProofGenerating: FC<StepProps> = ({
   const { provider } = useWeb3Context()
   const { identityBigIntString, verifiableCredentials, getZkProof } =
     useZkpContext()
-  const { isVCRequestPending, isKycFinished } = useKycContext()
+  const {
+    isVCRequestPending,
+    isKycFinished,
+    selectedKycProvider,
+    KYC_PROVIDERS_DETAILS_MAP,
+  } = useKycContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
     config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
@@ -99,6 +104,10 @@ const ProofGenerating: FC<StepProps> = ({
         }
         delay={500}
         variant='skeleton'
+        iconNameOrImgUrl={
+          selectedKycProvider &&
+          KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].iconName
+        }
       />
       <h2 className='proof-generating__title'>{`Proof of Human`}</h2>
       <AppButton
