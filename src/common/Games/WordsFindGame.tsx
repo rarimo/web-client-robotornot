@@ -6,8 +6,12 @@ import {
   blackColor,
   BORDER_RADIUS,
   DEFAULT_PADDING,
+  FONT_SIZE,
   greenColor,
   greyColor,
+  LETTER_PADDING_X,
+  LETTER_PADDING_Y,
+  SECTION_PADDING,
   SQUARE_PADDING,
   SQUARE_SIZE,
   whiteColor,
@@ -18,6 +22,7 @@ type Props = {
   words: string[]
   rows: number
   cols: number
+  setSuccess: (successWords: number) => void
 }
 
 type Cell = {
@@ -35,7 +40,10 @@ interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
   ): CanvasRenderingContext2D
 }
 
-const WordsFindGame = ({ words, rows, cols }: Props) => {
+const isHorizontalValue = ['left', 'right']
+const isVerticalValue = ['up', 'down']
+
+const WordsFindGame = ({ words, rows, cols, setSuccess }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
   const [successfulWordsCount, setSuccessfulWordsCount] = useState(0)
 
@@ -46,28 +54,62 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
   let successfulCords: Cell[] = []
   let prevState = { col: -1, row: -1 }
   let state: Cell
+  const sideBarBlock = document.querySelector('.sidebar-content')
+  const blockWidth =
+    (sideBarBlock &&
+      sideBarBlock.getBoundingClientRect().width - SECTION_PADDING) ??
+    0
 
-  const isHorizontalValue = ['left', 'right']
-  const isVerticalValue = ['up', 'down']
+  const canvasWidth =
+    2 * DEFAULT_PADDING + (SQUARE_PADDING + SQUARE_SIZE) * cols
+
+  const resizeGameRatio = useMemo(() => {
+    const ratio = blockWidth / canvasWidth
+    return ratio >= 1 ? 2 : 2 * ratio
+  }, [canvasWidth, blockWidth])
+
+  const squareSize = useMemo(() => {
+    return SQUARE_SIZE * resizeGameRatio
+  }, [resizeGameRatio])
+
+  const squarePadding = useMemo(() => {
+    return SQUARE_PADDING * resizeGameRatio
+  }, [resizeGameRatio])
+
+  const defaultPadding = useMemo(() => {
+    return DEFAULT_PADDING * resizeGameRatio
+  }, [resizeGameRatio])
+
+  const letterPaddingX = useMemo(() => {
+    return LETTER_PADDING_X * resizeGameRatio
+  }, [resizeGameRatio])
+
+  const letterPaddingY = useMemo(() => {
+    return LETTER_PADDING_Y * resizeGameRatio
+  }, [resizeGameRatio])
 
   const width = useMemo(() => {
-    return 2 * DEFAULT_PADDING + (SQUARE_PADDING + SQUARE_SIZE) * cols
-  }, [cols])
+    return blockWidth < canvasWidth ? 2 * blockWidth : 2 * canvasWidth
+  }, [blockWidth, canvasWidth])
 
   const height = useMemo(() => {
-    return 2 * DEFAULT_PADDING + (SQUARE_PADDING + SQUARE_SIZE) * rows
-  }, [rows])
+    return (
+      2 *
+      ((2 * DEFAULT_PADDING + (SQUARE_PADDING + SQUARE_SIZE) * rows) *
+        resizeGameRatio)
+    )
+  }, [rows, resizeGameRatio])
 
   const matrix = useMemo(() => {
     return createWordMatrix(words, rows, cols)
   }, [words, cols, rows])
 
   const fillActiveSquare = (event: MouseEvent) => {
-    const row = Math.trunc(
-      (event.offsetX - DEFAULT_PADDING) / (SQUARE_SIZE + SQUARE_PADDING),
-    )
     const col = Math.trunc(
-      (event.offsetY - DEFAULT_PADDING) / (SQUARE_SIZE + SQUARE_PADDING),
+      (event.offsetX - defaultPadding) / ((squareSize + squarePadding) / 2),
+    )
+    const row = Math.trunc(
+      (event.offsetY - defaultPadding) / ((squareSize + squarePadding) / 2),
     )
     if (col === cols || row === rows) return
     state = { row, col }
@@ -79,52 +121,50 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
     ) {
       if (!checkExistsCord(prevState.row, prevState.col, successfulCords)) {
         ctx.fillStyle = blackColor
-        // console.log(...arrResultCords)
         ctx.fillRect(
-          DEFAULT_PADDING +
-            prevState.row * SQUARE_SIZE +
-            (prevState.row - 1) * SQUARE_PADDING,
-          DEFAULT_PADDING +
-            prevState.col * SQUARE_SIZE +
-            (prevState.col - 1) * SQUARE_PADDING,
+          defaultPadding +
+            prevState.col * squareSize +
+            (prevState.col - 1) * squarePadding,
+          defaultPadding +
+            prevState.row * squareSize +
+            (prevState.row - 1) * squarePadding,
           checkExistsCord(prevState.row, prevState.col, successfulCords)
             ? 0
-            : SQUARE_SIZE + 2 * SQUARE_PADDING,
+            : squareSize + 2 * squarePadding,
           checkExistsCord(prevState.row, prevState.col, successfulCords)
             ? 0
-            : SQUARE_SIZE + 2 * SQUARE_PADDING,
+            : squareSize + 2 * squarePadding,
         )
         ctx.fillStyle = greyColor
         ctx
           .roundRect(
-            DEFAULT_PADDING +
-              prevState.row * SQUARE_SIZE +
-              prevState.row * SQUARE_PADDING,
-            DEFAULT_PADDING +
-              prevState.col * SQUARE_SIZE +
-              prevState.col * SQUARE_PADDING,
-            SQUARE_SIZE,
-            SQUARE_SIZE,
+            defaultPadding +
+              prevState.col * squareSize +
+              prevState.col * squarePadding,
+            defaultPadding +
+              prevState.row * squareSize +
+              prevState.row * squarePadding,
+            squareSize,
+            squareSize,
             BORDER_RADIUS,
           )
           .fill()
         ctx.fillStyle = whiteColor
         ctx.fillText(
-          matrix[prevState.col][prevState.row],
-          DEFAULT_PADDING +
-            20 +
-            prevState.row * SQUARE_SIZE +
-            prevState.row * SQUARE_PADDING,
-          DEFAULT_PADDING +
-            30 +
-            prevState.col * SQUARE_SIZE +
-            prevState.col * SQUARE_PADDING,
+          matrix[prevState.row][prevState.col],
+          defaultPadding +
+            letterPaddingX +
+            prevState.col * squareSize +
+            prevState.col * squarePadding,
+          defaultPadding +
+            letterPaddingY +
+            prevState.row * squareSize +
+            prevState.row * squarePadding,
         )
       }
       const el = arrResultCords.findIndex(
         obj => obj.row === prevState.row && obj.col === prevState.col,
       )
-      // console.log({ el })
       arrResult.splice(el, 1)
       arrResultCords.splice(el, 1)
       prevState = state
@@ -133,33 +173,33 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
       ctx.fillStyle = greenColor
       const direction = mouseMoveAlign(prevState, state)
       ctx.fillRect(
-        isHorizontalValue.includes(direction)
-          ? DEFAULT_PADDING +
-              row * SQUARE_SIZE +
-              (row + (direction === 'right' ? -1 : 0)) * SQUARE_PADDING
-          : DEFAULT_PADDING + row * SQUARE_SIZE + row * SQUARE_PADDING,
         isVerticalValue.includes(direction)
-          ? DEFAULT_PADDING +
-              col * SQUARE_SIZE +
-              (col + (direction === 'down' ? -1 : 0)) * SQUARE_PADDING
-          : DEFAULT_PADDING + col * SQUARE_SIZE + col * SQUARE_PADDING,
+          ? defaultPadding +
+              col * squareSize +
+              (col + (direction === 'down' ? -1 : 0)) * squarePadding
+          : defaultPadding + col * squareSize + col * squarePadding,
         isHorizontalValue.includes(direction)
-          ? SQUARE_SIZE + SQUARE_PADDING
-          : SQUARE_SIZE,
+          ? defaultPadding +
+              row * squareSize +
+              (row + (direction === 'right' ? -1 : 0)) * squarePadding
+          : defaultPadding + row * squareSize + row * squarePadding,
         isVerticalValue.includes(direction)
-          ? SQUARE_SIZE + SQUARE_PADDING
-          : SQUARE_SIZE,
+          ? squareSize + squarePadding
+          : squareSize,
+        isHorizontalValue.includes(direction)
+          ? squareSize + squarePadding
+          : squareSize,
       )
     }
 
     ctx.fillStyle = whiteColor
     ctx.fillText(
-      matrix[col][row],
-      DEFAULT_PADDING + 20 + row * SQUARE_SIZE + row * SQUARE_PADDING,
-      DEFAULT_PADDING + 30 + col * SQUARE_SIZE + col * SQUARE_PADDING,
+      matrix[row][col],
+      defaultPadding + letterPaddingX + col * squareSize + col * squarePadding,
+      defaultPadding + letterPaddingY + row * squareSize + row * squarePadding,
     )
     prevState = state
-    arrResult.push(matrix[col][row])
+    arrResult.push(matrix[row][col])
     arrResultCords.push({ col, row })
   }
 
@@ -179,30 +219,26 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
       for (const item of arrResultCords) {
         ctx.fillStyle = blackColor
         ctx.fillRect(
-          DEFAULT_PADDING +
-            item.row * SQUARE_SIZE +
-            (item.row - 1) * SQUARE_PADDING,
-          DEFAULT_PADDING +
-            item.col * SQUARE_SIZE +
-            (item.col - 1) * SQUARE_PADDING,
+          defaultPadding +
+            item.col * squareSize +
+            (item.col - 1) * squarePadding,
+          defaultPadding +
+            item.row * squareSize +
+            (item.row - 1) * squarePadding,
           checkExistsCord(item.row, item.col, successfulCords)
             ? 0
-            : SQUARE_SIZE + 2 * SQUARE_PADDING,
+            : squareSize + 2 * squarePadding,
           checkExistsCord(item.row, item.col, successfulCords)
             ? 0
-            : SQUARE_SIZE + 2 * SQUARE_PADDING,
+            : squareSize + 2 * squarePadding,
         )
         ctx.fillStyle = greyColor
         ctx
           .roundRect(
-            DEFAULT_PADDING +
-              item.row * SQUARE_SIZE +
-              item.row * SQUARE_PADDING,
-            DEFAULT_PADDING +
-              item.col * SQUARE_SIZE +
-              item.col * SQUARE_PADDING,
-            SQUARE_SIZE,
-            SQUARE_SIZE,
+            defaultPadding + item.col * squareSize + item.col * squarePadding,
+            defaultPadding + item.row * squareSize + item.row * squarePadding,
+            squareSize,
+            squareSize,
             BORDER_RADIUS,
           )
           .fill()
@@ -210,29 +246,25 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
           ctx.fillStyle = greenColor
           ctx
             .roundRect(
-              DEFAULT_PADDING +
-                item.row * SQUARE_SIZE +
-                item.row * SQUARE_PADDING,
-              DEFAULT_PADDING +
-                item.col * SQUARE_SIZE +
-                item.col * SQUARE_PADDING,
-              SQUARE_SIZE,
-              SQUARE_SIZE,
+              defaultPadding + item.col * squareSize + item.col * squarePadding,
+              defaultPadding + item.row * squareSize + item.row * squarePadding,
+              squareSize,
+              squareSize,
               BORDER_RADIUS,
             )
             .fill()
         }
         ctx.fillStyle = '#FFF'
         ctx.fillText(
-          matrix[item.col][item.row],
-          DEFAULT_PADDING +
-            20 +
-            item.row * SQUARE_SIZE +
-            item.row * SQUARE_PADDING,
-          DEFAULT_PADDING +
-            30 +
-            item.col * SQUARE_SIZE +
-            item.col * SQUARE_PADDING,
+          matrix[item.row][item.col],
+          defaultPadding +
+            letterPaddingX +
+            item.col * squareSize +
+            item.col * squarePadding,
+          defaultPadding +
+            letterPaddingY +
+            item.row * squareSize +
+            item.row * squarePadding,
         )
       }
     }
@@ -249,7 +281,7 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
   }
 
   useEffect(() => {
-    if (canvasRef.current) {
+    if (canvasRef.current && matrix.length && matrix[0].length) {
       CanvasRenderingContext2D.prototype.roundRect = function (
         x,
         y,
@@ -270,43 +302,55 @@ const WordsFindGame = ({ words, rows, cols }: Props) => {
         return this
       }
       const canvas = canvasRef.current
+      canvas.style.width = `${width / 2}px`
+      canvas.style.height = `${height / 2}px`
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
-      ctx.fillStyle = '#000'
+      ctx.fillStyle = blackColor
       ctx?.fillRect(0, 0, width, height)
-      ctx.font = '24px serif'
+      ctx.font = `${FONT_SIZE * resizeGameRatio}px Euclid Circular B`
       ctx.textAlign = 'center'
-
-      for (let row = 0; row < matrix.length; row += 1)
-        for (let col = 0; col < matrix[row].length; col += 1) {
+      for (let col = 0; col < matrix.length; col += 1)
+        for (let row = 0; row < matrix[col].length; row += 1) {
           ctx.fillStyle = '#2B2B2B'
           ctx.strokeStyle = ctx.fillStyle
           ctx
             .roundRect(
-              DEFAULT_PADDING + row * SQUARE_SIZE + row * SQUARE_PADDING,
-              DEFAULT_PADDING + col * SQUARE_SIZE + col * SQUARE_PADDING,
-              SQUARE_SIZE,
-              SQUARE_SIZE,
-              SQUARE_PADDING,
+              defaultPadding + row * squareSize + row * squarePadding,
+              defaultPadding + col * squareSize + col * squarePadding,
+              squareSize,
+              squareSize,
+              squarePadding,
             )
             .fill()
           ctx.fillStyle = '#FFF'
           ctx.fillText(
             matrix[col][row],
-            DEFAULT_PADDING + 20 + row * SQUARE_SIZE + row * SQUARE_PADDING,
-            DEFAULT_PADDING + 30 + col * SQUARE_SIZE + col * SQUARE_PADDING,
+            defaultPadding +
+              LETTER_PADDING_X * resizeGameRatio +
+              row * squareSize +
+              row * squarePadding,
+            defaultPadding +
+              LETTER_PADDING_Y * resizeGameRatio +
+              col * squareSize +
+              col * squarePadding,
           )
         }
       canvas?.addEventListener('mousedown', mouseDownHandler)
+
       return () => canvas?.removeEventListener('mousedown', mouseDownHandler)
     }
   }, [])
 
+  useEffect(() => {
+    setSuccess(successfulWordsCount)
+  }, [setSuccess, successfulWordsCount])
+
   return (
     <div className='word-find-game'>
-      <h3>
-        Found: {successfulWordsCount}/{words.length}
-      </h3>
+      <p className='word-find-game__text'>
+        {'Interactive game during the wait time'}
+      </p>
       <canvas ref={canvasRef} height={height} width={width} />
     </div>
   )

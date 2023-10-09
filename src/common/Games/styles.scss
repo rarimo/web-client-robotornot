@@ -1,7 +1,12 @@
 .word-find-game{
-  padding-left: 30%;
-  padding-bottom: toRem(100);
-  width: 100%;
-  background: white;
   position: relative;
+  background: var(--black);
+}
+
+.word-find-game__text{
+  margin-bottom: toRem(48);
+  margin-top: toRem(70);
+  color: var(--white);
+  font-size: var(--field-text-font-size);
+  text-align: center;
 }

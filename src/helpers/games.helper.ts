@@ -82,7 +82,7 @@ export function createWordMatrix(
     }
   }
 
-  const alphabet = '.'
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < columns; col++) {
       if (matrix[row][col] === null) {

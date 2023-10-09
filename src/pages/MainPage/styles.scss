@@ -42,6 +42,16 @@
   height: 100%;
 }
 
+.main-page__sidebar-content-game{
+  background: var(--black);
+}
+
+.main-page-sidebar-content-game-text{
+  color: var(--white);
+  font-weight: 600;
+  font-size: var(--field-text-font-size);
+}
+
 .main-page__content-sidebar-toggler-wrp {
   position: absolute;
   top: toRem(24);
