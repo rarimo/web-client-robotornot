@@ -252,4 +252,5 @@ export enum ICON_NAMES {
   sidebar = 'sidebar',
 
   rarimeSnap = 'rarime-snap',
+  rarimeSnapFilled = 'rarime-snap-filled',
 }

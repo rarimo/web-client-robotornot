@@ -109,13 +109,25 @@ const ProofGenerating: FC<StepProps> = ({
           KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].iconName
         }
       />
-      <h2 className='proof-generating__title'>{`Proof of Human`}</h2>
-      <AppButton
-        text={`Generate proof`}
-        modification='border-circle'
-        onClick={handleGenerateProof}
-        isDisabled={isPending || isVCRequestPending}
-      />
+
+      <h2 className='proof-generating__title'>
+        {isVCRequestPending ? `Getting a credentials` : `Proof of Human`}
+      </h2>
+
+      {isVCRequestPending && (
+        <span className='proof-generating__subtitle'>
+          {`The identity provider issues a credential, which is then stored in your wallet`}
+        </span>
+      )}
+
+      <div className='proof-generating__actions'>
+        <AppButton
+          text={`Generate proof`}
+          modification='border-circle'
+          onClick={handleGenerateProof}
+          isDisabled={isPending || isVCRequestPending || !verifiableCredentials}
+        />
+      </div>
     </motion.div>
   )
 }

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect } from 'react'
 
 import { AppButton, Icon } from '@/common'
-import { useWeb3Context } from '@/contexts'
+import { useKycContext, useWeb3Context } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
@@ -16,6 +16,7 @@ const WalletConnection: FC<StepProps> = ({
   ...rest
 }) => {
   const { provider, isValidChain, init } = useWeb3Context()
+  const { questPlatformDetails } = useKycContext()
 
   const connectProvider = useCallback(async () => {
     try {
@@ -38,7 +39,11 @@ const WalletConnection: FC<StepProps> = ({
     >
       <div className='app__badge'>
         <div className='app__badge-item'>
-          <Icon className='app__badge-item-icon' name={ICON_NAMES.metamask} />
+          <img
+            className='app__badge-item-icon'
+            src={questPlatformDetails?.questCreatorDetails?.iconLink}
+            alt={questPlatformDetails?.questCreatorDetails?.name}
+          />
         </div>
 
         <div className='app__badge-splitter'>
@@ -48,7 +53,13 @@ const WalletConnection: FC<StepProps> = ({
           />
         </div>
 
-        <div className='app__badge-item'></div>
+        <div className='app__badge-item'>
+          <img
+            className='app__badge-item-icon'
+            src={questPlatformDetails?.destinationDetails?.iconLink}
+            alt={questPlatformDetails?.destinationDetails?.name}
+          />
+        </div>
       </div>
 
       <h2 className='wallet-connection__title'>

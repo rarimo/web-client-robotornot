@@ -193,6 +193,8 @@ a {
 .app__badge-item {
   overflow: hidden;
   display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
   border: toRem(2) solid var(--background-secondary-main);
 
@@ -203,7 +205,10 @@ a {
 }
 
 .app__badge-item-icon {
+  object-fit: cover;
+  object-position: center;
   width: 100%;
+  height: 100%;
 }
 
 .app__badge-splitter {
@@ -283,7 +288,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: toRem(24);
-  margin-top: toRem(24);
+  margin-top: auto;
 
   .app__step-sidebar-content-actions-btn {
     width: 100%;
