@@ -9,7 +9,7 @@ import {
 import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
-import { AppFooter, AppNavbar, Loader } from '@/common'
+import { AppFooter, AppNavbar, InvalidChainHandler, Loader } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import {
   bus,
@@ -103,6 +103,8 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
       <AppFooter />
       <ToastContainer />
+
+      <InvalidChainHandler isShown={isAppInitialized} />
     </>
   )
 }

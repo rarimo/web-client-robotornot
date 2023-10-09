@@ -169,19 +169,6 @@ a {
   }
 }
 
-.app__invalid-chain-modal {
-  display: flex;
-  flex-direction: column;
-  gap: toRem(24);
-}
-
-.app__invalid-chain-modal-actions {
-
-  .app__invalid-chain-modal-action-btn {
-    width: 100%;
-  }
-}
-
 .app__step-subtitle {
   color: var(--text-primary-main);
   font-size: toRem(20);

@@ -1,17 +1,19 @@
 import './styles.scss'
 
+import { MotionProps } from 'framer-motion'
 import { FC, HTMLAttributes } from 'react'
 
 import { AppButton, Modal } from '@/common'
 import { ICON_NAMES } from '@/enums'
 
-interface Props extends HTMLAttributes<HTMLDivElement> {
-  isShown: boolean
-  updateIsShown: (isShown: boolean) => void
-  isCloseByClickOutside?: boolean
-  title?: string
-  subtitle?: string
-}
+type Props = HTMLAttributes<HTMLDivElement> &
+  MotionProps & {
+    isShown: boolean
+    updateIsShown: (isShown: boolean) => void
+    isCloseByClickOutside?: boolean
+    title?: string
+    subtitle?: string
+  }
 
 const BasicModal: FC<Props> = ({
   isShown,
@@ -25,11 +27,13 @@ const BasicModal: FC<Props> = ({
 }) => {
   return (
     <Modal
+      className={['basic-modal', className].join(' ')}
       isShown={isShown}
       updateIsShown={updateIsShown}
       isCloseByClickOutside={isCloseByClickOutside}
+      {...rest}
     >
-      <div className={`basic-modal__pane ${className}`} {...rest}>
+      <div className='basic-modal__inner'>
         <div className='basic-modal__header'>
           <div className='basic-modal__header-titles'>
             {title && <h5 className='basic-modal__title'>{title}</h5>}

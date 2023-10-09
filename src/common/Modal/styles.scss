@@ -1,7 +1,7 @@
 $z-index-local: 100;
 
 .modal {
-  --max-width: #{toRem(600)};
+  --modal-max-width: #{toRem(600)};
 
   display: flex;
   justify-content: center;
@@ -21,6 +21,6 @@ $z-index-local: 100;
   justify-content: center;
   position: relative;
   height: auto;
-  max-width: var(--max-width);
+  max-width: var(--modal-max-width);
   width: 100%;
 }

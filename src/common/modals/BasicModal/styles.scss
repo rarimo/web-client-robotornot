@@ -1,10 +1,14 @@
 $padding-side: toRem(24);
 
-.basic-modal__pane {
+.basic-modal {
   --basic-modal-max-width: #{toRem(400)};
+  --modal-max-width: var(--basic-modal-max-width);
+}
 
-  background: var(--background-primary-main);
-  max-width: var(--basic-modal-max-width);
+.basic-modal__inner {
+  background: var(--background-secondary-main);
+  border-radius: toRem(12);
+  width: 100%;
 }
 
 .basic-modal__header {

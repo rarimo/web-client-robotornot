@@ -1,0 +1,32 @@
+.wrapped-icon__wrp {
+  --icon-wrapper-inner: var(--success-light);
+  --icon-wrapper-icon: var(--success-main);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--icon-wrapper-inner);
+
+  @include static-icon-size(102);
+}
+
+.wrapped-icon__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: toRem(12);
+  background: var(--background-secondary-main);
+  box-shadow: toRem(0) toRem(5) toRem(14) toRem(0) rgba(0, 0, 0, 0.04),
+    toRem(0) toRem(1) toRem(1) toRem(0) rgba(0, 0, 0, 0.05),
+    toRem(0) toRem(6) toRem(24) toRem(0) rgba(0, 0, 0, 0.03);
+
+  @include static-icon-size(65);
+}
+
+.wrapped-icon {
+  width: 100%;
+  height: 100%;
+  color: var(--icon-wrapper-icon);
+}

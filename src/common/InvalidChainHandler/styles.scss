@@ -1,0 +1,20 @@
+body .invalid-chain-handler {
+  --basic-modal-max-width: #{toRem(428)};
+}
+
+.invalid-chain-handler .invalid-chain-handler__icon {
+  --icon-wrapper-inner: var(--error-light);
+  --icon-wrapper-icon: var(--error-main);
+}
+
+.invalid-chain-handler__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: toRem(24);
+}
+
+.invalid-chain-handler__action-btn {
+  width: 100%;
+}
