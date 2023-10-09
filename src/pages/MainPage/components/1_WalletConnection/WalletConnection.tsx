@@ -1,9 +1,8 @@
 import './styles.scss'
 
-import { config } from '@config'
-import { Chain, errors, PROVIDERS } from '@distributedlab/w3p'
+import { PROVIDERS } from '@distributedlab/w3p'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect, useMemo } from 'react'
+import { type FC, useCallback, useEffect } from 'react'
 
 import { AppButton, Icon } from '@/common'
 import { useWeb3Context } from '@/contexts'
@@ -18,55 +17,13 @@ const WalletConnection: FC<StepProps> = ({
 }) => {
   const { provider, isValidChain, init } = useWeb3Context()
 
-  const Title = useMemo(
-    () =>
-      !provider?.isConnected ? (
-        <>{`Wants to know if you are a human`}</>
-      ) : isValidChain ? (
-        <></>
-      ) : (
-        <>{`Please switch to ${
-          config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].name
-        } chain in MetaMask`}</>
-      ),
-    [isValidChain, provider?.isConnected],
-  )
-
   const connectProvider = useCallback(async () => {
     try {
       await init(PROVIDERS.Metamask)
     } catch (error) {
-      ErrorHandler.processWithoutFeedback(error)
+      ErrorHandler.process(error)
     }
   }, [init])
-
-  const requestAddChain = useCallback(
-    async (chain: Chain) => {
-      try {
-        await provider?.addChain?.(chain)
-      } catch (error) {
-        ErrorHandler.processWithoutFeedback(error)
-      }
-    },
-    [provider],
-  )
-
-  const requestSwitchChain = useCallback(
-    async (chain: Chain) => {
-      try {
-        await provider?.switchChain?.(Number(chain.id))
-      } catch (error) {
-        if (error instanceof errors.ProviderChainNotFoundError) {
-          await requestAddChain(chain)
-
-          return
-        }
-
-        throw error
-      }
-    },
-    [provider, requestAddChain],
-  )
 
   useEffect(() => {
     if (!provider?.isConnected || !isValidChain) return
@@ -94,31 +51,17 @@ const WalletConnection: FC<StepProps> = ({
         <div className='app__badge-item'></div>
       </div>
 
-      <h2 className='wallet-connection__title'>{Title}</h2>
+      <h2 className='wallet-connection__title'>
+        {`Wants to know if you are a human`}
+      </h2>
 
       <div className='app__step-actions'>
-        {provider?.isConnected ? (
-          isValidChain ? (
-            <></>
-          ) : (
-            <AppButton
-              text={`Switch chain`}
-              modification='border-circle'
-              onClick={() =>
-                requestSwitchChain(
-                  config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
-                )
-              }
-            />
-          )
-        ) : (
-          <AppButton
-            iconLeft={ICON_NAMES.metamask}
-            text={`Connect metamask`}
-            modification='border-circle'
-            onClick={connectProvider}
-          />
-        )}
+        <AppButton
+          iconLeft={ICON_NAMES.metamask}
+          text={`Connect metamask`}
+          modification='border-circle'
+          onClick={connectProvider}
+        />
 
         <div className='app__step-actions-tip'>
           <span className='app__step-actions-tip-text'>

@@ -1,4 +1,5 @@
 import {
+  Chain,
   errors,
   MetamaskProvider,
   Provider,
@@ -18,7 +19,7 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
-import { bus, BUS_EVENTS } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
@@ -30,6 +31,7 @@ interface Web3ProviderContextValue {
   init: (providerType?: SUPPORTED_PROVIDERS) => Promise<void>
   addProvider: (provider: ProviderInstance) => void
   disconnect: () => Promise<void>
+  requestSwitchChain: (chain: Chain) => Promise<void>
 }
 
 export const web3ProviderContext = createContext<Web3ProviderContextValue>({
@@ -46,6 +48,9 @@ export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   },
   disconnect: async () => {
     throw new TypeError('disconnect() not implemented')
+  },
+  requestSwitchChain: async (chain: Chain) => {
+    throw new TypeError(`requestSwitchChain() not implemented for ${chain}`)
   },
 })
 
@@ -181,6 +186,34 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
     providerDetector.addProvider(provider)
   }
 
+  const requestAddChain = useCallback(
+    async (chain: Chain) => {
+      try {
+        await provider?.addChain?.(chain)
+      } catch (error) {
+        ErrorHandler.process(error)
+      }
+    },
+    [provider],
+  )
+
+  const requestSwitchChain = useCallback(
+    async (chain: Chain) => {
+      try {
+        await provider?.switchChain?.(Number(chain.id))
+      } catch (error) {
+        if (error instanceof errors.ProviderChainNotFoundError) {
+          await requestAddChain(chain)
+
+          return
+        }
+
+        ErrorHandler.process(error)
+      }
+    },
+    [provider, requestAddChain],
+  )
+
   return (
     <web3ProviderContext.Provider
       value={{
@@ -192,6 +225,7 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         init,
         addProvider,
         disconnect,
+        requestSwitchChain,
       }}
     >
       {children}
