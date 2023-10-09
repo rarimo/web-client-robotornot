@@ -506,6 +506,21 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     ],
   )
 
+  const detectProviderFromVC = useCallback(() => {
+    if (!verifiableCredentials?.credentialSubject?.provider) return
+
+    const provider = verifiableCredentials.credentialSubject.provider as string
+
+    setSelectedKycProvider(
+      {
+        Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
+        'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
+        'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+        Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+      }[provider],
+    )
+  }, [verifiableCredentials])
+
   useEffectOnce(() => {
     // FIXME: hotfix due to worldcoin redirect link respond
     if (window.location.href.includes('providers#id_token')) {
@@ -522,6 +537,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     if (searchParams.get('id_token')) {
       login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
     }
+
+    detectProviderFromVC()
   })
 
   return (
