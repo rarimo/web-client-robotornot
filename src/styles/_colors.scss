@@ -19,6 +19,14 @@ $background-secondary-light-rgb: hexToRGB($background-secondary-light);
 $background-secondary-main-rgb: hexToRGB($background-secondary-main);
 $background-secondary-dark-rgb: hexToRGB($background-secondary-dark);
 
+$background-tertiary-light: #1f2124;
+$background-tertiary-main: #1f2124;
+$background-tertiary-dark: #1f2124;
+
+$background-tertiary-light-rgb: hexToRGB($background-tertiary-light);
+$background-tertiary-main-rgb: hexToRGB($background-tertiary-main);
+$background-tertiary-dark-rgb: hexToRGB($background-tertiary-dark);
+
 /* status colors */
 
 $success-light: #d6f4de;

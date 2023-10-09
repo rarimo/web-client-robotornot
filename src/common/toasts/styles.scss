@@ -1,9 +1,10 @@
-.Toastify__toast.default-toast {
+.Toastify__toast.toast {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--white);
+  background: var(--background-tertiary-main);
   padding: toRem(12);
+  border-radius: toRem(12);
 }
 
 .Toastify__toast-body {
@@ -17,7 +18,7 @@
   }
 }
 
-.default-toast__body {
+.toast__body {
   display: flex;
   position: relative;
   gap: toRem(12);
@@ -25,13 +26,13 @@
   padding-right: toRem(12);
 }
 
-.default-toast__icon-wrp {
+.toast__icon-wrp {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: toRem(8);
+  border-radius: 50%;
 
-  @include static-icon-size(56);
+  @include static-icon-size(64);
 
   .Toastify__toast--success & {
     background: var(--success-light);
@@ -54,35 +55,44 @@
   }
 }
 
-.default-toast .default-toast__icon {
-  @include static-icon-size(24);
+.toast .toast__icon {
+  @include static-icon-size(48);
 }
 
-.default-toast__details {
+.toast__details {
   display: flex;
   flex-direction: column;
   padding: toRem(8) 0;
   flex: 1;
 }
 
-.default-toast__title {
+.toast__title {
   font-size: toRem(14);
   line-height: 1.5;
   font-weight: 500;
   letter-spacing: toRem(0.1);
-  color: var(--text-primary-main);
+  color: var(--text-primary-invert-main);
 }
 
-.default-toast__message {
+.toast__message {
   font-size: toRem(14);
   line-height: 1.5;
   letter-spacing: toRem(0.25);
-  color: var(--text-secondary-main);
+  color: var(--text-primary-invert-main);
   max-width: toRem(230);
   width: 100%;
 
   @include respond-to(xsmall) {
-    width: toRem(180);
+    width: toRem(220);
+  }
+
+  .transaction-toast__message-icon {
+    display: inline;
+    vertical-align: baseline;
+    width: 0.9em;
+    height: 0.9em;
+    transform: translateY(toRem(2));
+    margin-left: toRem(4);
   }
 }
 
@@ -91,26 +101,28 @@
   top: 45%;
   right: toRem(12);
   transform: translateY(-50%);
-  color: var(--text-secondary-main);
+  color: var(--text-primary-invert-main);
   padding: 0;
   font-size: toRem(28);
   line-height: 1;
 }
 
 .Toastify__progress-bar {
+  height: toRem(2);
+
   .Toastify__toast--success & {
-    background: var(--success-main);
+    background: var(--text-primary-invert-main);
   }
 
   .Toastify__toast--error & {
-    background: var(--error-main);
+    background: var(--text-primary-invert-main);
   }
 
   .Toastify__toast--warning & {
-    background: var(--warning-main);
+    background: var(--text-primary-invert-main);
   }
 
   .Toastify__toast--info & {
-    background: var(--info-dark);
+    background: var(--text-primary-invert-main);
   }
 }

@@ -1,6 +1,3 @@
-import 'react-toastify/dist/ReactToastify.css'
-import './styles.scss'
-
 import { config } from '@config'
 import { type TransactionResponse } from '@distributedlab/w3p'
 import { FC, HTMLAttributes, useMemo } from 'react'
@@ -83,21 +80,21 @@ const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
   }, [link, provider, txHash, txResponse])
 
   return (
-    <div className='transaction-toast__body'>
-      <div className='transaction-toast__icon-wrp'>
-        <Icon className='transaction-toast__icon' name={iconName} />
+    <div className='toast__body'>
+      <div className='toast__icon-wrp'>
+        <Icon className='toast__icon' name={iconName} />
       </div>
-      <div className='transaction-toast__details'>
-        <h4 className='transaction-toast__title'>{toastTitle}</h4>
+      <div className='toast__details'>
+        <h4 className='toast__title'>{toastTitle}</h4>
         <a
           href={targetLink}
           target='_blank'
           rel='noreferrer noopener'
-          className='transaction-toast__message'
+          className='toast__message'
         >
           {toastMessage}
           <Icon
-            className='transaction-toast__message-icon'
+            className='toast__message-icon'
             name={ICON_NAMES.externalLink}
           />
         </a>
