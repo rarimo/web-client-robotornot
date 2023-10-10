@@ -75,7 +75,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     [],
   )
 
-  // TODO: add steps indicator
   return (
     <div className={['main-page', className].join(' ')} {...rest}>
       {isLoaded ? (

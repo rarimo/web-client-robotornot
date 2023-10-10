@@ -160,6 +160,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     zkProof,
 
     createIdentity,
+    getIsIdentityProvedMsg,
+    parseDIDToIdentityBigIntString,
   } = useZkpContext()
   const { isVCRequestPending } = useKycContext()
 
@@ -198,12 +200,28 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
   const init = useCallback(async () => {
     try {
-      if (verifiableCredentials && isSnapInstalled) {
+      let identityBigIntString = ''
+
+      if (isSnapInstalled) {
         /**
          * As createIdentity() method is return existing identity or create new,
          * we can detect created one by checking verifiable credentials
          */
-        await createIdentity()
+        const identityIdString = await createIdentity()
+
+        identityBigIntString = identityIdString
+          ? parseDIDToIdentityBigIntString(identityIdString)
+          : ''
+      }
+
+      if (identityBigIntString) {
+        const isIdentityProvedMsg = await getIsIdentityProvedMsg(
+          identityBigIntString,
+        )
+
+        if (isIdentityProvedMsg) {
+          setCurrentStep(Steps.ProofSubmittedStep)
+        }
       }
 
       await sleep(1_000)
@@ -213,7 +231,12 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     }
 
     setIsLoaded(true)
-  }, [createIdentity, isSnapInstalled, verifiableCredentials])
+  }, [
+    isSnapInstalled,
+    createIdentity,
+    getIsIdentityProvedMsg,
+    parseDIDToIdentityBigIntString,
+  ])
 
   const handleWalletConnectionStepFinish = useCallback(() => {
     setCurrentStep(Steps.SnapConnectionStep)
@@ -476,10 +499,10 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    setCurrentStep(detectStartStep())
+    if (!currentStep) setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
-  }, [detectStartStep, isInitialized, isLoaded])
+  }, [currentStep, detectStartStep, isInitialized, isLoaded])
 
   return (
     <formStepperContext.Provider

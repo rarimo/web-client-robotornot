@@ -79,7 +79,6 @@ const ProofSubmitting: FC<StepProps> = ({
           <>
             <div className='proof-submitting__flow-line' />
             <div className='proof-submitting__flow-item'>
-              {/*TODO: detect website where user come from*/}
               <img
                 className='proof-submitting__flow-item-icon'
                 src={questPlatformDetails?.destinationDetails?.iconLink}

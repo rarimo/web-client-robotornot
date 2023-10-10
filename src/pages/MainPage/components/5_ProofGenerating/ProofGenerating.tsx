@@ -5,12 +5,7 @@ import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { AppButton, ProgressLoader } from '@/common'
-import {
-  useFormStepperContext,
-  useKycContext,
-  useWeb3Context,
-  useZkpContext,
-} from '@/contexts'
+import { useFormStepperContext, useKycContext, useZkpContext } from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -18,7 +13,6 @@ import {
   GaCategories,
   gaSendCustomEvent,
 } from '@/helpers'
-import { useIdentityVerifier } from '@/hooks/contracts'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const ProofGenerating: FC<StepProps> = ({
@@ -30,8 +24,7 @@ const ProofGenerating: FC<StepProps> = ({
   const [isPending, setIsPending] = useState(false)
 
   const { prevStep } = useFormStepperContext()
-  const { provider } = useWeb3Context()
-  const { identityBigIntString, verifiableCredentials, getZkProof } =
+  const { verifiableCredentials, getZkProof, getIsIdentityProvedMsg } =
     useZkpContext()
   const {
     isVCRequestPending,
@@ -41,29 +34,8 @@ const ProofGenerating: FC<StepProps> = ({
     verificationErrorMessages,
   } = useKycContext()
 
-  const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
-    config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
-  )
-
   const checkIsIdentityProved = useCallback(async () => {
-    if (!identityBigIntString || !provider?.address)
-      throw new TypeError(`Identity or provider is not defined`)
-
-    const isDIDProved = await isIdentityProved(identityBigIntString)
-
-    const isAddressProved = await isSenderAddressProved(provider.address)
-
-    let provedMsg = ''
-
-    if (isDIDProved && isAddressProved) {
-      provedMsg =
-        'Your identity has been verified as human, and the wallet address is already linked to it.'
-    } else if (isDIDProved && !isAddressProved) {
-      provedMsg = 'Identity verification already completed'
-    } else if (!isDIDProved && isAddressProved) {
-      provedMsg =
-        'The wallet address you entered is associated with another identity. Please use a different wallet address.'
-    }
+    const provedMsg = await getIsIdentityProvedMsg()
 
     if (provedMsg) {
       bus.emit(BUS_EVENTS.warning, provedMsg)
@@ -73,12 +45,7 @@ const ProofGenerating: FC<StepProps> = ({
     }
 
     return false
-  }, [
-    identityBigIntString,
-    isIdentityProved,
-    isSenderAddressProved,
-    provider?.address,
-  ])
+  }, [getIsIdentityProvedMsg])
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
