@@ -264,6 +264,10 @@ a {
   display: flex;
   flex-direction: column;
   padding: toRem(40) toRem(32);
+
+  @include respond-to(xmedium) {
+    overflow-y: auto;
+  }
 }
 
 .app__step-sidebar-content-title {

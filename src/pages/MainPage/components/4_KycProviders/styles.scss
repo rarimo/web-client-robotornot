@@ -1,10 +1,22 @@
 .kyc-providers {
   display: flex;
   flex-direction: column;
+
+  @include respond-to(xmedium) {
+    overflow-y: auto;
+    padding: toRem(256) toRem(56) toRem(56);
+    top: 0;
+    left: 0;
+  }
 }
 
 .kyc-providers__title {
   margin-bottom: toRem(40);
+
+  @include respond-to(xmedium) {
+    position: relative;
+    font-size: toRem(32);
+  }
 }
 
 .kyc-providers__list {
@@ -12,6 +24,11 @@
   grid-template-columns: 1fr 1fr;
   grid-gap: toRem(24);
   max-width: 75%;
+
+  @include respond-to(xmedium) {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
 }
 
 .kyc-providers__card-error {
