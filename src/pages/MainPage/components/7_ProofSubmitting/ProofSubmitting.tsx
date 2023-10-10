@@ -29,6 +29,13 @@ const ProofSubmitting: FC<StepProps> = ({
     [selectedChainToPublish],
   )
 
+  const isQuestPlatformDetailsShown = useMemo(
+    () =>
+      questPlatformDetails?.destinationDetails?.iconLink &&
+      questPlatformDetails?.destinationDetails?.name,
+    [questPlatformDetails],
+  )
+
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
 
@@ -46,31 +53,33 @@ const ProofSubmitting: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-submitting', className].join(' ')} {...rest}>
-      <div className='proof-submitting__flow'>
-        <div className='proof-submitting__flow-item'>
-          <Icon
-            className='proof-submitting__flow-item-icon'
-            name={ICON_NAMES.rarimeSnapFilled}
-          />
+      {isQuestPlatformDetailsShown && (
+        <div className='proof-submitting__flow'>
+          <div className='proof-submitting__flow-item'>
+            <Icon
+              className='proof-submitting__flow-item-icon'
+              name={ICON_NAMES.rarimeSnapFilled}
+            />
+          </div>
+          {/*TODO: replace by motion.path*/}
+          <div className='proof-submitting__flow-line' />
+          <div className='proof-submitting__flow-item'>
+            <Icon
+              className='proof-submitting__flow-item-icon'
+              name={selectedChainDetails.icon as ICON_NAMES}
+            />
+          </div>
+          <div className='proof-submitting__flow-line' />
+          <div className='proof-submitting__flow-item'>
+            {/*TODO: detect website where user come from*/}
+            <img
+              className='proof-submitting__flow-item-icon'
+              src={questPlatformDetails?.destinationDetails?.iconLink}
+              alt={questPlatformDetails?.destinationDetails?.name}
+            />
+          </div>
         </div>
-        {/*TODO: replace by motion.path*/}
-        <div className='proof-submitting__flow-line' />
-        <div className='proof-submitting__flow-item'>
-          <Icon
-            className='proof-submitting__flow-item-icon'
-            name={selectedChainDetails.icon as ICON_NAMES}
-          />
-        </div>
-        <div className='proof-submitting__flow-line' />
-        <div className='proof-submitting__flow-item'>
-          {/*TODO: detect website where user come from*/}
-          <img
-            className='proof-submitting__flow-item-icon'
-            src={questPlatformDetails?.destinationDetails?.iconLink}
-            alt={questPlatformDetails?.destinationDetails?.name}
-          />
-        </div>
-      </div>
+      )}
 
       <h2 className='proof-submitting__title'>{`Share proof with Galxe`}</h2>
 

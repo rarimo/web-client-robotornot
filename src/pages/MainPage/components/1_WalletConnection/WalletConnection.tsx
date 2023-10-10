@@ -2,7 +2,8 @@ import './styles.scss'
 
 import { PROVIDERS } from '@distributedlab/w3p'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect } from 'react'
+import { type FC, useCallback, useEffect, useMemo } from 'react'
+import { useKey } from 'react-use'
 
 import { AppButton, Icon } from '@/common'
 import { useKycContext, useWeb3Context } from '@/contexts'
@@ -26,6 +27,17 @@ const WalletConnection: FC<StepProps> = ({
     }
   }, [init])
 
+  const isQuestPlatformDetailsShown = useMemo(
+    () =>
+      questPlatformDetails?.questCreatorDetails?.iconLink &&
+      questPlatformDetails?.questCreatorDetails?.name &&
+      questPlatformDetails?.destinationDetails?.iconLink &&
+      questPlatformDetails?.destinationDetails?.name,
+    [questPlatformDetails],
+  )
+
+  useKey('Enter', connectProvider)
+
   useEffect(() => {
     if (!provider?.isConnected || !isValidChain) return
 
@@ -37,30 +49,32 @@ const WalletConnection: FC<StepProps> = ({
       className={['wallet-connection', className].join(' ')}
       {...rest}
     >
-      <div className='app__badge'>
-        <div className='app__badge-item'>
-          <img
-            className='app__badge-item-icon'
-            src={questPlatformDetails?.questCreatorDetails?.iconLink}
-            alt={questPlatformDetails?.questCreatorDetails?.name}
-          />
-        </div>
+      {isQuestPlatformDetailsShown && (
+        <div className='app__badge'>
+          <div className='app__badge-item'>
+            <img
+              className='app__badge-item-icon'
+              src={questPlatformDetails?.questCreatorDetails?.iconLink}
+              alt={questPlatformDetails?.questCreatorDetails?.name}
+            />
+          </div>
 
-        <div className='app__badge-splitter'>
-          <Icon
-            className='app__badge-splitter-icon'
-            name={ICON_NAMES.arrowRight}
-          />
-        </div>
+          <div className='app__badge-splitter'>
+            <Icon
+              className='app__badge-splitter-icon'
+              name={ICON_NAMES.arrowRight}
+            />
+          </div>
 
-        <div className='app__badge-item'>
-          <img
-            className='app__badge-item-icon'
-            src={questPlatformDetails?.destinationDetails?.iconLink}
-            alt={questPlatformDetails?.destinationDetails?.name}
-          />
+          <div className='app__badge-item'>
+            <img
+              className='app__badge-item-icon'
+              src={questPlatformDetails?.destinationDetails?.iconLink}
+              alt={questPlatformDetails?.destinationDetails?.name}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <h2 className='wallet-connection__title'>
         {`Wants to know if you are a human`}

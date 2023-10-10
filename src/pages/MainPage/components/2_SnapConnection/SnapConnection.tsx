@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect } from 'react'
+import { useKey } from 'react-use'
 
 import { AppButton, Icon } from '@/common'
 import { useMetamaskZkpSnapContext } from '@/contexts'
@@ -21,6 +22,8 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       ErrorHandler.processWithoutFeedback(error)
     }
   }, [checkSnapStatus, connectOrInstallSnap])
+
+  useKey('Enter', installSnap)
 
   useEffect(() => {
     if (!isSnapInstalled) return

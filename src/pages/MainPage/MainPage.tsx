@@ -4,7 +4,7 @@ import { AnimatePresence, LayoutGroup, motion, Variants } from 'framer-motion'
 import { type FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { EmptyQuestPlatformModal, ErrorMessage, Icon, Loader } from '@/common'
+import { ErrorMessage, Icon, Loader } from '@/common'
 import { useFormStepperContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 
@@ -149,8 +149,6 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
           <Loader className='main-page__loader' />
         </div>
       )}
-
-      <EmptyQuestPlatformModal />
     </div>
   )
 }
