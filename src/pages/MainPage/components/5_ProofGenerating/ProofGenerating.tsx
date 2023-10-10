@@ -2,10 +2,15 @@ import './styles.scss'
 
 import { config } from '@config'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { AppButton, ProgressLoader } from '@/common'
-import { useKycContext, useWeb3Context, useZkpContext } from '@/contexts'
+import {
+  useFormStepperContext,
+  useKycContext,
+  useWeb3Context,
+  useZkpContext,
+} from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -16,14 +21,10 @@ import {
 import { useIdentityVerifier } from '@/hooks/contracts'
 import { StepProps } from '@/pages/MainPage/components/types'
 
-const ProofGenerating: FC<StepProps> = ({
-  nextStepCb,
-  onErrorCb,
-  className,
-  ...rest
-}) => {
+const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
 
+  const { prevStep } = useFormStepperContext()
   const { provider } = useWeb3Context()
   const { identityBigIntString, verifiableCredentials, getZkProof } =
     useZkpContext()
@@ -32,6 +33,7 @@ const ProofGenerating: FC<StepProps> = ({
     isKycFinished,
     selectedKycProvider,
     KYC_PROVIDERS_DETAILS_MAP,
+    verificationErrorMessages,
   } = useKycContext()
 
   const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
@@ -87,12 +89,18 @@ const ProofGenerating: FC<StepProps> = ({
       await getZkProof()
     } catch (error) {
       ErrorHandler.process(error)
-      onErrorCb?.(error as Error)
     }
 
     gaSendCustomEvent(GaCategories.GenerateProof)
     setIsPending(false)
-  }, [checkIsIdentityProved, getZkProof, nextStepCb, onErrorCb])
+  }, [checkIsIdentityProved, getZkProof, nextStepCb])
+
+  useEffect(() => {
+    if (!verificationErrorMessages) return
+
+    prevStep()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verificationErrorMessages])
 
   return (
     <motion.div className={['proof-generating', className].join(' ')} {...rest}>

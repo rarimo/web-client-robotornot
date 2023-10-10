@@ -1,28 +1,35 @@
 import './styles.scss'
 
+import { HTTP_STATUS_CODES } from '@distributedlab/jac'
 import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
 
-import { useKycContext } from '@/contexts'
-import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { AppButton, BasicModal, Icon } from '@/common'
+import { useFormStepperContext, useKycContext } from '@/contexts'
+import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import { ErrorHandler, GaCategories, gaSendCustomEvent } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 import { KycProvidersItem } from './components'
 
-const KycProviders: FC<StepProps> = ({
-  nextStepCb,
-  onErrorCb,
-  className,
-  ...rest
-}) => {
-  const { KYC_PROVIDERS_DETAILS_MAP } = useKycContext()
-
+const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
+  const [isErrorMsgModalShown, setIsErrorMsgModalShown] = useState(false)
 
-  const { login } = useKycContext()
+  const {
+    KYC_PROVIDERS_DETAILS_MAP,
+    verificationErrorMessages,
+    isVCRequestPending,
+    isVCRequestFailed,
 
-  const { isVCRequestPending } = useKycContext()
+    login,
+    clearKycError,
+    setIsVCRequestFailed,
+    setIsVCRequestPending,
+  } = useKycContext()
+
+  const { selectedKycProvider, kycError } = useKycContext()
+  const { nextStep } = useFormStepperContext()
 
   const handleLogin = useCallback(
     async (kycProvider: SUPPORTED_KYC_PROVIDERS) => {
@@ -38,19 +45,37 @@ const KycProviders: FC<StepProps> = ({
         gaSendCustomEvent(kycProvider)
       } catch (error) {
         ErrorHandler.process(error)
-        onErrorCb?.(error as Error)
       }
 
       setIsPending(false)
     },
-    [login, onErrorCb],
+    [login],
   )
 
-  useEffect(() => {
-    if (!isVCRequestPending) return
+  const hideErrorMsgModal = useCallback(() => {
+    setIsErrorMsgModalShown(false)
+    setIsVCRequestFailed(false)
+    setIsVCRequestPending(false)
+    clearKycError()
+  }, [clearKycError, setIsVCRequestFailed, setIsVCRequestPending])
 
-    nextStepCb()
-  }, [isVCRequestPending, nextStepCb])
+  useEffect(() => {
+    if (!isVCRequestPending || !!verificationErrorMessages) return
+
+    nextStepCb?.()
+  }, [
+    isVCRequestPending,
+    isVCRequestFailed,
+    nextStep,
+    nextStepCb,
+    verificationErrorMessages,
+  ])
+
+  useEffect(() => {
+    if (!verificationErrorMessages) return
+
+    setIsErrorMsgModalShown(true)
+  }, [verificationErrorMessages])
 
   return (
     <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
@@ -72,6 +97,47 @@ const KycProviders: FC<StepProps> = ({
           />
         ))}
       </div>
+
+      <BasicModal
+        isShown={isErrorMsgModalShown}
+        updateIsShown={setIsErrorMsgModalShown}
+      >
+        <div className='kyc-providers__card'>
+          <div className='kyc-providers__card-error'>
+            <div className='kyc-providers__card-error-icon-wrp'>
+              <Icon
+                className='kyc-providers__card-error-icon'
+                name={ICON_NAMES.x}
+              />
+            </div>
+
+            <span className='kyc-providers__card-error-title'>
+              {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+                ? `This KYC provider / Address was already claimed by another identity`
+                : verificationErrorMessages}
+            </span>
+            <span className='kyc-providers__card-error-message'>
+              {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+                ? 'Seem like you are trying to use a provider that you used already. Please choose another one'
+                : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
+            </span>
+          </div>
+
+          <AppButton
+            className='kyc-providers__card-button'
+            text={
+              (selectedKycProvider &&
+                KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]
+                  ?.completeKycMessage) ||
+              `RETURN TO PROVIDER LIST`
+            }
+            modification='border-circle'
+            iconRight={ICON_NAMES.arrowRight}
+            size='large'
+            onClick={hideErrorMsgModal}
+          />
+        </div>
+      </BasicModal>
     </motion.div>
   )
 }

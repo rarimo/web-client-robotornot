@@ -450,6 +450,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     const nextStepIndex = steps.findIndex(step => step === currentStep) + 1
 
+    if (!steps[nextStepIndex]) return
+
     setCurrentStep(steps[nextStepIndex])
   }, [currentStep])
 
@@ -457,6 +459,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     const steps = Object.values(Steps)
 
     const prevStepIndex = steps.findIndex(step => step === currentStep) - 1
+
+    if (!steps[prevStepIndex]) return
 
     setCurrentStep(steps[prevStepIndex])
   }, [currentStep])

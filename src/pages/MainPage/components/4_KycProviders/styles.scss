@@ -13,3 +13,43 @@
   grid-gap: toRem(24);
   max-width: 75%;
 }
+
+.kyc-providers__card-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: toRem(16);
+}
+
+.kyc-providers__card-error-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--error-main);
+  color: var(--white);
+
+  @include static-icon-size(36);
+}
+
+.kyc-providers__card-error-icon {
+
+  @include static-icon-size(28);
+}
+
+.kyc-providers__card-error-title {
+  color: var(--error-main);
+  font-size: toRem(20);
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+.kyc-providers__card-error-message {
+  color: var(--text-secondary-main);
+  font-size: toRem(16);
+  line-height: 1.6;
+}
+
+.kyc-providers__card-button {
+  margin: toRem(16) auto 0;
+}
