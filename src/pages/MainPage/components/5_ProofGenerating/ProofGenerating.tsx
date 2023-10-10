@@ -21,7 +21,12 @@ import {
 import { useIdentityVerifier } from '@/hooks/contracts'
 import { StepProps } from '@/pages/MainPage/components/types'
 
-const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
+const ProofGenerating: FC<StepProps> = ({
+  nextStepCb,
+  className,
+  onErrorCb,
+  ...rest
+}) => {
   const [isPending, setIsPending] = useState(false)
 
   const { prevStep } = useFormStepperContext()
@@ -89,11 +94,12 @@ const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       await getZkProof()
     } catch (error) {
       ErrorHandler.process(error)
+      onErrorCb?.(error as Error)
     }
 
     gaSendCustomEvent(GaCategories.GenerateProof)
     setIsPending(false)
-  }, [checkIsIdentityProved, getZkProof, nextStepCb])
+  }, [checkIsIdentityProved, getZkProof, nextStepCb, onErrorCb])
 
   useEffect(() => {
     if (!verificationErrorMessages) return
