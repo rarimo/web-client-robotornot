@@ -81,7 +81,7 @@ const ProofGenerating: FC<StepProps> = ({
         className='proof-generating__progress'
         checkpoints={[50, 100]}
         checkpointIndex={
-          isKycFinished ? (verifiableCredentials ? 1 : 0) : undefined
+          verifiableCredentials ? 1 : isKycFinished ? 0 : undefined
         }
         delay={500}
         variant='skeleton'
