@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 import { useKey } from 'react-use'
 
 import { AppButton, Icon } from '@/common'
@@ -11,16 +11,22 @@ import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
+  const [isPending, setIsPending] = useState(false)
+
   const { connectOrInstallSnap, checkSnapStatus, isSnapInstalled } =
     useMetamaskZkpSnapContext()
 
   const installSnap = useCallback(async () => {
+    setIsPending(true)
+
     try {
       await connectOrInstallSnap()
       await checkSnapStatus()
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
+
+    setIsPending(false)
   }, [checkSnapStatus, connectOrInstallSnap])
 
   useKey('Enter', installSnap)
@@ -59,6 +65,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
           onClick={installSnap}
           text={`Install Snap`}
           modification='border-circle'
+          isDisabled={isPending}
         />
 
         <div className='app__step-actions-tip'>

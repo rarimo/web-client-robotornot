@@ -231,13 +231,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     setCurrentStep(Steps.ProofGeneratingStep)
   }, [])
 
-  // TODO: change to shows modals
-  const handleKycProvidersStepError = useCallback((error: Error) => {
-    ErrorHandler.processWithoutFeedback(error)
-
-    setCurrentStep(Steps.KycProvidersStep)
-  }, [])
-
   const handleProofGeneratingStepFinish = useCallback(() => {
     setCurrentStep(Steps.ProofGeneratingLoaderStep)
   }, [])
@@ -301,7 +294,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
           key={Steps.KycProvidersStep}
           className='main-page__step'
           nextStepCb={handleKycProvidersStepFinish}
-          onErrorCb={handleKycProvidersStepError}
           {...stepAnimationProps}
         />
       ),
@@ -350,7 +342,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     }
   }, [
     handleIdentityCreationStepFinish,
-    handleKycProvidersStepError,
     handleKycProvidersStepFinish,
     handleProofGeneratingStepError,
     handleProofGeneratingLoaderStepFinish,
@@ -485,8 +476,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    // setCurrentStep(detectStartStep())
-    setCurrentStep(Steps.ProofSubmittedStep)
+    setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
   }, [detectStartStep, isInitialized, isLoaded])

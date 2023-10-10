@@ -2,13 +2,18 @@ import './styles.scss'
 
 import { PROVIDERS } from '@distributedlab/w3p'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect, useMemo } from 'react'
+import get from 'lodash/get'
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useKey } from 'react-use'
 
 import { AppButton, Icon } from '@/common'
-import { useKycContext, useWeb3Context } from '@/contexts'
+import {
+  useKycContext,
+  useMetamaskZkpSnapContext,
+  useWeb3Context,
+} from '@/contexts'
 import { ICON_NAMES } from '@/enums'
-import { ErrorHandler } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const WalletConnection: FC<StepProps> = ({
@@ -16,15 +21,22 @@ const WalletConnection: FC<StepProps> = ({
   className,
   ...rest
 }) => {
+  const [isPending, setIsPending] = useState(false)
+
   const { provider, isValidChain, init } = useWeb3Context()
+  const { isMetamaskInstalled } = useMetamaskZkpSnapContext()
   const { questPlatformDetails } = useKycContext()
 
   const connectProvider = useCallback(async () => {
+    setIsPending(true)
+
     try {
       await init(PROVIDERS.Metamask)
     } catch (error) {
       ErrorHandler.process(error)
     }
+
+    setIsPending(false)
   }, [init])
 
   const isQuestPlatformDetailsShown = useMemo(
@@ -36,7 +48,47 @@ const WalletConnection: FC<StepProps> = ({
     [questPlatformDetails],
   )
 
-  useKey('Enter', connectProvider)
+  const installMMLink = useMemo(() => {
+    if (isMetamaskInstalled) return ''
+
+    const browserExtensionsLinks = {
+      chrome:
+        'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
+      opera: 'https://addons.opera.com/en/extensions/details/metamask-10/',
+      firefox: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+    }
+
+    // Get the user-agent string
+    const userAgentString = navigator.userAgent
+
+    let chromeAgent = userAgentString.indexOf('Chrome') > -1 ? 'chrome' : ''
+    const firefoxAgent =
+      userAgentString.indexOf('Firefox') > -1 ? 'firefox' : ''
+    const operaAgent = userAgentString.indexOf('OP') > -1 ? 'opera' : ''
+
+    // Discard Chrome since it also matches Opera
+    if (chromeAgent && operaAgent) chromeAgent = ''
+
+    const currentBrowser = chromeAgent || firefoxAgent || operaAgent || ''
+
+    if (!currentBrowser) return ''
+
+    return get(browserExtensionsLinks, currentBrowser, '')
+  }, [isMetamaskInstalled])
+
+  const openInstallMetamaskLink = useCallback(() => {
+    if (!installMMLink) {
+      bus.emit(BUS_EVENTS.warning, `Your browser is not support Metamask`)
+
+      return
+    }
+
+    setIsPending(true)
+
+    window.open(installMMLink, '_blank', 'noopener noreferrer')
+  }, [installMMLink])
+
+  useKey('Enter', installMMLink ? openInstallMetamaskLink : connectProvider)
 
   useEffect(() => {
     if (!provider?.isConnected || !isValidChain) return
@@ -81,12 +133,25 @@ const WalletConnection: FC<StepProps> = ({
       </h2>
 
       <div className='app__step-actions'>
-        <AppButton
-          iconLeft={ICON_NAMES.metamask}
-          text={`Connect metamask`}
-          modification='border-circle'
-          onClick={connectProvider}
-        />
+        {isMetamaskInstalled ? (
+          <AppButton
+            iconLeft={ICON_NAMES.metamask}
+            text={`Connect metamask`}
+            modification='border-circle'
+            onClick={connectProvider}
+            isDisabled={isPending}
+          />
+        ) : (
+          <AppButton
+            iconLeft={ICON_NAMES.metamask}
+            text={isPending ? `Please, reload page` : `Install metamask`}
+            modification='border-circle'
+            onClick={openInstallMetamaskLink}
+            target='_blank'
+            rel='noopener noreferrer'
+            isDisabled={isPending}
+          />
+        )}
 
         <div className='app__step-actions-tip'>
           <span className='app__step-actions-tip-text'>

@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => {
 
   // const isProduction = env.VITE_ENVIRONMENT === 'production'
   const isStaging = env.VITE_ENVIRONMENT === 'staging'
-  // const isDevelopment = env.VITE_ENVIRONMENT === 'development'
+  const isDevelopment =
+    env.VITE_ENVIRONMENT === 'development' || env.VITE_ENVIRONMENT === 'dev'
   const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
   // const buildVersion = env.VITE_APP_BUILD_VERSION
 
@@ -241,7 +242,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
-      // sourcemap: true,
+      sourcemap: isDevelopment,
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin
