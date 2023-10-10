@@ -1,13 +1,15 @@
 .kyc-providers {
   display: flex;
   flex-direction: column;
+  padding: 0;
+}
 
-  @include respond-to(xmedium) {
-    overflow-y: auto;
-    padding: toRem(256) toRem(56) toRem(56);
-    top: 0;
-    left: 0;
-  }
+.kyc-providers__content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 100%;
+  padding: toRem(56);
 }
 
 .kyc-providers__title {
@@ -26,7 +28,8 @@
   max-width: 75%;
 
   @include respond-to(xmedium) {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     max-width: none;
   }
 }

@@ -79,23 +79,25 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
   return (
     <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
-      <h2 className='kyc-providers__title'>
-        {`Add identity management to your wallet`}
-      </h2>
+      <div className='kyc-providers__content'>
+        <h2 className='kyc-providers__title'>
+          {`Add identity management to your wallet`}
+        </h2>
 
-      <div className='kyc-providers__list'>
-        {Object.values(SUPPORTED_KYC_PROVIDERS).map((provider, idx) => (
-          <KycProvidersItem
-            key={idx}
-            className='kyc-providers__list-item'
-            supportedKycProvider={provider}
-            name={KYC_PROVIDERS_DETAILS_MAP[provider].name}
-            iconName={KYC_PROVIDERS_DETAILS_MAP[provider].iconName}
-            handleLogin={handleLogin}
-            isDisabled={isPending}
-            tooltipMsg={KYC_PROVIDERS_DETAILS_MAP[provider].tooltipElement}
-          />
-        ))}
+        <div className='kyc-providers__list'>
+          {Object.values(SUPPORTED_KYC_PROVIDERS).map((provider, idx) => (
+            <KycProvidersItem
+              key={idx}
+              className='kyc-providers__list-item'
+              supportedKycProvider={provider}
+              name={KYC_PROVIDERS_DETAILS_MAP[provider].name}
+              iconName={KYC_PROVIDERS_DETAILS_MAP[provider].iconName}
+              handleLogin={handleLogin}
+              isDisabled={isPending}
+              tooltipMsg={KYC_PROVIDERS_DETAILS_MAP[provider].tooltipElement}
+            />
+          ))}
+        </div>
       </div>
 
       <BasicModal

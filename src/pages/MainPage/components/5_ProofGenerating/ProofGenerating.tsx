@@ -77,37 +77,41 @@ const ProofGenerating: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-generating', className].join(' ')} {...rest}>
-      <ProgressLoader
-        className='proof-generating__progress'
-        checkpoints={[50, 100]}
-        checkpointIndex={
-          verifiableCredentials ? 1 : isKycFinished ? 0 : undefined
-        }
-        delay={500}
-        variant='skeleton'
-        iconNameOrImgUrl={
-          selectedKycProvider &&
-          KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].iconName
-        }
-      />
-
-      <h2 className='proof-generating__title'>
-        {isVCRequestPending ? `Getting a credentials` : `Proof of Human`}
-      </h2>
-
-      {isVCRequestPending && (
-        <span className='proof-generating__subtitle'>
-          {`The identity provider issues a credential, which is then stored in your wallet`}
-        </span>
-      )}
-
-      <div className='proof-generating__actions'>
-        <AppButton
-          text={`Generate proof`}
-          modification='border-circle'
-          onClick={handleGenerateProof}
-          isDisabled={isPending || isVCRequestPending || !verifiableCredentials}
+      <div className='proof-generating__content'>
+        <ProgressLoader
+          className='proof-generating__progress'
+          checkpoints={[50, 100]}
+          checkpointIndex={
+            verifiableCredentials ? 1 : isKycFinished ? 0 : undefined
+          }
+          delay={500}
+          variant='skeleton'
+          iconNameOrImgUrl={
+            selectedKycProvider &&
+            KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].iconName
+          }
         />
+
+        <h2 className='proof-generating__title'>
+          {isVCRequestPending ? `Getting a credentials` : `Proof of Human`}
+        </h2>
+
+        {isVCRequestPending && (
+          <span className='proof-generating__subtitle'>
+            {`The identity provider issues a credential, which is then stored in your wallet`}
+          </span>
+        )}
+
+        <div className='proof-generating__actions'>
+          <AppButton
+            text={`Generate proof`}
+            modification='border-circle'
+            onClick={handleGenerateProof}
+            isDisabled={
+              isPending || isVCRequestPending || !verifiableCredentials
+            }
+          />
+        </div>
       </div>
     </motion.div>
   )
