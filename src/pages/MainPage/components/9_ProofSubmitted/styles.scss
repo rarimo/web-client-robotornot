@@ -2,31 +2,8 @@
   align-items: center;
 }
 
-.proof-submitted__overtitle-icon-wrp {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  background: var(--success-light);
-  margin-bottom: toRem(32);
-
-  @include static-icon-size(102);
-}
-
-.proof-submitted__overtitle-icon-inner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--background-secondary-main);
-  border-radius: 50%;
-
-  @include static-icon-size(64);
-}
-
 .proof-submitted__overtitle-icon {
-  color: var(--success-main);
-
-  @include static-icon-size(32);
+  margin-bottom: toRem(32);
 }
 
 .proof-submitted__title {

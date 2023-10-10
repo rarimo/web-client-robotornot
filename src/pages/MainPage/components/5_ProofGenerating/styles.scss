@@ -8,5 +8,13 @@
 
 .proof-generating__title {
   font-size: toRem(32);
-  margin-bottom: toRem(32);
+}
+
+.proof-generating__subtitle {
+  text-align: center;
+  margin-top: toRem(16);
+}
+
+.proof-generating__actions {
+  margin-top: toRem(32);
 }

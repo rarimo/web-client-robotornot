@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
+import { useKey } from 'react-use'
 
 import { AppButton, Icon } from '@/common'
 import { useZkpContext } from '@/contexts'
@@ -29,6 +30,8 @@ const IdentityCreation: FC<StepProps> = ({
 
     setIsPending(false)
   }, [createIdentity])
+
+  useKey('Enter', requestCreateIdentity)
 
   useEffect(() => {
     if (!identityIdString) return

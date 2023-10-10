@@ -6,6 +6,7 @@ import { type FC, useEffect } from 'react'
 
 import { ProgressLoader } from '@/common'
 import { useZkpContext } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const ProofGeneratingLoader: FC<StepProps> = ({
@@ -31,6 +32,7 @@ const ProofGeneratingLoader: FC<StepProps> = ({
         delay={2_000}
         checkpoints={[100]}
         checkpointIndex={zkProof?.pub_signals ? 0 : undefined}
+        iconNameOrImgUrl={ICON_NAMES.shieldExclamation}
       />
 
       <h2 className='proof-generating-loader__title'>

@@ -10,6 +10,10 @@
   max-width: toRem(320);
   width: 100%;
   gap: toRem(8);
+
+  &--thin {
+    max-width: toRem(175);
+  }
 }
 
 .proof-submitting__flow-item {
@@ -27,7 +31,7 @@
 
 .proof-submitting__flow-line {
   flex: 1;
-  border: toRem(2) dashed var(--primary-main);
+  border: toRem(1.75) dashed var(--primary-main);
 }
 
 .proof-submitting__title {

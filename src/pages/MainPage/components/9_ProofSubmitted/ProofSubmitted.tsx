@@ -6,7 +6,7 @@ import { type FC, useEffect, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
-import { Icon } from '@/common'
+import { Icon, WrappedIcon } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { StepProps } from '@/pages/MainPage/components/types'
@@ -40,14 +40,10 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
   return (
     <motion.div className={['proof-submitted', className].join(' ')} {...rest}>
-      <div className='proof-submitted__overtitle-icon-wrp'>
-        <div className='proof-submitted__overtitle-icon-inner'>
-          <Icon
-            className='proof-submitted__overtitle-icon'
-            name={ICON_NAMES.check}
-          />
-        </div>
-      </div>
+      <WrappedIcon
+        className='proof-submitted__overtitle-icon'
+        iconName={ICON_NAMES.check}
+      />
 
       <h2 className='proof-submitted__title'>
         {`Enjoy the web as a true human!`}

@@ -2,10 +2,11 @@ import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useMemo, useState } from 'react'
 
-import { AppButton } from '@/common'
-import { useZkpContext } from '@/contexts'
+import { AppButton, Icon } from '@/common'
+import { useKycContext, useZkpContext } from '@/contexts'
+import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
@@ -21,6 +22,19 @@ const ProofSubmitting: FC<StepProps> = ({
   )
 
   const { submitZkp } = useZkpContext()
+  const { questPlatformDetails } = useKycContext()
+
+  const selectedChainDetails = useMemo(
+    () => config.SUPPORTED_CHAINS_DETAILS[selectedChainToPublish],
+    [selectedChainToPublish],
+  )
+
+  const isQuestPlatformDetailsShown = useMemo(
+    () =>
+      questPlatformDetails?.destinationDetails?.iconLink &&
+      questPlatformDetails?.destinationDetails?.name,
+    [questPlatformDetails],
+  )
 
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
@@ -39,19 +53,40 @@ const ProofSubmitting: FC<StepProps> = ({
 
   return (
     <motion.div className={['proof-submitting', className].join(' ')} {...rest}>
-      <div className='proof-submitting__flow'>
+      <div
+        className={[
+          'proof-submitting__flow',
+          ...(isQuestPlatformDetailsShown
+            ? []
+            : ['proof-submitting__flow--thin']),
+        ].join(' ')}
+      >
         <div className='proof-submitting__flow-item'>
-          <div className='proof-submitting__flow-item-icon' />
+          <Icon
+            className='proof-submitting__flow-item-icon'
+            name={ICON_NAMES.rarimeSnapFilled}
+          />
         </div>
         {/*TODO: replace by motion.path*/}
         <div className='proof-submitting__flow-line' />
         <div className='proof-submitting__flow-item'>
-          <div className='proof-submitting__flow-item-icon' />
+          <Icon
+            className='proof-submitting__flow-item-icon'
+            name={selectedChainDetails.icon as ICON_NAMES}
+          />
         </div>
-        <div className='proof-submitting__flow-line' />
-        <div className='proof-submitting__flow-item'>
-          <div className='proof-submitting__flow-item-icon' />
-        </div>
+        {isQuestPlatformDetailsShown && (
+          <>
+            <div className='proof-submitting__flow-line' />
+            <div className='proof-submitting__flow-item'>
+              <img
+                className='proof-submitting__flow-item-icon'
+                src={questPlatformDetails?.destinationDetails?.iconLink}
+                alt={questPlatformDetails?.destinationDetails?.name}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <h2 className='proof-submitting__title'>{`Share proof with Galxe`}</h2>

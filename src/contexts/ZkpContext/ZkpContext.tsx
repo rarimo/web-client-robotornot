@@ -66,6 +66,8 @@ interface ZkpContextValue {
   ) => Promise<W3CCredential | undefined>
   getZkProof: () => Promise<ZKPProofResponse | undefined>
   submitZkp: (selectedChain: SUPPORTED_CHAINS) => Promise<void>
+  getIsIdentityProvedMsg: (_identityBigIntString?: string) => Promise<string>
+  parseDIDToIdentityBigIntString: (identityIdString: string) => string
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
@@ -99,6 +101,12 @@ export const zkpContext = createContext<ZkpContextValue>({
   submitZkp: async () => {
     throw new TypeError(`submitZkp() not implemented`)
   },
+  getIsIdentityProvedMsg: () => {
+    throw new TypeError(`getIsIdentityProvedString() not implemented`)
+  },
+  parseDIDToIdentityBigIntString: () => {
+    throw new TypeError(`parseDIDToIdentityBigIntString() not implemented`)
+  },
 })
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -124,11 +132,22 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const { getProveIdentityTxBody } = useIdentityVerifier()
 
+  const parseDIDToIdentityBigIntString = useCallback(
+    (identityIdString: string) => {
+      const parsedDid = DID.parse(`did:iden3:${identityIdString}`)
+
+      if (!parsedDid?.id?.bigInt()?.toString()) throw new Error('Invalid DID')
+
+      return parsedDid.id.bigInt().toString()
+    },
+    [],
+  )
+
   const identityBigIntString = useMemo(() => {
     if (!identityIdString) return ''
 
-    return DID.parse(`did:iden3:${identityIdString}`).id.bigInt().toString()
-  }, [identityIdString])
+    return parseDIDToIdentityBigIntString(identityIdString)
+  }, [identityIdString, parseDIDToIdentityBigIntString])
 
   const txSubmitExplorerLink = useMemo(() => {
     if (!txSubmitHash || !provider?.getTxUrl) return ''
@@ -393,6 +412,44 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     ],
   )
 
+  const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
+    config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
+  )
+
+  const getIsIdentityProvedMsg = useCallback(
+    async (_identityBigIntString?: string) => {
+      const currentIdentityBigIntString =
+        _identityBigIntString ?? identityBigIntString
+
+      if (!currentIdentityBigIntString || !provider?.address)
+        throw new TypeError(`Identity or provider is not defined`)
+
+      const isDIDProved = await isIdentityProved(currentIdentityBigIntString)
+
+      const isAddressProved = await isSenderAddressProved(provider.address)
+
+      let provedMsg = ''
+
+      if (isDIDProved && isAddressProved) {
+        provedMsg =
+          'Your identity has been verified as human, and the wallet address is already linked to it.'
+      } else if (isDIDProved && !isAddressProved) {
+        provedMsg = 'Identity verification already completed'
+      } else if (!isDIDProved && isAddressProved) {
+        provedMsg =
+          'The wallet address you entered is associated with another identity. Please use a different wallet address.'
+      }
+
+      return provedMsg
+    },
+    [
+      identityBigIntString,
+      isIdentityProved,
+      isSenderAddressProved,
+      provider?.address,
+    ],
+  )
+
   return (
     <zkpContext.Provider
       value={{
@@ -412,6 +469,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         getVerifiableCredentials,
         getZkProof,
         submitZkp,
+        getIsIdentityProvedMsg,
+        parseDIDToIdentityBigIntString,
       }}
       {...rest}
     >

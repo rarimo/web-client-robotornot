@@ -13,13 +13,13 @@ type Props = HTMLAttributes<HTMLDivElement> &
     isShown: boolean
   }
 
-const InvalidChainHandler: FC<Props> = ({ isShown, ...rest }) => {
+const InvalidChainModal: FC<Props> = ({ isShown, ...rest }) => {
   const { provider, isValidChain, requestSwitchChain } = useWeb3Context()
   const { isMetamaskInstalled } = useMetamaskZkpSnapContext()
 
   return (
     <BasicModal
-      className='invalid-chain-handler'
+      className='invalid-chain-modal'
       isShown={Boolean(
         isMetamaskInstalled &&
           isShown &&
@@ -33,21 +33,21 @@ const InvalidChainHandler: FC<Props> = ({ isShown, ...rest }) => {
       title={`Unsupported Chain`}
       {...rest}
     >
-      <div className='invalid-chain-handler__body'>
+      <div className='invalid-chain-modal__body'>
         <WrappedIcon
-          className='invalid-chain-handler__icon'
+          className='invalid-chain-modal__icon'
           iconName={ICON_NAMES.exclamation}
         />
 
-        <span className='invalid-chain-handler__subtitle'>
+        <span className='invalid-chain-modal__subtitle'>
           {`Please switch to ${
             config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].name
           } chain in MetaMask`}
         </span>
 
-        <div className='invalid-chain-handler__actions'>
+        <div className='invalid-chain-modal__actions'>
           <AppButton
-            className='invalid-chain-handler__action-btn'
+            className='invalid-chain-modal__action-btn'
             modification='border-circle'
             onClick={() =>
               requestSwitchChain(
@@ -62,4 +62,4 @@ const InvalidChainHandler: FC<Props> = ({ isShown, ...rest }) => {
   )
 }
 
-export default InvalidChainHandler
+export default InvalidChainModal

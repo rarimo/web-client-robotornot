@@ -19,7 +19,7 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
-import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import { ErrorHandler } from '@/helpers'
 import { useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
@@ -128,22 +128,6 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         const currentProviderType = providerType || storageState?.providerType
 
         if (!currentProviderType) return
-
-        const NAMED_PROVIDERS = {
-          [PROVIDERS.Metamask]: 'Metamask',
-          [PROVIDERS.Coinbase]: 'Coinbase',
-          [PROVIDERS.Near]: 'Near',
-          [PROVIDERS.Phantom]: 'Phantom',
-          [PROVIDERS.Solflare]: 'Solflare',
-          [PROVIDERS.Fallback]: '',
-        }
-
-        if (!providerDetector.getProvider(currentProviderType)) {
-          bus.emit(
-            BUS_EVENTS.warning,
-            `${NAMED_PROVIDERS[currentProviderType]} wallet not detected. Please install the browser extension to proceed.`,
-          )
-        }
 
         const initializedProvider = await provider.init(
           SUPPORTED_PROVIDERS_MAP[

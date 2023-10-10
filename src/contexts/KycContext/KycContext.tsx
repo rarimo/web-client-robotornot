@@ -1,6 +1,7 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
 import type { UserInfo } from '@uauth/js/build/types'
+import { AnimatePresence } from 'framer-motion'
 import {
   createContext,
   FC,
@@ -14,7 +15,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
-import { useEffectOnce } from 'react-use'
+import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
@@ -121,26 +122,6 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   },
 }
 
-interface KycContextValue {
-  selectedKycProvider?: SUPPORTED_KYC_PROVIDERS
-
-  authorizedKycResponse: unknown | undefined
-  selectedKycDetails: [string, string][]
-  kycError?: JsonApiError
-  verificationErrorMessages: string
-
-  KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
-
-  isVCRequestPending: boolean
-  isVCRequestFailed: boolean
-
-  isKycFinished: boolean
-
-  login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
-  verifyKyc: (identityIdString: string) => Promise<void>
-  retryKyc: () => void
-}
-
 type GitCoinPassportUserInfo = {
   address: string
   score: string
@@ -160,6 +141,43 @@ type GitCoinPassportUserInfo = {
       hash: string
     }
   }[]
+}
+
+type QuestPlatform = {
+  questCreatorDetails: {
+    name: string
+    iconLink: string
+  }
+  destinationDetails: {
+    link: string
+    name: string
+    iconLink: string
+  }
+}
+
+interface KycContextValue {
+  selectedKycProvider?: SUPPORTED_KYC_PROVIDERS
+
+  authorizedKycResponse: unknown | undefined
+  selectedKycDetails: [string, string][]
+  kycError?: JsonApiError
+  verificationErrorMessages: string
+
+  KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
+
+  isVCRequestPending: boolean
+  isVCRequestFailed: boolean
+
+  isKycFinished: boolean
+
+  login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
+  verifyKyc: (identityIdString: string) => Promise<void>
+  retryKyc: () => void
+  clearKycError: () => void
+  setIsVCRequestPending: (isPending: boolean) => void
+  setIsVCRequestFailed: (isFailed: boolean) => void
+
+  questPlatformDetails?: QuestPlatform
 }
 
 export const kycContext = createContext<KycContextValue>({
@@ -183,12 +201,26 @@ export const kycContext = createContext<KycContextValue>({
   retryKyc: () => {
     throw new TypeError(`retryKyc not implemented`)
   },
+  clearKycError: () => {
+    throw new TypeError(`clearKycError not implemented`)
+  },
+  setIsVCRequestPending: () => {
+    throw new TypeError(`setIsVCRequestPending not implemented`)
+  },
+  setIsVCRequestFailed: () => {
+    throw new TypeError(`setIsVCRequestFailed not implemented`)
+  },
+
+  questPlatformDetails: {} as QuestPlatform,
 })
 
 const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...rest
 }) => {
+  const [questPlatformDetails, setQuestPlatformDetails] =
+    useLocalStorage<QuestPlatform>('questPlatform', undefined)
+
   const [selectedKycProvider, setSelectedKycProvider] =
     useState<SUPPORTED_KYC_PROVIDERS>()
 
@@ -323,6 +355,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [kycError, setKycError] = useState<JsonApiError>()
 
   const verificationErrorMessages = useMemo(() => {
+    if (!kycError) return ''
+
     switch (kycError?.httpStatus) {
       case 401:
         return localizeUnauthorizedError(kycError)
@@ -337,6 +371,10 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const retryKyc = useCallback(() => {
     setRefreshKey(prev => prev + 1)
+  }, [])
+
+  const clearKycError = useCallback(() => {
+    setKycError(undefined)
   }, [])
 
   const login = useCallback(
@@ -453,6 +491,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const handleKycProviderComponentLogin = useCallback(
     async (response: unknown) => {
+      setKycError(undefined)
       setIsVCRequestPending(true)
       setIsVCRequestFailed(false)
 
@@ -506,14 +545,46 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     ],
   )
 
+  const detectProviderFromVC = useCallback(() => {
+    if (!verifiableCredentials?.credentialSubject?.provider) return
+
+    const provider = verifiableCredentials.credentialSubject.provider as string
+
+    setSelectedKycProvider(
+      {
+        Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
+        'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
+        'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+        Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+      }[provider],
+    )
+  }, [verifiableCredentials])
+
+  const parseQuestPlatform = useCallback(() => {
+    if (questPlatformDetails?.questCreatorDetails?.iconLink) return
+
+    try {
+      const questPlatformStr = searchParams.get('quest_platform') as string
+
+      const questPlatform = Buffer.from(questPlatformStr, 'base64').toString(
+        'binary',
+      )
+
+      setQuestPlatformDetails(JSON.parse(questPlatform))
+    } catch (error) {
+      /* empty */
+    }
+  }, [
+    questPlatformDetails?.questCreatorDetails?.iconLink,
+    searchParams,
+    setQuestPlatformDetails,
+  ])
+
   useEffectOnce(() => {
     // FIXME: hotfix due to worldcoin redirect link respond
-    if (window.location.href.includes('providers#id_token')) {
+    if (window.location.href.includes('#id_token')) {
       window.open(
-        window.location.href.replace(
-          'providers#id_token',
-          'providers?id_token',
-        ),
+        window.location.href.replace('#id_token', '?id_token'),
         '_self',
         'noopener,noreferrer',
       )
@@ -522,6 +593,10 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     if (searchParams.get('id_token')) {
       login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
     }
+
+    detectProviderFromVC()
+
+    parseQuestPlatform()
   })
 
   return (
@@ -530,6 +605,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         {...rest}
         value={{
           selectedKycProvider,
+          questPlatformDetails,
 
           authorizedKycResponse,
           selectedKycDetails,
@@ -546,41 +622,44 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           login,
           verifyKyc,
           retryKyc,
+          clearKycError,
+          setIsVCRequestPending,
+          setIsVCRequestFailed,
         }}
       >
         {children}
       </kycContext.Provider>
 
-      {verifiableCredentials ? (
-        <></>
-      ) : (
-        <>
-          {selectedKycProvider ===
-          SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
-            <KycProviderUnstoppableDomains
-              key={refreshKey}
-              loginCb={handleKycProviderComponentLogin}
-            />
-          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
-            <KycProviderWorldCoin
-              key={refreshKey}
-              loginCb={handleKycProviderComponentLogin}
-            />
-          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
-            <KycProviderCivic
-              key={refreshKey}
-              loginCb={handleKycProviderComponentLogin}
-            />
-          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
-            <KycProviderGitCoin
-              key={refreshKey}
-              loginCb={handleKycProviderComponentLogin}
-            />
-          ) : (
-            <></>
-          )}
-        </>
-      )}
+      <AnimatePresence initial={false} mode='wait'>
+        {!verifiableCredentials && (
+          <>
+            {selectedKycProvider ===
+            SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
+              <KycProviderUnstoppableDomains
+                key={refreshKey}
+                loginCb={handleKycProviderComponentLogin}
+              />
+            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
+              <KycProviderWorldCoin
+                key={refreshKey}
+                loginCb={handleKycProviderComponentLogin}
+              />
+            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
+              <KycProviderCivic
+                key={refreshKey}
+                loginCb={handleKycProviderComponentLogin}
+              />
+            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
+              <KycProviderGitCoin
+                key={refreshKey}
+                loginCb={handleKycProviderComponentLogin}
+              />
+            ) : (
+              <></>
+            )}
+          </>
+        )}
+      </AnimatePresence>
     </>
   )
 }
