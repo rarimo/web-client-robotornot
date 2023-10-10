@@ -1,3 +1,3 @@
-import WordsFindGame from './WordsFindGame'
+import WordsScrambleGame from './WordsScrambleGame'
 
-export default WordsFindGame
+export default WordsScrambleGame
