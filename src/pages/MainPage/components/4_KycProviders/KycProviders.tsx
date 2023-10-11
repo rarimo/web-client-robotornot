@@ -81,7 +81,7 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
       <div className='kyc-providers__content'>
         <h2 className='kyc-providers__title'>
-          {`Add identity management to your wallet`}
+          {`Select the identity provider of your choice`}
         </h2>
 
         <div className='kyc-providers__list'>
