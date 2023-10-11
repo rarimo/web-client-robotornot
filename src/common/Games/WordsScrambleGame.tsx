@@ -19,6 +19,8 @@ type Props = {
 type Cell = {
   row: number
   col: number
+  color?: number
+  align?: string
 }
 
 interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
@@ -40,12 +42,18 @@ const greenColor = 'rgba(44,167,75,0.5)'
 const greyColor = '#2b2b2b'
 const blackColor = '#000'
 const whiteColor = '#fff'
-const purpleColor = 'rgba(122, 83, 171, 0.6)'
 const LETTER_PADDING_X = 20
 const LETTER_PADDING_Y = 30
 const FONT_SIZE = 24
 const SECTION_TOP_PADDING = 128
-
+const successColors: string[] = [
+  'rgba(122, 83, 171, 0.6)',
+  'rgba(48,68,254,0.6)',
+  'rgba(255,121,85,0.6)',
+  'rgba(44,167,75,0.5)',
+  'rgba(250,217,2,0.65)',
+  'rgba(91, 241, 205, 0.6)',
+]
 const isHorizontalValue = ['left', 'right']
 const isVerticalValue = ['up', 'down']
 
@@ -57,7 +65,10 @@ const WordsScrambleGame = ({
   setIsShown,
 }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
+
   const [successfulWordsCount, setSuccessfulWordsCount] = useState(0)
+  const [blockWidth, setBlockWidth] = useState(0)
+  const [blockHeight, setBlockHeight] = useState(0)
 
   let ctx: ICanvasRenderingContext2D
 
@@ -66,11 +77,10 @@ const WordsScrambleGame = ({
   let successfulCords: Cell[] = []
   let prevState = { col: -1, row: -1 }
   let state: Cell
+  const remainingWords = [...words]
 
   let sideBarBlock: HTMLDivElement | null
-  const [blockWidth, setBlockWidth] = useState(0)
-  const [blockHeight, setBlockHeight] = useState(0)
-
+  let successfulWordsColorNumber = 0
   const canvasWidth =
     2 * DEFAULT_PADDING + SQUARE_PADDING * (cols - 1) + SQUARE_SIZE * cols
 
@@ -106,11 +116,11 @@ const WordsScrambleGame = ({
   }, [resizeGameRatio])
 
   const defaultPadding = useMemo(() => {
-    return DEFAULT_PADDING * resizeGameRatio
+    return (DEFAULT_PADDING * resizeGameRatio) / 2
   }, [resizeGameRatio])
 
   const defaultPaddingVertical = useMemo(() => {
-    return DEFAULT_PADDING_VERTICAL * resizeGameRatio
+    return (DEFAULT_PADDING_VERTICAL * resizeGameRatio) / 2
   }, [resizeGameRatio])
 
   const letterPaddingX = useMemo(() => {
@@ -135,7 +145,13 @@ const WordsScrambleGame = ({
       : resizeGameRatioType === 'width'
       ? blockHeight * resizeGameRatio
       : 2 * blockHeight
-  }, [blockHeight, canvasHeight, canvasWidth, resizeGameRatio, resizeGameRatioType])
+  }, [
+    blockHeight,
+    canvasHeight,
+    canvasWidth,
+    resizeGameRatio,
+    resizeGameRatioType,
+  ])
 
   const matrix = useMemo(() => {
     return createWordMatrix(words, rows, cols)
@@ -161,6 +177,7 @@ const WordsScrambleGame = ({
       (event.offsetY - defaultPaddingVertical / 2) /
         ((squareSize + squarePadding) / 2),
     )
+    let direction = 'default'
 
     if (col === cols || row === rows) return
     state = { row, col }
@@ -232,7 +249,7 @@ const WordsScrambleGame = ({
         )
         .fill()
       ctx.fillStyle = greenColor
-      const direction = mouseMoveAlign(prevState, state)
+      direction = mouseMoveAlign(prevState, state)
       ctx.fillRect(
         isVerticalValue.includes(direction)
           ? defaultPadding +
@@ -255,12 +272,19 @@ const WordsScrambleGame = ({
     printLetter(col, row)
     prevState = state
     arrResult.push(matrix[row][col])
-    arrResultCords.push({ col, row })
+    arrResultCords.push({
+      col,
+      row,
+      color: successfulWordsColorNumber,
+      align: direction,
+    })
   }
 
   const checkResult = () => {
     const resultWord = arrResult.join('').toLowerCase()
-    if (words.includes(resultWord)) {
+    const resultWordIndex = remainingWords.findIndex(el => el === resultWord)
+    if (resultWordIndex !== -1) {
+      remainingWords.splice(resultWordIndex, 1)
       successfulCords = successfulCords.concat(arrResultCords)
       setSuccessfulWordsCount(prevState => prevState + 1)
       return true
@@ -273,12 +297,34 @@ const WordsScrambleGame = ({
     if (!checkResult()) {
       for (const item of arrResultCords) {
         if (checkExistsCord(item.row, item.col, successfulCords)) {
-          ctx.fillStyle = purpleColor
+          const square = successfulCords.find(
+            obj => obj.row === item.row && obj.col === item.col,
+          )
+
+          const direction = square?.align ?? 'default'
+
+          ctx.fillStyle = successColors[square?.color ?? 0]
           ctx.fillRect(
-            defaultPadding + item.col * squareSize + item.col * squarePadding,
-            defaultPadding + item.row * squareSize + item.row * squarePadding,
-            squareSize,
-            squareSize,
+            isVerticalValue.includes(direction)
+              ? defaultPadding +
+                  item.col * squareSize +
+                  (item.col + (direction === 'down' ? -1 : 0)) * squarePadding
+              : defaultPadding +
+                  item.col * squareSize +
+                  item.col * squarePadding,
+            isHorizontalValue.includes(direction)
+              ? defaultPaddingVertical +
+                  item.row * squareSize +
+                  (item.row + (direction === 'right' ? -1 : 0)) * squarePadding
+              : defaultPaddingVertical +
+                  item.row * squareSize +
+                  item.row * squarePadding,
+            isVerticalValue.includes(direction)
+              ? squareSize + squarePadding
+              : squareSize,
+            isHorizontalValue.includes(direction)
+              ? squareSize + squarePadding
+              : squareSize,
           )
         } else {
           ctx.fillStyle = blackColor
@@ -314,7 +360,7 @@ const WordsScrambleGame = ({
     } else {
       let localPrevState = { col: -1, row: -1 }
       for (const { col, row } of arrResultCords) {
-        ctx.fillStyle = purpleColor
+        ctx.fillStyle = successColors[successfulWordsColorNumber]
         const direction = mouseMoveAlign(localPrevState, { col, row })
         ctx.fillRect(
           isVerticalValue.includes(direction)
@@ -337,6 +383,10 @@ const WordsScrambleGame = ({
         printLetter(col, row)
         localPrevState = { col, row }
       }
+      successfulWordsColorNumber =
+        successfulWordsColorNumber + 1 >= successColors.length
+          ? 0
+          : successfulWordsColorNumber + 1
     }
     arrResult = []
     arrResultCords = []
@@ -385,7 +435,7 @@ const WordsScrambleGame = ({
     ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
     ctx.fillStyle = blackColor
     ctx?.fillRect(0, 0, width, height)
-    ctx.font = `${FONT_SIZE * resizeGameRatio}px Euclid Circular B`
+    ctx.font = `${FONT_SIZE * resizeGameRatio}px euclidCircularB`
     ctx.textAlign = 'center'
     for (let col = 0; col < matrix.length; col += 1)
       for (let row = 0; row < matrix[col].length; row += 1) {
@@ -417,7 +467,7 @@ const WordsScrambleGame = ({
   return (
     <motion.div
       className='word-find-game'
-      transition={{ ease: 'easeOut', duration: 0.5 }}
+      transition={{ ease: 'backInOut', duration: 0.5 }}
       initial={{ y: '101%' }}
       animate={{ y: isShown ? 0 : '101%' }}
     >
