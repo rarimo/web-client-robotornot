@@ -19,10 +19,6 @@ const cols = 7
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   const [isShowGame, setIsShowGame] = useState(false)
 
-  const playGame = () => {
-    setIsShowGame(prevState => !prevState)
-  }
-
   return (
     <motion.div
       className={[
@@ -57,7 +53,9 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
           text={`Play Game`}
           modification='border-circle'
           size='small'
-          onClick={playGame}
+          onClick={() => {
+            setIsShowGame(prevState => !prevState)
+          }}
         />
       </div>
     </motion.div>
