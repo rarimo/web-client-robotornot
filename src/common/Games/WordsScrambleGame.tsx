@@ -44,6 +44,7 @@ const purpleColor = 'rgba(122, 83, 171, 0.6)'
 const LETTER_PADDING_X = 20
 const LETTER_PADDING_Y = 30
 const FONT_SIZE = 24
+const SECTION_TOP_PADDING = 128
 
 const isHorizontalValue = ['left', 'right']
 const isVerticalValue = ['up', 'down']
@@ -68,14 +69,33 @@ const WordsScrambleGame = ({
 
   let sideBarBlock: HTMLDivElement | null
   const [blockWidth, setBlockWidth] = useState(0)
+  const [blockHeight, setBlockHeight] = useState(0)
 
   const canvasWidth =
     2 * DEFAULT_PADDING + SQUARE_PADDING * (cols - 1) + SQUARE_SIZE * cols
 
+  const canvasHeight =
+    2 * DEFAULT_PADDING_VERTICAL +
+    SQUARE_PADDING * (rows - 1) +
+    SQUARE_SIZE * rows
+
   const resizeGameRatio = useMemo(() => {
-    const ratio = blockWidth / canvasWidth
-    return ratio >= 1 ? 2 : 2 * ratio
-  }, [blockWidth, canvasWidth])
+    const ratioWidth = blockWidth / canvasWidth
+    const ratioHeight = blockHeight / canvasHeight
+    return ratioWidth >= ratioHeight
+      ? ratioHeight >= 1
+        ? 2
+        : 2 * ratioHeight
+      : ratioWidth >= 1
+      ? 2
+      : 2 * ratioWidth
+  }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
+
+  const resizeGameRatioType = useMemo(() => {
+    const ratioWidth = blockWidth / canvasWidth
+    const ratioHeight = blockHeight / canvasHeight
+    return ratioWidth >= ratioHeight ? 'height' : 'width'
+  }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
 
   const squareSize = useMemo(() => {
     return SQUARE_SIZE * resizeGameRatio
@@ -102,15 +122,20 @@ const WordsScrambleGame = ({
   }, [resizeGameRatio])
 
   const width = useMemo(() => {
-    return 2 * blockWidth
-  }, [blockWidth])
+    return blockWidth > canvasWidth
+      ? 2 * canvasWidth
+      : resizeGameRatioType === 'height'
+      ? blockWidth * resizeGameRatio
+      : 2 * blockWidth
+  }, [blockWidth, canvasWidth, resizeGameRatio, resizeGameRatioType])
 
   const height = useMemo(() => {
-    return (
-      2 * defaultPaddingVertical +
-      (squarePadding * (rows - 1) + squareSize * rows)
-    )
-  }, [defaultPaddingVertical, squarePadding, squareSize, rows])
+    return blockHeight > canvasHeight
+      ? 2 * canvasWidth
+      : resizeGameRatioType === 'width'
+      ? blockHeight * resizeGameRatio
+      : 2 * blockHeight
+  }, [blockHeight, canvasHeight, canvasWidth, resizeGameRatio, resizeGameRatioType])
 
   const matrix = useMemo(() => {
     return createWordMatrix(words, rows, cols)
@@ -328,6 +353,11 @@ const WordsScrambleGame = ({
   const initGame = () => {
     sideBarBlock = document.querySelector('.word-find-game')
     setBlockWidth(sideBarBlock ? sideBarBlock.getBoundingClientRect().width : 0)
+    setBlockHeight(
+      sideBarBlock
+        ? sideBarBlock.getBoundingClientRect().height - SECTION_TOP_PADDING
+        : 0,
+    )
     CanvasRenderingContext2D.prototype.roundRect = function (
       x,
       y,

@@ -6,9 +6,14 @@
   height: 100%;
   left: 0;
   top: 0;
+  display: flex;
+flex-direction: column;
+  align-items: center;
+
 }
 
 .word-find-game__header{
+  width: 100%;
   padding: toRem(32);
   display: flex;
   justify-content: space-between;
