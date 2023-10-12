@@ -96,7 +96,6 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   return (
     <>
       <AppNavbar />
-
       <div className='app__main'>
         {isAppInitialized ? children : <Loader />}
       </div>

@@ -1,10 +1,24 @@
 import { motion } from 'framer-motion'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
-import { AppButton } from '@/common'
+import { AppButton, WordsScrambleGame } from '@/common'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
+const words = [
+  'bitcoin',
+  'luna',
+  'rarimo',
+  'moon',
+  'polygon',
+  'mumbai',
+  'ether',
+]
+const rows = 9
+const cols = 7
+
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const [isShowGame, setIsShowGame] = useState(false)
+
   return (
     <motion.div
       className={[
@@ -14,6 +28,13 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       ].join(' ')}
       {...rest}
     >
+      <WordsScrambleGame
+        words={words}
+        rows={rows}
+        cols={cols}
+        isShown={isShowGame}
+        setIsShown={setIsShowGame}
+      />
       <div className='app__step-sidebar-content-img-wrp'>
         <img
           className='app__step-sidebar-content-img'
@@ -32,6 +53,9 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
           text={`Play Game`}
           modification='border-circle'
           size='small'
+          onClick={() => {
+            setIsShowGame(prevState => !prevState)
+          }}
         />
       </div>
     </motion.div>
