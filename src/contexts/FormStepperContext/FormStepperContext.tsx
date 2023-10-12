@@ -202,7 +202,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     try {
       let identityBigIntString = ''
 
-      if (isSnapInstalled) {
+      if (isSnapInstalled && provider?.isConnected) {
         /**
          * As createIdentity() method is return existing identity or create new,
          * we can detect created one by checking verifiable credentials
@@ -233,9 +233,10 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     setIsLoaded(true)
   }, [
     isSnapInstalled,
+    provider?.isConnected,
     createIdentity,
-    getIsIdentityProvedMsg,
     parseDIDToIdentityBigIntString,
+    getIsIdentityProvedMsg,
   ])
 
   const handleWalletConnectionStepFinish = useCallback(() => {

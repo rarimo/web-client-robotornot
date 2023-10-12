@@ -1,10 +1,24 @@
 .kyc-providers {
   display: flex;
   flex-direction: column;
+  padding: 0;
+}
+
+.kyc-providers__content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 100%;
+  padding: toRem(56);
 }
 
 .kyc-providers__title {
   margin-bottom: toRem(40);
+
+  @include respond-to(xmedium) {
+    position: relative;
+    font-size: toRem(32);
+  }
 }
 
 .kyc-providers__list {
@@ -12,6 +26,12 @@
   grid-template-columns: 1fr 1fr;
   grid-gap: toRem(24);
   max-width: 75%;
+
+  @include respond-to(xmedium) {
+    display: flex;
+    flex-direction: column;
+    max-width: none;
+  }
 }
 
 .kyc-providers__card-error {

@@ -2,13 +2,15 @@ import './styles.scss'
 
 import { config } from '@config'
 import { motion } from 'framer-motion'
-import { type FC, useEffect, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
 import { Icon, WrappedIcon } from '@/common'
+import { Skeleton } from '@/common/Loader/variants'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
+import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const SECOND = 1000
@@ -16,15 +18,34 @@ const SECOND = 1000
 const REDIRECT_TIMEOUT = 30
 
 const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
+  const [isPending, setIsPending] = useState(false)
   const [isManualRedirected] = useState(false)
 
-  const { selectedKycProvider, KYC_PROVIDERS_DETAILS_MAP } = useKycContext()
-  const { txSubmitExplorerLink } = useZkpContext()
+  const {
+    selectedKycProvider,
+    KYC_PROVIDERS_DETAILS_MAP,
+    detectProviderFromVC,
+  } = useKycContext()
+  const { txSubmitExplorerLink, getVerifiableCredentials } = useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
     intervalMs: SECOND,
   })
+
+  const requestProveDetails = useCallback(async () => {
+    setIsPending(true)
+
+    try {
+      const vc = await getVerifiableCredentials()
+
+      await detectProviderFromVC(vc)
+    } catch (error) {
+      ErrorHandler.process(error)
+    }
+
+    setIsPending(false)
+  }, [detectProviderFromVC, getVerifiableCredentials])
 
   useEffectOnce(() => {
     startCountdown()
@@ -56,7 +77,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             <span className='proof-submitted__metadata-value'>{`Proof of Humanity`}</span>
           </div>
 
-          {selectedKycProvider && (
+          {selectedKycProvider ? (
             <>
               <div className='proof-submitted__metadata-divider' />
               <div className='proof-submitted__metadata-row'>
@@ -71,6 +92,25 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
                   {KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].name}
                 </span>
               </div>
+            </>
+          ) : (
+            <>
+              {isPending ? (
+                <Skeleton />
+              ) : (
+                <>
+                  <div className='proof-submitted__metadata-divider' />
+
+                  <div className='proof-submitted__metadata-row'>
+                    <span className='proof-submitted__metadata-label' />
+                    <span className='proof-submitted__metadata-value'>
+                      <button onClick={requestProveDetails}>
+                        {`Request details`}
+                      </button>
+                    </span>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

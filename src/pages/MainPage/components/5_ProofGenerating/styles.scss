@@ -1,13 +1,33 @@
 .proof-generating {
   align-items: center;
+  padding: 0;
+}
+
+.proof-generating__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  width: 100%;
+  padding: toRem(56);
 }
 
 .proof-generating__progress {
   margin-bottom: toRem(32);
+
+  @include respond-to(xmedium) {
+    margin-bottom: toRem(16);
+  }
 }
 
 .proof-generating__title {
+  text-align: center;
   font-size: toRem(32);
+
+  @include respond-to(xmedium) {
+    position: relative;
+    font-size: toRem(16);
+  }
 }
 
 .proof-generating__subtitle {

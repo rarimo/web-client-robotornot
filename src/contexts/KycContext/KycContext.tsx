@@ -1,5 +1,6 @@
 import { config } from '@config'
 import { type JsonApiError } from '@distributedlab/jac'
+import { W3CCredential } from '@rarimo/rarime-connector'
 import type { UserInfo } from '@uauth/js/build/types'
 import { AnimatePresence } from 'framer-motion'
 import {
@@ -176,6 +177,7 @@ interface KycContextValue {
   clearKycError: () => void
   setIsVCRequestPending: (isPending: boolean) => void
   setIsVCRequestFailed: (isFailed: boolean) => void
+  detectProviderFromVC: (vc?: W3CCredential) => void
 
   questPlatformDetails?: QuestPlatform
 }
@@ -209,6 +211,9 @@ export const kycContext = createContext<KycContextValue>({
   },
   setIsVCRequestFailed: () => {
     throw new TypeError(`setIsVCRequestFailed not implemented`)
+  },
+  detectProviderFromVC: () => {
+    throw new TypeError(`detectProviderFromVC not implemented`)
   },
 
   questPlatformDetails: {} as QuestPlatform,
@@ -545,20 +550,25 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     ],
   )
 
-  const detectProviderFromVC = useCallback(() => {
-    if (!verifiableCredentials?.credentialSubject?.provider) return
+  const detectProviderFromVC = useCallback(
+    (VC?: W3CCredential) => {
+      const currentVC = VC ?? verifiableCredentials
 
-    const provider = verifiableCredentials.credentialSubject.provider as string
+      if (!currentVC?.credentialSubject?.provider) return
 
-    setSelectedKycProvider(
-      {
-        Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
-        'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
-        'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
-        Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
-      }[provider],
-    )
-  }, [verifiableCredentials])
+      const provider = currentVC.credentialSubject.provider as string
+
+      setSelectedKycProvider(
+        {
+          Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
+          'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
+          'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+          Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+        }[provider],
+      )
+    },
+    [verifiableCredentials],
+  )
 
   const parseQuestPlatform = useCallback(() => {
     if (questPlatformDetails?.questCreatorDetails?.iconLink) return
@@ -625,6 +635,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           clearKycError,
           setIsVCRequestPending,
           setIsVCRequestFailed,
+          detectProviderFromVC,
         }}
       >
         {children}
