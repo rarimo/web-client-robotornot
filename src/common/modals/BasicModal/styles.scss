@@ -28,13 +28,13 @@ $padding-side: toRem(24);
 .basic-modal__title {
   font-size: toRem(20);
   font-weight: 600;
-  color: var(--text-primary-main);
+  color: var(--text-secondary-main);
 }
 
 .basic-modal__subtitle {
   font-size: toRem(14);
   line-height: 1.45;
-  color: var(--text-secondary-main);
+  color: var(--text-primary-main);
 }
 
 .basic-modal__body {

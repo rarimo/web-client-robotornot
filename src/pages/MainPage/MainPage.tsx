@@ -79,7 +79,13 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     <div className={['main-page', className].join(' ')} {...rest}>
       {isLoaded ? (
         isLoadFailed ? (
-          <ErrorMessage message={`Ooops... something went wrong`} />
+          <motion.div className='main-page__content'>
+            <motion.div className='main-page__step'>
+              <ErrorMessage
+                message={`Ooops... something went wrong, please reload page`}
+              />
+            </motion.div>
+          </motion.div>
         ) : (
           <LayoutGroup>
             <motion.div

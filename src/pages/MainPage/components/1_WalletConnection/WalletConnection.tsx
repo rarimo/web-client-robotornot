@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { config } from '@config'
 import { PROVIDERS } from '@distributedlab/w3p'
 import { motion } from 'framer-motion'
 import get from 'lodash/get'
@@ -52,10 +53,9 @@ const WalletConnection: FC<StepProps> = ({
     if (isMetamaskInstalled) return ''
 
     const browserExtensionsLinks = {
-      chrome:
-        'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
-      opera: 'https://addons.opera.com/en/extensions/details/metamask-10/',
-      firefox: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+      chrome: config.CHROME_METAMASK_ADDON_LINK,
+      opera: config.OPERA_METAMASK_ADDON_LINK,
+      firefox: config.FIREFOX_METAMASK_ADDON_LINK,
     }
 
     // Get the user-agent string

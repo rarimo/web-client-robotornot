@@ -1,3 +1,4 @@
+import { config } from '@config'
 import { motion } from 'framer-motion'
 import { FC } from 'react'
 
@@ -27,7 +28,12 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
 
       <p className='app__step-sidebar-content-text'>
         {`Learn more about`}{' '}
-        <a className='app__text-link' href='https://google.com'>
+        <a
+          className='app__text-link'
+          href={config.EXTERNAL_LANDING_URL}
+          target='_blank'
+          rel='noreferrer'
+        >
           {`Rarimo`}
         </a>
       </p>

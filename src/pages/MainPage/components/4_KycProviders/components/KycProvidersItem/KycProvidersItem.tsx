@@ -35,8 +35,10 @@ const KycProvidersItem: FC<Props> = ({
 
       {tooltipMsg && (
         <div className='kyc-providers-item__icon-wrp'>
-          {/*FIXME*/}
-          <AppTooltip style={{ maxWidth: `320px` }} msgContent={tooltipMsg}>
+          <AppTooltip
+            className='kyc-providers-item__tooltip'
+            msgContent={tooltipMsg}
+          >
             <Icon
               className='kyc-providers-item__icon kyc-providers-item__icon--decor'
               name={ICON_NAMES.informationCircle}
