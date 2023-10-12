@@ -104,7 +104,7 @@ const ProofGenerating: FC<StepProps> = ({
 
         <div className='proof-generating__actions'>
           <AppButton
-            text={`Generate proof`}
+            text={`Generate ZK-Proof`}
             modification='border-circle'
             onClick={handleGenerateProof}
             isDisabled={

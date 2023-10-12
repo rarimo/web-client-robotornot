@@ -15,6 +15,10 @@ body .invalid-chain-modal {
   gap: toRem(24);
 }
 
+.invalid-chain-modal__subtitle {
+  color: var(--text-secondary-main);
+}
+
 .invalid-chain-modal__action-btn {
   width: 100%;
 }

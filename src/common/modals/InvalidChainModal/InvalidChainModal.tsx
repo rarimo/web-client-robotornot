@@ -36,7 +36,7 @@ const InvalidChainModal: FC<Props> = ({ isShown, ...rest }) => {
       <div className='invalid-chain-modal__body'>
         <WrappedIcon
           className='invalid-chain-modal__icon'
-          iconName={ICON_NAMES.exclamation}
+          iconName={ICON_NAMES.crossedChain}
         />
 
         <span className='invalid-chain-modal__subtitle'>
