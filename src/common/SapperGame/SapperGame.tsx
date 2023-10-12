@@ -33,6 +33,7 @@ const DEFAULT_PADDING = 16
 const DEFAULT_PADDING_VERTICAL = 16
 const BORDER_RADIUS = 4
 const greyColor = '#949494'
+const greyLight = '#dedede'
 const blackColor = '#000'
 const whiteColor = '#fff'
 const LETTER_PADDING_X = 20
@@ -41,9 +42,11 @@ const FONT_SIZE = 24
 
 const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
-  let canvas: HTMLCanvasElement
   const [blockWidth, setBlockWidth] = useState(0)
   const [blockHeight, setBlockHeight] = useState(0)
+
+  let canvas: HTMLCanvasElement
+  let ctx: ICanvasRenderingContext2D
 
   const canvasWidth =
     2 * DEFAULT_PADDING + SQUARE_PADDING * (cols - 1) + SQUARE_SIZE * cols
@@ -127,7 +130,7 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
 
   const init = () => {
     canvas = canvasRef.current
-    const ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
+    ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
 
     if (!canvas || !ctx || !gameField) return
 
@@ -192,6 +195,7 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
     })
   }
   const clickSquare = (event: MouseEvent) => {
+    if (squareSize === 0 || squarePadding === 0) return
     const col = Math.trunc(
       (event.offsetX - defaultPadding / 2) / ((squareSize + squarePadding) / 2),
     )
@@ -199,6 +203,16 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
       (event.offsetY - defaultPaddingVertical / 2) /
         ((squareSize + squarePadding) / 2),
     )
+    ctx.fillStyle = greyLight
+    ctx
+      .roundRect(
+        col * (squareSize + squarePadding),
+        row * (squareSize + squarePadding),
+        squareSize,
+        squareSize,
+        BORDER_RADIUS,
+      )
+      .fill()
 
     console.log({ col, row })
   }
