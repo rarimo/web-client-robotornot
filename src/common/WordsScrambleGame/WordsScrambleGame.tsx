@@ -1,10 +1,5 @@
-import './styles.scss'
-
-import { motion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-import { AppButton } from '@/common'
-import { ICON_NAMES } from '@/enums'
+import { motion, MotionProps } from 'framer-motion'
+import { HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
 
 import { checkExistsCord, createWordMatrix, mouseMoveAlign } from './helpers'
 
@@ -12,9 +7,9 @@ type Props = {
   words: string[]
   rows: number
   cols: number
-  isShown: boolean
-  setIsShown: (isShown: boolean) => void
-}
+  onStatusGameUpdated: (status: { found: number }) => void
+} & MotionProps &
+  HTMLAttributes<HTMLDivElement>
 
 type Cell = {
   row: number
@@ -61,8 +56,9 @@ const WordsScrambleGame = ({
   words,
   rows,
   cols,
-  isShown,
-  setIsShown,
+  className,
+  onStatusGameUpdated,
+  ...rest
 }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
 
@@ -245,7 +241,14 @@ const WordsScrambleGame = ({
     if (resultWordIndex !== -1) {
       remainingWords.splice(resultWordIndex, 1)
       successfulCords = successfulCords.concat(arrResultCords)
-      setSuccessfulWordsCount(prevState => prevState + 1)
+
+      const successfulWords = successfulWordsCount + 1
+
+      setSuccessfulWordsCount(successfulWords)
+
+      onStatusGameUpdated({
+        found: successfulWords,
+      })
       return true
     }
     return false
@@ -411,27 +414,11 @@ const WordsScrambleGame = ({
 
   return (
     <motion.div
-      className='word-find-game'
-      transition={{ ease: 'backInOut', duration: 0.5 }}
-      initial={{ y: '101%' }}
-      animate={{ y: isShown ? 0 : '101%' }}
+      className={['words-scramble-game', className].join(' ')}
+      {...rest}
     >
-      <div className='word-find-game__header'>
-        <p className='word-find-game__header-count'>{`Found: ${successfulWordsCount}/${words.length}`}</p>
-        <AppButton
-          className='word-find-game__header-btn'
-          scheme='none'
-          size='none'
-          iconRight={ICON_NAMES.x}
-          onClick={() => setIsShown(false)}
-        />
-      </div>
-      <p className='word-find-game__text'>
-        {'Interactive game during the wait time'}
-      </p>
-      <p className='word-find-game__text-two'>{'Let’s find words!'}</p>
       <canvas
-        className='word-find-game__canvas'
+        className='words-scramble-game__canvas'
         ref={canvasRef}
         height={height}
         width={width}

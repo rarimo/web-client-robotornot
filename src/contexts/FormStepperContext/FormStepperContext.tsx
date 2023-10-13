@@ -500,7 +500,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    if (!currentStep) setCurrentStep(detectStartStep())
+    // if (!currentStep) setCurrentStep(detectStartStep())
+    if (!currentStep) setCurrentStep(Steps.ProofGeneratingLoaderStep)
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
