@@ -502,7 +502,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!currentStep) setCurrentStep(detectStartStep())
 
-
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
 
