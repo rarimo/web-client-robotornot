@@ -1,6 +1,3 @@
-import 'react-toastify/dist/ReactToastify.css'
-import './styles.scss'
-
 import { FC, HTMLAttributes, useMemo } from 'react'
 
 import { Icon } from '@/common'
@@ -19,13 +16,13 @@ const DefaultToast: FC<Props> = ({ title, message, iconName, ...rest }) => {
   )
 
   return (
-    <div className='default-toast__body' {...rest}>
-      <div className='default-toast__icon-wrp'>
-        {toastIcon && <Icon className='default-toast__icon' name={toastIcon} />}
+    <div className='toast__body' {...rest}>
+      <div className='toast__icon-wrp'>
+        {toastIcon && <Icon className='toast__icon' name={toastIcon} />}
       </div>
-      <div className='default-toast__details'>
-        <h4 className='default-toast__title'>{title}</h4>
-        <p className='default-toast__message'>{message}</p>
+      <div className='toast__details'>
+        <h4 className='toast__title'>{title}</h4>
+        <p className='toast__message'>{message}</p>
       </div>
     </div>
   )

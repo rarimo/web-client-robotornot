@@ -247,4 +247,11 @@ export enum ICON_NAMES {
   robot = 'robot',
 
   credentialsLoader = 'credentials-loader',
+
+  collapse = 'collapse',
+  sidebar = 'sidebar',
+
+  rarimeSnap = 'rarime-snap',
+  rarimeSnapFilled = 'rarime-snap-filled',
+  crossedChain = 'crossed-chain',
 }

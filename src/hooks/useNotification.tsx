@@ -1,3 +1,6 @@
+import 'react-toastify/dist/ReactToastify.css'
+import '@/common/toasts/styles.scss'
+
 import { TransactionResponse } from '@distributedlab/w3p'
 import isObject from 'lodash/isObject'
 import { useCallback, useMemo } from 'react'
@@ -97,9 +100,10 @@ export const useNotification = () => {
             error: NOTIFICATION_TYPE.error,
             warning: NOTIFICATION_TYPE.warning,
           }[messageType] as TypeOptions,
-          className: 'default-toast',
+          className: 'toast',
           autoClose: MINUTE / 4,
           closeOnClick: false,
+          position: 'bottom-left',
         },
       )
     },
@@ -135,9 +139,10 @@ export const useNotification = () => {
           error: NOTIFICATION_TYPE.error,
           pending: NOTIFICATION_TYPE.info,
         }[type] as TypeOptions,
-        className: 'transaction-toast',
+        className: 'toast',
         autoClose: MINUTE / 4,
         closeOnClick: false,
+        position: 'bottom-left',
       },
     )
   }

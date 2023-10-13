@@ -34,7 +34,7 @@ const Modal: FC<Props> = ({
     <AnimatePresence initial={false}>
       {isShown && (
         <motion.div
-          className={`modal ${className || ''}`}
+          className={['modal', className].join(' ')}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

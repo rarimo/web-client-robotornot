@@ -144,6 +144,15 @@ export const config = {
 
   CIRCUITS_LOADING_TRIES_LIMIT:
     import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
+
+  CHROME_METAMASK_ADDON_LINK:
+    'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
+  FIREFOX_METAMASK_ADDON_LINK:
+    'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+  OPERA_METAMASK_ADDON_LINK:
+    'https://addons.opera.com/en/extensions/details/metamask-10/',
+
+  EXTERNAL_LANDING_URL: 'https://rarimo.com/',
 } as {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
@@ -181,6 +190,12 @@ export const config = {
     Chain
   >
   CIRCUITS_LOADING_TRIES_LIMIT: number
+
+  CHROME_METAMASK_ADDON_LINK: string
+  FIREFOX_METAMASK_ADDON_LINK: string
+  OPERA_METAMASK_ADDON_LINK: string
+
+  EXTERNAL_LANDING_URL: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

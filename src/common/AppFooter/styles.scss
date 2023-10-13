@@ -1,6 +1,13 @@
 .app-footer {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: toRem(32);
+  padding: toRem(50) var(--app-padding-right) toRem(64) var(--app-padding-left);
+}
+
+.app-footer__copyright {
+  color: var(--text-primary-main, #687281);
+  font-size: toRem(14);
+  font-weight: 500;
+  line-height: 1.3;
 }

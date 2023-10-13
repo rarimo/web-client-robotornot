@@ -1,10 +1,14 @@
 $padding-side: toRem(24);
 
-.basic-modal__pane {
+.basic-modal {
   --basic-modal-max-width: #{toRem(400)};
+  --modal-max-width: var(--basic-modal-max-width);
+}
 
-  background: var(--background-primary-main);
-  max-width: var(--basic-modal-max-width);
+.basic-modal__inner {
+  background: var(--background-secondary-main);
+  border-radius: toRem(12);
+  width: 100%;
 }
 
 .basic-modal__header {
@@ -24,13 +28,13 @@ $padding-side: toRem(24);
 .basic-modal__title {
   font-size: toRem(20);
   font-weight: 600;
-  color: var(--text-primary-main);
+  color: var(--text-secondary-main);
 }
 
 .basic-modal__subtitle {
   font-size: toRem(14);
   line-height: 1.45;
-  color: var(--text-secondary-main);
+  color: var(--text-primary-main);
 }
 
 .basic-modal__body {

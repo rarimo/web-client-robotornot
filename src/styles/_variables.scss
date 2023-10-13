@@ -14,9 +14,25 @@
   --background-primary-main: #{$background-primary-main};
   --background-primary-dark: #{$background-primary-dark};
 
+  --background-primary-light-rgb: #{$background-primary-light-rgb};
+  --background-primary-main-rgb: #{$background-primary-main-rgb};
+  --background-primary-dark-rgb: #{$background-primary-dark-rgb};
+
   --background-secondary-light: #{$background-secondary-light};
   --background-secondary-main: #{$background-secondary-main};
   --background-secondary-dark: #{$background-secondary-dark};
+
+  --background-secondary-light-rgb: #{$background-secondary-light-rgb};
+  --background-secondary-main-rgb: #{$background-secondary-main-rgb};
+  --background-secondary-dark-rgb: #{$background-secondary-dark-rgb};
+
+  --background-tertiary-light: #{$background-tertiary-light};
+  --background-tertiary-main: #{$background-tertiary-main};
+  --background-tertiary-dark: #{$background-tertiary-dark};
+
+  --background-tertiary-light-rgb: #{$background-tertiary-light-rgb};
+  --background-tertiary-main-rgb: #{$background-tertiary-main-rgb};
+  --background-tertiary-dark-rgb: #{$background-tertiary-dark-rgb};
 
   /* status colors */
   --success-light: #{$success-light};
@@ -79,7 +95,7 @@
 
   /* App variables */
   --app-txt: #{$text-primary-main};
-  --app-font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
+  --app-font-family: 'euclidCircularB', 'Roboto', 'Arial', sans-serif;
   --app-padding-right: #{toRem(132)};
   --app-padding-left: #{toRem(132)};
 

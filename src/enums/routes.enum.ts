@@ -1,7 +1,7 @@
 export enum RoutesPaths {
-  app = '/',
+  App = '/',
+  Main = '',
 
-  auth = '/auth',
   authProviders = '/auth/providers',
   authPreview = '/auth/preview',
   authConfirmation = '/auth/confirmation',

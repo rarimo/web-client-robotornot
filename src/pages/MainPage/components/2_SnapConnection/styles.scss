@@ -1,0 +1,20 @@
+.snap-connection__badge {
+  gap: 0;
+}
+
+.snap-connection__badge-item-snap {
+  padding: toRem(6);
+
+  /* FIXME */
+  background: #52b69a;
+}
+
+.snap-connection__badge-item {
+  &:not(.snap-connection__badge-item-snap) {
+    margin-left: -#{toRem(18)};
+  }
+}
+
+.snap-connection__title {
+  margin: toRem(32) 0 toRem(40);
+}
