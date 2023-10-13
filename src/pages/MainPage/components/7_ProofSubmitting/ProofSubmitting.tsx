@@ -89,7 +89,11 @@ const ProofSubmitting: FC<StepProps> = ({
         )}
       </div>
 
-      <h2 className='proof-submitting__title'>{`Share proof with Galxe`}</h2>
+      <h2 className='proof-submitting__title'>{`Share proof ${
+        isQuestPlatformDetailsShown
+          ? `with ${questPlatformDetails?.destinationDetails?.name}`
+          : 'to Ethereum'
+      }`}</h2>
 
       <span className='proof-submitting__subtitle'>
         {`Submitting a proof via blockchain`}
