@@ -16,7 +16,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       <div className='app__step-sidebar-content-img-wrp'>
         <img
           className='app__step-sidebar-content-img'
-          src='/images/box-game.png'
+          src='/images/sidebar-img-1.svg'
           alt='sidebar-content'
         />
       </div>
