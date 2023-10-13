@@ -40,7 +40,6 @@ const whiteColor = '#fff'
 const LETTER_PADDING_X = 20
 const LETTER_PADDING_Y = 30
 const FONT_SIZE = 24
-const SECTION_TOP_PADDING = 168
 const successColors: string[] = [
   'rgba(122, 83, 171, 0.6)',
   'rgba(48,68,254,0.6)',
@@ -61,6 +60,7 @@ const WordsScrambleGame = ({
   ...rest
 }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
+  const wordsScrambleGameRef = useRef<HTMLDivElement | null>(null)
 
   const [successfulWordsCount, setSuccessfulWordsCount] = useState(0)
   const [blockWidth, setBlockWidth] = useState(0)
@@ -348,14 +348,17 @@ const WordsScrambleGame = ({
     })
   }
 
-  const initGame = () => {
-    sideBarBlock = document.querySelector('.word-find-game')
+  const getSizeBlock = () => {
+    sideBarBlock = wordsScrambleGameRef.current
     setBlockWidth(sideBarBlock ? sideBarBlock.getBoundingClientRect().width : 0)
     setBlockHeight(
-      sideBarBlock
-        ? sideBarBlock.getBoundingClientRect().height - SECTION_TOP_PADDING
-        : 0,
+      sideBarBlock ? sideBarBlock.getBoundingClientRect().height : 0,
     )
+  }
+
+  const initGame = () => {
+    getSizeBlock()
+    window.addEventListener('resize', getSizeBlock)
     CanvasRenderingContext2D.prototype.roundRect = function (
       x,
       y,
@@ -407,7 +410,10 @@ const WordsScrambleGame = ({
   useEffect(() => {
     if (canvasRef.current && matrix.length && matrix[0].length) {
       const canvas = initGame()
-      return () => canvas?.removeEventListener('mousedown', mouseDownHandler)
+      return () => {
+        canvas?.removeEventListener('mousedown', mouseDownHandler),
+          window.removeEventListener('resize', getSizeBlock)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height, resizeGameRatio])
@@ -416,6 +422,7 @@ const WordsScrambleGame = ({
     <motion.div
       className={['words-scramble-game', className].join(' ')}
       {...rest}
+      ref={wordsScrambleGameRef}
     >
       <canvas
         className='words-scramble-game__canvas'
