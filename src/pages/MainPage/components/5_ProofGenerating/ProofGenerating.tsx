@@ -69,6 +69,7 @@ const ProofGenerating: FC<StepProps> = ({
   }, [checkIsIdentityProved, getZkProof, nextStepCb, onErrorCb])
 
   useEffect(() => {
+    nextStepCb()
     if (!verificationErrorMessages) return
 
     prevStep()

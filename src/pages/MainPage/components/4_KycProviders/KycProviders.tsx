@@ -60,6 +60,7 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   }, [clearKycError, setIsVCRequestFailed, setIsVCRequestPending])
 
   useEffect(() => {
+    nextStepCb()
     if (!isVCRequestPending || !!verificationErrorMessages) return
 
     nextStepCb?.()
