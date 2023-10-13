@@ -1,6 +1,5 @@
 .word-find-game{
   position: absolute;
-  z-index: var(--toastify-z-index);
   background: var(--black);
   width: 100%;
   height: 100%;
@@ -34,5 +33,16 @@ flex-direction: column;
 .word-find-game__header-count{
   font-size: var(--field-text-font-size);
   color: var(--white);
+  font-weight: 500;
+}
+
+.word-find-game__canvas{
+  margin: auto;
+}
+
+.word-find-game__text-two{
+  color: var(--white);
+  font-size: toRem(20);
+  text-align: center;
   font-weight: 500;
 }

@@ -22,9 +22,17 @@
   margin-left: auto;
   cursor: pointer;
   z-index: $local-z-index;
+
+  &:hover {
+    .icon {
+      color: var(--primary-main);
+    }
+  }
 }
 
 .kyc-providers-item__icon {
+  transition: color 0.35s ease-in-out;
+
   @include static-icon-size(48);
 
   &--decor {
@@ -35,7 +43,7 @@
 }
 
 .kyc-providers-item__name {
-  color: var(--text-primary-main);
+  color: var(--text-secondary-main);
   font-size: toRem(16);
   font-weight: 600;
 }
@@ -46,4 +54,11 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.kyc-providers-item .kyc-providers-item__tooltip {
+  /* FIXME */
+
+  background: #636a74;
+  max-width: toRem(320);
 }

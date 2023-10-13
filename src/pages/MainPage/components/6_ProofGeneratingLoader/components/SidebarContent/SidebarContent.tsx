@@ -38,7 +38,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       <div className='app__step-sidebar-content-img-wrp'>
         <img
           className='app__step-sidebar-content-img'
-          src='/images/box-game.png'
+          src='/images/sidebar-img-6.png'
           alt='sidebar-content'
         />
       </div>
@@ -50,6 +50,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       <div className='app__step-sidebar-content-actions'>
         <AppButton
           className='app__step-sidebar-content-actions-btn'
+          color='secondary'
           text={`Play Game`}
           modification='border-circle'
           size='small'

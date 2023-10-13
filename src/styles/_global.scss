@@ -160,7 +160,10 @@ a {
   padding: 0 var(--app-padding-right) 0 var(--app-padding-left);
 
   & > * {
-    flex: 1;
+
+    &:first-child {
+      flex: 1;
+    }
   }
 
   @include respond-to(xsmall) {
@@ -239,8 +242,10 @@ a {
   gap: toRem(2.4);
   font-size: toRem(14);
   font-weight: 400;
+  color: var(--text-primary-main);
 
   &--accent {
+    color: var(--text-secondary-main);
     font-weight: 600;
   }
 }
@@ -252,7 +257,7 @@ a {
 .app__step-sidebar-content-img-wrp {
   width: 100%;
   height: auto;
-  margin-bottom: auto;
+  margin: auto;
 }
 
 .app__step-sidebar-content-img {
@@ -272,7 +277,7 @@ a {
 
 .app__step-sidebar-content-title {
   text-align: center;
-  color: var(--text-secondary-main);
+  color: var(--text-primary-main);
   font-size: toRem(32);
   font-weight: 600;
 }

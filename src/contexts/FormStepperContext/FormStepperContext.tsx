@@ -18,7 +18,7 @@ import {
   useWeb3Context,
   useZkpContext,
 } from '@/contexts'
-import { ErrorHandler, sleep } from '@/helpers'
+import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
 
 /* prettier-ignore-start */
 /* eslint-disable */
@@ -504,6 +504,10 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
+
+  useEffect(() => {
+    gaSendCustomEvent(GaCategories.PageView, { pathname: currentStep })
+  }, [currentStep])
 
   return (
     <formStepperContext.Provider
