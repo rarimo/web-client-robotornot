@@ -34,7 +34,7 @@ interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
 }
 
 const SQUARE_SIZE = 44
-const SQUARE_PADDING = 8
+const GAP = 8
 const DEFAULT_PADDING = 32
 const DEFAULT_PADDING_VERTICAL = 32
 const BORDER_RADIUS = 8
@@ -45,7 +45,7 @@ const whiteColor = '#fff'
 const LETTER_PADDING_X = 20
 const LETTER_PADDING_Y = 30
 const FONT_SIZE = 24
-const SECTION_TOP_PADDING = 128
+const SECTION_TOP_PADDING = 168
 const successColors: string[] = [
   'rgba(122, 83, 171, 0.6)',
   'rgba(48,68,254,0.6)',
@@ -81,46 +81,33 @@ const WordsScrambleGame = ({
 
   let sideBarBlock: HTMLDivElement | null
   let successfulWordsColorNumber = 0
+
   const canvasWidth =
-    2 * DEFAULT_PADDING + SQUARE_PADDING * (cols - 1) + SQUARE_SIZE * cols
+    2 * DEFAULT_PADDING + GAP * (cols - 1) + SQUARE_SIZE * cols
 
   const canvasHeight =
-    2 * DEFAULT_PADDING_VERTICAL +
-    SQUARE_PADDING * (rows - 1) +
-    SQUARE_SIZE * rows
+    2 * DEFAULT_PADDING_VERTICAL + GAP * (rows - 1) + SQUARE_SIZE * rows
 
   const resizeGameRatio = useMemo(() => {
     const ratioWidth = blockWidth / canvasWidth
     const ratioHeight = blockHeight / canvasHeight
-    return ratioWidth >= ratioHeight
-      ? ratioHeight >= 1
-        ? 2
-        : 2 * ratioHeight
-      : ratioWidth >= 1
-      ? 2
-      : 2 * ratioWidth
-  }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
-
-  const resizeGameRatioType = useMemo(() => {
-    const ratioWidth = blockWidth / canvasWidth
-    const ratioHeight = blockHeight / canvasHeight
-    return ratioWidth >= ratioHeight ? 'height' : 'width'
+    return ratioWidth >= ratioHeight ? 2 * ratioHeight : 2 * ratioWidth
   }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
 
   const squareSize = useMemo(() => {
     return SQUARE_SIZE * resizeGameRatio
   }, [resizeGameRatio])
 
-  const squarePadding = useMemo(() => {
-    return SQUARE_PADDING * resizeGameRatio
+  const gap = useMemo(() => {
+    return GAP * resizeGameRatio
   }, [resizeGameRatio])
 
   const defaultPadding = useMemo(() => {
-    return (DEFAULT_PADDING * resizeGameRatio) / 2
+    return DEFAULT_PADDING * resizeGameRatio
   }, [resizeGameRatio])
 
   const defaultPaddingVertical = useMemo(() => {
-    return (DEFAULT_PADDING_VERTICAL * resizeGameRatio) / 2
+    return DEFAULT_PADDING_VERTICAL * resizeGameRatio
   }, [resizeGameRatio])
 
   const letterPaddingX = useMemo(() => {
@@ -132,26 +119,12 @@ const WordsScrambleGame = ({
   }, [resizeGameRatio])
 
   const width = useMemo(() => {
-    return blockWidth > canvasWidth
-      ? 2 * canvasWidth
-      : resizeGameRatioType === 'height'
-      ? blockWidth * resizeGameRatio
-      : 2 * blockWidth
-  }, [blockWidth, canvasWidth, resizeGameRatio, resizeGameRatioType])
+    return canvasWidth * resizeGameRatio
+  }, [canvasWidth, resizeGameRatio])
 
   const height = useMemo(() => {
-    return blockHeight > canvasHeight
-      ? 2 * canvasWidth
-      : resizeGameRatioType === 'width'
-      ? blockHeight * resizeGameRatio
-      : 2 * blockHeight
-  }, [
-    blockHeight,
-    canvasHeight,
-    canvasWidth,
-    resizeGameRatio,
-    resizeGameRatioType,
-  ])
+    return canvasHeight * resizeGameRatio
+  }, [canvasHeight, resizeGameRatio])
 
   const matrix = useMemo(() => {
     return createWordMatrix(words, rows, cols)
@@ -161,21 +134,17 @@ const WordsScrambleGame = ({
     ctx.fillStyle = whiteColor
     ctx.fillText(
       matrix[row][col],
-      defaultPadding + letterPaddingX + col * squareSize + col * squarePadding,
-      defaultPaddingVertical +
-        letterPaddingY +
-        row * squareSize +
-        row * squarePadding,
+      defaultPadding + letterPaddingX + col * squareSize + col * gap,
+      defaultPaddingVertical + letterPaddingY + row * squareSize + row * gap,
     )
   }
 
   const fillActiveSquare = (event: MouseEvent) => {
     const col = Math.trunc(
-      (event.offsetX - defaultPadding / 2) / ((squareSize + squarePadding) / 2),
+      (event.offsetX - defaultPadding / 2) / ((squareSize + gap) / 2),
     )
     const row = Math.trunc(
-      (event.offsetY - defaultPaddingVertical / 2) /
-        ((squareSize + squarePadding) / 2),
+      (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
     )
     let direction = 'default'
 
@@ -192,26 +161,24 @@ const WordsScrambleGame = ({
         ctx.fillRect(
           defaultPadding +
             prevState.col * squareSize +
-            (prevState.col - 1) * squarePadding,
+            (prevState.col - 1) * gap,
           defaultPadding +
             prevState.row * squareSize +
-            (prevState.row - 1) * squarePadding,
+            (prevState.row - 1) * gap,
           checkExistsCord(prevState.row, prevState.col, successfulCords)
             ? 0
-            : squareSize + 2 * squarePadding,
+            : squareSize + 2 * gap,
           checkExistsCord(prevState.row, prevState.col, successfulCords)
             ? 0
-            : squareSize + 2 * squarePadding,
+            : squareSize + 2 * gap,
         )
         ctx.fillStyle = greyColor
         ctx
           .roundRect(
-            defaultPadding +
-              prevState.col * squareSize +
-              prevState.col * squarePadding,
+            defaultPadding + prevState.col * squareSize + prevState.col * gap,
             defaultPaddingVertical +
               prevState.row * squareSize +
-              prevState.row * squarePadding,
+              prevState.row * gap,
             squareSize,
             squareSize,
             BORDER_RADIUS,
@@ -229,20 +196,16 @@ const WordsScrambleGame = ({
     } else {
       ctx.fillStyle = blackColor
       ctx.fillRect(
-        defaultPadding + col * squareSize + (col - 1) * squarePadding,
-        defaultPadding + row * squareSize + (row - 1) * squarePadding,
-        checkExistsCord(row, col, successfulCords)
-          ? 0
-          : squareSize + 2 * squarePadding,
-        checkExistsCord(row, col, successfulCords)
-          ? 0
-          : squareSize + 2 * squarePadding,
+        defaultPadding + col * squareSize + (col - 1) * gap,
+        defaultPadding + row * squareSize + (row - 1) * gap,
+        checkExistsCord(row, col, successfulCords) ? 0 : squareSize + 2 * gap,
+        checkExistsCord(row, col, successfulCords) ? 0 : squareSize + 2 * gap,
       )
       ctx.fillStyle = greyColor
       ctx
         .roundRect(
-          defaultPadding + col * squareSize + col * squarePadding,
-          defaultPaddingVertical + row * squareSize + row * squarePadding,
+          defaultPadding + col * squareSize + col * gap,
+          defaultPaddingVertical + row * squareSize + row * gap,
           squareSize,
           squareSize,
           BORDER_RADIUS,
@@ -254,19 +217,15 @@ const WordsScrambleGame = ({
         isVerticalValue.includes(direction)
           ? defaultPadding +
               col * squareSize +
-              (col + (direction === 'down' ? -1 : 0)) * squarePadding
-          : defaultPadding + col * squareSize + col * squarePadding,
+              (col + (direction === 'down' ? -1 : 0)) * gap
+          : defaultPadding + col * squareSize + col * gap,
         isHorizontalValue.includes(direction)
           ? defaultPaddingVertical +
               row * squareSize +
-              (row + (direction === 'right' ? -1 : 0)) * squarePadding
-          : defaultPaddingVertical + row * squareSize + row * squarePadding,
-        isVerticalValue.includes(direction)
-          ? squareSize + squarePadding
-          : squareSize,
-        isHorizontalValue.includes(direction)
-          ? squareSize + squarePadding
-          : squareSize,
+              (row + (direction === 'right' ? -1 : 0)) * gap
+          : defaultPaddingVertical + row * squareSize + row * gap,
+        isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
+        isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
       )
     }
     printLetter(col, row)
@@ -308,47 +267,37 @@ const WordsScrambleGame = ({
             isVerticalValue.includes(direction)
               ? defaultPadding +
                   item.col * squareSize +
-                  (item.col + (direction === 'down' ? -1 : 0)) * squarePadding
-              : defaultPadding +
-                  item.col * squareSize +
-                  item.col * squarePadding,
+                  (item.col + (direction === 'down' ? -1 : 0)) * gap
+              : defaultPadding + item.col * squareSize + item.col * gap,
             isHorizontalValue.includes(direction)
               ? defaultPaddingVertical +
                   item.row * squareSize +
-                  (item.row + (direction === 'right' ? -1 : 0)) * squarePadding
-              : defaultPaddingVertical +
-                  item.row * squareSize +
-                  item.row * squarePadding,
-            isVerticalValue.includes(direction)
-              ? squareSize + squarePadding
-              : squareSize,
+                  (item.row + (direction === 'right' ? -1 : 0)) * gap
+              : defaultPaddingVertical + item.row * squareSize + item.row * gap,
+            isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
             isHorizontalValue.includes(direction)
-              ? squareSize + squarePadding
+              ? squareSize + gap
               : squareSize,
           )
         } else {
           ctx.fillStyle = blackColor
           ctx.fillRect(
-            defaultPadding +
-              item.col * squareSize +
-              (item.col - 1) * squarePadding,
+            defaultPadding + item.col * squareSize + (item.col - 1) * gap,
             defaultPaddingVertical +
               item.row * squareSize +
-              (item.row - 1) * squarePadding,
+              (item.row - 1) * gap,
             checkExistsCord(item.row, item.col, successfulCords)
               ? 0
-              : squareSize + 2 * squarePadding,
+              : squareSize + 2 * gap,
             checkExistsCord(item.row, item.col, successfulCords)
               ? 0
-              : squareSize + 2 * squarePadding,
+              : squareSize + 2 * gap,
           )
           ctx.fillStyle = greyColor
           ctx
             .roundRect(
-              defaultPadding + item.col * squareSize + item.col * squarePadding,
-              defaultPaddingVertical +
-                item.row * squareSize +
-                item.row * squarePadding,
+              defaultPadding + item.col * squareSize + item.col * gap,
+              defaultPaddingVertical + item.row * squareSize + item.row * gap,
               squareSize,
               squareSize,
               BORDER_RADIUS,
@@ -366,19 +315,15 @@ const WordsScrambleGame = ({
           isVerticalValue.includes(direction)
             ? defaultPadding +
                 col * squareSize +
-                (col + (direction === 'down' ? -1 : 0)) * squarePadding
-            : defaultPadding + col * squareSize + col * squarePadding,
+                (col + (direction === 'down' ? -1 : 0)) * gap
+            : defaultPadding + col * squareSize + col * gap,
           isHorizontalValue.includes(direction)
             ? defaultPaddingVertical +
                 row * squareSize +
-                (row + (direction === 'right' ? -1 : 0)) * squarePadding
-            : defaultPaddingVertical + row * squareSize + row * squarePadding,
-          isVerticalValue.includes(direction)
-            ? squareSize + squarePadding
-            : squareSize,
-          isHorizontalValue.includes(direction)
-            ? squareSize + squarePadding
-            : squareSize,
+                (row + (direction === 'right' ? -1 : 0)) * gap
+            : defaultPaddingVertical + row * squareSize + row * gap,
+          isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
+          isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
         )
         printLetter(col, row)
         localPrevState = { col, row }
@@ -443,11 +388,11 @@ const WordsScrambleGame = ({
         ctx.strokeStyle = ctx.fillStyle
         ctx
           .roundRect(
-            defaultPadding + row * squareSize + row * squarePadding,
-            defaultPaddingVertical + col * squareSize + col * squarePadding,
+            defaultPadding + row * squareSize + row * gap,
+            defaultPaddingVertical + col * squareSize + col * gap,
             squareSize,
             squareSize,
-            squarePadding,
+            gap,
           )
           .fill()
         printLetter(row, col)
@@ -484,7 +429,13 @@ const WordsScrambleGame = ({
       <p className='word-find-game__text'>
         {'Interactive game during the wait time'}
       </p>
-      <canvas ref={canvasRef} height={height} width={width} />
+      <p className='word-find-game__text-two'>{'Let’s find words!'}</p>
+      <canvas
+        className='word-find-game__canvas'
+        ref={canvasRef}
+        height={height}
+        width={width}
+      />
     </motion.div>
   )
 }
