@@ -28,7 +28,7 @@ interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
 }
 
 const SQUARE_SIZE = 40
-const SQUARE_PADDING = 2
+const GAP = 2
 const DEFAULT_PADDING = 16
 const DEFAULT_PADDING_VERTICAL = 16
 const BORDER_RADIUS = 4
@@ -49,37 +49,23 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
   let ctx: ICanvasRenderingContext2D
 
   const canvasWidth =
-    2 * DEFAULT_PADDING + SQUARE_PADDING * (cols - 1) + SQUARE_SIZE * cols
+    2 * DEFAULT_PADDING + GAP * (cols - 1) + SQUARE_SIZE * cols
 
   const canvasHeight =
-    2 * DEFAULT_PADDING_VERTICAL +
-    SQUARE_PADDING * (rows - 1) +
-    SQUARE_SIZE * rows
+    2 * DEFAULT_PADDING_VERTICAL + GAP * (rows - 1) + SQUARE_SIZE * rows
 
   const resizeGameRatio = useMemo(() => {
     const ratioWidth = blockWidth / canvasWidth
     const ratioHeight = blockHeight / canvasHeight
-    return ratioWidth >= ratioHeight
-      ? ratioHeight >= 1
-        ? 2
-        : 2 * ratioHeight
-      : ratioWidth >= 1
-      ? 2
-      : 2 * ratioWidth
-  }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
-
-  const resizeGameRatioType = useMemo(() => {
-    const ratioWidth = blockWidth / canvasWidth
-    const ratioHeight = blockHeight / canvasHeight
-    return ratioWidth >= ratioHeight ? 'height' : 'width'
+    return ratioWidth >= ratioHeight ? 2 * ratioHeight : 2 * ratioWidth
   }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
 
   const squareSize = useMemo(() => {
     return SQUARE_SIZE * resizeGameRatio
   }, [resizeGameRatio])
 
-  const squarePadding = useMemo(() => {
-    return SQUARE_PADDING * resizeGameRatio
+  const gap = useMemo(() => {
+    return GAP * resizeGameRatio
   }, [resizeGameRatio])
 
   const defaultPadding = useMemo(() => {
@@ -99,26 +85,12 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
   }, [resizeGameRatio])
 
   const width = useMemo(() => {
-    return blockWidth > canvasWidth
-      ? 2 * canvasWidth
-      : resizeGameRatioType === 'height'
-      ? blockWidth * resizeGameRatio
-      : 2 * blockWidth
-  }, [blockWidth, canvasWidth, resizeGameRatio, resizeGameRatioType])
+    return canvasWidth * resizeGameRatio
+  }, [canvasWidth, resizeGameRatio])
 
   const height = useMemo(() => {
-    return blockHeight > canvasHeight
-      ? 2 * canvasWidth
-      : resizeGameRatioType === 'width'
-      ? blockHeight * resizeGameRatio
-      : 2 * blockHeight
-  }, [
-    blockHeight,
-    canvasHeight,
-    canvasWidth,
-    resizeGameRatio,
-    resizeGameRatioType,
-  ])
+    return canvasHeight * resizeGameRatio
+  }, [canvasHeight, resizeGameRatio])
 
   const minesInField = useMemo(() => {
     return generateMines(rows, cols, mines)
@@ -127,6 +99,15 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
   const gameField = useMemo(() => {
     return calculateMineCounts(minesInField, rows, cols)
   }, [cols, minesInField, rows])
+
+  const printLetter = (col: number, row: number) => {
+    ctx.fillStyle = whiteColor
+    ctx.fillText(
+      gameField[row][col],
+      defaultPadding + letterPaddingX + col * squareSize + col * gap,
+      defaultPaddingVertical + letterPaddingY + row * squareSize + row * gap,
+    )
+  }
 
   const init = () => {
     canvas = canvasRef.current
@@ -167,16 +148,11 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
     ctx.clearRect(defaultPadding, defaultPaddingVertical, width, height)
 
     ctx.fillStyle = 'blue'
-    ctx.font = '20px Arial'
+    ctx.font = '32px Arial'
 
     ctx.fillStyle = 'black'
 
-    ctx.fillRect(
-      0,
-      0,
-      (squareSize + squarePadding) * cols,
-      (squareSize + squarePadding) * rows,
-    )
+    ctx.fillRect(0, 0, (squareSize + gap) * cols, (squareSize + gap) * rows)
 
     ctx.fillStyle = 'gray'
 
@@ -184,8 +160,8 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
       row.forEach((cell, colIndex) => {
         ctx
           .roundRect(
-            colIndex * (squareSize + squarePadding),
-            rowIndex * (squareSize + squarePadding),
+            colIndex * (squareSize + gap),
+            rowIndex * (squareSize + gap),
             squareSize,
             squareSize,
             BORDER_RADIUS,
@@ -195,24 +171,26 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
     })
   }
   const clickSquare = (event: MouseEvent) => {
-    if (squareSize === 0 || squarePadding === 0) return
+    if (squareSize === 0 || gap === 0) return
     const col = Math.trunc(
-      (event.offsetX - defaultPadding / 2) / ((squareSize + squarePadding) / 2),
+      (event.offsetX - defaultPadding / 2) / ((squareSize + gap) / 2),
     )
     const row = Math.trunc(
-      (event.offsetY - defaultPaddingVertical / 2) /
-        ((squareSize + squarePadding) / 2),
+      (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
     )
     ctx.fillStyle = greyLight
     ctx
       .roundRect(
-        col * (squareSize + squarePadding),
-        row * (squareSize + squarePadding),
+        col * (squareSize + gap),
+        row * (squareSize + gap),
         squareSize,
         squareSize,
         BORDER_RADIUS,
       )
       .fill()
+    ctx.fillStyle = 'black'
+
+    printLetter(col, row)
 
     console.log({ col, row })
   }
