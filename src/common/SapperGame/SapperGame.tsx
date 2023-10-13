@@ -36,7 +36,7 @@ const greyColor = '#949494'
 const greyLight = '#dedede'
 const blackColor = '#000'
 const whiteColor = '#fff'
-const LETTER_PADDING_X = 20
+const LETTER_PADDING_X = 18
 const LETTER_PADDING_Y = 30
 const FONT_SIZE = 24
 
@@ -101,11 +101,11 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
   }, [cols, minesInField, rows])
 
   const printLetter = (col: number, row: number) => {
-    ctx.fillStyle = whiteColor
+    ctx.fillStyle = 'black'
     ctx.fillText(
       gameField[row][col],
-      defaultPadding + letterPaddingX + col * squareSize + col * gap,
-      defaultPaddingVertical + letterPaddingY + row * squareSize + row * gap,
+      letterPaddingX + col * squareSize + (col - 1) * gap,
+      letterPaddingY + row * squareSize + (row - 1) * gap,
     )
   }
 
@@ -148,7 +148,7 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
     ctx.clearRect(defaultPadding, defaultPaddingVertical, width, height)
 
     ctx.fillStyle = 'blue'
-    ctx.font = '32px Arial'
+    ctx.font = '40px Arial'
 
     ctx.fillStyle = 'black'
 
@@ -178,6 +178,7 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
     const row = Math.trunc(
       (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
     )
+
     ctx.fillStyle = greyLight
     ctx
       .roundRect(
@@ -188,9 +189,13 @@ const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
         BORDER_RADIUS,
       )
       .fill()
-    ctx.fillStyle = 'black'
 
     printLetter(col, row)
+
+    if (String(gameField[col][row]).toUpperCase() === 'X') {
+      console.log(gameField[col][row].toUpperCase());
+      alert('you lose')
+    }
 
     console.log({ col, row })
   }
