@@ -1,17 +1,10 @@
-.word-find-game{
-  position: absolute;
-  background: var(--black);
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
+.sidebar-game {
   display: flex;
-flex-direction: column;
-  align-items: center;
-
+  flex-direction: column;
+  background: var(--black);
 }
 
-.word-find-game__header{
+.sidebar-game__header {
   width: 100%;
   padding: toRem(32);
   display: flex;
@@ -19,30 +12,32 @@ flex-direction: column;
   align-items: center;
 }
 
-.word-find-game__header-icon{
- width: toRem(20);
+.sidebar-game__header-icon {
+  width: toRem(20);
   height: toRem(20);
 }
 
-.word-find-game__text{
+.sidebar-game__overtitle {
   color: var(--white);
   font-size: var(--field-text-font-size);
   text-align: center;
 }
 
-.word-find-game__header-count{
+.sidebar-game__header-count {
   font-size: var(--field-text-font-size);
   color: var(--white);
   font-weight: 500;
 }
 
-.word-find-game__canvas{
-  margin: auto;
-}
-
-.word-find-game__text-two{
+.sidebar-game__title {
   color: var(--white);
   font-size: toRem(20);
   text-align: center;
   font-weight: 500;
+}
+
+.sidebar-game__content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
