@@ -2,6 +2,7 @@ import './styles.scss'
 
 import { State } from '@civic/common-gateway-react'
 import { GatewayProvider, useGateway } from '@civic/ethereum-gateway-react'
+import { JsonApiClient } from '@distributedlab/jac'
 import { providers, Wallet } from 'ethers'
 import {
   FC,
@@ -14,7 +15,6 @@ import {
 } from 'react'
 import { useEffectOnce } from 'react-use'
 
-import { api } from '@/api'
 import { BasicModal, Icon } from '@/common'
 import { config } from '@/config'
 import { useWeb3Context } from '@/contexts'
@@ -45,9 +45,16 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
 
   const getSignedNonce = useCallback(async () => {
     try {
-      const { data } = await api.post<{
+      // FIXME: remove
+      const localApi = new JsonApiClient({
+        baseUrl: 'http://localhost:8002',
+        mode: 'no-cors',
+        credentials: 'omit',
+      })
+
+      const { data } = await localApi.post<{
         message: string
-      }>('integrations/kyc-service/v1/public/nonce', {
+      }>('/integrations/kyc-service/v1/public/nonce', {
         body: {
           data: {
             type: 'nonce_request',

@@ -34,7 +34,15 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       setIsPending(true)
 
       try {
-        await login(kycProvider, nextStepCb ?? nextStep)
+        await login(kycProvider, () => {
+          if (nextStepCb) {
+            nextStepCb()
+
+            return
+          }
+
+          nextStep()
+        })
 
         gaSendCustomEvent(GaCategories.ProviderSelection, {
           provider: kycProvider,

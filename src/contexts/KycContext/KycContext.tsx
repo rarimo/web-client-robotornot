@@ -409,9 +409,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const login = useCallback(
     async (
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
-      VCCreatedOrKycFinishedCb?: () => void,
+      _VCCreatedOrKycFinishedCb?: () => void,
     ) => {
-      setVCCreatedOrKycFinishedCb(VCCreatedOrKycFinishedCb)
+      setVCCreatedOrKycFinishedCb(_ => _VCCreatedOrKycFinishedCb)
 
       const currentIdentityIdString =
         identityIdString || (await createIdentity())
@@ -423,7 +423,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         setIsVCRequestFailed(false)
         setIsVCRequestPending(false)
 
-        VCCreatedOrKycFinishedCb?.()
+        _VCCreatedOrKycFinishedCb?.()
 
         return
       }
@@ -482,6 +482,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       // FIXME: remove
       const localApi = new JsonApiClient({
         baseUrl: 'http://localhost:8002',
+        mode: 'no-cors',
+        credentials: 'omit',
       })
 
       const { data } = await localApi.post<{
