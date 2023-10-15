@@ -1,4 +1,5 @@
 import { config, SUPPORTED_CHAINS } from '@config'
+import { JsonApiClient } from '@distributedlab/jac'
 import { RuntimeError } from '@distributedlab/tools'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
@@ -23,7 +24,6 @@ import {
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
-import { api } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import {
   awaitFinalityBlock,
@@ -53,16 +53,13 @@ interface ZkpContextValue {
 
   txSubmitExplorerLink: string
 
-  isClaimOfferExists: (
-    _identityIdString?: string,
-    triesLimit?: number,
-  ) => Promise<boolean>
   getClaimOffer: (
     _identityIdString?: string,
   ) => Promise<SaveCredentialsRequestParams>
   createIdentity: () => Promise<string | undefined>
   getVerifiableCredentials: (
     _identityIdString?: string,
+    claimOffer?: SaveCredentialsRequestParams,
   ) => Promise<W3CCredential | undefined>
   getZkProof: () => Promise<ZKPProofResponse | undefined>
   submitZkp: (selectedChain: SUPPORTED_CHAINS) => Promise<void>
@@ -86,9 +83,6 @@ export const zkpContext = createContext<ZkpContextValue>({
     throw new TypeError(`getClaimOffer() not implemented`)
   },
 
-  isClaimOfferExists: async () => {
-    throw new TypeError(`isClaimOfferExists() not implemented`)
-  },
   createIdentity: async () => {
     throw new TypeError(`createIdentity() not implemented`)
   },
@@ -180,8 +174,13 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     async (_identityIdString?: string) => {
       const currIdentityIdString = _identityIdString ?? identityIdString
 
-      const { data } = await api.get<SaveCredentialsRequestParams>(
-        `/integrations/issuer/v1/public/claims/offers/${currIdentityIdString}/IdentityProviders`,
+      // FIXME: remove
+      const localApi = new JsonApiClient({
+        baseUrl: 'http://localhost:3002',
+      })
+
+      const { data } = await localApi.get<SaveCredentialsRequestParams>(
+        `/integrations/issuer/v1/public/claims/offers/${currIdentityIdString}/${config.CLAIM_TYPE}`,
       )
 
       return data
@@ -189,36 +188,14 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [identityIdString],
   )
 
-  const isClaimOfferExists = useCallback(
+  const getVerifiableCredentials = useCallback(
     async (
       _identityIdString?: string,
-      triesLimit = config.CLAIM_OFFER_MAX_TRIES_COUNT,
-    ) => {
-      const currIdentityIdString = _identityIdString ?? identityIdString
-
-      let tryCounter = 0
-
-      while (tryCounter < triesLimit) {
-        try {
-          await getClaimOffer(currIdentityIdString)
-
-          return true
-        } catch (error) {
-          /* empty */
-        }
-
-        await sleep(config.CLAIM_OFFER_DELAY)
-        tryCounter++
-      }
-
-      return false
-    },
-    [getClaimOffer, identityIdString],
-  )
-
-  const getVerifiableCredentials = useCallback(
-    async (_identityIdString?: string): Promise<W3CCredential | undefined> => {
+      claimOffer?: SaveCredentialsRequestParams,
+    ): Promise<W3CCredential | undefined> => {
       const currentIdentityIdString = _identityIdString ?? identityIdString
+      const currentClaimOffer =
+        claimOffer ?? (await getClaimOffer(currentIdentityIdString))
 
       let vc: W3CCredential | undefined = verifiableCredentials
 
@@ -230,11 +207,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           vc?.credentialSubject?.id?.includes?.(currentIdentityIdString)
         )
       ) {
-        vc = (
-          await zkpSnap.getVerifiableCredentials(
-            await getClaimOffer(currentIdentityIdString),
-          )
-        )?.[0]
+        vc = (await zkpSnap.getVerifiableCredentials(currentClaimOffer))?.[0]
       }
 
       setVerifiableCredentials(vc)
@@ -463,7 +436,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
         txSubmitExplorerLink,
 
-        isClaimOfferExists,
         getClaimOffer,
         createIdentity,
         getVerifiableCredentials,

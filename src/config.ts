@@ -78,6 +78,7 @@ export const config = {
   EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
     .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
 
+  CLAIM_TYPE: import.meta.env.VITE_CLAIM_TYPE,
   CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
   CLAIM_OFFER_MAX_TRIES_COUNT:
     import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 5,
@@ -177,6 +178,7 @@ export const config = {
 
   EXTERNAL_PLATFORM_REDIRECT_URL: string
 
+  CLAIM_TYPE: string
   CLAIM_OFFER_DELAY: number
   CLAIM_OFFER_MAX_TRIES_COUNT: number
   KYC_VERIFICATION_DELAY: number
