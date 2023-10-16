@@ -1,14 +1,17 @@
 import { config } from '@config'
+import { FetcherError } from '@distributedlab/fetcher'
 import {
+  ConflictError,
+  HTTP_STATUS_CODES,
   JsonApiClient,
   type JsonApiError,
-  NotFoundError,
+  UnauthorizedError,
 } from '@distributedlab/jac'
 import {
   SaveCredentialsRequestParams,
   W3CCredential,
 } from '@rarimo/rarime-connector'
-import type { UserInfo } from '@uauth/js/build/types'
+import type { UserInfo } from '@uauth/js'
 import { AnimatePresence } from 'framer-motion'
 import {
   createContext,
@@ -362,16 +365,15 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const verificationErrorMessages = useMemo(() => {
     if (!kycError) return ''
 
-    switch (kycError?.httpStatus) {
-      case 401:
-        return localizeUnauthorizedError(kycError)
-      case 409:
-        return t(
-          'This KYC provider / Address was already claimed by another identity',
-        )
-      default:
-        return ''
-    }
+    if (kycError instanceof UnauthorizedError)
+      return localizeUnauthorizedError(kycError)
+
+    if (kycError instanceof ConflictError)
+      return t(
+        `This KYC provider / Address was already claimed by another identity`,
+      )
+
+    return ''
   }, [kycError, t])
 
   const retryKyc = useCallback(() => {
@@ -393,7 +395,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         return true
       } catch (error) {
-        if (error instanceof NotFoundError) return false
+        if (
+          error instanceof FetcherError &&
+          error.response.status === HTTP_STATUS_CODES.NOT_FOUND
+        )
+          return false
 
         setKycError(error as JsonApiError)
         setIsVCRequestFailed(true)
@@ -411,30 +417,35 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
       _VCCreatedOrKycFinishedCb?: () => void,
     ) => {
-      setVCCreatedOrKycFinishedCb(_ => _VCCreatedOrKycFinishedCb)
+      subscribeToClaimWaiting(config.CLAIM_TYPE, identityIdString)
 
-      const currentIdentityIdString =
-        identityIdString || (await createIdentity())
-
-      if (!currentIdentityIdString) return
-
-      if (await _isUserHasClaim(currentIdentityIdString)) {
-        setIsKycFinished(true)
-        setIsVCRequestFailed(false)
-        setIsVCRequestPending(false)
-
-        _VCCreatedOrKycFinishedCb?.()
-
-        return
-      }
-
-      if (supportedKycProvider === selectedKycProvider) {
-        retryKyc()
-
-        return
-      }
-
-      setSelectedKycProvider(supportedKycProvider)
+      // setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
+      //
+      // const currentIdentityIdString =
+      //   identityIdString || (await createIdentity())
+      //
+      // if (!currentIdentityIdString) return
+      //
+      // if (await _isUserHasClaim(currentIdentityIdString)) {
+      //   console.log('_isUserHasClaim')
+      //   setIsKycFinished(true)
+      //   setIsVCRequestFailed(false)
+      //   setIsVCRequestPending(false)
+      //
+      //   _VCCreatedOrKycFinishedCb?.()
+      //
+      //   return
+      // }
+      //
+      // console.log('nope')
+      //
+      // if (supportedKycProvider === selectedKycProvider) {
+      //   retryKyc()
+      //
+      //   return
+      // }
+      //
+      // setSelectedKycProvider(supportedKycProvider)
     },
     [
       _isUserHasClaim,
@@ -481,9 +492,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       // FIXME: remove
       const localApi = new JsonApiClient({
-        baseUrl: 'http://localhost:8002',
-        mode: 'no-cors',
-        credentials: 'omit',
+        baseUrl: 'http://localhost:8000',
       })
 
       const { data } = await localApi.post<{
@@ -516,14 +525,18 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       identityIdString: string,
       onClaimReceived?: (claim: SaveCredentialsRequestParams) => Promise<void>,
     ) => {
-      // FIXME
-      // Create WebSocket connection.
       const socket = new WebSocket(
         `ws://localhost:3002/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
       )
 
-      // Listen for messages
+      socket.addEventListener('open', event => {
+        console.log('open')
+        console.log(event)
+      })
+
       socket.addEventListener('message', async event => {
+        console.log(event)
+
         const msg = event.data as string | SaveCredentialsRequestParams
 
         if (typeof msg === 'string') return
@@ -532,6 +545,36 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         socket.close()
       })
+
+      socket.addEventListener('error', async event => {
+        console.log('error')
+        console.log(event)
+      })
+
+      // FIXME: localhost
+      // const socket = io(`ws://localhost:3002`, {
+      //   path: `/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
+      // })
+
+      // socket.on('open', event => {
+      //   console.log('open')
+      //   console.log(event)
+      // })
+      //
+      // socket.on('message', event => {
+      //   console.log('message')
+      //   console.log(event)
+      // })
+
+      // socket.on('message', async ({ data }) => {
+      //   const msg = data as string | SaveCredentialsRequestParams
+      //
+      //   if (typeof msg === 'string') return
+      //
+      //   await onClaimReceived?.(msg)
+      //
+      //   socket.close()
+      // })
     },
     [],
   )

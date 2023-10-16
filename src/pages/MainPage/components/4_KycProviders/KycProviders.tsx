@@ -125,11 +125,10 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               (selectedKycProvider &&
                 KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]
                   ?.completeKycMessage) ||
-              `RETURN TO PROVIDER LIST`
+              `Return to provider list`
             }
             modification='border-circle'
             iconRight={ICON_NAMES.arrowRight}
-            size='large'
             onClick={hideErrorMsgModal}
           />
         </div>

@@ -2,7 +2,7 @@ import { JsonApiClient } from '@distributedlab/jac'
 import { FC, HTMLAttributes } from 'react'
 import { useEffectOnce } from 'react-use'
 
-import { api } from '@/api'
+// import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
 
@@ -18,9 +18,7 @@ const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {
       try {
         // FIXME: remove
         const localApi = new JsonApiClient({
-          baseUrl: 'http://localhost:8002',
-          mode: 'no-cors',
-          credentials: 'omit',
+          baseUrl: 'http://localhost:8000',
         })
 
         const { data } = await localApi.post<{

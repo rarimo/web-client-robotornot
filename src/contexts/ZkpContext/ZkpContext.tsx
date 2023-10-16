@@ -1,17 +1,16 @@
 import { config, SUPPORTED_CHAINS } from '@config'
-import { JsonApiClient } from '@distributedlab/jac'
+import { fetcher } from '@distributedlab/fetcher'
 import { RuntimeError } from '@distributedlab/tools'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
-import type { ZKProof } from '@iden3/js-jwz'
 import type {
   SaveCredentialsRequestParams,
   StateInfo,
   W3CCredential,
   ZKPProofResponse,
+  ZKProof,
 } from '@rarimo/rarime-connector'
-import { CircuitId } from '@rarimo/zkp-gen-iden3'
 import { utils } from 'ethers'
 import log from 'loglevel'
 import {
@@ -55,7 +54,7 @@ interface ZkpContextValue {
 
   getClaimOffer: (
     _identityIdString?: string,
-  ) => Promise<SaveCredentialsRequestParams>
+  ) => Promise<SaveCredentialsRequestParams | undefined>
   createIdentity: () => Promise<string | undefined>
   getVerifiableCredentials: (
     _identityIdString?: string,
@@ -175,12 +174,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       const currIdentityIdString = _identityIdString ?? identityIdString
 
       // FIXME: remove
-      const localApi = new JsonApiClient({
-        baseUrl: 'http://localhost:3002',
-      })
-
-      const { data } = await localApi.get<SaveCredentialsRequestParams>(
-        `/integrations/issuer/v1/public/claims/offers/${currIdentityIdString}/${config.CLAIM_TYPE}`,
+      const { data } = await fetcher.get<SaveCredentialsRequestParams>(
+        `http://localhost:3002/v1/credentials/did:iden3:${currIdentityIdString}/${config.CLAIM_TYPE}`,
       )
 
       return data
@@ -191,15 +186,16 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getVerifiableCredentials = useCallback(
     async (
       _identityIdString?: string,
-      claimOffer?: SaveCredentialsRequestParams,
+      _claimOffer?: SaveCredentialsRequestParams,
     ): Promise<W3CCredential | undefined> => {
       const currentIdentityIdString = _identityIdString ?? identityIdString
-      const currentClaimOffer =
-        claimOffer ?? (await getClaimOffer(currentIdentityIdString))
+      const claimOffer =
+        _claimOffer ?? (await getClaimOffer(currentIdentityIdString))
 
       let vc: W3CCredential | undefined = verifiableCredentials
 
       if (
+        claimOffer &&
         !(
           currentIdentityIdString &&
           vc?.credentialSubject?.id &&
@@ -207,7 +203,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           vc?.credentialSubject?.id?.includes?.(currentIdentityIdString)
         )
       ) {
-        vc = (await zkpSnap.getVerifiableCredentials(currentClaimOffer))?.[0]
+        vc = (await zkpSnap.getVerifiableCredentials(claimOffer))?.[0]
       }
 
       setVerifiableCredentials(vc)
@@ -235,7 +231,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setIsZKPRequestPending(true)
 
     const zkProofResponse = await zkpSnap.createProof({
-      circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+      circuitId: 'credentialAtomicQueryMTPV2OnChain',
       accountAddress: provider?.address,
 
       query: {

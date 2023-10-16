@@ -47,9 +47,7 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
     try {
       // FIXME: remove
       const localApi = new JsonApiClient({
-        baseUrl: 'http://localhost:8002',
-        mode: 'no-cors',
-        credentials: 'omit',
+        baseUrl: 'http://localhost:8000',
       })
 
       const { data } = await localApi.post<{
