@@ -31,7 +31,12 @@ import { useEffectOnce, useLocalStorage } from 'react-use'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
-import { abbrCenter, ErrorHandler, localizeUnauthorizedError } from '@/helpers'
+import {
+  abbrCenter,
+  ErrorHandler,
+  localizeUnauthorizedError,
+  sleep,
+} from '@/helpers'
 
 const KycProviderUnstoppableDomains = lazy(
   () =>
@@ -412,6 +417,84 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [getClaimOffer, getVerifiableCredentials],
   )
 
+  const subscribeToClaimWaiting = useCallback(
+    async (
+      claimType: string,
+      identityIdString: string,
+      onClaimReceived?: (claim: SaveCredentialsRequestParams) => Promise<void>,
+    ) => {
+      const socket = new WebSocket(
+        `ws://localhost:3002/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
+      )
+
+      let isManualClosed = false
+
+      socket.addEventListener('open', event => {
+        console.log('open')
+        console.log(event)
+      })
+
+      socket.addEventListener('message', async event => {
+        console.log(event)
+
+        const msg = event.data as string | SaveCredentialsRequestParams
+
+        console.log(msg)
+
+        if (msg && msg === 'processing') return false
+
+        isManualClosed = true
+        socket.close()
+
+        console.log('imma here')
+
+        await onClaimReceived?.(typeof msg === 'string' ? JSON.parse(msg) : msg)
+      })
+
+      socket.addEventListener('error', async event => {
+        console.log('error')
+        console.log(event)
+      })
+
+      socket.addEventListener('close', async event => {
+        console.log('close')
+        console.log(event)
+
+        console.log('isManualClosed', isManualClosed)
+
+        if (!isManualClosed) {
+          subscribeToClaimWaiting(claimType, identityIdString, onClaimReceived)
+        }
+      })
+
+      // FIXME: localhost
+      // const socket = io(`ws://localhost:3002`, {
+      //   path: `/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
+      // })
+
+      // socket.on('open', event => {
+      //   console.log('open')
+      //   console.log(event)
+      // })
+      //
+      // socket.on('message', event => {
+      //   console.log('message')
+      //   console.log(event)
+      // })
+
+      // socket.on('message', async ({ data }) => {
+      //   const msg = data as string | SaveCredentialsRequestParams
+      //
+      //   if (typeof msg === 'string') return
+      //
+      //   await onClaimReceived?.(msg)
+      //
+      //   socket.close()
+      // })
+    },
+    [],
+  )
+
   const login = useCallback(
     async (
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
@@ -516,66 +599,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [selectedKycProvider],
   )
 
-  const subscribeToClaimWaiting = useCallback(
-    (
-      claimType: string,
-      identityIdString: string,
-      onClaimReceived?: (claim: SaveCredentialsRequestParams) => Promise<void>,
-    ) => {
-      const socket = new WebSocket(
-        `ws://localhost:3002/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
-      )
-
-      socket.addEventListener('open', event => {
-        console.log('open')
-        console.log(event)
-      })
-
-      socket.addEventListener('message', async event => {
-        console.log(event)
-
-        const msg = event.data as string | SaveCredentialsRequestParams
-
-        if (typeof msg === 'string') return
-
-        await onClaimReceived?.(msg)
-
-        socket.close()
-      })
-
-      socket.addEventListener('error', async event => {
-        console.log('error')
-        console.log(event)
-      })
-
-      // FIXME: localhost
-      // const socket = io(`ws://localhost:3002`, {
-      //   path: `/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
-      // })
-
-      // socket.on('open', event => {
-      //   console.log('open')
-      //   console.log(event)
-      // })
-      //
-      // socket.on('message', event => {
-      //   console.log('message')
-      //   console.log(event)
-      // })
-
-      // socket.on('message', async ({ data }) => {
-      //   const msg = data as string | SaveCredentialsRequestParams
-      //
-      //   if (typeof msg === 'string') return
-      //
-      //   await onClaimReceived?.(msg)
-      //
-      //   socket.close()
-      // })
-    },
-    [],
-  )
-
   const handleKycProviderComponentLogin = useCallback(
     async (response: unknown) => {
       setKycError(undefined)
@@ -589,12 +612,16 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         setIsKycFinished(true)
 
+        await sleep(1000)
+
         subscribeToClaimWaiting(
           config.CLAIM_TYPE,
           identityIdString,
           async (claimOffer: SaveCredentialsRequestParams) => {
+            console.log('getVerifiableCredentials')
             await getVerifiableCredentials(identityIdString, claimOffer)
 
+            console.log('setIsVCRequestPending(false)')
             setIsVCRequestPending(false)
           },
         )

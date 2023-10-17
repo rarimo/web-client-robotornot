@@ -1969,13 +1969,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime/packages/connector::locator=react-template%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rarimo/rarime-connector@portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime/packages/connector::locator=react-template%40workspace%3A."
+"@rarimo/rarime-connector@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@rarimo/rarime-connector@npm:0.5.0"
   dependencies:
     "@ethersproject/providers": 5.7.2
+  checksum: f2afc717f549884e72419abf153a05d423a773e6d3af007af1ad8b6925381c5e2794c94e5a7c73c13bc6f8730b78971e79cdd1450df43acaf51016dce09fe2b9
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@rarimo/shared-zkp-iden3@npm:^2.0.0-rc.24, @rarimo/shared-zkp-iden3@npm:^2.0.0-rc.26":
   version: 2.0.0-rc.26
@@ -10563,7 +10564,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": "*"
+    "@rarimo/rarime-connector": ^0.5.0
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0

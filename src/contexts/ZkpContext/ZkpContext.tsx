@@ -1,12 +1,13 @@
 import { config, SUPPORTED_CHAINS } from '@config'
 import { fetcher } from '@distributedlab/fetcher'
+import { RuntimeError } from '@distributedlab/tools'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
 import type {
   SaveCredentialsRequestParams,
   StateInfo,
-  UpdateStateDetails,
+  // UpdateStateDetails,
   W3CCredential,
   ZKPProofResponse,
   ZKProof,
@@ -24,8 +25,17 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
-import { GaCategories, gaSendCustomEvent, increaseGasLimit } from '@/helpers'
-import { useIdentityVerifier, useSbtIdentityVerifier } from '@/hooks/contracts'
+import {
+  awaitFinalityBlock,
+  GaCategories,
+  gaSendCustomEvent,
+  increaseGasLimit,
+  sleep,
+} from '@/helpers'
+import {
+  useIdentityVerifier,
+  // useSbtIdentityVerifier
+} from '@/hooks/contracts'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -107,7 +117,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const [zkProof, setZkProof] = useState<ZKProof>()
   const [statesMerkleProof, setStatesMerkleProof] = useState<StatesMerkleProof>()
-  const [updateStateDetails, setUpdateStateDetails] = useState<UpdateStateDetails>()
+  const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
+  // const [updateStateDetails, setUpdateStateDetails] = useState<UpdateStateDetails>()
   const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<W3CCredential>('vc', undefined)
   const [identityIdString, setIdentityIdString] = useState('')
   const [txSubmitHash, setTxSubmitHash] = useState('')
@@ -117,8 +128,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const { provider } = useWeb3Context()
   const zkpSnap = useMetamaskZkpSnapContext()
 
-  // const { getProveIdentityTxBody } = useIdentityVerifier()
-  const { getProveIdentityTxBody } = useSbtIdentityVerifier()
+  const { getProveIdentityTxBody } = useIdentityVerifier()
+  // const { getProveIdentityTxBody } = useSbtIdentityVerifier()
 
   const parseDIDToIdentityBigIntString = useCallback(
     (identityIdString: string) => {
@@ -244,7 +255,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     setStatesMerkleProof(zkProofResponse?.statesMerkleData)
 
-    setUpdateStateDetails(zkProofResponse?.updateStateDetails)
+    setTransitStateTx(zkProofResponse?.updateStateTx)
+
+    // setUpdateStateDetails(zkProofResponse?.updateStateDetails)
 
     setIsZKPRequestPending(false)
 
@@ -261,11 +274,54 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     })
   }, [identityIdString])
 
+  const handleTransitStateError = useCallback(
+    async (error: unknown) => {
+      if (error instanceof Error && 'error' in error) {
+        const str = 'Identities states root already exists'
+        const currentError = error.error as RuntimeError
+        const errorString = currentError?.message
+
+        if (errorString?.includes(str)) return
+      }
+
+      await sleep(1000)
+
+      logAppStateDetails()
+
+      throw error
+    },
+    [logAppStateDetails],
+  )
+
+  const transitState = useCallback(async () => {
+    if (!provider?.rawProvider) throw new TypeError('Provider is not defined')
+
+    if (!transitStateTx?.data)
+      throw new TypeError('Transit state tx is not defined')
+
+    try {
+      await provider?.signAndSendTx?.(transitStateTx)
+
+      gaSendCustomEvent(GaCategories.TransitState)
+
+      await awaitFinalityBlock(
+        config.FINALITY_BLOCK_AMOUNT,
+        provider?.rawProvider,
+      )
+    } catch (error) {
+      await handleTransitStateError(error)
+    }
+  }, [provider, transitStateTx, handleTransitStateError])
+
   const submitZkp = useCallback(
     async (selectedChain: SUPPORTED_CHAINS) => {
       setIsProveRequestPending(true)
 
       try {
+        if (transitStateTx?.data) {
+          await transitState()
+        }
+
         if (!provider?.address || !provider?.rawProvider)
           throw new TypeError('Provider is not defined')
 
@@ -275,34 +331,24 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         if (!statesMerkleProof)
           throw new TypeError(`States merkle proof is not defined`)
 
-        if (!updateStateDetails)
-          throw new TypeError(`Update state details is not defined`)
-
         const txBody = {
           to: config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${selectedChain}`],
           ...getProveIdentityTxBody(
             {
-              statesMerkleData: {
-                issuerId: statesMerkleProof.issuerId,
-                issuerState: statesMerkleProof.state.hash,
-                createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
-                merkleProof: statesMerkleProof.merkleProof.map(el =>
-                  utils.arrayify(el),
-                ),
-              },
-              inputs: zkProof.pub_signals.map?.(el => BigInt(el)),
-              a: [zkProof?.proof.pi_a[0], zkProof?.proof.pi_a[1]],
-              b: [
-                [zkProof?.proof.pi_b[0][1], zkProof?.proof.pi_b[0][0]],
-                [zkProof?.proof.pi_b[1][1], zkProof?.proof.pi_b[1][0]],
-              ],
-              c: [zkProof?.proof.pi_c[0], zkProof?.proof.pi_c[1]],
+              issuerId: statesMerkleProof.issuerId,
+              issuerState: statesMerkleProof.state.hash,
+              createdAtTimestamp: statesMerkleProof.state.createdAtTimestamp,
+              merkleProof: statesMerkleProof.merkleProof.map(el =>
+                utils.arrayify(el),
+              ),
             },
-            {
-              newIdentitiesStatesRoot: updateStateDetails.stateRootHash,
-              gistData: updateStateDetails.gistRootDataStruct,
-              proof: updateStateDetails.proof,
-            },
+            zkProof.pub_signals.map?.(el => BigInt(el)),
+            [zkProof?.proof.pi_a[0], zkProof?.proof.pi_a[1]],
+            [
+              [zkProof?.proof.pi_b[0][1], zkProof?.proof.pi_b[0][0]],
+              [zkProof?.proof.pi_b[1][1], zkProof?.proof.pi_b[1][0]],
+            ],
+            [zkProof?.proof.pi_c[0], zkProof?.proof.pi_c[1]],
           ),
         }
 
@@ -329,6 +375,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       setIsProveRequestPending(false)
     },
     [
+      transitStateTx?.data,
       provider,
       zkProof?.pub_signals,
       zkProof?.proof.pi_a,
@@ -336,7 +383,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       zkProof?.proof.pi_c,
       statesMerkleProof,
       getProveIdentityTxBody,
-      updateStateDetails,
+      setIsUserSubmittedZkp,
+      transitState,
       logAppStateDetails,
     ],
   )

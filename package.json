@@ -32,7 +32,7 @@
     "@rarimo/auth-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/client": "^2.0.0-rc.24",
     "@rarimo/identity-gen-iden3": "^2.0.0-rc.24",
-    "@rarimo/rarime-connector": "*",
+    "@rarimo/rarime-connector": "^0.5.0",
     "@rarimo/shared-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/zkp-gen-iden3": "^2.0.0-rc.24",
     "@sentry/react": "7.63.0",
@@ -110,11 +110,5 @@
     "vite-tsconfig-paths": "^4.0.3",
     "yorkie": "^2.0.0"
   },
-  "packageManager": "yarn@3.6.0",
-  "resolutions": {
-    "rarime-snap-monorepo": "portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime",
-    "@rarimo/rarime-connector": "portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime/packages/connector",
-    "site": "portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime/packages/site",
-    "@rarimo/rarime": "portal:/Users/lukachisama/Documents/RARIMO/IDENTITY/snaps/rarime/packages/snap"
-  }
+  "packageManager": "yarn@3.6.0"
 }
