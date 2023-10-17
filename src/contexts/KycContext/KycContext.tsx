@@ -417,35 +417,32 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
       _VCCreatedOrKycFinishedCb?: () => void,
     ) => {
-      subscribeToClaimWaiting(config.CLAIM_TYPE, identityIdString)
+      // subscribeToClaimWaiting(config.CLAIM_TYPE, identityIdString)
 
-      // setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
-      //
-      // const currentIdentityIdString =
-      //   identityIdString || (await createIdentity())
-      //
-      // if (!currentIdentityIdString) return
-      //
-      // if (await _isUserHasClaim(currentIdentityIdString)) {
-      //   console.log('_isUserHasClaim')
-      //   setIsKycFinished(true)
-      //   setIsVCRequestFailed(false)
-      //   setIsVCRequestPending(false)
-      //
-      //   _VCCreatedOrKycFinishedCb?.()
-      //
-      //   return
-      // }
-      //
-      // console.log('nope')
-      //
-      // if (supportedKycProvider === selectedKycProvider) {
-      //   retryKyc()
-      //
-      //   return
-      // }
-      //
-      // setSelectedKycProvider(supportedKycProvider)
+      setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
+
+      const currentIdentityIdString =
+        identityIdString || (await createIdentity())
+
+      if (!currentIdentityIdString) return
+
+      if (await _isUserHasClaim(currentIdentityIdString)) {
+        setIsKycFinished(true)
+        setIsVCRequestFailed(false)
+        setIsVCRequestPending(false)
+
+        _VCCreatedOrKycFinishedCb?.()
+
+        return
+      }
+
+      if (supportedKycProvider === selectedKycProvider) {
+        retryKyc()
+
+        return
+      }
+
+      setSelectedKycProvider(supportedKycProvider)
     },
     [
       _isUserHasClaim,
