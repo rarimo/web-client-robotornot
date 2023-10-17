@@ -1,7 +1,7 @@
 import './styles.scss'
 
 import { config, SUPPORTED_CHAINS } from '@config'
-import { motion } from 'framer-motion'
+import { animate, motion, stagger } from 'framer-motion'
 import { type FC, useCallback, useMemo, useState } from 'react'
 
 import { AppButton, Icon } from '@/common'
@@ -9,6 +9,22 @@ import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
+
+// FIXME
+const FAKE_ARRAY = ['', '', '', '', '', '']
+
+const LineContainerVariants = {
+  initial: {
+    transition: {
+      staggerChildren: FAKE_ARRAY.length / 75,
+    },
+  },
+  animate: {
+    transition: {
+      staggerChildren: FAKE_ARRAY.length / 75,
+    },
+  },
+}
 
 const ProofSubmitting: FC<StepProps> = ({
   nextStepCb,
@@ -39,7 +55,20 @@ const ProofSubmitting: FC<StepProps> = ({
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
 
-    // TODO: run animation
+    await animate(
+      '.proof-submitting__flow-dot',
+      {
+        y: ['0%', '25%', '-25%'],
+      },
+      {
+        duration: 0.5,
+        repeat: Infinity,
+        repeatType: 'reverse',
+        repeatDelay: 1,
+        ease: 'easeInOut',
+        delay: stagger(FAKE_ARRAY.length / 55),
+      },
+    )
 
     try {
       await submitZkp(selectedChainToPublish)
@@ -52,6 +81,24 @@ const ProofSubmitting: FC<StepProps> = ({
 
     setIsPending(false)
   }, [nextStepCb, onErrorCb, selectedChainToPublish, submitZkp])
+
+  const PendingAnimationLoader = useMemo(() => {
+    return (
+      <motion.div
+        className='proof-submitting__flow-line'
+        variants={LineContainerVariants}
+        initial='initial'
+        animate='animate'
+        transition={{
+          delay: 1.5,
+        }}
+      >
+        {FAKE_ARRAY.map((_, idx) => (
+          <motion.div className='proof-submitting__flow-dot' key={idx} />
+        ))}
+      </motion.div>
+    )
+  }, [])
 
   return (
     <motion.div className={['proof-submitting', className].join(' ')} {...rest}>
@@ -69,8 +116,7 @@ const ProofSubmitting: FC<StepProps> = ({
             name={ICON_NAMES.rarimeSnapFilled}
           />
         </div>
-        {/*TODO: replace by motion.path*/}
-        <div className='proof-submitting__flow-line' />
+        {PendingAnimationLoader}
         <div className='proof-submitting__flow-item'>
           <Icon
             className='proof-submitting__flow-item-icon'
@@ -79,7 +125,7 @@ const ProofSubmitting: FC<StepProps> = ({
         </div>
         {isQuestPlatformDetailsShown && (
           <>
-            <div className='proof-submitting__flow-line' />
+            {PendingAnimationLoader}
             <div className='proof-submitting__flow-item'>
               <img
                 className='proof-submitting__flow-item-icon'

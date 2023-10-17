@@ -30,8 +30,25 @@
 }
 
 .proof-submitting__flow-line {
+  display: flex;
+  justify-content: space-around;
   flex: 1;
-  border: toRem(1.75) dashed var(--primary-main);
+}
+
+.proof-submitting__flow-line .proof-submitting__flow-dot {
+  background: var(--primary-main);
+
+  @include static-icon-size(4);
+
+  &:first-child {
+    border-bottom-left-radius: 25%;
+    border-top-left-radius: 25%;
+  }
+
+  &:last-child {
+    border-bottom-right-radius: 25%;
+    border-top-right-radius: 25%;
+  }
 }
 
 .proof-submitting__title {
