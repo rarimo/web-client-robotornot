@@ -55,7 +55,7 @@ const ProofSubmitting: FC<StepProps> = ({
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
 
-    await animate(
+    animate(
       '.proof-submitting__flow-dot',
       {
         y: ['0%', '25%', '-25%'],
