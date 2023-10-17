@@ -1,5 +1,5 @@
 import { AnimatePresence } from 'framer-motion'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import {
   createBrowserRouter,
   Navigate,
@@ -16,10 +16,9 @@ import {
 import FormStepperContextProvider from '@/contexts/FormStepperContext'
 import MetamaskZkpSnapContextProvider from '@/contexts/MetamaskZkpSnapContext'
 import { RoutesPaths } from '@/enums'
+import MainPage from '@/pages/MainPage'
 
 export const AppRoutes = () => {
-  const MainPage = lazy(() => import('src/pages/MainPage'))
-
   const router = createBrowserRouter([
     {
       path: RoutesPaths.App,
