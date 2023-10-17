@@ -10,7 +10,14 @@ type Props<R extends string, H extends string> = {
   text?: string
   scheme?: 'filled' | 'flat' | 'none'
   modification?: 'border-circle' | 'border-rounded' | 'none'
-  color?: 'primary' | 'success' | 'error' | 'warning' | 'info' | 'none'
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'error'
+    | 'warning'
+    | 'info'
+    | 'none'
   size?: 'large' | 'medium' | 'small' | 'x-small' | 'none'
   href?: H
   routePath?: R
