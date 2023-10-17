@@ -39,10 +39,12 @@ const ProofSubmitting: FC<StepProps> = ({
   const requestSubmitZkp = useCallback(async () => {
     setIsPending(true)
 
-    nextStepCb()
+    // TODO: run animation
 
     try {
       await submitZkp(selectedChainToPublish)
+
+      nextStepCb()
     } catch (error) {
       ErrorHandler.process(error)
       onErrorCb?.(error as Error)

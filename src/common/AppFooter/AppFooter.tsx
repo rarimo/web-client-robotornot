@@ -8,9 +8,9 @@ const AppFooter: FC<HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   return (
     <div className={`app-footer ${className}`} {...rest}>
-      <span className='app-footer__copyright'>
-        {`© ${new Date().getFullYear()} Rarimo`}
-      </span>
+      {/*<span className='app-footer__copyright'>*/}
+      {/*  {`© ${new Date().getFullYear()} Rarimo`}*/}
+      {/*</span>*/}
     </div>
   )
 }

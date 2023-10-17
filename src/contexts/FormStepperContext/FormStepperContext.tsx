@@ -33,8 +33,6 @@ import ProofGeneratingLoaderStep from '@/pages/MainPage/components/6_ProofGenera
 import ProofGeneratingLoaderSidebarContent from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarContent'
 import ProofSubmittingStep from '@/pages/MainPage/components/7_ProofSubmitting'
 import ProofSubmittingSidebarContent from '@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'
-import ProofSubmittingLoaderStep from '@/pages/MainPage/components/8_ProofSubmittingLoader'
-import ProofSubmittingLoaderSidebarContent from '@/pages/MainPage/components/8_ProofSubmittingLoader/components/SidebarContent'
 import ProofSubmittedStep from '@/pages/MainPage/components/9_ProofSubmitted'
 import ProofSubmittedSidebarContent from '@/pages/MainPage/components/9_ProofSubmitted/components/SidebarContent'
 
@@ -46,7 +44,6 @@ export enum Steps {
   ProofGeneratingStep = 'PROOF_GENERATING_STEP',
   ProofGeneratingLoaderStep = 'PROOF_GENERATING_LOADER_STEP',
   ProofSubmittingStep = 'PROOF_SUBMITTING_STEP',
-  ProofSubmittingLoaderStep = 'PROOF_SUBMITTING_LOADER_STEP',
   ProofSubmittedStep = 'PROOF_SUBMITTED_STEP',
 }
 
@@ -256,17 +253,13 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [])
 
   const handleProofSubmittingStepFinish = useCallback(() => {
-    setCurrentStep(Steps.ProofSubmittingLoaderStep)
+    setCurrentStep(Steps.ProofSubmittedStep)
   }, [])
 
   const handleProofSubmittingStepError = useCallback((error: Error) => {
     ErrorHandler.processWithoutFeedback(error)
 
     setCurrentStep(Steps.ProofSubmittingStep)
-  }, [])
-
-  const handleProofSubmittingLoaderStepFinish = useCallback(() => {
-    setCurrentStep(Steps.ProofSubmittedStep)
   }, [])
 
   const handleProofSubmittedStepFinish = useCallback(() => {
@@ -333,14 +326,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
           {...stepAnimationProps}
         />
       ),
-      [Steps.ProofSubmittingLoaderStep]: (
-        <ProofSubmittingLoaderStep
-          key={Steps.ProofSubmittingLoaderStep}
-          className='main-page__step'
-          nextStepCb={handleProofSubmittingLoaderStepFinish}
-          {...stepAnimationProps}
-        />
-      ),
       [Steps.ProofSubmittedStep]: (
         <ProofSubmittedStep
           key={Steps.ProofSubmittedStep}
@@ -357,7 +342,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     handleProofGeneratingLoaderStepFinish,
     handleProofGeneratingStepFinish,
     handleProofSubmittedStepFinish,
-    handleProofSubmittingLoaderStepFinish,
     handleProofSubmittingStepError,
     handleProofSubmittingStepFinish,
     handleSnapConnectionStepFinish,
@@ -417,13 +401,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
       [Steps.ProofSubmittingStep]: (
         <ProofSubmittingSidebarContent
           key={Steps.ProofSubmittingStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofSubmittingLoaderStep]: (
-        <ProofSubmittingLoaderSidebarContent
-          key={Steps.ProofSubmittingLoaderStep}
           className='main-page__sidebar-content'
           {...sidebarContentAnimationProps}
         />
