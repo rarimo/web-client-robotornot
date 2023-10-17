@@ -54,6 +54,8 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
     StepComponent,
     SidebarComponent,
+
+    setIsSidebarAnimationCompleted,
   } = useFormStepperContext()
 
   const SidebarToggler = useCallback(
@@ -134,6 +136,9 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
                     duration: '0.75',
                     delay: 0.5,
                     ease: 'backInOut',
+                  }}
+                  onAnimationComplete={() => {
+                    setIsSidebarAnimationCompleted(true)
                   }}
                 >
                   <div className='main-page__sidebar-content'>
