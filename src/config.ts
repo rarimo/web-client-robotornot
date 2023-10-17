@@ -11,7 +11,9 @@ export type SUPPORTED_CHAINS = keyof typeof FALLBACK_SUPPORTED_CHAINS
 
 type ContractAddresses = {
   [k in
+    | `IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
     | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
+    // FIXME: remove
     | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
 }
 
@@ -163,12 +165,14 @@ export const config = {
 
   RARIMO_CORE_RPC_API_URL: string
   RARIMO_EVM_RPC_URL: string
+  // FIXME: remove
   STATE_V2_CONTRACT_ADDRESS: string
 
   UNSTOPPABLE_DOMAINS_CLIENT_ID: string
 
   WORLDCOIN_APP_ID: string
   AUTH_BJJ_CREDENTIAL_HASH: string
+  // FIXME: remove
   ISSUER_ID: string
 
   FINALITY_BLOCK_AMOUNT: number
@@ -203,6 +207,9 @@ Object.assign(config, {
   ...(Object.keys(config.SUPPORTED_CHAINS_DETAILS).reduce(
     (acc, curr) => ({
       ...acc,
+      /* eslint-disable max-len */
+      /* prettier-ignore */
+      [`IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* eslint-disable max-len */
       /* prettier-ignore */
       [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
