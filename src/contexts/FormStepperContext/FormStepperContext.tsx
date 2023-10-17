@@ -2,7 +2,6 @@ import {
   createContext,
   FC,
   HTMLAttributes,
-  lazy,
   memo,
   ReactElement,
   useCallback,
@@ -19,50 +18,34 @@ import {
   useZkpContext,
 } from '@/contexts'
 import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
-
-/* prettier-ignore-start */
-/* eslint-disable */
-const WalletConnectionStep                     = lazy(() => import('@/pages/MainPage/components/1_WalletConnection'))
-const WalletConnectionSidebarContent           = lazy(() => import('@/pages/MainPage/components/1_WalletConnection/components/SidebarContent'))
-
-const SnapConnectionStep                       = lazy(() => import('@/pages/MainPage/components/2_SnapConnection'))
-const SnapConnectionSidebarContent             = lazy(() => import('@/pages/MainPage/components/2_SnapConnection/components/SidebarContent'))
-
-const IdentityCreationStep                     = lazy(() => import('@/pages/MainPage/components/3_IdentityCreation'))
-const IdentityCreationSidebarContent           = lazy(() => import('@/pages/MainPage/components/3_IdentityCreation/components/SidebarContent'))
-
-const KycProvidersStep                         = lazy(() => import('@/pages/MainPage/components/4_KycProviders'))
-const KycProvidersSidebarContent               = lazy(() => import('@/pages/MainPage/components/4_KycProviders/components/SidebarContent'))
-
-const ProofGeneratingStep                      = lazy(() => import('@/pages/MainPage/components/5_ProofGenerating'))
-const ProofGeneratingVCLoaderSidebarContent    = lazy(() => import('@/pages/MainPage/components/5_ProofGenerating/components/SidebarContentVCLoading'))
-const ProofGeneratingSidebarContent            = lazy(() => import('@/pages/MainPage/components/5_ProofGenerating/components/SidebarContent'))
-
-const ProofGeneratingLoaderStep                = lazy(() => import('@/pages/MainPage/components/6_ProofGeneratingLoader'))
-const ProofGeneratingLoaderSidebarContent      = lazy(() => import('@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarContent'))
-
-const ProofSubmittingStep                      = lazy(() => import('@/pages/MainPage/components/7_ProofSubmitting'))
-const ProofSubmittingSidebarContent            = lazy(() => import('@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'))
-
-const ProofSubmittingLoaderStep                = lazy(() => import('@/pages/MainPage/components/8_ProofSubmittingLoader'))
-const ProofSubmittingLoaderSidebarContent      = lazy(() => import('@/pages/MainPage/components/8_ProofSubmittingLoader/components/SidebarContent'))
-
-const ProofSubmittedStep                       = lazy(() => import('@/pages/MainPage/components/9_ProofSubmitted'))
-const ProofSubmittedSidebarContent             = lazy(() => import('@/pages/MainPage/components/9_ProofSubmitted/components/SidebarContent'))
+import WalletConnectionStep from '@/pages/MainPage/components/1_WalletConnection'
+import WalletConnectionSidebarContent from '@/pages/MainPage/components/1_WalletConnection/components/SidebarContent'
+import SnapConnectionStep from '@/pages/MainPage/components/2_SnapConnection'
+import SnapConnectionSidebarContent from '@/pages/MainPage/components/2_SnapConnection/components/SidebarContent'
+import IdentityCreationStep from '@/pages/MainPage/components/3_IdentityCreation'
+import IdentityCreationSidebarContent from '@/pages/MainPage/components/3_IdentityCreation/components/SidebarContent'
+import KycProvidersStep from '@/pages/MainPage/components/4_KycProviders'
+import KycProvidersSidebarContent from '@/pages/MainPage/components/4_KycProviders/components/SidebarContent'
+import ProofGeneratingStep from '@/pages/MainPage/components/5_ProofGenerating'
+import ProofGeneratingSidebarContent from '@/pages/MainPage/components/5_ProofGenerating/components/SidebarContent'
+import ProofGeneratingVCLoaderSidebarContent from '@/pages/MainPage/components/5_ProofGenerating/components/SidebarContentVCLoading'
+import ProofGeneratingLoaderStep from '@/pages/MainPage/components/6_ProofGeneratingLoader'
+import ProofGeneratingLoaderSidebarContent from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarContent'
+import ProofSubmittingStep from '@/pages/MainPage/components/7_ProofSubmitting'
+import ProofSubmittingSidebarContent from '@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'
+import ProofSubmittedStep from '@/pages/MainPage/components/9_ProofSubmitted'
+import ProofSubmittedSidebarContent from '@/pages/MainPage/components/9_ProofSubmitted/components/SidebarContent'
 
 export enum Steps {
-  WalletConnectionStep      = 'WALLET_CONNECTION_STEP',
-  SnapConnectionStep        = 'SNAP_CONNECTION_STEP',
-  IdentityCreationStep      = 'IDENTITY_CREATION_STEP',
-  KycProvidersStep          = 'KYC_PROVIDERS_STEP',
-  ProofGeneratingStep       = 'PROOF_GENERATING_STEP',
+  WalletConnectionStep = 'WALLET_CONNECTION_STEP',
+  SnapConnectionStep = 'SNAP_CONNECTION_STEP',
+  IdentityCreationStep = 'IDENTITY_CREATION_STEP',
+  KycProvidersStep = 'KYC_PROVIDERS_STEP',
+  ProofGeneratingStep = 'PROOF_GENERATING_STEP',
   ProofGeneratingLoaderStep = 'PROOF_GENERATING_LOADER_STEP',
-  ProofSubmittingStep       = 'PROOF_SUBMITTING_STEP',
-  ProofSubmittingLoaderStep = 'PROOF_SUBMITTING_LOADER_STEP',
-  ProofSubmittedStep        = 'PROOF_SUBMITTED_STEP',
+  ProofSubmittingStep = 'PROOF_SUBMITTING_STEP',
+  ProofSubmittedStep = 'PROOF_SUBMITTED_STEP',
 }
-/* eslint-enable */
-/* prettier-ignore-end */
 
 interface FormStepperContextValue {
   isLoaded: boolean
@@ -270,17 +253,13 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [])
 
   const handleProofSubmittingStepFinish = useCallback(() => {
-    setCurrentStep(Steps.ProofSubmittingLoaderStep)
+    setCurrentStep(Steps.ProofSubmittedStep)
   }, [])
 
   const handleProofSubmittingStepError = useCallback((error: Error) => {
     ErrorHandler.processWithoutFeedback(error)
 
     setCurrentStep(Steps.ProofSubmittingStep)
-  }, [])
-
-  const handleProofSubmittingLoaderStepFinish = useCallback(() => {
-    setCurrentStep(Steps.ProofSubmittedStep)
   }, [])
 
   const handleProofSubmittedStepFinish = useCallback(() => {
@@ -347,14 +326,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
           {...stepAnimationProps}
         />
       ),
-      [Steps.ProofSubmittingLoaderStep]: (
-        <ProofSubmittingLoaderStep
-          key={Steps.ProofSubmittingLoaderStep}
-          className='main-page__step'
-          nextStepCb={handleProofSubmittingLoaderStepFinish}
-          {...stepAnimationProps}
-        />
-      ),
       [Steps.ProofSubmittedStep]: (
         <ProofSubmittedStep
           key={Steps.ProofSubmittedStep}
@@ -371,7 +342,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     handleProofGeneratingLoaderStepFinish,
     handleProofGeneratingStepFinish,
     handleProofSubmittedStepFinish,
-    handleProofSubmittingLoaderStepFinish,
     handleProofSubmittingStepError,
     handleProofSubmittingStepFinish,
     handleSnapConnectionStepFinish,
@@ -431,13 +401,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
       [Steps.ProofSubmittingStep]: (
         <ProofSubmittingSidebarContent
           key={Steps.ProofSubmittingStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofSubmittingLoaderStep]: (
-        <ProofSubmittingLoaderSidebarContent
-          key={Steps.ProofSubmittingLoaderStep}
           className='main-page__sidebar-content'
           {...sidebarContentAnimationProps}
         />

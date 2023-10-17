@@ -67,8 +67,16 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       />
 
       <h2 className='proof-submitted__title'>
-        {`Enjoy the web as a true human!`}
+        {txSubmitExplorerLink
+          ? `Enjoy the web as a true human!`
+          : `You're already on the human side of the web `}
       </h2>
+
+      {!txSubmitExplorerLink && (
+        <span className='proof-submitted__subtitle'>
+          {`You don't need to go through the verification process again`}
+        </span>
+      )}
 
       <div className='proof-submitted__card'>
         <div className='proof-submitted__metadata'>
@@ -116,7 +124,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         </div>
       </div>
 
-      {txSubmitExplorerLink && (
+      {txSubmitExplorerLink ? (
         <a
           href={txSubmitExplorerLink}
           className='proof-submitted__link'
@@ -125,6 +133,8 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         >
           {`View on block explorer`}
         </a>
+      ) : (
+        <span className='proof-submitted__tip'>{`Enjoy the web as a true human!`}</span>
       )}
     </motion.div>
   )

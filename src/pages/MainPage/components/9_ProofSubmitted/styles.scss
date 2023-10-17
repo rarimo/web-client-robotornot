@@ -12,6 +12,12 @@
   margin-bottom: toRem(24);
 }
 
+.proof-submitted__subtitle {
+  text-align: center;
+  font-size: toRem(16);
+  margin-bottom: toRem(24);
+}
+
 .proof-submitted__card {
   max-width: toRem(425);
   width: 100%;
@@ -62,5 +68,9 @@
 }
 
 .proof-submitted__link {
+  margin-top: toRem(24);
+}
+
+.proof-submitted__tip {
   margin-top: toRem(24);
 }

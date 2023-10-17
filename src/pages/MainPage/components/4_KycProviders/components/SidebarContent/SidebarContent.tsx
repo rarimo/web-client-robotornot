@@ -13,7 +13,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       ].join(' ')}
       {...rest}
     >
-      <div className='app__step-sidebar-content-img-wrp'>
+      <div className='app__step-sidebar-content-img-wrp app__step-sidebar-content-img-wrp--single'>
         <img
           className='app__step-sidebar-content-img'
           src='/images/sidebar-img-4.svg'
