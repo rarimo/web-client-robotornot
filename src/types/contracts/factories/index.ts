@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { IdentityVerifier__factory } from "./IdentityVerifier__factory";
+export { SBTIdentityVerifier__factory } from "./SBTIdentityVerifier__factory";
 export { ZKPQueriesStorage__factory } from "./ZKPQueriesStorage__factory";
