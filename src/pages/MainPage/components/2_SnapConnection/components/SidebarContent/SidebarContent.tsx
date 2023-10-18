@@ -1,6 +1,7 @@
-import { animate, motion, stagger } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { FC, useCallback, useEffect, useRef } from 'react'
 
+import { TypingAnimatedText } from '@/common'
 import { useFormStepperContext } from '@/contexts'
 import { sleep } from '@/helpers'
 import { SidebarProps } from '@/pages/MainPage/components/types'
@@ -13,25 +14,12 @@ const DESCRIPTIONS = [
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   const imageSeq = useRef<HTMLImageElement>(null)
+  const textTyping = useRef<{ play: () => void; stop: () => void }>(null)
 
   const { isSidebarAnimationCompleted } = useFormStepperContext()
 
-  // const count = useMotionValue(0)
-  // const rounded = useTransform(count, latest => Math.round(latest))
-  // eslint-disable-next-line max-len
-  // const displayText = useTransform(rounded, latest => baseText.slice(0, latest))
-
   const animateText = useCallback(() => {
-    animate(
-      '.app__step-sidebar-content-text',
-      {
-        opacity: 1,
-      },
-      {
-        ease: 'easeInOut',
-        delay: stagger(0.4),
-      },
-    )
+    textTyping.current?.play()
   }, [])
 
   const animateSequence = useCallback(async () => {
@@ -71,13 +59,11 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         />
       </div>
 
-      <div className='app__step-sidebar-content-text-wrp'>
-        {DESCRIPTIONS.map((el, idx) => (
-          <p key={idx} className='app__step-sidebar-content-text'>
-            {el}
-          </p>
-        ))}
-      </div>
+      <TypingAnimatedText
+        ref={textTyping}
+        isAutoplay={false}
+        text={DESCRIPTIONS.join('\n\n')}
+      />
     </motion.div>
   )
 }
