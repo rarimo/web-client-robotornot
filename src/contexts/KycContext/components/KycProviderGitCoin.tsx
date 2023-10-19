@@ -1,8 +1,7 @@
-import { JsonApiClient } from '@distributedlab/jac'
 import { FC, HTMLAttributes } from 'react'
 import { useEffectOnce } from 'react-use'
 
-// import { api } from '@/api'
+import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
 import { ErrorHandler } from '@/helpers'
 
@@ -16,12 +15,7 @@ const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {
   useEffectOnce(() => {
     const getSignedNonce = async () => {
       try {
-        // FIXME: remove
-        const localApi = new JsonApiClient({
-          baseUrl: 'http://localhost:8000',
-        })
-
-        const { data } = await localApi.post<{
+        const { data } = await api.post<{
           message: string
         }>('integrations/kyc-service/v1/public/nonce', {
           body: {

@@ -14,7 +14,7 @@ import { AppRoutes } from '@/routes'
 
 const root = createRoot(document.getElementById('root') as Element)
 
-initApi(config.API_URL)
+initApi()
 
 if (config.GA_ID) ReactGA.initialize(config.GA_ID)
 

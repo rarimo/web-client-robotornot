@@ -34,8 +34,6 @@ const ProofGenerating: FC<StepProps> = ({
     verificationErrorMessages,
   } = useKycContext()
 
-  console.log(verifiableCredentials)
-
   const checkIsIdentityProved = useCallback(async () => {
     const provedMsg = await getIsIdentityProvedMsg()
 

@@ -1,5 +1,4 @@
 import { config, SUPPORTED_CHAINS } from '@config'
-import { fetcher } from '@distributedlab/fetcher'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import { DID } from '@iden3/js-iden3-core'
@@ -23,6 +22,7 @@ import {
 } from 'react'
 import { useLocalStorage } from 'react-use'
 
+import { issuerApi } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { GaCategories, gaSendCustomEvent, increaseGasLimit } from '@/helpers'
 import { useIdentityVerifier, useSbtIdentityVerifier } from '@/hooks/contracts'
@@ -170,8 +170,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       const currIdentityIdString = _identityIdString ?? identityIdString
 
       // FIXME: remove
-      const { data } = await fetcher.get<SaveCredentialsRequestParams>(
-        `http://localhost:3002/v1/credentials/did:iden3:${currIdentityIdString}/${config.CLAIM_TYPE}`,
+      const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
+        `/v1/credentials/did:iden3:${currIdentityIdString}/${config.CLAIM_TYPE}`,
       )
 
       return data

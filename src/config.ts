@@ -58,6 +58,7 @@ export const config = {
   ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT,
 
   API_URL: import.meta.env.VITE_API_URL,
+  ISSUER_API_URL: import.meta.env.VITE_ISSUER_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
@@ -159,6 +160,7 @@ export const config = {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
   API_URL: string
+  ISSUER_API_URL: string
   APP_NAME: string
   LOG_LEVEL: string
   BUILD_VERSION: string

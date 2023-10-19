@@ -3,7 +3,6 @@ import { FetcherError } from '@distributedlab/fetcher'
 import {
   ConflictError,
   HTTP_STATUS_CODES,
-  JsonApiClient,
   type JsonApiError,
   UnauthorizedError,
 } from '@distributedlab/jac'
@@ -28,6 +27,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce, useLocalStorage } from 'react-use'
 
+import { api } from '@/api'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
@@ -423,9 +423,12 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       identityIdString: string,
       onClaimReceived?: (claim: SaveCredentialsRequestParams) => Promise<void>,
     ) => {
-      const socket = new WebSocket(
-        `ws://localhost:3002/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
-      )
+      const socketEndpoint = `${String(config.ISSUER_API_URL).replace(
+        'http',
+        'ws',
+      )}/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`
+
+      const socket = new WebSocket(socketEndpoint)
 
       let isManualClosed = false
 
@@ -466,31 +469,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           subscribeToClaimWaiting(claimType, identityIdString, onClaimReceived)
         }
       })
-
-      // FIXME: localhost
-      // const socket = io(`ws://localhost:3002`, {
-      //   path: `/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`,
-      // })
-
-      // socket.on('open', event => {
-      //   console.log('open')
-      //   console.log(event)
-      // })
-      //
-      // socket.on('message', event => {
-      //   console.log('message')
-      //   console.log(event)
-      // })
-
-      // socket.on('message', async ({ data }) => {
-      //   const msg = data as string | SaveCredentialsRequestParams
-      //
-      //   if (typeof msg === 'string') return
-      //
-      //   await onClaimReceived?.(msg)
-      //
-      //   socket.close()
-      // })
     },
     [],
   )
@@ -570,12 +548,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         },
       }
 
-      // FIXME: remove
-      const localApi = new JsonApiClient({
-        baseUrl: 'http://localhost:8000',
-      })
-
-      const { data } = await localApi.post<{
+      const { data } = await api.post<{
         type: 'verification_id'
         id: 'string'
       }>(`/integrations/kyc-service/v1/public/verify/${selectedKycProvider}`, {
