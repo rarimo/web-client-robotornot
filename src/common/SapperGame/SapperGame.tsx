@@ -1,226 +1,210 @@
 import './styles.scss'
 
-import { motion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { calculateMineCounts, generateMines } from './helpers'
+import { createField } from './helpers'
+
+enum Mask {
+  Mine = -1,
+  Open,
+  Closed,
+  Flag,
+  RedMine,
+}
 
 type Props = {
-  mines: number
-  rows: number
-  cols: number
+  size: number
 }
 
-type Cell = {
-  row: number
-  col: number
-  color?: number
-}
+const COUNTER_LENGTH = 3
 
-interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
-  roundRect(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    radius?: number,
-  ): CanvasRenderingContext2D
-}
+export default function SapperGame({ size }: Props) {
+  const dimension = new Array(size).fill(null)
 
-const SQUARE_SIZE = 40
-const GAP = 2
-const DEFAULT_PADDING = 16
-const DEFAULT_PADDING_VERTICAL = 16
-const BORDER_RADIUS = 4
-const greyColor = '#949494'
-const greyLight = '#dedede'
-const blackColor = '#000'
-const whiteColor = '#fff'
-const LETTER_PADDING_X = 18
-const LETTER_PADDING_Y = 30
-const FONT_SIZE = 24
+  const [death, setDeath] = useState(false)
+  const [remainingMines, setRemainingMines] = useState(size)
+  const [time, setTime] = useState(0)
 
-const WordsScrambleGame = ({ mines, rows, cols }: Props) => {
-  const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
-  const [blockWidth, setBlockWidth] = useState(0)
-  const [blockHeight, setBlockHeight] = useState(0)
+  const [field, setField] = useState<number[]>(() => createField(size))
+  const [mask, setMask] = useState<Mask[]>(() =>
+    new Array(size * size).fill(Mask.Closed),
+  )
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null)
 
-  let canvas: HTMLCanvasElement
-  let ctx: ICanvasRenderingContext2D
+  const win = useMemo(
+    () =>
+      !field.some(
+        (f, i) =>
+          f === Mask.Mine && mask[i] !== Mask.Flag && mask[i] !== Mask.Open,
+      ),
+    [field, mask],
+  )
 
-  const canvasWidth =
-    2 * DEFAULT_PADDING + GAP * (cols - 1) + SQUARE_SIZE * cols
+  const startTimer = useCallback(() => {
+    setTimer(setInterval(() => setTime(prevState => prevState + 1), 1000))
+  }, [])
 
-  const canvasHeight =
-    2 * DEFAULT_PADDING_VERTICAL + GAP * (rows - 1) + SQUARE_SIZE * rows
+  const stopTimer = useCallback(() => {
+    clearInterval(timer ? timer : '')
+    setTimer(null)
+  }, [timer])
 
-  const resizeGameRatio = useMemo(() => {
-    const ratioWidth = blockWidth / canvasWidth
-    const ratioHeight = blockHeight / canvasHeight
-    return ratioWidth >= ratioHeight ? 2 * ratioHeight : 2 * ratioWidth
-  }, [blockHeight, blockWidth, canvasHeight, canvasWidth])
+  const clickSquare = useCallback(
+    (x: number, y: number) => {
+      if (win || death || mask[y * size + x] === Mask.Flag) return
+      if (!timer) startTimer()
+      if (mask[y * size + x] === Mask.Open) return
 
-  const squareSize = useMemo(() => {
-    return SQUARE_SIZE * resizeGameRatio
-  }, [resizeGameRatio])
+      const clearing: [number, number][] = []
 
-  const gap = useMemo(() => {
-    return GAP * resizeGameRatio
-  }, [resizeGameRatio])
+      function clear(x: number, y: number) {
+        if (x >= 0 && x < size && y >= 0 && y < size) {
+          if (mask[y * size + x] === Mask.Open) return
 
-  const defaultPadding = useMemo(() => {
-    return (DEFAULT_PADDING * resizeGameRatio) / 2
-  }, [resizeGameRatio])
+          clearing.push([x, y])
+        }
+      }
 
-  const defaultPaddingVertical = useMemo(() => {
-    return (DEFAULT_PADDING_VERTICAL * resizeGameRatio) / 2
-  }, [resizeGameRatio])
+      clear(x, y)
 
-  const letterPaddingX = useMemo(() => {
-    return LETTER_PADDING_X * resizeGameRatio
-  }, [resizeGameRatio])
+      while (clearing.length) {
+        const item = clearing.pop()
+        if (item) {
+          const [x, y] = item
 
-  const letterPaddingY = useMemo(() => {
-    return LETTER_PADDING_Y * resizeGameRatio
-  }, [resizeGameRatio])
+          mask[y * size + x] = Mask.Open
 
-  const width = useMemo(() => {
-    return canvasWidth * resizeGameRatio
-  }, [canvasWidth, resizeGameRatio])
+          if (field[y * size + x] !== 0) continue
 
-  const height = useMemo(() => {
-    return canvasHeight * resizeGameRatio
-  }, [canvasHeight, resizeGameRatio])
+          clear(x + 1, y)
+          clear(x - 1, y)
+          clear(x, y + 1)
+          clear(x, y - 1)
+        }
+      }
 
-  const minesInField = useMemo(() => {
-    return generateMines(rows, cols, mines)
-  }, [cols, mines, rows])
+      if (field[y * size + x] === Mask.Mine) {
+        field.forEach((cell, i) => {
+          if (cell === Mask.Mine) {
+            mask[i] = Mask.Mine
+          }
+        })
+        mask[y * size + x] = Mask.RedMine
+        setDeath(true)
+        stopTimer()
+      }
+      setMask(prev => [...prev])
+    },
+    [death, field, mask, size, startTimer, stopTimer, timer, win],
+  )
 
-  const gameField = useMemo(() => {
-    return calculateMineCounts(minesInField, rows, cols)
-  }, [cols, minesInField, rows])
+  const rightClickSquare = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>, x: number, y: number) => {
+      e.preventDefault()
+      e.stopPropagation()
 
-  const printLetter = (col: number, row: number) => {
-    ctx.fillStyle = 'black'
-    ctx.fillText(
-      gameField[row][col],
-      letterPaddingX + col * squareSize + (col - 1) * gap,
-      letterPaddingY + row * squareSize + (row - 1) * gap,
-    )
-  }
+      if (win || death) return
 
-  const init = () => {
-    canvas = canvasRef.current
-    ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
+      if (mask[y * size + x] === Mask.Open) return
 
-    if (!canvas || !ctx || !gameField) return
+      if (mask[y * size + x] === Mask.Closed) {
+        mask[y * size + x] = Mask.Flag
+        setRemainingMines(prevState => prevState - 1)
+      } else if (mask[y * size + x] === Mask.Flag) {
+        setRemainingMines(prevState => prevState + 1)
+        mask[y * size + x] = Mask.Closed
+      }
 
-    const sideBarBlock = document.querySelector('.sapper-game')
-    setBlockWidth(sideBarBlock ? sideBarBlock.getBoundingClientRect().width : 0)
-    setBlockHeight(
-      sideBarBlock ? sideBarBlock.getBoundingClientRect().height : 0,
-    )
-    CanvasRenderingContext2D.prototype.roundRect = function (
-      x,
-      y,
-      width,
-      height,
-      radius?: number,
-    ): CanvasRenderingContext2D {
-      if (!radius) radius = 0
-      if (width < 2 * radius) radius = width / 2
-      if (height < 2 * radius) radius = height / 2
-      this.beginPath()
-      this.moveTo(x + radius, y)
-      this.arcTo(x + width, y, x + width, y + height, radius)
-      this.arcTo(x + width, y + height, x, y + height, radius)
-      this.arcTo(x, y + height, x, y, radius)
-      this.arcTo(x, y, x + width, y, radius)
-      this.closePath()
-      return this
-    }
+      setMask(prev => [...prev])
+    },
+    [death, mask, size, win],
+  )
 
-    canvas.width = width
-    canvas.height = height
-    canvas.style.width = `${width / 2}px`
-    canvas.style.height = `${height / 2}px`
+  const getClassSquare = useCallback(
+    (x: number, y: number) => {
+      if (mask[y * size + x] === Mask.Open) {
+        return `sapper-game__cell-type${field[y * size + x]}`
+      }
+      if (mask[y * size + x] === Mask.Closed) {
+        return `sapper-game__cell-closed`
+      }
+      if (mask[y * size + x] === Mask.Flag) {
+        return `sapper-game__cell-flag`
+      }
+      if (mask[y * size + x] === Mask.Mine) {
+        return `sapper-game__cell-mine`
+      }
+      if (mask[y * size + x] === Mask.RedMine) {
+        return `sapper-game__cell-mine-red`
+      }
+    },
+    [field, mask, size],
+  )
 
-    ctx.clearRect(defaultPadding, defaultPaddingVertical, width, height)
+  const refresh = useCallback(() => {
+    setField(() => createField(size))
+    setMask(() => new Array(size * size).fill(Mask.Closed))
+    setDeath(false)
+    setRemainingMines(size)
+    stopTimer()
+    setTime(0)
+  }, [size, stopTimer])
 
-    ctx.fillStyle = 'blue'
-    ctx.font = '40px Arial'
-
-    ctx.fillStyle = 'black'
-
-    ctx.fillRect(0, 0, (squareSize + gap) * cols, (squareSize + gap) * rows)
-
-    ctx.fillStyle = 'gray'
-
-    gameField.forEach((row, rowIndex) => {
-      row.forEach((cell, colIndex) => {
-        ctx
-          .roundRect(
-            colIndex * (squareSize + gap),
-            rowIndex * (squareSize + gap),
-            squareSize,
-            squareSize,
-            BORDER_RADIUS,
-          )
-          .fill()
-      })
-    })
-  }
-  const clickSquare = (event: MouseEvent) => {
-    if (squareSize === 0 || gap === 0) return
-    const col = Math.trunc(
-      (event.offsetX - defaultPadding / 2) / ((squareSize + gap) / 2),
-    )
-    const row = Math.trunc(
-      (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
-    )
-
-    ctx.fillStyle = greyLight
-    ctx
-      .roundRect(
-        col * (squareSize + gap),
-        row * (squareSize + gap),
-        squareSize,
-        squareSize,
-        BORDER_RADIUS,
-      )
-      .fill()
-
-    printLetter(col, row)
-
-    if (String(gameField[col][row]).toUpperCase() === 'X') {
-      console.log(gameField[col][row].toUpperCase());
-      alert('you lose')
-    }
-
-    console.log({ col, row })
-  }
-
-  const addClickHandler = canvas => {
-    if (!canvas) return
-    canvas.addEventListener('mouseup', clickSquare)
-    return () => canvas.removeEventListener('mouseup', clickSquare)
+  const _formatNumbers = (num: number) => {
+    return String(num).padStart(COUNTER_LENGTH, '0')
   }
 
   useEffect(() => {
-    init()
-    addClickHandler(canvas)
-  }, [gameField, height, width, resizeGameRatio])
+    if (win) {
+      stopTimer()
+      //TODO: add win scenario
+    }
+  }, [stopTimer, win])
 
   return (
-    <motion.div
-      className='sapper-game'
-      // transition={{ ease: 'backInOut', duration: 0.5 }}
-      // initial={{ y: 0 }}
-      // animate={{ y: isShown ? 0 : 0 }}
-    >
-      <canvas ref={canvasRef} height={height} width={width} />
-    </motion.div>
+    <div className='sapper-game'>
+      <div className='sapper-game-container'>
+        <div className='sapper-game__top-bar'>
+          <div className='sapper-game__top-bar-counter bombs-number'>
+            {_formatNumbers(remainingMines)}
+          </div>
+          <button
+            className={[
+              'sapper-game__top-bar-smile',
+              death
+                ? 'sapper-game__top-bar-smile-lose'
+                : win
+                ? 'sapper-game__top-bar-smile-win'
+                : 'sapper-game__top-bar-smile-default',
+            ].join(' ')}
+            onClick={refresh}
+          />
+          <div className='sapper-game__top-bar-counter timer'>
+            {_formatNumbers(time)}
+          </div>
+        </div>
+        <div className='sapper-game__game-field'>
+          {dimension.map((_, y) => {
+            return (
+              <div key={y} className={['sapper-game__row'].join(' ')}>
+                {dimension.map((_, x) => {
+                  return (
+                    <button
+                      className={[
+                        'sapper-game__row-cell',
+                        getClassSquare(x, y),
+                      ].join(' ')}
+                      key={x}
+                      onClick={() => clickSquare(x, y)}
+                      onContextMenu={e => rightClickSquare(e, x, y)}
+                    />
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
   )
 }
-
-export default WordsScrambleGame

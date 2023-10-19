@@ -1,35 +1,35 @@
-export const generateMines = (width, height, mineCount) => {
-  const mines = [];
-  while (mines.length < mineCount) {
-    const x = Math.floor(Math.random() * width);
-    const y = Math.floor(Math.random() * height);
-    const coordinate = `${x}-${y}`;
+const Mine = -1
 
-    if (!mines.includes(coordinate)) {
-      mines.push(coordinate);
-    }
-  }
-  return mines;
-}
+export const createField = (size: number): number[] => {
+  const field: number[] = new Array(size * size).fill(0)
 
-export const calculateMineCounts = (mines, width, height) => {
-  const mineCounts = Array.from({ length: height }, () => Array(width).fill(0));
+  const inc = (x: number, y: number) => {
+    if (x >= 0 && x < size && y >= 0 && y < size) {
+      if (field[y * size + x] === Mine) return
 
-  for (const mine of mines) {
-    const [x, y] = mine.split('-').map(Number);
-    mineCounts[y][x] = 'X';
-
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        const nx = x + dx;
-        const ny = y + dy;
-
-        if (nx >= 0 && nx < width && ny >= 0 && ny < height && mineCounts[ny][nx] !== 'X') {
-          mineCounts[ny][nx]++;
-        }
-      }
+      field[y * size + x] += 1
     }
   }
 
-  return mineCounts;
+  for (let i = 0; i < size; ) {
+    const x = Math.floor(Math.random() * size)
+    const y = Math.floor(Math.random() * size)
+
+    if (field[y * size + x] === Mine) continue
+
+    field[y * size + x] = Mine
+
+    i += 1
+
+    inc(x + 1, y)
+    inc(x - 1, y)
+    inc(x, y + 1)
+    inc(x, y - 1)
+    inc(x + 1, y - 1)
+    inc(x - 1, y - 1)
+    inc(x + 1, y + 1)
+    inc(x - 1, y + 1)
+  }
+
+  return field
 }

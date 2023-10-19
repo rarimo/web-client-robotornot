@@ -9,7 +9,6 @@ import {
 import { ToastContainer } from 'react-toastify'
 
 import { AppFooter, AppNavbar, InvalidChainModal, Loader } from '@/common'
-import SapperGame from '@/common/SapperGame/SapperGame'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
@@ -86,8 +85,6 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     <>
       <AppNavbar />
       <div className='app__main'>
-        <SapperGame mines={10} rows={9} cols={9} />
-
         {isAppInitialized ? children : <Loader />}
       </div>
 

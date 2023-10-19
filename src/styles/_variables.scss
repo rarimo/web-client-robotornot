@@ -93,6 +93,14 @@
   --border-secondary-main: #{$border-secondary-main};
   --border-secondary-dark: #{$border-secondary-dark};
 
+  /* sapper game colors */
+
+  --sapper-border-container-color:#{$sapper-border-container-color};
+
+  --sapper-border-color-main: #{$sapper-border-color-main};
+
+  --sapper-background-color-top-bar: #{$sapper-background-color-top-bar};
+
   /* App variables */
   --app-txt: #{$text-primary-main};
   --app-font-family: 'euclidCircularB', 'Roboto', 'Arial', sans-serif;
