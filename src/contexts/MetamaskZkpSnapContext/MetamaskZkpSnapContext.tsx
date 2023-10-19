@@ -124,10 +124,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [])
 
   const checkSnapExists = useCallback(async () => {
-    const _isSnapInstalled = await detectSnapInstalled(
-      'local:http://localhost:8081',
-      '0.6.0',
-    )
+    const _isSnapInstalled = await detectSnapInstalled()
 
     setIsSnapInstalled(_isSnapInstalled)
 
@@ -135,7 +132,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [])
 
   const connectOrInstallSnap = useCallback(async () => {
-    const snap = await enableSnap('local:http://localhost:8081', '0.6.0')
+    const snap = await enableSnap()
     const connector = await snap.getConnector()
     setConnector(connector)
   }, [])
