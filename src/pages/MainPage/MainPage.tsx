@@ -3,11 +3,13 @@ import './sidebars.scss'
 
 import { AnimatePresence, LayoutGroup, motion, Variants } from 'framer-motion'
 import { type FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'
+import { useWindowSize } from 'usehooks-ts'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ErrorMessage, Icon, Loader } from '@/common'
 import { useFormStepperContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
+import { isMobile } from '@/helpers'
 
 type Props = HTMLAttributes<HTMLDivElement>
 
@@ -41,6 +43,8 @@ const togglerAnimationVariants: Variants = {
 }
 
 const MainPage: FC<Props> = ({ className, ...rest }) => {
+  const { width } = useWindowSize()
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const sidebarUuid = useMemo(() => uuidv4(), [])
@@ -57,6 +61,12 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
     setIsSidebarAnimationCompleted,
   } = useFormStepperContext()
+
+  const isDeviceMobile = useMemo(() => {
+    if (width <= 1280) {
+      return isMobile()
+    }
+  }, [width])
 
   const SidebarToggler = useCallback(
     (type: 'expand' | 'collapse') => (
@@ -88,6 +98,12 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
                 message={`Ooops... something went wrong, please reload page`}
               />
             </motion.div>
+          </motion.div>
+        ) : isDeviceMobile ? (
+          <motion.div className='main-page__content'>
+            <div className='main-page__step'>
+              <h2 className='main-page__title'>{`Please use desktop device`}</h2>
+            </div>
           </motion.div>
         ) : (
           <LayoutGroup>
