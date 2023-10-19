@@ -4,7 +4,7 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { animate, motion, stagger } from 'framer-motion'
 import { type FC, useCallback, useMemo, useState } from 'react'
 
-import { AppButton, Icon } from '@/common'
+import { Icon, LoadingButton } from '@/common'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
@@ -147,12 +147,14 @@ const ProofSubmitting: FC<StepProps> = ({
         {`Submitting a proof via blockchain`}
       </span>
 
-      <AppButton
-        text={`Share`}
+      <LoadingButton
         modification='border-circle'
         onClick={requestSubmitZkp}
+        isPending={isPending}
         isDisabled={isPending}
-      />
+      >
+        {`Share`}
+      </LoadingButton>
     </motion.div>
   )
 }

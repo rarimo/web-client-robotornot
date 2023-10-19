@@ -214,7 +214,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         )
 
         if (isIdentityProvedMsg) {
-          // setCurrentStep(Steps.ProofSubmittedStep)
+          setCurrentStep(Steps.ProofSubmittedStep)
         }
       }
 
@@ -476,8 +476,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    // if (!currentStep) setCurrentStep(detectStartStep())
-    if (!currentStep) setCurrentStep(Steps.SnapConnectionStep)
+    if (!currentStep) setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])

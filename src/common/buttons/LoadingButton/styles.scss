@@ -1,0 +1,25 @@
+.loading-button {
+  transition: 0.35s ease-in-out;
+
+  &.loading-button--pending {
+    padding: toRem(16);
+    filter: none;
+    opacity: 1;
+  }
+}
+
+.loading-button .loading-button__loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center;
+  width: toRem(20);
+  height: toRem(20);
+
+  &:after {
+    width: toRem(16);
+    height: toRem(16);
+    border-width: toRem(2);
+    margin: auto;
+  }
+}

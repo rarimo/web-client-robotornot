@@ -6,7 +6,7 @@ import { LinkProps, NavLink } from 'react-router-dom'
 import { Icon } from '@/common'
 import { ICON_NAMES } from '@/enums'
 
-type Props<R extends string, H extends string> = {
+export type Props<R extends string, H extends string> = {
   text?: string
   scheme?: 'filled' | 'flat' | 'none'
   modification?: 'border-circle' | 'border-rounded' | 'none'
@@ -81,11 +81,9 @@ const AppButton = <R extends string, H extends string>({
         ) : (
           <></>
         )}
-        {children || text ? (
-          <span className='app-button__text'>{text}</span>
-        ) : (
-          <></>
-        )}
+
+        {children || <span className='app-button__text'>{text}</span> || <></>}
+
         {iconRight ? (
           <Icon className='app-button__icon-right' name={iconRight} />
         ) : (
