@@ -1,23 +1,12 @@
 import { motion } from 'framer-motion'
 import { FC, useState } from 'react'
 
-import { AppButton, WordsScrambleGame } from '@/common'
+import { AppButton } from '@/common'
+import SidebarGame from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarGame'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
-const words = [
-  'bitcoin',
-  'luna',
-  'rarimo',
-  'moon',
-  'polygon',
-  'mumbai',
-  'ether',
-]
-const rows = 9
-const cols = 7
-
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
-  const [isShowGame, setIsShowGame] = useState(false)
+  const [isGameShown, setIsGameShown] = useState(false)
 
   return (
     <motion.div
@@ -28,13 +17,6 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       ].join(' ')}
       {...rest}
     >
-      <WordsScrambleGame
-        words={words}
-        rows={rows}
-        cols={cols}
-        isShown={isShowGame}
-        setIsShown={setIsShowGame}
-      />
       <div className='app__step-sidebar-content-img-wrp'>
         <img
           className='app__step-sidebar-content-img'
@@ -55,10 +37,12 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
           modification='border-circle'
           size='small'
           onClick={() => {
-            setIsShowGame(prevState => !prevState)
+            setIsGameShown(prevState => !prevState)
           }}
         />
       </div>
+
+      <SidebarGame isShown={isGameShown} setIsShown={setIsGameShown} />
     </motion.div>
   )
 }

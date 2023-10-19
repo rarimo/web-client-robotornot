@@ -1,4 +1,5 @@
 import './styles.scss'
+import './sidebars.scss'
 
 import { AnimatePresence, LayoutGroup, motion, Variants } from 'framer-motion'
 import { type FC, HTMLAttributes, useCallback, useMemo, useState } from 'react'

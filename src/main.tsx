@@ -38,7 +38,7 @@ try {
 }
 
 root.render(
-  import.meta.env.DEV ? (
+  config.ENVIRONMENT && config.ENVIRONMENT === 'dev' ? (
     <AppRoutes />
   ) : (
     <StrictMode>

@@ -135,12 +135,11 @@ export const config = {
 
   GA_ID: import.meta.env.VITE_GA_ID,
 
-  SUPPORTED_CHAINS_DETAILS: (import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS
-    ? JSON.parse(import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS)
-    : FALLBACK_SUPPORTED_CHAINS) as Record<
-    keyof typeof FALLBACK_SUPPORTED_CHAINS,
-    Chain
-  >,
+  SUPPORTED_CHAINS_DETAILS: {
+    ...FALLBACK_SUPPORTED_CHAINS,
+    ...(import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS &&
+      JSON.parse(import.meta.env.VITE_SUPPORTED_CHAINS_DETAILS)),
+  } as Record<keyof typeof FALLBACK_SUPPORTED_CHAINS, Chain>,
 
   CIRCUITS_LOADING_TRIES_LIMIT:
     import.meta.env.VITE_CIRCUITS_LOADING_TRIES_LIMIT || 3,
