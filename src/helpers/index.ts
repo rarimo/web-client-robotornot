@@ -1,6 +1,7 @@
 export * from './bytes.helpers'
 export * from './chains.helpers'
 export * from './clipboard.helpers'
+export * from './device.helpers'
 export * from './error-handler'
 export * from './ethereum.helpers'
 export * from './event-bus'
