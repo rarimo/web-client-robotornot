@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import { FC, useCallback, useEffect, useRef } from 'react'
+import { FC, useEffect } from 'react'
 
 import { TypingAnimatedText } from '@/common'
 import { useFormStepperContext } from '@/contexts'
-import { sleep } from '@/helpers'
+import { useSidebarAnimation } from '@/hooks'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
 const DESCRIPTIONS = [
@@ -13,31 +13,13 @@ const DESCRIPTIONS = [
 ]
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
-  const imageSeq = useRef<HTMLImageElement>(null)
-  const textTyping = useRef<{ play: () => void; stop: () => void }>(null)
-
   const { isSidebarAnimationCompleted } = useFormStepperContext()
-
-  const animateText = useCallback(() => {
-    textTyping.current?.play()
-  }, [])
-
-  const animateSequence = useCallback(async () => {
-    if (!imageSeq.current) return
-
-    for (let i = 0; i < 59; i++) {
-      await sleep(1000 / 59)
-
-      imageSeq.current.src = `/images/sequences/sidebar-2/2_000${i + 10}.png`
-    }
-
-    animateText()
-  }, [animateText, imageSeq])
+  const { imageSeq, textTyping, animateSequence } = useSidebarAnimation()
 
   useEffect(() => {
     if (!isSidebarAnimationCompleted || !imageSeq.current) return
 
-    animateSequence()
+    animateSequence('/images/sequences/sidebar-2/2_000', 59)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarAnimationCompleted])
 
