@@ -93,7 +93,7 @@ const ProofGenerating: FC<StepProps> = ({
         />
 
         <h2 className='proof-generating__title'>
-          {isVCRequestPending ? `Getting a credentials` : `Proof of Human`}
+          {isVCRequestPending ? `Getting a credential` : `Proof of Human`}
         </h2>
 
         {isVCRequestPending && (
