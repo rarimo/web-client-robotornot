@@ -19,7 +19,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   useEffect(() => {
     if (!isSidebarAnimationCompleted || !imageSeq.current) return
 
-    animateSequence('/images/sequences/sidebar-2/2_000', 59)
+    animateSequence('/images/sequences/sidebar-2/2_000', 60)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarAnimationCompleted])
 
@@ -36,7 +36,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         <motion.img
           ref={imageSeq}
           className='app__step-sidebar-content-img'
-          src='/images/sequences/sidebar-2/2_00010.png'
+          src='/images/sequences/sidebar-2/2_0000.png'
           alt='sidebar-content'
         />
       </div>
