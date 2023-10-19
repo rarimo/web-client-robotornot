@@ -1,3 +1,5 @@
+import './styles.scss'
+
 import { motion } from 'framer-motion'
 import { FC, useEffect } from 'react'
 
@@ -38,10 +40,11 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       </div>
 
       <TypingAnimatedText
-        className='app__step-sidebar-content-title'
+        className='wallet-connection__sidebar-title'
         ref={textTyping}
         isAutoplay={false}
         text={DESCRIPTIONS.join('\n\n')}
+        duration={2}
       />
     </motion.div>
   )

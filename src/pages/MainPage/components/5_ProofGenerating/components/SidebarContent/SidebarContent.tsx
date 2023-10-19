@@ -6,10 +6,6 @@ import { useFormStepperContext } from '@/contexts'
 import { useSidebarAnimation } from '@/hooks'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
-const DESCRIPTIONS = [
-  "Zero-Knowledge Proofs (ZKPs) have been a theoretical concept in cryptography since the 1980s. However, their widespread practical use and adoption in identity systems have predominantly emerged in the 2020s.In a sense, you're part of a historic moment.",
-]
-
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   const { isSidebarAnimationCompleted } = useFormStepperContext()
   const { imageSeq, textTyping, animateSequence } = useSidebarAnimation()
@@ -42,7 +38,8 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         className='app__step-sidebar-content-text'
         ref={textTyping}
         isAutoplay={false}
-        text={DESCRIPTIONS.join('\n\n')}
+        text={`Zero-Knowledge Proofs (ZKPs) have been a theoretical concept in cryptography since the 1980s. However, their widespread practical use and adoption in identity systems have predominantly emerged in the 2020s.In a sense, you're part of a historic moment.`}
+        duration={5}
       />
     </motion.div>
   )

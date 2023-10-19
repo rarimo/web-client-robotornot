@@ -1,6 +1,8 @@
+import './styles.scss'
+
 import { config } from '@config'
 import { motion } from 'framer-motion'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useRef } from 'react'
 
 import { TypingAnimatedText } from '@/common'
 import { useFormStepperContext } from '@/contexts'
@@ -9,6 +11,7 @@ import { SidebarProps } from '@/pages/MainPage/components/types'
 
 const DESCRIPTIONS = [
   "Since this app is built on the Rarimo protocol, a cross-chain identity layer, This means you don't have to manually handle proofs for different chains. dApps can easily verify your credentials across blockchains, sparing you from additional fees and unnecessary steps.",
+  'Learn more about ',
 ]
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
@@ -20,6 +23,9 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
     animateSequence('/images/sequences/sidebar-7/7_000', 40)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarAnimationCompleted])
+
+  const preLinkTyping = useRef<{ play: () => void; stop: () => void }>(null)
+  const linkTyping = useRef<{ play: () => void; stop: () => void }>(null)
 
   return (
     <motion.div
@@ -40,31 +46,43 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       </div>
 
       <TypingAnimatedText
-        className='app__step-sidebar-content-text'
         ref={textTyping}
         isAutoplay={false}
-        text={DESCRIPTIONS.join('\n\n')}
+        text={DESCRIPTIONS[0]}
+        onAnimationComplete={() => {
+          preLinkTyping?.current?.play()
+        }}
+        duration={3}
       />
 
-      <motion.p
-        className='app__step-sidebar-content-text'
-        animate={{ display: isSidebarAnimationCompleted ? 'inline' : 'none' }}
-        initial={{ display: 'none' }}
-        transition={{
-          duration: 1,
-          ease: 'backInOut',
-        }}
-      >
-        {`Learn more about`}{' '}
+      <br />
+      <br />
+
+      <div className='proof-submitting__sidebar-text-wrp'>
+        <TypingAnimatedText
+          ref={preLinkTyping}
+          isAutoplay={false}
+          text={DESCRIPTIONS[1]}
+          onAnimationComplete={() => {
+            linkTyping?.current?.play()
+          }}
+          duration={1}
+        />
+
         <a
-          className='app__text-link'
+          className='app__text-link proof-submitting__sidebar-link'
           href={config.EXTERNAL_LANDING_URL}
           target='_blank'
           rel='noreferrer'
         >
-          {`Rarimo`}
+          <TypingAnimatedText
+            ref={linkTyping}
+            isAutoplay={false}
+            text={`Rarimo`}
+            duration={1}
+          />
         </a>
-      </motion.p>
+      </div>
     </motion.div>
   )
 }

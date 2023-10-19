@@ -17,7 +17,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   useEffect(() => {
     if (!isSidebarAnimationCompleted || !imageSeq.current) return
 
-    animateSequence('/images/sequences/sidebar-3/3_000', 36)
+    animateSequence('/images/sequences/sidebar-3/3_000', 37)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarAnimationCompleted])
   return (
@@ -43,6 +43,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         ref={textTyping}
         isAutoplay={false}
         text={DESCRIPTIONS.join('\n\n')}
+        duration={2}
       />
     </motion.div>
   )

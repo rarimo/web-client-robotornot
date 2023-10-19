@@ -30,12 +30,20 @@
   }
 }
 
-.app__step-sidebar-content-title {
+@mixin step-sidebar-content-title {
   text-align: center;
   margin-top: auto;
   color: var(--text-primary-main);
   font-size: toRem(32);
   font-weight: 600;
+}
+
+.app__step-sidebar-content-title {
+  @include step-sidebar-content-title;
+}
+
+.app__step-sidebar-content-text {
+  margin-bottom: auto;
 }
 
 .app__step-sidebar-content-actions {
@@ -46,6 +54,7 @@
   width: 100%;
 }
 
+.app__step-sidebar-content-actions-btn-wrp,
 .app__step-sidebar-content-actions-btn {
   width: 100%;
 }
