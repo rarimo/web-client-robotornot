@@ -241,8 +241,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       },
     })
 
-    console.log('zkProofResponse', zkProofResponse)
-
     setZkProof(zkProofResponse?.zkpProof)
 
     setStatesMerkleProof(zkProofResponse?.statesMerkleData)

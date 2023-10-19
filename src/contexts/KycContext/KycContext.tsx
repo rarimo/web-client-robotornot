@@ -432,39 +432,18 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       let isManualClosed = false
 
-      socket.addEventListener('open', event => {
-        console.log('open')
-        console.log(event)
-      })
-
       socket.addEventListener('message', async event => {
-        console.log(event)
-
         const msg = event.data as string | SaveCredentialsRequestParams
-
-        console.log(msg)
 
         if (msg && msg === 'processing') return false
 
         isManualClosed = true
         socket.close()
 
-        console.log('imma here')
-
         await onClaimReceived?.(typeof msg === 'string' ? JSON.parse(msg) : msg)
       })
 
-      socket.addEventListener('error', async event => {
-        console.log('error')
-        console.log(event)
-      })
-
-      socket.addEventListener('close', async event => {
-        console.log('close')
-        console.log(event)
-
-        console.log('isManualClosed', isManualClosed)
-
+      socket.addEventListener('close', async () => {
         if (!isManualClosed) {
           subscribeToClaimWaiting(claimType, identityIdString, onClaimReceived)
         }
@@ -591,10 +570,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           config.CLAIM_TYPE,
           identityIdString,
           async (claimOffer: SaveCredentialsRequestParams) => {
-            console.log('getVerifiableCredentials')
             await getVerifiableCredentials(identityIdString, claimOffer)
 
-            console.log('setIsVCRequestPending(false)')
             setIsVCRequestPending(false)
           },
         )
