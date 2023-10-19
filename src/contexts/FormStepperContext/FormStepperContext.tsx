@@ -63,6 +63,9 @@ interface FormStepperContextValue {
 
   isSidebarAnimationCompleted: boolean
   setIsSidebarAnimationCompleted: (value: boolean) => void
+
+  isSidebarClosingDisabled: boolean
+  setIsSidebarClosingDisabled: (value: boolean) => void
 }
 
 export const formStepperContext = createContext<FormStepperContextValue>({
@@ -89,6 +92,11 @@ export const formStepperContext = createContext<FormStepperContextValue>({
 
   isSidebarAnimationCompleted: false,
   setIsSidebarAnimationCompleted: () => {
+    throw new TypeError('setIsSidebarAnimationCompleted method is not defined')
+  },
+
+  isSidebarClosingDisabled: false,
+  setIsSidebarClosingDisabled: () => {
     throw new TypeError('setIsSidebarAnimationCompleted method is not defined')
   },
 })
@@ -141,6 +149,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLoadFailed, setIsLoadFailed] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
+
+  const [isSidebarClosingDisabled, setIsSidebarClosingDisabled] =
+    useState(false)
 
   const { provider, isValidChain } = useWeb3Context()
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
@@ -214,7 +225,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         )
 
         if (isIdentityProvedMsg) {
-          setCurrentStep(Steps.ProofSubmittedStep)
+          // setCurrentStep(Steps.ProofSubmittedStep)
         }
       }
 
@@ -476,7 +487,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    if (!currentStep) setCurrentStep(detectStartStep())
+    if (!currentStep) setCurrentStep(Steps.ProofGeneratingLoaderStep)
+    // if (!currentStep) setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
@@ -503,6 +515,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
         isSidebarAnimationCompleted,
         setIsSidebarAnimationCompleted,
+
+        isSidebarClosingDisabled,
+        setIsSidebarClosingDisabled,
       }}
     >
       {children}

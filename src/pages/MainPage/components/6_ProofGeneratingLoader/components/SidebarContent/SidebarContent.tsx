@@ -2,10 +2,13 @@ import { motion } from 'framer-motion'
 import { FC, useState } from 'react'
 
 import { AppButton } from '@/common'
+import { useFormStepperContext } from '@/contexts'
 import SidebarGame from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarGame'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const { setIsSidebarClosingDisabled } = useFormStepperContext()
+
   const [isGameShown, setIsGameShown] = useState(false)
 
   return (
@@ -38,6 +41,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
           size='small'
           onClick={() => {
             setIsGameShown(prevState => !prevState)
+            setIsSidebarClosingDisabled(true)
           }}
         />
       </div>
