@@ -33,8 +33,8 @@ import ProofGeneratingLoaderStep from '@/pages/MainPage/components/6_ProofGenera
 import ProofGeneratingLoaderSidebarContent from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarContent'
 import ProofSubmittingStep from '@/pages/MainPage/components/7_ProofSubmitting'
 import ProofSubmittingSidebarContent from '@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'
-import ProofSubmittedStep from '@/pages/MainPage/components/9_ProofSubmitted'
-import ProofSubmittedSidebarContent from '@/pages/MainPage/components/9_ProofSubmitted/components/SidebarContent'
+import ProofSubmittedStep from '@/pages/MainPage/components/8_ProofSubmitted'
+import ProofSubmittedSidebarContent from '@/pages/MainPage/components/8_ProofSubmitted/components/SidebarContent'
 
 export enum Steps {
   WalletConnectionStep = 'WALLET_CONNECTION_STEP',
@@ -225,7 +225,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         )
 
         if (isIdentityProvedMsg) {
-          // setCurrentStep(Steps.ProofSubmittedStep)
+          setCurrentStep(Steps.ProofSubmittedStep)
         }
       }
 
@@ -487,8 +487,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    if (!currentStep) setCurrentStep(Steps.ProofGeneratingLoaderStep)
-    // if (!currentStep) setCurrentStep(detectStartStep())
+    if (!currentStep) setCurrentStep(detectStartStep())
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
