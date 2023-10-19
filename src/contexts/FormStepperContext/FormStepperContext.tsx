@@ -477,7 +477,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     if (!isLoaded || isInitialized) return
 
     // if (!currentStep) setCurrentStep(detectStartStep())
-    if (!currentStep) setCurrentStep(Steps.SnapConnectionStep)
+    if (!currentStep) setCurrentStep(Steps.ProofSubmittingStep)
 
     setIsInitialized(true)
   }, [currentStep, detectStartStep, isInitialized, isLoaded])

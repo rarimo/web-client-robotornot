@@ -51,15 +51,16 @@ const TypingAnimatedText = forwardRef<
     controls.play()
 
     return controls.stop
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   })
 
   return (
     <div className={['typing-animated-text', className].join(' ')}>
-      <motion.p className='typing-animated-text__stub'>{text}</motion.p>
-      <motion.p className='typing-animated-text__content' {...rest}>
+      <motion.span className='typing-animated-text__stub'>{text}</motion.span>
+      <motion.span className='typing-animated-text__content' {...rest}>
         {displayText}
-      </motion.p>
+      </motion.span>
     </div>
   )
 })
