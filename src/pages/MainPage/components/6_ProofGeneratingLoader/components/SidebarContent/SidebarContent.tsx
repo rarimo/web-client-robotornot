@@ -12,6 +12,8 @@ const TEXT_DURATION_MS = 10_000
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
   const [isGameBtnShown, setIsGameBtnShown] = useState(false)
+  const { setIsSidebarClosingDisabled } = useFormStepperContext()
+
   const [isGameShown, setIsGameShown] = useState(false)
 
   const { isSidebarAnimationCompleted } = useFormStepperContext()
@@ -82,6 +84,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
                 size='small'
                 onClick={() => {
                   setIsGameShown(prevState => !prevState)
+                  setIsSidebarClosingDisabled(true)
                 }}
               />
             </motion.div>

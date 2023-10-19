@@ -60,6 +60,8 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     SidebarComponent,
 
     setIsSidebarAnimationCompleted,
+
+    isSidebarClosingDisabled,
   } = useFormStepperContext()
 
   const isDeviceMobile = useMemo(() => {
@@ -163,7 +165,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
                     </AnimatePresence>
 
                     <AnimatePresence>
-                      {SidebarToggler('collapse')}
+                      {!isSidebarClosingDisabled && SidebarToggler('collapse')}
                     </AnimatePresence>
                   </div>
                 </motion.div>

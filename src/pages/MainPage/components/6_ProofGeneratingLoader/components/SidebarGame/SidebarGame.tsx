@@ -6,10 +6,12 @@ import {
   type MotionProps,
   Variants,
 } from 'framer-motion'
-import { FC, HTMLAttributes, useState } from 'react'
+import { FC, HTMLAttributes, useEffect, useState } from 'react'
 
 import { AppButton, WordsScrambleGame } from '@/common'
+import { useFormStepperContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
+import { bus, BUS_EVENTS } from '@/helpers'
 
 const words = [
   'bitcoin',
@@ -57,9 +59,18 @@ const SidebarGame: FC<Props> = ({
   className,
   ...rest
 }) => {
+  const { setIsSidebarClosingDisabled } = useFormStepperContext()
   const [gameStatus, setGameStatus] = useState({
     found: 0,
   })
+
+  useEffect(() => {
+    if (gameStatus.found === words.length) {
+      bus.emit(BUS_EVENTS.success, "Congrats! You've found all the words!")
+      setIsShown(false)
+      setIsSidebarClosingDisabled(false)
+    }
+  }, [gameStatus.found, setIsShown, setIsSidebarClosingDisabled])
 
   return (
     <AnimatePresence>
@@ -83,7 +94,10 @@ const SidebarGame: FC<Props> = ({
               scheme='none'
               size='none'
               iconRight={ICON_NAMES.x}
-              onClick={() => setIsShown(false)}
+              onClick={() => {
+                setIsShown(false)
+                setIsSidebarClosingDisabled(false)
+              }}
             />
           </div>
           <p className='sidebar-game__overtitle'>
