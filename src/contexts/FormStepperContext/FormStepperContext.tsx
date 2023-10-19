@@ -33,8 +33,8 @@ import ProofGeneratingLoaderStep from '@/pages/MainPage/components/6_ProofGenera
 import ProofGeneratingLoaderSidebarContent from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarContent'
 import ProofSubmittingStep from '@/pages/MainPage/components/7_ProofSubmitting'
 import ProofSubmittingSidebarContent from '@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'
-import ProofSubmittedStep from '@/pages/MainPage/components/9_ProofSubmitted'
-import ProofSubmittedSidebarContent from '@/pages/MainPage/components/9_ProofSubmitted/components/SidebarContent'
+import ProofSubmittedStep from '@/pages/MainPage/components/8_ProofSubmitted'
+import ProofSubmittedSidebarContent from '@/pages/MainPage/components/8_ProofSubmitted/components/SidebarContent'
 
 export enum Steps {
   WalletConnectionStep = 'WALLET_CONNECTION_STEP',
@@ -60,6 +60,12 @@ interface FormStepperContextValue {
   nextStep: () => void
   prevStep: () => void
   setStep: (step: Steps) => void
+
+  isSidebarAnimationCompleted: boolean
+  setIsSidebarAnimationCompleted: (value: boolean) => void
+
+  isSidebarClosingDisabled: boolean
+  setIsSidebarClosingDisabled: (value: boolean) => void
 }
 
 export const formStepperContext = createContext<FormStepperContextValue>({
@@ -82,6 +88,16 @@ export const formStepperContext = createContext<FormStepperContextValue>({
   },
   setStep: () => {
     throw new TypeError('setStep method is not defined')
+  },
+
+  isSidebarAnimationCompleted: false,
+  setIsSidebarAnimationCompleted: () => {
+    throw new TypeError('setIsSidebarAnimationCompleted method is not defined')
+  },
+
+  isSidebarClosingDisabled: false,
+  setIsSidebarClosingDisabled: () => {
+    throw new TypeError('setIsSidebarAnimationCompleted method is not defined')
   },
 })
 
@@ -134,6 +150,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const [isLoadFailed, setIsLoadFailed] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
 
+  const [isSidebarClosingDisabled, setIsSidebarClosingDisabled] =
+    useState(false)
+
   const { provider, isValidChain } = useWeb3Context()
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
   const {
@@ -147,6 +166,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     parseDIDToIdentityBigIntString,
   } = useZkpContext()
   const { isVCRequestPending } = useKycContext()
+
+  const [isSidebarAnimationCompleted, setIsSidebarAnimationCompleted] =
+    useState(false)
 
   const stepsProgress = useMemo(() => {
     const steps = Object.values(Steps)
@@ -423,6 +445,12 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     return currentStep ? STEPS_SIDEBAR_CONTENT[currentStep] : <></>
   }, [STEPS_SIDEBAR_CONTENT, currentStep])
 
+  const setStep = useCallback((step: Steps) => {
+    setIsSidebarAnimationCompleted(false)
+
+    setCurrentStep(step)
+  }, [])
+
   const nextStep = useCallback(() => {
     const steps = Object.values(Steps)
 
@@ -430,8 +458,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!steps[nextStepIndex]) return
 
-    setCurrentStep(steps[nextStepIndex])
-  }, [currentStep])
+    setStep(steps[nextStepIndex])
+  }, [currentStep, setStep])
 
   const prevStep = useCallback(() => {
     const steps = Object.values(Steps)
@@ -440,12 +468,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!steps[prevStepIndex]) return
 
-    setCurrentStep(steps[prevStepIndex])
-  }, [currentStep])
-
-  const setStep = useCallback((step: Steps) => {
-    setCurrentStep(step)
-  }, [])
+    setStep(steps[prevStepIndex])
+  }, [currentStep, setStep])
 
   const handleError = useCallback(
     (error: Error) => {
@@ -487,6 +511,12 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         prevStep,
         setStep,
         handleError,
+
+        isSidebarAnimationCompleted,
+        setIsSidebarAnimationCompleted,
+
+        isSidebarClosingDisabled,
+        setIsSidebarClosingDisabled,
       }}
     >
       {children}

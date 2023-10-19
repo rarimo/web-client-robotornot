@@ -41,3 +41,12 @@
   display: flex;
   justify-content: center;
 }
+
+.sidebar-game__success-icon {
+  @include static-icon-size(toRem(28))
+}
+
+.sidebar-game__success-text {
+  font-size: toRem(16);
+  color: var(--text-primary-invert-main);
+}
