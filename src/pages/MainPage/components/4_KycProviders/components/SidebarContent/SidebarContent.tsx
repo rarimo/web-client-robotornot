@@ -1,9 +1,21 @@
 import { motion } from 'framer-motion'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
+import { useFormStepperContext } from '@/contexts'
+import { useSidebarAnimation } from '@/hooks'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const { isSidebarAnimationCompleted } = useFormStepperContext()
+  const { imageSeq, animateSequence } = useSidebarAnimation()
+
+  useEffect(() => {
+    if (!isSidebarAnimationCompleted || !imageSeq.current) return
+
+    animateSequence('/images/sequences/sidebar-4/4_000', 62)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSidebarAnimationCompleted])
+
   return (
     <motion.div
       className={[
@@ -14,9 +26,10 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       {...rest}
     >
       <div className='app__step-sidebar-content-img-wrp app__step-sidebar-content-img-wrp--single'>
-        <img
+        <motion.img
+          ref={imageSeq}
           className='app__step-sidebar-content-img'
-          src='/images/sidebar-img-4.svg'
+          src='/images/sequences/sidebar-4/4_0000.png'
           alt='sidebar-content'
         />
       </div>

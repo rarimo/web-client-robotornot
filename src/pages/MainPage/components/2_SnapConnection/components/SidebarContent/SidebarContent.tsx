@@ -1,9 +1,30 @@
-import { motion } from 'framer-motion'
-import { FC } from 'react'
+import './styles.scss'
 
+import { motion } from 'framer-motion'
+import { FC, useEffect } from 'react'
+
+import { TypingAnimatedText } from '@/common'
+import { useFormStepperContext } from '@/contexts'
+import { useSidebarAnimation } from '@/hooks'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
+const DESCRIPTIONS = [
+  'RariMe Snap allows users to store and manage identity credentials through MetaMask wallet',
+  'You can utilize the RariMe Identity Snap to seamlessly integrate any identity credential and use them across various blockchains without any additional effort.',
+  'Is not that cool? Same wallet for managing your Crypto and identity',
+]
+
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const { isSidebarAnimationCompleted } = useFormStepperContext()
+  const { imageSeq, textTyping, animateSequence } = useSidebarAnimation()
+
+  useEffect(() => {
+    if (!isSidebarAnimationCompleted || !imageSeq.current) return
+
+    animateSequence('/images/sequences/sidebar-2/2_000', 24)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSidebarAnimationCompleted])
+
   return (
     <motion.div
       className={[
@@ -14,22 +35,20 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       {...rest}
     >
       <div className='app__step-sidebar-content-img-wrp'>
-        <img
+        <motion.img
+          ref={imageSeq}
           className='app__step-sidebar-content-img'
-          src='/images/sidebar-img-2.svg'
+          src='/images/sequences/sidebar-2/2_0000.png'
           alt='sidebar-content'
         />
       </div>
 
-      <p className='app__step-sidebar-content-text'>
-        {`RariMe Snap allows users to store and manage identity credentials through MetaMask wallet`}
-      </p>
-      <p className='app__step-sidebar-content-text'>
-        {`You can utilize the RariMe Identity Snap to seamlessly integrate any identity credential and use them across various blockchains without any additional effort.`}
-      </p>
-      <p className='app__step-sidebar-content-text'>
-        {`Is not that cool? Same wallet for managing your Crypto and identity`}
-      </p>
+      <TypingAnimatedText
+        className='snap-connection__sidebar-text'
+        ref={textTyping}
+        isAutoplay={false}
+        text={DESCRIPTIONS.join('\n\n')}
+      />
     </motion.div>
   )
 }
