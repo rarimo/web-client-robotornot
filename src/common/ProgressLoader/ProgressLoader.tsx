@@ -40,14 +40,14 @@ const ProgressLoader: FC<Props> = ({
     [variant],
   )
 
-  const border = useMemo(
-    () =>
-      // FIXME
-      typeof checkpointIndex !== 'undefined'
-        ? checkpoints?.[checkpointIndex + 1]
-        : checkpoints?.[0],
-    [checkpointIndex, checkpoints],
-  )
+  const border = useMemo(() => {
+    if (!checkpoints) return null
+
+    // FIXME
+    return typeof checkpointIndex !== 'undefined'
+      ? checkpoints?.[checkpointIndex + 1]
+      : checkpoints?.[0]
+  }, [checkpointIndex, checkpoints])
 
   useInterval(
     () => {

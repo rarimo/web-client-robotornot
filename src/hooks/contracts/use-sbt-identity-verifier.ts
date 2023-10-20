@@ -19,16 +19,14 @@ export const useSbtIdentityVerifier = (
   )
 
   const contractInstance = useMemo(() => {
-    if (!address || !provider?.rawProvider) return undefined
+    if (!address || !provider?.rawProvider) return null
 
-    return provider?.rawProvider && address
-      ? SBTIdentityVerifier__factory.connect(
-          address,
-          new providers.Web3Provider(
-            provider?.rawProvider as providers.ExternalProvider,
-          ),
-        )
-      : undefined
+    return SBTIdentityVerifier__factory.connect(
+      address,
+      new providers.Web3Provider(
+        provider?.rawProvider as providers.ExternalProvider,
+      ),
+    )
   }, [address, provider?.rawProvider])
 
   const isIdentityProved = useCallback(

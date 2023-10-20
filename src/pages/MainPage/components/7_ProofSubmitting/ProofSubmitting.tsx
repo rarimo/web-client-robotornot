@@ -47,8 +47,8 @@ const ProofSubmitting: FC<StepProps> = ({
 
   const isQuestPlatformDetailsShown = useMemo(
     () =>
-      questPlatformDetails?.destinationDetails?.iconLink &&
-      questPlatformDetails?.destinationDetails?.name,
+      !!questPlatformDetails?.destinationDetails?.iconLink &&
+      !!questPlatformDetails?.destinationDetails?.name,
     [questPlatformDetails],
   )
 

@@ -42,10 +42,10 @@ const WalletConnection: FC<StepProps> = ({
 
   const isQuestPlatformDetailsShown = useMemo(
     () =>
-      questPlatformDetails?.questCreatorDetails?.iconLink &&
-      questPlatformDetails?.questCreatorDetails?.name &&
-      questPlatformDetails?.destinationDetails?.iconLink &&
-      questPlatformDetails?.destinationDetails?.name,
+      !!questPlatformDetails?.questCreatorDetails?.iconLink &&
+      !!questPlatformDetails?.questCreatorDetails?.name &&
+      !!questPlatformDetails?.destinationDetails?.iconLink &&
+      !!questPlatformDetails?.destinationDetails?.name,
     [questPlatformDetails],
   )
 

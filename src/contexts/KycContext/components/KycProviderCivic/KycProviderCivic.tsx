@@ -114,6 +114,8 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
     } catch (error) {
       /* empty */
     }
+
+    return null
   }, [provider?.rawProvider])
 
   const isProduction = useMemo(() => config.ENVIRONMENT === 'production', [])
@@ -132,18 +134,20 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
 
   if (isProduction) {
     return (
-      <GatewayProvider
-        wallet={wallet}
-        gatekeeperNetwork={GATEKEEPER_NETWORK_MAP.uniqness}
-        options={{
-          autoShowModal: true,
-        }}
-      >
-        <KycProviderCivicContent
-          loginCb={loginCb}
-          handleSigned={handleSigned}
-        />
-      </GatewayProvider>
+      wallet && (
+        <GatewayProvider
+          wallet={wallet}
+          gatekeeperNetwork={GATEKEEPER_NETWORK_MAP.uniqness}
+          options={{
+            autoShowModal: true,
+          }}
+        >
+          <KycProviderCivicContent
+            loginCb={loginCb}
+            handleSigned={handleSigned}
+          />
+        </GatewayProvider>
+      )
     )
   }
 
@@ -182,7 +186,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
         </button>
       </div>
 
-      {gatekeeperNetwork && (
+      {gatekeeperNetwork && wallet && (
         <GatewayProvider
           wallet={wallet}
           gatekeeperNetwork={gatekeeperNetwork}

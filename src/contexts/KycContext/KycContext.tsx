@@ -249,23 +249,20 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     getVerifiableCredentials,
   } = useZkpContext()
 
-  const kycDetails = useMemo<
-    | Partial<
-        | {
-            address: string
-            civicGatekeeperNetworkId: number
-            gitcoinPassportScore: string
-            id: string
-            kycAdditionalData: string
-            provider: string
-            type: string
-            unstoppableDomain: string
-            worldcoinScore: string
-          } & QueryVariableName
-      >
-    | undefined
-  >(
-    () => verifiableCredentials?.credentialSubject,
+  const kycDetails = useMemo<Partial<
+    | {
+        address: string
+        civicGatekeeperNetworkId: number
+        gitcoinPassportScore: string
+        id: string
+        kycAdditionalData: string
+        provider: string
+        type: string
+        unstoppableDomain: string
+        worldcoinScore: string
+      } & QueryVariableName
+  > | null>(
+    () => verifiableCredentials?.credentialSubject || null,
     [verifiableCredentials?.credentialSubject],
   )
 
