@@ -13,3 +13,12 @@
   max-width: toRem(140);
   width: 100%;
 }
+
+.app-navbar__support-link {
+  margin-left: auto;
+  color: var(--text-secondary-main);
+  font-size: toRem(14);
+  font-weight: 600;
+  line-height: 1.3;
+  padding-right: 0;
+}

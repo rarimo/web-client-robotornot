@@ -254,4 +254,6 @@ export enum ICON_NAMES {
   rarimeSnap = 'rarime-snap',
   rarimeSnapFilled = 'rarime-snap-filled',
   crossedChain = 'crossed-chain',
+
+  discord = 'discord',
 }

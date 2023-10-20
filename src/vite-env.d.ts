@@ -52,6 +52,8 @@ interface ImportMetaEnv {
 
   VITE_SNAP_ORIGIN: string
   VITE_SNAP_VERSION: string
+
+  VITE_SUPPORT_LINK: string
 }
 
 interface Document {

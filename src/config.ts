@@ -156,6 +156,8 @@ export const config = {
     'https://addons.opera.com/en/extensions/details/metamask-10/',
 
   EXTERNAL_LANDING_URL: 'https://rarimo.com/',
+
+  SUPPORT_LINK: import.meta.env.VITE_SUPPORT_LINK,
 } as {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
@@ -203,6 +205,8 @@ export const config = {
   OPERA_METAMASK_ADDON_LINK: string
 
   EXTERNAL_LANDING_URL: string
+
+  SUPPORT_LINK: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

@@ -618,21 +618,17 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     try {
       const questPlatformStr = searchParams.get('quest_platform') as string
 
+      if (!questPlatformStr) return
+
       const questPlatform = Buffer.from(questPlatformStr, 'base64').toString(
         'binary',
       )
 
-      let parsedQuestPlatform: QuestPlatform | null = null
+      const parsedQuestPlatform = JSON.parse(questPlatform) as QuestPlatform
 
-      try {
-        parsedQuestPlatform = JSON.parse(questPlatform)
-      } catch (error) {
-        /* empty */
-      }
+      setQuestPlatformDetails(parsedQuestPlatform)
 
       if (!parsedQuestPlatform) return
-
-      setQuestPlatformDetails(JSON.parse(questPlatform))
 
       if (
         parsedQuestPlatform?.questCreatorDetails?.name &&
@@ -647,7 +643,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       gaSendCustomEvent(`User went from quest platform`)
     } catch (error) {
-      /* empty */
+      ErrorHandler.processWithoutFeedback(error)
     }
   }, [
     questPlatformDetails?.questCreatorDetails?.iconLink,
