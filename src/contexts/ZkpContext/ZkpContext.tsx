@@ -5,7 +5,7 @@ import { DID } from '@iden3/js-iden3-core'
 import type {
   SaveCredentialsRequestParams,
   StateInfo,
-  // UpdateStateDetails,
+  UpdateStateDetails,
   W3CCredential,
   ZKPProofResponse,
   ZKProof,
@@ -25,7 +25,7 @@ import { useLocalStorage } from 'react-use'
 import { issuerApi } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { GaCategories, gaSendCustomEvent, increaseGasLimit } from '@/helpers'
-import { useIdentityVerifier, useSbtIdentityVerifier } from '@/hooks/contracts'
+import { useSbtIdentityVerifier } from '@/hooks/contracts'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -107,8 +107,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const [zkProof, setZkProof] = useState<ZKProof>()
   const [statesMerkleProof, setStatesMerkleProof] = useState<StatesMerkleProof>()
-  const [transitStateTx, setTransitStateTx] = useState<TransactionRequest>()
-  const [updateStateDetails, setUpdateStateDetails] = useState<any>()
+  const [, setTransitStateTx] = useState<TransactionRequest>()
+  const [updateStateDetails, setUpdateStateDetails] = useState<UpdateStateDetails>()
   const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<W3CCredential>('vc', undefined)
   const [identityIdString, setIdentityIdString] = useState('')
   const [txSubmitHash, setTxSubmitHash] = useState('')
@@ -118,8 +118,8 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const { provider } = useWeb3Context()
   const zkpSnap = useMetamaskZkpSnapContext()
 
-  // const { getProveIdentityTxBody } = useIdentityVerifier()
-  const { getProveIdentityTxBody } = useSbtIdentityVerifier()
+  const { isIdentityProved, isSenderAddressProved, getProveIdentityTxBody } =
+    useSbtIdentityVerifier()
 
   const parseDIDToIdentityBigIntString = useCallback(
     (identityIdString: string) => {
@@ -344,10 +344,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       updateStateDetails,
       logAppStateDetails,
     ],
-  )
-
-  const { isIdentityProved, isSenderAddressProved } = useIdentityVerifier(
-    config?.[`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${config.DEFAULT_CHAIN}`],
   )
 
   const getIsIdentityProvedMsg = useCallback(
