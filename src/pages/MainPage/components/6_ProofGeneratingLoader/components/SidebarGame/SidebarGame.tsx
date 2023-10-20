@@ -6,24 +6,12 @@ import {
   type MotionProps,
   Variants,
 } from 'framer-motion'
-import { FC, HTMLAttributes, useEffect, useState } from 'react'
+import { FC, HTMLAttributes } from 'react'
 
-import { AppButton, WordsScrambleGame } from '@/common'
+import { AppButton } from '@/common'
+import SapperGame from '@/common/SapperGame'
 import { useFormStepperContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
-import { bus, BUS_EVENTS } from '@/helpers'
-
-const words = [
-  'bitcoin',
-  'luna',
-  'rarimo',
-  'moon',
-  'polygon',
-  'mumbai',
-  'ether',
-]
-const rows = 9
-const cols = 7
 
 const gameAnimationVariants: Variants = {
   hidden: {
@@ -60,17 +48,6 @@ const SidebarGame: FC<Props> = ({
   ...rest
 }) => {
   const { setIsSidebarClosingDisabled } = useFormStepperContext()
-  const [gameStatus, setGameStatus] = useState({
-    found: 0,
-  })
-
-  useEffect(() => {
-    if (gameStatus.found === words.length) {
-      bus.emit(BUS_EVENTS.success, "Congrats! You've found all the words!")
-      setIsShown(false)
-      setIsSidebarClosingDisabled(false)
-    }
-  }, [gameStatus.found, setIsShown, setIsSidebarClosingDisabled])
 
   return (
     <AnimatePresence>
@@ -88,7 +65,6 @@ const SidebarGame: FC<Props> = ({
           }}
         >
           <div className='sidebar-game__header'>
-            <p className='sidebar-game__header-count'>{`Found: ${gameStatus.found}/${words.length}`}</p>
             <AppButton
               className='sidebar-game__header-btn'
               scheme='none'
@@ -101,17 +77,12 @@ const SidebarGame: FC<Props> = ({
             />
           </div>
           <p className='sidebar-game__overtitle'>
-            {'Interactive game during the wait time'}
+            {
+              'Zero-knowledge proofs are still a bit slow to generate. Enjoy the game while we take care of it!'
+            }
           </p>
-          <p className='sidebar-game__title'>{'Let’s find words!'}</p>
 
-          <WordsScrambleGame
-            className='sidebar-game__content'
-            words={words}
-            rows={rows}
-            cols={cols}
-            onStatusGameUpdated={setGameStatus}
-          />
+          <SapperGame className='sidebar-game__content' size={8} />
         </motion.div>
       )}
     </AnimatePresence>

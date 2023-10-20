@@ -1,0 +1,127 @@
+.sapper-game {
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+}
+
+
+.sapper-game-container {
+  padding: toRem(5);
+  background: var(--sapper-border-color-main);
+  border: toRem(5) outset;
+  border-right-color: var(--sapper-border-container-color);
+  border-bottom-color: var(--sapper-border-container-color);
+
+}
+
+.sapper-game__game-field {
+  border: toRem(7) inset var(--sapper-border-color-main);
+  border-right-color: var(--white);
+  border-bottom-color: var(--white);
+
+}
+
+.sapper-game__row {
+  display: flex;
+}
+
+.sapper-game__row-cell {
+  width: toRem(32);
+  height: toRem(32);
+  cursor: pointer;
+  background-size: 100%;
+}
+
+.sapper-game__top-bar {
+  padding: toRem(5);
+  border: toRem(8) inset var(--sapper-border-color-main);
+  background: var(--sapper-background-color-top-bar);
+  display: flex;
+  justify-content: space-between;
+}
+
+.sapper-game__top-bar-counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--error-main);
+  background: var(--black);
+  padding: toRem(4) toRem(6);
+  font-size: 2.25em;
+  flex: 1;
+}
+
+.sapper-game__top-bar-smile {
+  width: toRem(52);
+  height: toRem(52);
+  background-size: 100%;
+
+  &:active {
+    background-image: url("/static/images/games/face_pressed.svg");
+  }
+}
+
+.sapper-game__top-bar-smile-default {
+  background-image: url("/static/images/games/face_unpressed.svg");
+}
+
+.sapper-game__top-bar-smile-lose {
+  background-image: url("/static/images/games/face_lose.svg");
+}
+
+.sapper-game__top-bar-smile-win {
+  background-image: url("/static/images/games/face_win.svg");
+}
+
+.sapper-game__cell-closed {
+  background-image: url("/static/images/games/closed.svg");
+}
+
+.sapper-game__cell-flag {
+  background-image: url("/static/images/games/flag.svg");
+}
+
+.sapper-game__cell-mine {
+  background-image: url("/static/images/games/mine.svg");
+}
+
+.sapper-game__cell-mine-red {
+  background-image: url("/static/images/games/mine_red.svg");
+}
+
+.sapper-game__cell-type0 {
+  background-image: url("/static/images/games/type0.svg");
+}
+
+.sapper-game__cell-type1 {
+  background-image: url("/static/images/games/type1.svg");
+}
+
+.sapper-game__cell-type2 {
+  background-image: url("/static/images/games/type2.svg");
+}
+
+.sapper-game__cell-type3 {
+  background-image: url("/static/images/games/type3.svg");
+}
+
+.sapper-game__cell-type4 {
+  background-image: url("/static/images/games/type4.svg");
+}
+
+.sapper-game__cell-type5 {
+  background-image: url("/static/images/games/type5.svg");
+}
+
+.sapper-game__cell-type6 {
+  background-image: url("/static/images/games/type6.svg");
+}
+
+.sapper-game__cell-type7 {
+  background-image: url("/static/images/games/type7.svg");
+}
+
+.sapper-game__cell-type8 {
+  background-image: url("/static/images/games/type8.svg");
+}
+

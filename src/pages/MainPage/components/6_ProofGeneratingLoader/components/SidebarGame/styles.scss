@@ -12,6 +12,10 @@
   align-items: center;
 }
 
+.sidebar-game__header-btn {
+  margin-left: auto;
+}
+
 .sidebar-game__header-icon {
   width: toRem(20);
   height: toRem(20);
@@ -36,10 +40,11 @@
   font-weight: 500;
 }
 
-.sidebar-game__content {
+.sidebar-game .sidebar-game__content {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .sidebar-game__success-icon {
