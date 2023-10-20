@@ -1,0 +1,15 @@
+.proof-submitting__sidebar-text-wrp {
+  display: flex;
+  align-items: baseline;
+  text-align: left;
+  width: 100%;
+  gap: toRem(4);
+  margin-bottom: auto;
+}
+
+.proof-submitting__sidebar-link.app__text-link {
+  .typing-animated-text .typing-animated-text__content {
+    font: inherit;
+    text-decoration: underline;
+  }
+}

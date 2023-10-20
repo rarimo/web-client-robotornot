@@ -1,7 +1,15 @@
 import { motion, MotionProps } from 'framer-motion'
-import { HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { checkExistsCord, createWordMatrix, mouseMoveAlign } from './helpers'
+import { useStateRef } from './hooks'
 
 type Props = {
   words: string[]
@@ -62,21 +70,25 @@ const WordsScrambleGame = ({
   const canvasRef = useRef<HTMLCanvasElement>({} as HTMLCanvasElement)
   const wordsScrambleGameRef = useRef<HTMLDivElement | null>(null)
 
-  const [successfulWordsCount, setSuccessfulWordsCount] = useState(0)
+  const [, setSuccessfulWordsCount, successfulWordsCountRef] =
+    useStateRef<number>(0)
   const [blockWidth, setBlockWidth] = useState(0)
   const [blockHeight, setBlockHeight] = useState(0)
+  const [ctx, setCtx] = useState({} as ICanvasRenderingContext2D)
 
-  let ctx: ICanvasRenderingContext2D
-
-  let arrResult: string[] = []
-  let arrResultCords: Cell[] = []
-  let successfulCords: Cell[] = []
-  let prevState = { col: -1, row: -1 }
-  let state: Cell
-  const remainingWords = [...words]
-
-  let sideBarBlock: HTMLDivElement | null
-  let successfulWordsColorNumber = 0
+  const [, setArrResult, arrResultRef] = useStateRef<string[]>([])
+  const [, setArrResultCords, arrResultCordsRef] = useStateRef<Cell[]>([])
+  const [, setSuccessfulCords, successfulCordsRef] = useStateRef<Cell[]>([])
+  const [, setCordsPrevState, cordsPrevStateRef] = useStateRef<Cell>({
+    col: -1,
+    row: -1,
+  })
+  const [remainingWords, setRemainingWords] = useState<string[]>([...words])
+  const [
+    ,
+    setSuccessfulWordsColorNumberIndex,
+    successfulWordsColorNumberIndexRef,
+  ] = useStateRef<number>(0)
 
   const canvasWidth =
     2 * DEFAULT_PADDING + GAP * (cols - 1) + SQUARE_SIZE * cols
@@ -126,143 +138,217 @@ const WordsScrambleGame = ({
     return createWordMatrix(words, rows, cols)
   }, [words, cols, rows])
 
-  const printLetter = (col: number, row: number) => {
-    ctx.fillStyle = whiteColor
-    ctx.fillText(
-      matrix[row][col],
-      defaultPadding + letterPaddingX + col * squareSize + col * gap,
-      defaultPaddingVertical + letterPaddingY + row * squareSize + row * gap,
-    )
-  }
+  const _printLetter = useCallback(
+    (col: number, row: number) => {
+      ctx.fillStyle = whiteColor
+      ctx.fillText(
+        matrix[row][col],
+        defaultPadding + letterPaddingX + col * squareSize + col * gap,
+        defaultPaddingVertical + letterPaddingY + row * squareSize + row * gap,
+      )
+    },
+    [
+      ctx,
+      defaultPadding,
+      defaultPaddingVertical,
+      gap,
+      letterPaddingX,
+      letterPaddingY,
+      matrix,
+      squareSize,
+    ],
+  )
 
-  const fillActiveSquare = (event: MouseEvent) => {
-    const col = Math.trunc(
-      (event.offsetX - defaultPadding / 2) / ((squareSize + gap) / 2),
-    )
-    const row = Math.trunc(
-      (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
-    )
-    let direction = 'default'
+  const fillActiveSquare = useCallback(
+    (event: MouseEvent) => {
+      const col = Math.trunc(
+        (event.offsetX - defaultPadding / 2) / ((squareSize + gap) / 2),
+      )
+      const row = Math.trunc(
+        (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
+      )
+      let direction = 'default'
 
-    if (col === cols || row === rows) return
-    state = { row, col }
-    if (state.row === prevState.row && state.col === prevState.col) return
+      if (col === cols || row === rows) return
+      const cordsState = { col, row }
+      if (
+        cordsState.row === cordsPrevStateRef.current.row &&
+        cordsState.col === cordsPrevStateRef.current.col
+      )
+        return
 
-    if (
-      checkExistsCord(row, col, arrResultCords) &&
-      arrResultCords.length > 1
-    ) {
-      if (!checkExistsCord(prevState.row, prevState.col, successfulCords)) {
+      if (
+        checkExistsCord(row, col, arrResultCordsRef.current) &&
+        arrResultCordsRef.current.length > 1
+      ) {
+        if (
+          !checkExistsCord(
+            cordsPrevStateRef.current.row,
+            cordsPrevStateRef.current.col,
+            successfulCordsRef.current,
+          )
+        ) {
+          ctx.fillStyle = blackColor
+          ctx.fillRect(
+            defaultPadding +
+              cordsPrevStateRef.current.col * squareSize +
+              (cordsPrevStateRef.current.col - 1) * gap,
+            defaultPadding +
+              cordsPrevStateRef.current.row * squareSize +
+              (cordsPrevStateRef.current.row - 1) * gap,
+            checkExistsCord(
+              cordsPrevStateRef.current.row,
+              cordsPrevStateRef.current.col,
+              successfulCordsRef.current,
+            )
+              ? 0
+              : squareSize + 2 * gap,
+            checkExistsCord(
+              cordsPrevStateRef.current.row,
+              cordsPrevStateRef.current.col,
+              successfulCordsRef.current,
+            )
+              ? 0
+              : squareSize + 2 * gap,
+          )
+          ctx.fillStyle = greyColor
+          ctx
+            .roundRect(
+              defaultPadding +
+                cordsPrevStateRef.current.col * squareSize +
+                cordsPrevStateRef.current.col * gap,
+              defaultPaddingVertical +
+                cordsPrevStateRef.current.row * squareSize +
+                cordsPrevStateRef.current.row * gap,
+              squareSize,
+              squareSize,
+              BORDER_RADIUS,
+            )
+            .fill()
+          _printLetter(
+            cordsPrevStateRef.current.col,
+            cordsPrevStateRef.current.row,
+          )
+        }
+
+        const elIndex = arrResultCordsRef.current.findIndex(
+          obj =>
+            obj.row === cordsPrevStateRef.current.row &&
+            obj.col === cordsPrevStateRef.current.col,
+        )
+        setArrResult(prevState => {
+          prevState.splice(elIndex, 1)
+          return prevState
+        })
+        setArrResultCords(prevState => {
+          prevState.splice(elIndex, 1)
+          return prevState
+        })
+        setCordsPrevState(cordsState)
+        return
+      } else {
         ctx.fillStyle = blackColor
         ctx.fillRect(
-          defaultPadding +
-            prevState.col * squareSize +
-            (prevState.col - 1) * gap,
-          defaultPadding +
-            prevState.row * squareSize +
-            (prevState.row - 1) * gap,
-          checkExistsCord(prevState.row, prevState.col, successfulCords)
+          defaultPadding + col * squareSize + (col - 1) * gap,
+          defaultPadding + row * squareSize + (row - 1) * gap,
+          checkExistsCord(row, col, successfulCordsRef.current)
             ? 0
             : squareSize + 2 * gap,
-          checkExistsCord(prevState.row, prevState.col, successfulCords)
+          checkExistsCord(row, col, successfulCordsRef.current)
             ? 0
             : squareSize + 2 * gap,
         )
         ctx.fillStyle = greyColor
         ctx
           .roundRect(
-            defaultPadding + prevState.col * squareSize + prevState.col * gap,
-            defaultPaddingVertical +
-              prevState.row * squareSize +
-              prevState.row * gap,
+            defaultPadding + col * squareSize + col * gap,
+            defaultPaddingVertical + row * squareSize + row * gap,
             squareSize,
             squareSize,
             BORDER_RADIUS,
           )
           .fill()
-        printLetter(prevState.col, prevState.row)
-      }
-      const el = arrResultCords.findIndex(
-        obj => obj.row === prevState.row && obj.col === prevState.col,
-      )
-      arrResult.splice(el, 1)
-      arrResultCords.splice(el, 1)
-      prevState = state
-      return
-    } else {
-      ctx.fillStyle = blackColor
-      ctx.fillRect(
-        defaultPadding + col * squareSize + (col - 1) * gap,
-        defaultPadding + row * squareSize + (row - 1) * gap,
-        checkExistsCord(row, col, successfulCords) ? 0 : squareSize + 2 * gap,
-        checkExistsCord(row, col, successfulCords) ? 0 : squareSize + 2 * gap,
-      )
-      ctx.fillStyle = greyColor
-      ctx
-        .roundRect(
-          defaultPadding + col * squareSize + col * gap,
-          defaultPaddingVertical + row * squareSize + row * gap,
-          squareSize,
-          squareSize,
-          BORDER_RADIUS,
+        ctx.fillStyle = greenColor
+        direction = mouseMoveAlign(cordsPrevStateRef.current, cordsState)
+        ctx.fillRect(
+          isVerticalValue.includes(direction)
+            ? defaultPadding +
+                col * squareSize +
+                (col + (direction === 'down' ? -1 : 0)) * gap
+            : defaultPadding + col * squareSize + col * gap,
+          isHorizontalValue.includes(direction)
+            ? defaultPaddingVertical +
+                row * squareSize +
+                (row + (direction === 'right' ? -1 : 0)) * gap
+            : defaultPaddingVertical + row * squareSize + row * gap,
+          isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
+          isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
         )
-        .fill()
-      ctx.fillStyle = greenColor
-      direction = mouseMoveAlign(prevState, state)
-      ctx.fillRect(
-        isVerticalValue.includes(direction)
-          ? defaultPadding +
-              col * squareSize +
-              (col + (direction === 'down' ? -1 : 0)) * gap
-          : defaultPadding + col * squareSize + col * gap,
-        isHorizontalValue.includes(direction)
-          ? defaultPaddingVertical +
-              row * squareSize +
-              (row + (direction === 'right' ? -1 : 0)) * gap
-          : defaultPaddingVertical + row * squareSize + row * gap,
-        isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
-        isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
-      )
-    }
-    printLetter(col, row)
-    prevState = state
-    arrResult.push(matrix[row][col])
-    arrResultCords.push({
-      col,
-      row,
-      color: successfulWordsColorNumber,
-      align: direction,
-    })
-  }
+      }
+      _printLetter(col, row)
+      setCordsPrevState(cordsState)
+      setArrResult(prevState => [...prevState, matrix[row][col]])
+      setArrResultCords(prevState => [
+        ...prevState,
+        {
+          col,
+          row,
+          color: successfulWordsColorNumberIndexRef.current,
+          align: direction,
+        },
+      ])
+    },
+    [
+      defaultPadding,
+      squareSize,
+      gap,
+      defaultPaddingVertical,
+      cols,
+      rows,
+      cordsPrevStateRef,
+      arrResultCordsRef,
+      _printLetter,
+      setCordsPrevState,
+      setArrResult,
+      setArrResultCords,
+      successfulCordsRef,
+      ctx,
+      matrix,
+      successfulWordsColorNumberIndexRef,
+    ],
+  )
 
-  const checkResult = () => {
-    const resultWord = arrResult.join('').toLowerCase()
+  const checkResult = useCallback(() => {
+    const resultWord = arrResultRef.current.join('').toLowerCase()
     const resultWordIndex = remainingWords.findIndex(el => el === resultWord)
     if (resultWordIndex !== -1) {
-      remainingWords.splice(resultWordIndex, 1)
-      successfulCords = successfulCords.concat(arrResultCords)
-
-      const successfulWords = successfulWordsCount + 1
-
-      setSuccessfulWordsCount(successfulWords)
-
-      onStatusGameUpdated({
-        found: successfulWords,
-      })
+      setRemainingWords(prevState => prevState.splice(resultWordIndex, 1))
+      setSuccessfulCords(prevState =>
+        prevState.concat(arrResultCordsRef.current),
+      )
+      setSuccessfulWordsCount(prevState => prevState + 1)
+      onStatusGameUpdated({ found: successfulWordsCountRef.current + 1 })
       return true
     }
     return false
-  }
+  }, [
+    arrResultCordsRef,
+    arrResultRef,
+    onStatusGameUpdated,
+    remainingWords,
+    setSuccessfulCords,
+    setSuccessfulWordsCount,
+    successfulWordsCountRef,
+  ])
 
-  const clear = () => {
+  const clear = useCallback(() => {
     canvasRef.current?.removeEventListener('mousemove', fillActiveSquare)
     if (!checkResult()) {
-      for (const item of arrResultCords) {
-        if (checkExistsCord(item.row, item.col, successfulCords)) {
-          const square = successfulCords.find(
+      for (const item of arrResultCordsRef.current) {
+        if (checkExistsCord(item.row, item.col, successfulCordsRef.current)) {
+          const square = successfulCordsRef.current.find(
             obj => obj.row === item.row && obj.col === item.col,
           )
-
           const direction = square?.align ?? 'default'
 
           ctx.fillStyle = successColors[square?.color ?? 0]
@@ -289,10 +375,10 @@ const WordsScrambleGame = ({
             defaultPaddingVertical +
               item.row * squareSize +
               (item.row - 1) * gap,
-            checkExistsCord(item.row, item.col, successfulCords)
+            checkExistsCord(item.row, item.col, successfulCordsRef.current)
               ? 0
               : squareSize + 2 * gap,
-            checkExistsCord(item.row, item.col, successfulCords)
+            checkExistsCord(item.row, item.col, successfulCordsRef.current)
               ? 0
               : squareSize + 2 * gap,
           )
@@ -307,12 +393,13 @@ const WordsScrambleGame = ({
             )
             .fill()
         }
-        printLetter(item.col, item.row)
+        _printLetter(item.col, item.row)
       }
     } else {
       let localPrevState = { col: -1, row: -1 }
-      for (const { col, row } of arrResultCords) {
-        ctx.fillStyle = successColors[successfulWordsColorNumber]
+      for (const { col, row } of arrResultCordsRef.current) {
+        ctx.fillStyle =
+          successColors[successfulWordsColorNumberIndexRef.current]
         const direction = mouseMoveAlign(localPrevState, { col, row })
         ctx.fillRect(
           isVerticalValue.includes(direction)
@@ -328,37 +415,47 @@ const WordsScrambleGame = ({
           isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
           isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
         )
-        printLetter(col, row)
+        _printLetter(col, row)
         localPrevState = { col, row }
       }
-      successfulWordsColorNumber =
-        successfulWordsColorNumber + 1 >= successColors.length
-          ? 0
-          : successfulWordsColorNumber + 1
+      setSuccessfulWordsColorNumberIndex(prevState =>
+        prevState + 1 >= successColors.length ? 0 : prevState + 1,
+      )
     }
-    arrResult = []
-    arrResultCords = []
-    prevState = { col: -1, row: -1 }
-  }
+    setArrResult([])
+    setArrResultCords([])
+    setCordsPrevState({ col: -1, row: -1 })
+  }, [
+    fillActiveSquare,
+    checkResult,
+    setArrResult,
+    setArrResultCords,
+    setCordsPrevState,
+    arrResultCordsRef,
+    successfulCordsRef,
+    _printLetter,
+    ctx,
+    defaultPadding,
+    squareSize,
+    gap,
+    defaultPaddingVertical,
+    setSuccessfulWordsColorNumberIndex,
+    successfulWordsColorNumberIndexRef,
+  ])
 
-  const mouseDownHandler = () => {
+  const mouseDownHandler = useCallback(() => {
     canvasRef.current?.addEventListener('mousemove', fillActiveSquare)
-    canvasRef.current?.addEventListener('mouseup', () => {
-      clear()
-    })
-  }
+    canvasRef.current?.addEventListener('mouseup', clear)
+  }, [fillActiveSquare, clear])
 
-  const getSizeBlock = () => {
-    sideBarBlock = wordsScrambleGameRef.current
-    setBlockWidth(sideBarBlock ? sideBarBlock.getBoundingClientRect().width : 0)
-    setBlockHeight(
-      sideBarBlock ? sideBarBlock.getBoundingClientRect().height : 0,
-    )
-  }
+  const getSizeBlock = useCallback(() => {
+    const block = wordsScrambleGameRef.current
+    setBlockWidth(block ? block.getBoundingClientRect().width : 0)
+    setBlockHeight(block ? block.getBoundingClientRect().height : 0)
+  }, [])
 
-  const initGame = () => {
+  const initCtx = useCallback(() => {
     getSizeBlock()
-    window.addEventListener('resize', getSizeBlock)
     CanvasRenderingContext2D.prototype.roundRect = function (
       x,
       y,
@@ -383,9 +480,13 @@ const WordsScrambleGame = ({
     canvas.height = height
     canvas.style.width = `${width / 2}px`
     canvas.style.height = `${height / 2}px`
-    ctx = canvas.getContext('2d') as ICanvasRenderingContext2D
+    setCtx(canvas.getContext('2d') as ICanvasRenderingContext2D)
+  }, [getSizeBlock, height, width])
+
+  const initGameField = useCallback(() => {
+    if (!ctx.fillRect || !matrix.length || !matrix[0].length) return
     ctx.fillStyle = blackColor
-    ctx?.fillRect(0, 0, width, height)
+    ctx.fillRect(0, 0, width, height)
     ctx.font = `${FONT_SIZE * resizeGameRatio}px euclidCircularB`
     ctx.textAlign = 'center'
     for (let col = 0; col < matrix.length; col += 1)
@@ -401,22 +502,40 @@ const WordsScrambleGame = ({
             gap,
           )
           .fill()
-        printLetter(row, col)
+        _printLetter(row, col)
       }
-    canvas?.addEventListener('mousedown', mouseDownHandler)
-    return canvas
-  }
+  }, [
+    _printLetter,
+    ctx,
+    defaultPadding,
+    defaultPaddingVertical,
+    gap,
+    height,
+    matrix,
+    resizeGameRatio,
+    squareSize,
+    width,
+  ])
 
   useEffect(() => {
-    if (canvasRef.current && matrix.length && matrix[0].length) {
-      const canvas = initGame()
-      return () => {
-        canvas?.removeEventListener('mousedown', mouseDownHandler),
-          window.removeEventListener('resize', getSizeBlock)
-      }
+    if (canvasRef.current) {
+      initCtx()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width, height, resizeGameRatio])
+  }, [width, height, resizeGameRatio, initCtx])
+
+  useEffect(() => {
+    initGameField()
+  }, [initGameField])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    canvas?.addEventListener('mousedown', mouseDownHandler)
+    window.addEventListener('resize', getSizeBlock)
+    return () => {
+      canvas?.removeEventListener('mousedown', mouseDownHandler)
+      window.removeEventListener('resize', getSizeBlock)
+    }
+  }, [mouseDownHandler, getSizeBlock])
 
   return (
     <motion.div

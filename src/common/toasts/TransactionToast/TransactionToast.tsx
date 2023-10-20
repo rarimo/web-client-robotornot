@@ -61,10 +61,14 @@ const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
     if (link) return link
 
     if (txHash) {
-      return provider?.getTxUrl?.(
+      const txUrl = provider?.getTxUrl?.(
         config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
         txHash,
       )
+
+      if (!txUrl) return ''
+
+      return txUrl
     }
 
     if (txResponse) {
@@ -72,11 +76,17 @@ const TransactionToast: FC<Props> = ({ type, link, txHash, txResponse }) => {
 
       if (!txHash) return ''
 
-      return provider?.getTxUrl?.(
+      const txUrl = provider?.getTxUrl?.(
         config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN],
         txHash,
       )
+
+      if (!txUrl) return ''
+
+      return txUrl
     }
+
+    return ''
   }, [link, provider, txHash, txResponse])
 
   return (

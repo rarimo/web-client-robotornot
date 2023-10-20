@@ -24,13 +24,13 @@ const ProgressBar: FC<Props> = ({
 
   const [progress, setProgress] = useState(0)
 
-  const border = useMemo(
-    () =>
-      typeof checkpointIndex !== 'undefined'
-        ? checkpoints?.[checkpointIndex + 1]
-        : checkpoints?.[0],
-    [checkpointIndex, checkpoints],
-  )
+  const border = useMemo(() => {
+    if (!checkpoints) return null
+
+    return typeof checkpointIndex !== 'undefined'
+      ? checkpoints?.[checkpointIndex + 1]
+      : checkpoints?.[0]
+  }, [checkpointIndex, checkpoints])
 
   useInterval(
     () => {

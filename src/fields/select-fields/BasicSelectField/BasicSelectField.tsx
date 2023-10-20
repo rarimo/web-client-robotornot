@@ -41,7 +41,7 @@ const BasicSelectField: FC<Props> = ({
   placeholder = ' ',
 }) => {
   const selectedOption = useMemo(() => {
-    return valueOptions?.find(el => el.value === value)
+    return valueOptions?.find(el => el.value === value) ?? null
   }, [value, valueOptions])
 
   return (

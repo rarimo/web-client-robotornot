@@ -11,7 +11,9 @@ export type SUPPORTED_CHAINS = keyof typeof FALLBACK_SUPPORTED_CHAINS
 
 type ContractAddresses = {
   [k in
+    | `IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
     | `IDENTITY_VERIFIER_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`
+    // FIXME: remove
     | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
 }
 
@@ -56,6 +58,7 @@ export const config = {
   ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT,
 
   API_URL: import.meta.env.VITE_API_URL,
+  ISSUER_API_URL: import.meta.env.VITE_ISSUER_API_URL,
   APP_NAME: import.meta.env.VITE_APP_NAME,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
@@ -78,6 +81,7 @@ export const config = {
   EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
     .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
 
+  CLAIM_TYPE: import.meta.env.VITE_CLAIM_TYPE,
   CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
   CLAIM_OFFER_MAX_TRIES_COUNT:
     import.meta.env.VITE_CLAIM_OFFER_MAX_TRIES_COUNT || 5,
@@ -156,18 +160,21 @@ export const config = {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
   API_URL: string
+  ISSUER_API_URL: string
   APP_NAME: string
   LOG_LEVEL: string
   BUILD_VERSION: string
 
   RARIMO_CORE_RPC_API_URL: string
   RARIMO_EVM_RPC_URL: string
+  // FIXME: remove
   STATE_V2_CONTRACT_ADDRESS: string
 
   UNSTOPPABLE_DOMAINS_CLIENT_ID: string
 
   WORLDCOIN_APP_ID: string
   AUTH_BJJ_CREDENTIAL_HASH: string
+  // FIXME: remove
   ISSUER_ID: string
 
   FINALITY_BLOCK_AMOUNT: number
@@ -176,6 +183,7 @@ export const config = {
 
   EXTERNAL_PLATFORM_REDIRECT_URL: string
 
+  CLAIM_TYPE: string
   CLAIM_OFFER_DELAY: number
   CLAIM_OFFER_MAX_TRIES_COUNT: number
   KYC_VERIFICATION_DELAY: number
@@ -201,6 +209,9 @@ Object.assign(config, {
   ...(Object.keys(config.SUPPORTED_CHAINS_DETAILS).reduce(
     (acc, curr) => ({
       ...acc,
+      /* eslint-disable max-len */
+      /* prettier-ignore */
+      [`IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',
       /* eslint-disable max-len */
       /* prettier-ignore */
       [`IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`]: import.meta.env[`VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_${curr}`] || '',

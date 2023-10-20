@@ -46,12 +46,14 @@ const ProgressLoaderPulse: FC<Props> = ({
   className,
   ...rest
 }) => {
-  const isIcon = useMemo(
-    () =>
-      iconNameOrImgUrl &&
-      (Object.values(ICON_NAMES) as string[]).includes(iconNameOrImgUrl),
-    [iconNameOrImgUrl],
-  )
+  const isIcon = useMemo(() => {
+    if (!iconNameOrImgUrl) return null
+
+    return (
+      Boolean(iconNameOrImgUrl) &&
+      (Object.values(ICON_NAMES) as string[]).includes(iconNameOrImgUrl)
+    )
+  }, [iconNameOrImgUrl])
 
   return (
     <motion.div

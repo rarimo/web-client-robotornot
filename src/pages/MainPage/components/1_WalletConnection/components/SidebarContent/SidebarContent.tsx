@@ -1,9 +1,26 @@
-import { motion } from 'framer-motion'
-import { FC } from 'react'
+import './styles.scss'
 
+import { motion } from 'framer-motion'
+import { FC, useEffect } from 'react'
+
+import { TypingAnimatedText } from '@/common'
+import { useFormStepperContext } from '@/contexts'
+import { useSidebarAnimation } from '@/hooks'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
+const DESCRIPTIONS = ['Join the human side of the web']
+
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const { isSidebarAnimationCompleted } = useFormStepperContext()
+  const { imageSeq, textTyping, animateSequence } = useSidebarAnimation()
+
+  useEffect(() => {
+    if (!isSidebarAnimationCompleted || !imageSeq.current) return
+
+    animateSequence('/images/sequences/sidebar-1/1_000', 21)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSidebarAnimationCompleted])
+
   return (
     <motion.div
       className={[
@@ -14,16 +31,21 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
       {...rest}
     >
       <div className='app__step-sidebar-content-img-wrp'>
-        <img
+        <motion.img
+          ref={imageSeq}
           className='app__step-sidebar-content-img'
-          src='/images/sidebar-img-1.svg'
+          src='/images/sequences/sidebar-1/1_0000.png'
           alt='sidebar-content'
         />
       </div>
 
-      <h3 className='app__step-sidebar-content-title'>
-        {`Join the human side of the web`}
-      </h3>
+      <TypingAnimatedText
+        className='wallet-connection__sidebar-title'
+        ref={textTyping}
+        isAutoplay={false}
+        text={DESCRIPTIONS.join('\n\n')}
+        duration={2}
+      />
     </motion.div>
   )
 }

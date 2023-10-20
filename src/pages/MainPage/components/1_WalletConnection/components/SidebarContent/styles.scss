@@ -1,0 +1,10 @@
+@import "../../../../sidebars";
+
+.wallet-connection__sidebar-title {
+  margin-top: auto;
+
+  &.typing-animated-text .typing-animated-text__stub,
+  &.typing-animated-text .typing-animated-text__content {
+    @include step-sidebar-content-title;
+  }
+}

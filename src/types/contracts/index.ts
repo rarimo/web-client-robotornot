@@ -2,7 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { IdentityVerifier } from "./IdentityVerifier";
+export type { SBTIdentityVerifier } from "./SBTIdentityVerifier";
 export type { ZKPQueriesStorage } from "./ZKPQueriesStorage";
 export * as factories from "./factories";
 export { IdentityVerifier__factory } from "./factories/IdentityVerifier__factory";
+export { SBTIdentityVerifier__factory } from "./factories/SBTIdentityVerifier__factory";
 export { ZKPQueriesStorage__factory } from "./factories/ZKPQueriesStorage__factory";

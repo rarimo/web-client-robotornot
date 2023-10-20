@@ -13,6 +13,11 @@
   flex: 1;
 }
 
+.main-page__title {
+  text-align: center;
+  font-size: toRem(32);
+}
+
 .main-page__step {
   position: absolute;
   top: 0;

@@ -1,2 +1,2 @@
 export * from './use-identity-verifier'
-export * from './use-lightweight-state-v2'
+export * from './use-sbt-identity-verifier'
