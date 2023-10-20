@@ -1,6 +1,12 @@
 import './styles.scss'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, {
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import { createField } from './helpers'
 
@@ -14,11 +20,11 @@ enum Mask {
 
 type Props = {
   size: number
-}
+} & HTMLAttributes<HTMLDivElement>
 
 const COUNTER_LENGTH = 3
 
-export default function SapperGame({ size }: Props) {
+export default function SapperGame({ size, className }: Props) {
   const dimension = new Array(size).fill(null)
 
   const [death, setDeath] = useState(false)
@@ -162,7 +168,7 @@ export default function SapperGame({ size }: Props) {
   }, [stopTimer, win])
 
   return (
-    <div className='sapper-game'>
+    <div className={['sapper-game', className].join(' ')}>
       <div className='sapper-game-container'>
         <div className='sapper-game__top-bar'>
           <div className='sapper-game__top-bar-counter bombs-number'>
