@@ -74,3 +74,14 @@
 .proof-submitted__tip {
   margin-top: toRem(24);
 }
+
+.proof-submitted__request-btn {
+  width: 100%;
+  background: #F5F6FF;
+  color: var(--success-main);
+
+  .proof-submitted &:hover, .proof-submitted &:focus {
+    background: #F5F6FF;
+    color: var(--success-main);
+  }
+}

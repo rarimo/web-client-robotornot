@@ -6,7 +6,7 @@ import { type FC, useCallback, useEffect, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
-import { Icon, WrappedIcon } from '@/common'
+import { AppButton, Icon, WrappedIcon } from '@/common'
 import { Skeleton } from '@/common/Loader/variants'
 import { useKycContext, useZkpContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
@@ -110,12 +110,14 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
                   <div className='proof-submitted__metadata-divider' />
 
                   <div className='proof-submitted__metadata-row'>
-                    <span className='proof-submitted__metadata-label' />
-                    <span className='proof-submitted__metadata-value'>
-                      <button onClick={requestProveDetails}>
-                        {`Request details`}
-                      </button>
-                    </span>
+                    <AppButton
+                      className='proof-submitted__request-btn'
+                      onClick={requestProveDetails}
+                      modification='border-circle'
+                      iconLeft={ICON_NAMES.rarimeSnapFilled}
+                    >
+                      {`Retrieve data`}
+                    </AppButton>
                   </div>
                 </>
               )}
