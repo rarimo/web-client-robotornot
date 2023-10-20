@@ -252,9 +252,37 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     setCurrentStep(Steps.IdentityCreationStep)
   }, [])
 
-  const handleIdentityCreationStepFinish = useCallback(() => {
+  const handleIdentityCreationStepFinish = useCallback(async () => {
+    if (isSnapInstalled && provider?.isConnected) {
+      /**
+       * As createIdentity() method is return existing identity or create new,
+       * we can detect created one by checking verifiable credentials
+       */
+      const identityIdString = await createIdentity()
+
+      const identityBigIntString = identityIdString
+        ? parseDIDToIdentityBigIntString(identityIdString)
+        : ''
+
+      const isIdentityProvedMsg = await getIsIdentityProvedMsg(
+        identityBigIntString,
+      )
+
+      if (isIdentityProvedMsg) {
+        setCurrentStep(Steps.ProofSubmittedStep)
+      }
+
+      return
+    }
+
     setCurrentStep(Steps.KycProvidersStep)
-  }, [])
+  }, [
+    createIdentity,
+    getIsIdentityProvedMsg,
+    isSnapInstalled,
+    parseDIDToIdentityBigIntString,
+    provider?.isConnected,
+  ])
 
   const handleKycProvidersStepFinish = useCallback(() => {
     setCurrentStep(Steps.ProofGeneratingStep)
