@@ -236,6 +236,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [selectedKycProvider, setSelectedKycProvider] =
     useState<SUPPORTED_KYC_PROVIDERS>()
 
+  const [isShowKycProvider, setIsShowKycProvider] = useState(false)
+
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
 
@@ -387,22 +389,22 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     setKycError(undefined)
   }, [])
 
-  const _isUserHasClaim = useCallback(
+  const _getClaimIfExists = useCallback(
     async (identityIdString: string) => {
       try {
         const claimOffer = await getClaimOffer(identityIdString)
 
+        if (!claimOffer) throw new TypeError('claimOffer is not defined')
+
         setIsKycFinished(true)
 
-        await getVerifiableCredentials(identityIdString, claimOffer)
-
-        return true
+        return claimOffer
       } catch (error) {
         if (
           error instanceof FetcherError &&
           error.response.status === HTTP_STATUS_CODES.NOT_FOUND
         )
-          return false
+          return null
 
         setKycError(error as JsonApiError)
         setIsVCRequestFailed(true)
@@ -412,7 +414,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         throw error
       }
     },
-    [getClaimOffer, getVerifiableCredentials],
+    [getClaimOffer],
   )
 
   const subscribeToClaimWaiting = useCallback(
@@ -450,12 +452,32 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [],
   )
 
+  const detectProviderFromVC = useCallback(
+    (VC?: W3CCredential) => {
+      const currentVC = VC ?? verifiableCredentials
+
+      if (!currentVC?.credentialSubject?.provider) return
+
+      const provider = currentVC.credentialSubject.provider as string
+
+      setSelectedKycProvider(
+        {
+          Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
+          'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
+          'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+          Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+        }[provider],
+      )
+    },
+    [verifiableCredentials],
+  )
+
   const login = useCallback(
     async (
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
       _VCCreatedOrKycFinishedCb?: () => void,
     ) => {
-      // subscribeToClaimWaiting(config.CLAIM_TYPE, identityIdString)
+      setSelectedKycProvider(supportedKycProvider)
 
       setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
 
@@ -464,27 +486,35 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       if (!currentIdentityIdString) return
 
-      if (await _isUserHasClaim(currentIdentityIdString)) {
+      const claim = await _getClaimIfExists(currentIdentityIdString)
+
+      if (claim) {
         setIsKycFinished(true)
         setIsVCRequestFailed(false)
         setIsVCRequestPending(false)
 
         _VCCreatedOrKycFinishedCb?.()
 
+        const vc = await getVerifiableCredentials(identityIdString, claim)
+
+        detectProviderFromVC(vc)
+
         return
       }
+
+      setIsShowKycProvider(true)
 
       if (supportedKycProvider === selectedKycProvider) {
         retryKyc()
 
         return
       }
-
-      setSelectedKycProvider(supportedKycProvider)
     },
     [
-      _isUserHasClaim,
+      _getClaimIfExists,
       createIdentity,
+      detectProviderFromVC,
+      getVerifiableCredentials,
       identityIdString,
       retryKyc,
       selectedKycProvider,
@@ -592,26 +622,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     ],
   )
 
-  const detectProviderFromVC = useCallback(
-    (VC?: W3CCredential) => {
-      const currentVC = VC ?? verifiableCredentials
-
-      if (!currentVC?.credentialSubject?.provider) return
-
-      const provider = currentVC.credentialSubject.provider as string
-
-      setSelectedKycProvider(
-        {
-          Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
-          'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
-          'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
-          Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
-        }[provider],
-      )
-    },
-    [verifiableCredentials],
-  )
-
   const parseQuestPlatform = useCallback(() => {
     if (questPlatformDetails?.questCreatorDetails?.iconLink) return
 
@@ -702,7 +712,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       </kycContext.Provider>
 
       <AnimatePresence initial={false} mode='wait'>
-        {!verifiableCredentials && (
+        {!verifiableCredentials && isShowKycProvider && (
           <>
             {selectedKycProvider ===
             SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
