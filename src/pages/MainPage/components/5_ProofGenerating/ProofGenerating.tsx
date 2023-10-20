@@ -84,7 +84,7 @@ const ProofGenerating: FC<StepProps> = ({
           checkpointIndex={
             verifiableCredentials ? 1 : isKycFinished ? 0 : undefined
           }
-          delay={500}
+          delay={config.CLAIM_OFFER_DELAY}
           variant='skeleton'
           iconNameOrImgUrl={
             selectedKycProvider &&
