@@ -34,6 +34,7 @@ import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
   abbrCenter,
   ErrorHandler,
+  gaSendCustomEvent,
   localizeUnauthorizedError,
   sleep,
 } from '@/helpers'
@@ -621,7 +622,30 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         'binary',
       )
 
+      let parsedQuestPlatform: QuestPlatform | null = null
+
+      try {
+        parsedQuestPlatform = JSON.parse(questPlatform)
+      } catch (error) {
+        /* empty */
+      }
+
+      if (!parsedQuestPlatform) return
+
       setQuestPlatformDetails(JSON.parse(questPlatform))
+
+      if (
+        parsedQuestPlatform?.questCreatorDetails?.name &&
+        parsedQuestPlatform?.destinationDetails?.name
+      ) {
+        gaSendCustomEvent(
+          `${parsedQuestPlatform.questCreatorDetails.name}-${parsedQuestPlatform.destinationDetails.name}`,
+        )
+
+        return
+      }
+
+      gaSendCustomEvent(`User went from quest platform`)
     } catch (error) {
       /* empty */
     }
