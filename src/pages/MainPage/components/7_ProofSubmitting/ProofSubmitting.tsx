@@ -140,7 +140,7 @@ const ProofSubmitting: FC<StepProps> = ({
       <h2 className='proof-submitting__title'>{`Share proof ${
         isQuestPlatformDetailsShown
           ? `with ${questPlatformDetails?.destinationDetails?.name}`
-          : 'to Ethereum'
+          : `to ${config.SUPPORTED_CHAINS_DETAILS[config.DEFAULT_CHAIN].name}`
       }`}</h2>
 
       <span className='proof-submitting__subtitle'>
