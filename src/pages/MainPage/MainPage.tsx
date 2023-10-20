@@ -104,11 +104,20 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
             </motion.div>
           </motion.div>
         ) : isDeviceMobile ? (
-          <motion.div className='main-page__content'>
-            <div className='main-page__step'>
-              <h2 className='main-page__title'>{`Please use desktop device`}</h2>
+          <div className='main-page__mobile-warning'>
+            <div className='main-page__mobile-warninh-icon-wrp'>
+              <Icon
+                className='main-page__mobile-warninh-icon'
+                name={ICON_NAMES.deviceMobile}
+              />
             </div>
-          </motion.div>
+            <h4 className='main-page__mobile-warning-title'>
+              {`Mobile version is not yet available.`}
+            </h4>
+            <span className='main-page__mobile-warning-subtitle'>
+              {`Please use desktop device`}
+            </span>
+          </div>
         ) : (
           <LayoutGroup>
             <motion.div

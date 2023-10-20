@@ -13,6 +13,50 @@
   flex: 1;
 }
 
+.main-page__mobile-warning {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.main-page__mobile-warninh-icon-wrp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--white);
+
+  @include static-icon-size(80);
+}
+
+.main-page__mobile-warninh-icon {
+  color: var(--primary-main);
+
+  @include static-icon-size(50);
+}
+
+.main-page__mobile-warning-title {
+  text-align: center;
+  color: var(--text-secondary-main);
+  font-size: toRem(20);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: toRem(24) 0 toRem(16);
+}
+
+.main-page__mobile-warning-subtitle {
+  text-align: center;
+  color: var(--text-primary-main);
+  font-size: toRem(16);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: toRem(0.32);
+}
+
+
 .main-page__title {
   text-align: center;
   font-size: toRem(32);

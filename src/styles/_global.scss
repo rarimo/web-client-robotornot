@@ -39,6 +39,11 @@ body {
     opacity: 0.5;
     filter: blur(#{toRem(2)});
   }
+
+  @include respond-to(small) {
+    background-position: center center;
+    background-size: cover;
+  }
 }
 
 input,
