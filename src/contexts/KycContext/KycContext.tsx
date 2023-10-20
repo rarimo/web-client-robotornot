@@ -1,7 +1,16 @@
 import { config } from '@config'
-import { type JsonApiError } from '@distributedlab/jac'
-import { W3CCredential } from '@rarimo/rarime-connector'
-import type { UserInfo } from '@uauth/js/build/types'
+import { FetcherError } from '@distributedlab/fetcher'
+import {
+  ConflictError,
+  HTTP_STATUS_CODES,
+  type JsonApiError,
+  UnauthorizedError,
+} from '@distributedlab/jac'
+import {
+  SaveCredentialsRequestParams,
+  W3CCredential,
+} from '@rarimo/rarime-connector'
+import type { UserInfo } from '@uauth/js'
 import { AnimatePresence } from 'framer-motion'
 import {
   createContext,
@@ -159,7 +168,6 @@ type QuestPlatform = {
 interface KycContextValue {
   selectedKycProvider?: SUPPORTED_KYC_PROVIDERS
 
-  authorizedKycResponse: unknown | undefined
   selectedKycDetails: [string, string][]
   kycError?: JsonApiError
   verificationErrorMessages: string
@@ -171,8 +179,10 @@ interface KycContextValue {
 
   isKycFinished: boolean
 
-  login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => Promise<void>
-  verifyKyc: (identityIdString: string) => Promise<void>
+  login: (
+    supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
+    VCCreatedOrKycFinishedCb?: () => void,
+  ) => Promise<void>
   retryKyc: () => void
   clearKycError: () => void
   setIsVCRequestPending: (isPending: boolean) => void
@@ -183,7 +193,6 @@ interface KycContextValue {
 }
 
 export const kycContext = createContext<KycContextValue>({
-  authorizedKycResponse: undefined,
   selectedKycDetails: [],
   verificationErrorMessages: '',
 
@@ -196,9 +205,6 @@ export const kycContext = createContext<KycContextValue>({
 
   login: (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
     throw new TypeError(`login not implemented for ${supportedKycProvider}`)
-  },
-  verifyKyc: (identityIdString: string) => {
-    throw new TypeError(`verifyKyc not implemented for ${identityIdString}`)
   },
   retryKyc: () => {
     throw new TypeError(`retryKyc not implemented`)
@@ -232,7 +238,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
 
-  const [authorizedKycResponse, setAuthorizedKycResponse] = useState<unknown>()
   const [isKycFinished, setIsKycFinished] = useState(false)
 
   const {
@@ -240,27 +245,24 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     verifiableCredentials,
 
     createIdentity,
-    isClaimOfferExists,
+    getClaimOffer,
     getVerifiableCredentials,
   } = useZkpContext()
 
-  const kycDetails = useMemo<
-    | Partial<
-        | {
-            address: string
-            civicGatekeeperNetworkId: number
-            gitcoinPassportScore: string
-            id: string
-            kycAdditionalData: string
-            provider: string
-            type: string
-            unstoppableDomain: string
-            worldcoinScore: string
-          } & QueryVariableName
-      >
-    | undefined
-  >(
-    () => verifiableCredentials?.credentialSubject,
+  const kycDetails = useMemo<Partial<
+    | {
+        address: string
+        civicGatekeeperNetworkId: number
+        gitcoinPassportScore: string
+        id: string
+        kycAdditionalData: string
+        provider: string
+        type: string
+        unstoppableDomain: string
+        worldcoinScore: string
+      } & QueryVariableName
+  > | null>(
+    () => verifiableCredentials?.credentialSubject || null,
     [verifiableCredentials?.credentialSubject],
   )
 
@@ -359,19 +361,21 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const [kycError, setKycError] = useState<JsonApiError>()
 
+  const [VCCreatedOrKycFinishedCb, setVCCreatedOrKycFinishedCb] =
+    useState<() => void>()
+
   const verificationErrorMessages = useMemo(() => {
     if (!kycError) return ''
 
-    switch (kycError?.httpStatus) {
-      case 401:
-        return localizeUnauthorizedError(kycError)
-      case 409:
-        return t(
-          'This KYC provider / Address was already claimed by another identity',
-        )
-      default:
-        return ''
-    }
+    if (kycError instanceof UnauthorizedError)
+      return localizeUnauthorizedError(kycError)
+
+    if (kycError instanceof ConflictError)
+      return t(
+        `This KYC provider / Address was already claimed by another identity`,
+      )
+
+    return ''
   }, [kycError, t])
 
   const retryKyc = useCallback(() => {
@@ -382,8 +386,93 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     setKycError(undefined)
   }, [])
 
+  const _isUserHasClaim = useCallback(
+    async (identityIdString: string) => {
+      try {
+        const claimOffer = await getClaimOffer(identityIdString)
+
+        setIsKycFinished(true)
+
+        await getVerifiableCredentials(identityIdString, claimOffer)
+
+        return true
+      } catch (error) {
+        if (
+          error instanceof FetcherError &&
+          error.response.status === HTTP_STATUS_CODES.NOT_FOUND
+        )
+          return false
+
+        setKycError(error as JsonApiError)
+        setIsVCRequestFailed(true)
+
+        ErrorHandler.processWithoutFeedback(error)
+
+        throw error
+      }
+    },
+    [getClaimOffer, getVerifiableCredentials],
+  )
+
+  const subscribeToClaimWaiting = useCallback(
+    async (
+      claimType: string,
+      identityIdString: string,
+      onClaimReceived?: (claim: SaveCredentialsRequestParams) => Promise<void>,
+    ) => {
+      const socketEndpoint = `${String(config.ISSUER_API_URL).replace(
+        'http',
+        'ws',
+      )}/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`
+
+      const socket = new WebSocket(socketEndpoint)
+
+      let isManualClosed = false
+
+      socket.addEventListener('message', async event => {
+        const msg = event.data as string | SaveCredentialsRequestParams
+
+        if (msg && msg === 'processing') return false
+
+        isManualClosed = true
+        socket.close()
+
+        await onClaimReceived?.(typeof msg === 'string' ? JSON.parse(msg) : msg)
+      })
+
+      socket.addEventListener('close', async () => {
+        if (!isManualClosed) {
+          subscribeToClaimWaiting(claimType, identityIdString, onClaimReceived)
+        }
+      })
+    },
+    [],
+  )
+
   const login = useCallback(
-    async (supportedKycProvider: SUPPORTED_KYC_PROVIDERS) => {
+    async (
+      supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
+      _VCCreatedOrKycFinishedCb?: () => void,
+    ) => {
+      // subscribeToClaimWaiting(config.CLAIM_TYPE, identityIdString)
+
+      setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
+
+      const currentIdentityIdString =
+        identityIdString || (await createIdentity())
+
+      if (!currentIdentityIdString) return
+
+      if (await _isUserHasClaim(currentIdentityIdString)) {
+        setIsKycFinished(true)
+        setIsVCRequestFailed(false)
+        setIsVCRequestPending(false)
+
+        _VCCreatedOrKycFinishedCb?.()
+
+        return
+      }
+
       if (supportedKycProvider === selectedKycProvider) {
         retryKyc()
 
@@ -392,86 +481,53 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       setSelectedKycProvider(supportedKycProvider)
     },
-    [retryKyc, selectedKycProvider],
-  )
-
-  const handleVerificationChecking = useCallback(
-    async (verificationId: string) => {
-      let isPending = true
-
-      do {
-        const { data } = await api.get<{
-          type: 'verify_status'
-          id: 'string'
-          status: 'verified' | 'unverified' | 'pending'
-          user_data: unknown
-        }>(`/integrations/kyc-service/v1/public/status/${verificationId}`)
-
-        switch (data.status) {
-          case 'verified':
-            setAuthorizedKycResponse(data.user_data)
-            isPending = false
-            break
-          case 'unverified':
-            isPending = false
-            break
-          default:
-            await sleep(config.KYC_VERIFICATION_DELAY)
-        }
-      } while (isPending)
-    },
-    [],
+    [
+      _isUserHasClaim,
+      createIdentity,
+      identityIdString,
+      retryKyc,
+      selectedKycProvider,
+    ],
   )
 
   const verifyKyc = useCallback(
-    async (identityIdString: string, _authKycResponse?: unknown) => {
-      const currentAuthKycResponse = _authKycResponse ?? authorizedKycResponse
-
-      if (!currentAuthKycResponse)
-        throw new TypeError('authKycResponse is undefined')
-
+    async (identityIdString: string, authKycResponse: unknown) => {
       if (!selectedKycProvider)
-        throw new TypeError('selectedKycProviderName is undefined')
+        throw new TypeError('selectedKycProviderName is not defined')
 
       const VERIFY_KYC_DATA_MAP = {
         [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
-          id_token: currentAuthKycResponse,
+          id_token: authKycResponse,
         },
         [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          chain_name: currentAuthKycResponse.chainName,
+          chain_name: authKycResponse.chainName,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          address: currentAuthKycResponse.address,
+          address: authKycResponse.address,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          signature: currentAuthKycResponse.signature,
+          signature: authKycResponse.signature,
         },
         [SUPPORTED_KYC_PROVIDERS.GITCOIN]: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          address: currentAuthKycResponse.address,
+          address: authKycResponse.address,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          signature: currentAuthKycResponse.signature,
+          signature: authKycResponse.signature,
         },
         [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
-          access_token: (currentAuthKycResponse as { accessToken: string })
+          access_token: (authKycResponse as { accessToken: string })
             .accessToken,
         },
       }
 
-      const { data } = await api.post<
-        | {
-            type: 'user_data'
-            user_data: unknown
-          }
-        | {
-            type: 'verification_id'
-            id: 'string'
-          }
-      >(`/integrations/kyc-service/v1/public/verify/${selectedKycProvider}`, {
+      const { data } = await api.post<{
+        type: 'verification_id'
+        id: 'string'
+      }>(`/integrations/kyc-service/v1/public/verify/${selectedKycProvider}`, {
         body: {
           data: {
             type: 'verify',
@@ -485,13 +541,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         },
       })
 
-      if (!data) return
+      if (!data) throw new TypeError('data is not defined')
 
-      if (data.type === 'verification_id') {
-        await handleVerificationChecking(data.id)
-      }
+      return data.id
     },
-    [authorizedKycResponse, handleVerificationChecking, selectedKycProvider],
+    [selectedKycProvider],
   )
 
   const handleKycProviderComponentLogin = useCallback(
@@ -500,52 +554,39 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       setIsVCRequestPending(true)
       setIsVCRequestFailed(false)
 
-      setAuthorizedKycResponse(response)
-
-      if (!selectedKycProvider) return
-
-      let currentIdentityIdString = identityIdString
-
-      if (!currentIdentityIdString) {
-        currentIdentityIdString = (await createIdentity()) ?? ''
-      }
-
-      if (!currentIdentityIdString) return
+      VCCreatedOrKycFinishedCb?.()
 
       try {
-        if (!(await isClaimOfferExists(currentIdentityIdString, 1))) {
-          try {
-            await verifyKyc(currentIdentityIdString, response)
-          } catch (error) {
-            setKycError(error as JsonApiError)
-
-            ErrorHandler.processWithoutFeedback(error)
-
-            setIsVCRequestFailed(true)
-
-            return
-          }
-        }
+        await verifyKyc(identityIdString, response)
 
         setIsKycFinished(true)
 
-        await isClaimOfferExists(currentIdentityIdString)
+        await sleep(1000)
 
-        await getVerifiableCredentials(currentIdentityIdString)
+        subscribeToClaimWaiting(
+          config.CLAIM_TYPE,
+          identityIdString,
+          async (claimOffer: SaveCredentialsRequestParams) => {
+            await getVerifiableCredentials(identityIdString, claimOffer)
+
+            setIsVCRequestPending(false)
+          },
+        )
       } catch (error) {
         ErrorHandler.processWithoutFeedback(error)
-        setIsVCRequestFailed(true)
-      }
 
-      setIsVCRequestPending(false)
-      return
+        setKycError(error as JsonApiError)
+
+        setIsVCRequestFailed(true)
+
+        return
+      }
     },
     [
-      createIdentity,
+      VCCreatedOrKycFinishedCb,
       getVerifiableCredentials,
       identityIdString,
-      isClaimOfferExists,
-      selectedKycProvider,
+      subscribeToClaimWaiting,
       verifyKyc,
     ],
   )
@@ -590,6 +631,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     setQuestPlatformDetails,
   ])
 
+  // TODO: check worldcoin
   useEffectOnce(() => {
     // FIXME: hotfix due to worldcoin redirect link respond
     if (window.location.href.includes('#id_token')) {
@@ -617,7 +659,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycProvider,
           questPlatformDetails,
 
-          authorizedKycResponse,
           selectedKycDetails,
           kycError,
           verificationErrorMessages,
@@ -630,7 +671,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           isKycFinished,
 
           login,
-          verifyKyc,
           retryKyc,
           clearKycError,
           setIsVCRequestPending,

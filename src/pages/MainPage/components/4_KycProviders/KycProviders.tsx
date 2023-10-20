@@ -19,8 +19,6 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const {
     KYC_PROVIDERS_DETAILS_MAP,
     verificationErrorMessages,
-    isVCRequestPending,
-    isVCRequestFailed,
 
     login,
     clearKycError,
@@ -36,7 +34,15 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       setIsPending(true)
 
       try {
-        await login(kycProvider)
+        await login(kycProvider, () => {
+          if (nextStepCb) {
+            nextStepCb()
+
+            return
+          }
+
+          nextStep()
+        })
 
         gaSendCustomEvent(GaCategories.ProviderSelection, {
           provider: kycProvider,
@@ -49,7 +55,7 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
       setIsPending(false)
     },
-    [login],
+    [login, nextStep, nextStepCb],
   )
 
   const hideErrorMsgModal = useCallback(() => {
@@ -58,18 +64,6 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     setIsVCRequestPending(false)
     clearKycError()
   }, [clearKycError, setIsVCRequestFailed, setIsVCRequestPending])
-
-  useEffect(() => {
-    if (!isVCRequestPending || !!verificationErrorMessages) return
-
-    nextStepCb?.()
-  }, [
-    isVCRequestPending,
-    isVCRequestFailed,
-    nextStep,
-    nextStepCb,
-    verificationErrorMessages,
-  ])
 
   useEffect(() => {
     if (!verificationErrorMessages) return
@@ -131,11 +125,10 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               (selectedKycProvider &&
                 KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]
                   ?.completeKycMessage) ||
-              `RETURN TO PROVIDER LIST`
+              `Return to provider list`
             }
             modification='border-circle'
             iconRight={ICON_NAMES.arrowRight}
-            size='large'
             onClick={hideErrorMsgModal}
           />
         </div>

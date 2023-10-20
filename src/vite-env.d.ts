@@ -4,6 +4,7 @@ interface ImportMetaEnv {
   VITE_ENVIRONMENT: string
   VITE_PORT: string
   VITE_API_URL: string
+  VITE_ISSUER_API_URL: string
   VITE_APP_NAME: string
   VITE_APP_BUILD_VERSION: string
 
@@ -25,6 +26,7 @@ interface ImportMetaEnv {
 
   VITE_EXTERNAL_PLATFORM_REDIRECT_URL: string
 
+  VITE_CLAIM_TYPE: string
   VITE_CLAIM_OFFER_DELAY: number
   VITE_CLAIM_OFFER_MAX_TRIES_COUNT: number
   VITE_KYC_VERIFICATION_DELAY: number

@@ -1,16 +1,16 @@
 import { config } from '@config'
+import { Fetcher } from '@distributedlab/fetcher'
 import { JsonApiClient } from '@distributedlab/jac'
-import { makeRarimoQuerier, RarimoQuerier } from '@rarimo/client'
 
 export let api: JsonApiClient
 
-export let querier: RarimoQuerier
+export let issuerApi: Fetcher
 
-export const initApi = (baseUrl: string) => {
+export const initApi = () => {
   api = new JsonApiClient({
-    baseUrl,
+    baseUrl: config.API_URL,
   })
-  querier = makeRarimoQuerier({
-    apiUrl: config.RARIMO_CORE_RPC_API_URL,
+  issuerApi = new Fetcher({
+    baseUrl: config.ISSUER_API_URL,
   })
 }

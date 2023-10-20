@@ -68,6 +68,8 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     if (width <= 1280) {
       return isMobile()
     }
+
+    return false
   }, [width])
 
   const SidebarToggler = useCallback(
