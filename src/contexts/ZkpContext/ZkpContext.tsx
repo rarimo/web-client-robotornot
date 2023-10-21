@@ -224,11 +224,14 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getZkProof = useCallback(async (): Promise<
     ZKPProofResponse | undefined
   > => {
+    if (!verifiableCredentials?.issuer) throw new TypeError('Issuer is not set')
+
     setIsZKPRequestPending(true)
 
     const zkProofResponse = await zkpSnap.createProof({
       circuitId: 'credentialAtomicQueryMTPV2OnChain',
       accountAddress: provider?.address,
+      issuerDid: verifiableCredentials?.issuer,
 
       query: {
         allowedIssuers: ['*'],
@@ -252,7 +255,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setIsZKPRequestPending(false)
 
     return zkProofResponse
-  }, [zkpSnap, provider?.address, setZkProof])
+  }, [verifiableCredentials?.issuer, zkpSnap, provider?.address])
 
   /**
    * SUBMITTING PROOF
