@@ -34,7 +34,6 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         className,
       ].join(' ')}
       {...rest}
-      onClick={() => setIsGameBtnShown(prevState => !prevState)}
     >
       <div className='app__step-sidebar-content-img-wrp'>
         <motion.img

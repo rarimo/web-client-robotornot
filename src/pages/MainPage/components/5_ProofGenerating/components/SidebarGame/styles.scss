@@ -1,0 +1,57 @@
+.sidebar-game {
+  display: flex;
+  flex-direction: column;
+  background: var(--black);
+}
+
+.sidebar-game__header {
+  width: 100%;
+  padding: toRem(32);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-game__header-btn {
+  margin-left: auto;
+}
+
+.sidebar-game__header-icon {
+  width: toRem(20);
+  height: toRem(20);
+}
+
+.sidebar-game__overtitle {
+  color: var(--white);
+  font-size: var(--field-text-font-size);
+  text-align: center;
+}
+
+.sidebar-game__header-count {
+  font-size: var(--field-text-font-size);
+  color: var(--white);
+  font-weight: 500;
+}
+
+.sidebar-game__title {
+  color: var(--white);
+  font-size: toRem(20);
+  text-align: center;
+  font-weight: 500;
+}
+
+.sidebar-game .sidebar-game__content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-game__success-icon {
+  @include static-icon-size(toRem(28))
+}
+
+.sidebar-game__success-text {
+  font-size: toRem(16);
+  color: var(--text-primary-invert-main);
+}
