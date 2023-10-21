@@ -63,7 +63,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         <AppButton
           iconLeft={ICON_NAMES.rarimeSnap}
           onClick={installSnap}
-          text={`Install Snap`}
+          text={`Connect Snap`}
           modification='border-circle'
           isDisabled={isPending}
         />

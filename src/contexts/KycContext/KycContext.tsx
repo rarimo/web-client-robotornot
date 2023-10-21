@@ -378,7 +378,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         `This KYC provider / Address was already claimed by another identity`,
       )
 
-    return ''
+    return 'Failed to verify KYC, please contact support'
   }, [kycError, t])
 
   const retryKyc = useCallback(() => {

@@ -270,9 +270,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
       if (isIdentityProvedMsg) {
         setCurrentStep(Steps.ProofSubmittedStep)
-      }
 
-      return
+        return
+      }
     }
 
     setCurrentStep(Steps.KycProvidersStep)
