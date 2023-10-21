@@ -1,9 +1,10 @@
-import { motion } from 'framer-motion'
-import { FC } from 'react'
-import { useEffectOnce } from 'react-use'
+import { AnimatePresence, motion } from 'framer-motion'
+import { FC, useEffect, useState } from 'react'
 
-import { TypingAnimatedText } from '@/common'
+import { AppButton, TypingAnimatedText } from '@/common'
+import { useFormStepperContext } from '@/contexts'
 import { useSidebarAnimation } from '@/hooks'
+import SidebarGame from '@/pages/MainPage/components/5_ProofGenerating/components/SidebarGame'
 import { SidebarProps } from '@/pages/MainPage/components/types'
 
 const DESCRIPTION = [
@@ -13,13 +14,20 @@ const DESCRIPTION = [
 ]
 
 const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
+  const [isGameBtnShown, setIsGameBtnShown] = useState(false)
+  const { setIsSidebarClosingDisabled } = useFormStepperContext()
+
+  const [isGameShown, setIsGameShown] = useState(false)
+
+  const { isSidebarAnimationCompleted } = useFormStepperContext()
   const { imageSeq, textTyping, animateSequence } = useSidebarAnimation()
 
-  useEffectOnce(() => {
-    if (!imageSeq.current) return
+  useEffect(() => {
+    if (!isSidebarAnimationCompleted || !imageSeq.current) return
 
     animateSequence('/images/sequences/sidebar-5/5_000', 32)
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSidebarAnimationCompleted, imageSeq])
 
   return (
     <motion.div
@@ -38,13 +46,49 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
           alt='sidebar-content'
         />
       </div>
-
       <TypingAnimatedText
         className='app__step-sidebar-content-text'
         ref={textTyping}
         isAutoplay={false}
         text={DESCRIPTION.join('\n\n')}
+        onAnimationComplete={() => {
+          setIsGameBtnShown(true)
+        }}
       />
+      <motion.div className='app__step-sidebar-content-actions'>
+        <AnimatePresence>
+          {isGameBtnShown && (
+            <motion.div
+              className='app__step-sidebar-content-actions-btn-wrp'
+              initial={{ opacity: 0, y: 20, height: 0 }}
+              animate={{
+                opacity: 1,
+                y: [20, 0],
+                scale: [0.9, 1],
+                height: 'auto',
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.5,
+                ease: 'backInOut',
+              }}
+            >
+              <AppButton
+                className='app__step-sidebar-content-actions-btn'
+                color='secondary'
+                text={`Play Game`}
+                modification='border-circle'
+                size='small'
+                onClick={() => {
+                  setIsGameShown(prevState => !prevState)
+                  setIsSidebarClosingDisabled(true)
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+      <SidebarGame isShown={isGameShown} setIsShown={setIsGameShown} />
     </motion.div>
   )
 }
