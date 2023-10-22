@@ -244,6 +244,32 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     getIsIdentityProvedMsg,
   ])
 
+  const setStep = useCallback((step: Steps) => {
+    setIsSidebarAnimationCompleted(false)
+
+    setCurrentStep(step)
+  }, [])
+
+  const nextStep = useCallback(() => {
+    const steps = Object.values(Steps)
+
+    const nextStepIndex = steps.findIndex(step => step === currentStep) + 1
+
+    if (!steps[nextStepIndex]) return
+
+    setStep(steps[nextStepIndex])
+  }, [currentStep, setStep])
+
+  const prevStep = useCallback(() => {
+    const steps = Object.values(Steps)
+
+    const prevStepIndex = steps.findIndex(step => step === currentStep) - 1
+
+    if (!steps[prevStepIndex]) return
+
+    setStep(steps[prevStepIndex])
+  }, [currentStep, setStep])
+
   const handleWalletConnectionStepFinish = useCallback(() => {
     setCurrentStep(Steps.SnapConnectionStep)
   }, [])
@@ -290,12 +316,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
   const handleProofGeneratingStepFinish = useCallback(() => {
     setCurrentStep(Steps.ProofGeneratingLoaderStep)
-  }, [])
-
-  const handleProofGeneratingStepError = useCallback((error: Error) => {
-    ErrorHandler.processWithoutFeedback(error)
-
-    setCurrentStep(Steps.ProofGeneratingStep)
   }, [])
 
   const handleProofGeneratingLoaderStepFinish = useCallback(() => {
@@ -355,7 +375,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
           key={Steps.ProofGeneratingStep}
           className='main-page__step'
           nextStepCb={handleProofGeneratingStepFinish}
-          onErrorCb={handleProofGeneratingStepError}
           {...stepAnimationProps}
         />
       ),
@@ -388,7 +407,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [
     handleIdentityCreationStepFinish,
     handleKycProvidersStepFinish,
-    handleProofGeneratingStepError,
     handleProofGeneratingLoaderStepFinish,
     handleProofGeneratingStepFinish,
     handleProofSubmittedStepFinish,
@@ -472,32 +490,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const SidebarComponent: ReactElement = useMemo(() => {
     return currentStep ? STEPS_SIDEBAR_CONTENT[currentStep] : <></>
   }, [STEPS_SIDEBAR_CONTENT, currentStep])
-
-  const setStep = useCallback((step: Steps) => {
-    setIsSidebarAnimationCompleted(false)
-
-    setCurrentStep(step)
-  }, [])
-
-  const nextStep = useCallback(() => {
-    const steps = Object.values(Steps)
-
-    const nextStepIndex = steps.findIndex(step => step === currentStep) + 1
-
-    if (!steps[nextStepIndex]) return
-
-    setStep(steps[nextStepIndex])
-  }, [currentStep, setStep])
-
-  const prevStep = useCallback(() => {
-    const steps = Object.values(Steps)
-
-    const prevStepIndex = steps.findIndex(step => step === currentStep) - 1
-
-    if (!steps[prevStepIndex]) return
-
-    setStep(steps[prevStepIndex])
-  }, [currentStep, setStep])
 
   const handleError = useCallback(
     (error: Error) => {

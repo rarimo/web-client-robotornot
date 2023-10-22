@@ -1969,12 +1969,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "@rarimo/rarime-connector@npm:0.7.0"
+"@rarimo/rarime-connector@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@rarimo/rarime-connector@npm:0.6.0"
   dependencies:
     "@ethersproject/providers": 5.7.2
-  checksum: cb535ed047bc5242f73e168e81d82865135834332b4d6bd206dfe953b78f9f312c3ac2f2f384e5d896b9f358bbe9af967a92d4730925feca66a5abd47d7c18ce
+  checksum: 4c68c1a7018c73e36aebf50b789c82fdffde2fa3e954f77005812c9b65a4acb86694081f450328784ea37ef66dde999cdcd381b2845ad18e55777562cc5a73fa
   languageName: node
   linkType: hard
 
@@ -4305,9 +4305,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001551
-  resolution: "caniuse-lite@npm:1.0.30001551"
-  checksum: ffdee85b1c130cbebf0aa978ba839f3525f8e304855ba9bf0fbefaac8dd8c40051a7e19ac84a7cf4ba026410abcbe6f8b45560b22ee417c52daecaf955108e65
+  version: 1.0.30001553
+  resolution: "caniuse-lite@npm:1.0.30001553"
+  checksum: 45d6a2a3c3a098c8093a4c8883fceafb4bbf59d96f6fd5bb381ba4581d07eecbe0ede4f55383f0d49374154ff6a808bd90fbe32b17ccd1738034d2579787b33c
   languageName: node
   linkType: hard
 
@@ -10582,7 +10582,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": ^0.7.0
+    "@rarimo/rarime-connector": 0.6.0
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0

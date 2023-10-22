@@ -231,7 +231,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     const zkProofResponse = await zkpSnap.createProof({
       circuitId: 'credentialAtomicQueryMTPV2OnChain',
       accountAddress: provider?.address,
-      issuerDid: verifiableCredentials?.issuer,
+      // issuerDid: verifiableCredentials?.issuer,
 
       query: {
         allowedIssuers: ['*'],

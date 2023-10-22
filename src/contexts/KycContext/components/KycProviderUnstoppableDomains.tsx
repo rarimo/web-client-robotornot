@@ -5,9 +5,10 @@ import { useEffectOnce } from 'react-use'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => void
+  errorCb: (error: Error) => void
 }
 
-const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
+const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb, errorCb }) => {
   const uauth = useMemo(
     () =>
       new UAuth({
@@ -19,10 +20,14 @@ const KycProviderUnstoppableDomains: FC<Props> = ({ loginCb }) => {
   )
 
   const login = useCallback(async () => {
-    const authorization = await uauth.loginWithPopup()
+    try {
+      const authorization = await uauth.loginWithPopup()
 
-    loginCb(authorization)
-  }, [loginCb, uauth])
+      loginCb(authorization)
+    } catch (error) {
+      errorCb(error as Error)
+    }
+  }, [errorCb, loginCb, uauth])
 
   useEffectOnce(() => {
     login()

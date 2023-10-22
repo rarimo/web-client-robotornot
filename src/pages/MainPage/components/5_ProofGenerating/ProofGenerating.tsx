@@ -5,7 +5,12 @@ import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
 
 import { AppButton, ProgressLoader } from '@/common'
-import { useFormStepperContext, useKycContext, useZkpContext } from '@/contexts'
+import {
+  Steps,
+  useFormStepperContext,
+  useKycContext,
+  useZkpContext,
+} from '@/contexts'
 import {
   bus,
   BUS_EVENTS,
@@ -15,15 +20,10 @@ import {
 } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
-const ProofGenerating: FC<StepProps> = ({
-  nextStepCb,
-  className,
-  onErrorCb,
-  ...rest
-}) => {
+const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
 
-  const { prevStep } = useFormStepperContext()
+  const { setStep, prevStep } = useFormStepperContext()
   const { verifiableCredentials, getZkProof, getIsIdentityProvedMsg } =
     useZkpContext()
   const {
@@ -49,10 +49,9 @@ const ProofGenerating: FC<StepProps> = ({
 
   const handleGenerateProof = useCallback(async () => {
     setIsPending(true)
+    nextStepCb()
 
     try {
-      nextStepCb()
-
       if (config.ENVIRONMENT !== 'dev') {
         if (await checkIsIdentityProved())
           throw new TypeError(`Identity already proved`)
@@ -60,13 +59,13 @@ const ProofGenerating: FC<StepProps> = ({
 
       await getZkProof()
     } catch (error) {
+      setStep(Steps.ProofGeneratingStep)
       ErrorHandler.process(error)
-      onErrorCb?.(error as Error)
     }
 
     gaSendCustomEvent(GaCategories.GenerateProof)
     setIsPending(false)
-  }, [checkIsIdentityProved, getZkProof, nextStepCb, onErrorCb])
+  }, [checkIsIdentityProved, getZkProof, nextStepCb, setStep])
 
   useEffect(() => {
     if (!verificationErrorMessages) return

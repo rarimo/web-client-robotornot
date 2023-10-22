@@ -7,9 +7,10 @@ import { ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  errorCb: (error: Error) => void
 }
 
-const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {
+const KycProviderGitCoin: FC<Props> = ({ loginCb, errorCb }) => {
   const { provider } = useWeb3Context()
 
   useEffectOnce(() => {
@@ -35,6 +36,7 @@ const KycProviderGitCoin: FC<Props> = ({ loginCb }) => {
         })
       } catch (error) {
         ErrorHandler.process(error)
+        errorCb(error as Error)
       }
     }
 

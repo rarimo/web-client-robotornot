@@ -1,5 +1,6 @@
 import './styles.scss'
 
+import { config } from '@config'
 import { motion } from 'framer-motion'
 import isEmpty from 'lodash/isEmpty'
 import { type FC, useEffect } from 'react'
@@ -29,7 +30,7 @@ const ProofGeneratingLoader: FC<StepProps> = ({
     >
       <ProgressLoader
         className='proof-generating-loader__progress-loader'
-        delay={2_000}
+        delay={config.PROOF_GEN_DELAY}
         checkpoints={[100]}
         checkpointIndex={zkProof?.pub_signals ? 0 : undefined}
         iconNameOrImgUrl={ICON_NAMES.shieldExclamation}

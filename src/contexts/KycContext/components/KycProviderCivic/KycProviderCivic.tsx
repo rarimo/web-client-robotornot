@@ -23,6 +23,7 @@ import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   loginCb: (response: unknown) => Promise<void>
+  errorCb: (error: Error) => void
 }
 
 /**
@@ -35,6 +36,7 @@ const GATEKEEPER_NETWORK_MAP = {
 
 const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
   loginCb,
+  errorCb,
   handleSigned,
 }) => {
   const { gatewayToken, requestGatewayToken } = useGateway()
@@ -82,8 +84,9 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
       })
     } catch (error) {
       ErrorHandler.process(error)
+      errorCb(error as Error)
     }
-  }, [loginCb, provider, handleSigned])
+  }, [provider, handleSigned, loginCb, errorCb])
 
   useEffect(() => {
     if (gatewayToken?.state === State.ACTIVE || signedNonce) return
@@ -102,7 +105,7 @@ const KycProviderCivicContent: FC<Props & { handleSigned: () => void }> = ({
   return <></>
 }
 
-const KycProviderCivic: FC<Props> = ({ loginCb }) => {
+const KycProviderCivic: FC<Props> = ({ loginCb, errorCb }) => {
   const [isModalShown, setIsModalShown] = useState(true)
   const { provider } = useWeb3Context()
 
@@ -145,6 +148,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
           <KycProviderCivicContent
             loginCb={loginCb}
             handleSigned={handleSigned}
+            errorCb={errorCb}
           />
         </GatewayProvider>
       )
@@ -196,6 +200,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb }) => {
         >
           <KycProviderCivicContent
             loginCb={loginCb}
+            errorCb={errorCb}
             handleSigned={handleSigned}
           />
         </GatewayProvider>

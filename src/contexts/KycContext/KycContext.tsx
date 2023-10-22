@@ -495,9 +495,19 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         _VCCreatedOrKycFinishedCb?.()
 
-        const vc = await getVerifiableCredentials(identityIdString, claim)
+        try {
+          const vc = await getVerifiableCredentials(identityIdString, claim)
 
-        detectProviderFromVC(vc)
+          detectProviderFromVC(vc)
+        } catch (error) {
+          ErrorHandler.processWithoutFeedback(error)
+
+          setKycError(error as JsonApiError)
+
+          setIsVCRequestFailed(true)
+
+          return
+        }
 
         return
       }
@@ -622,6 +632,14 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     ],
   )
 
+  const handleKycComponentError = useCallback((error: Error) => {
+    ErrorHandler.processWithoutFeedback(error)
+
+    setKycError(error as JsonApiError)
+
+    setIsVCRequestFailed(true)
+  }, [])
+
   const parseQuestPlatform = useCallback(() => {
     if (questPlatformDetails?.questCreatorDetails?.iconLink) return
 
@@ -719,6 +737,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
               <KycProviderUnstoppableDomains
                 key={refreshKey}
                 loginCb={handleKycProviderComponentLogin}
+                errorCb={handleKycComponentError}
               />
             ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
               <KycProviderWorldCoin
@@ -729,11 +748,13 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
               <KycProviderCivic
                 key={refreshKey}
                 loginCb={handleKycProviderComponentLogin}
+                errorCb={handleKycComponentError}
               />
             ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
               <KycProviderGitCoin
                 key={refreshKey}
                 loginCb={handleKycProviderComponentLogin}
+                errorCb={handleKycComponentError}
               />
             ) : (
               <></>
