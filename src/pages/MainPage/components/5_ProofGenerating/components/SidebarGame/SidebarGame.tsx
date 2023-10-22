@@ -103,6 +103,7 @@ const SidebarGame: FC<Props> = ({
           </div>
           <p className='sidebar-game__overtitle'>
             {'Interactive game during the wait time'}
+            <br />
             {
               'Zero-knowledge proofs are still a bit slow to generate. Enjoy the game while we take care of it!'
             }
