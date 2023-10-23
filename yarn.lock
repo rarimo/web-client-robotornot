@@ -1969,12 +1969,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:0.7.2":
-  version: 0.7.2
-  resolution: "@rarimo/rarime-connector@npm:0.7.2"
+"@rarimo/rarime-connector@npm:0.8.0":
+  version: 0.8.0
+  resolution: "@rarimo/rarime-connector@npm:0.8.0"
   dependencies:
     "@ethersproject/providers": 5.7.2
-  checksum: eac2fe49a01b03c4f5dec6d742277923c702450c0f2f381e86429ec71f4bce54a38b1c001fea917bb622d8daaa2a03bf0a18a7b82519615a2de2fa6a3e9f2aa8
+    ethers: 5.7.2
+  checksum: d59f4742aa7e5bfa26f9353106ee3f8dca29a49d24e644a8fc1718515dd79fb1861def89a2cacceca7373be6eeb3de15c2681d940dd82092173e88d3cb74abde
   languageName: node
   linkType: hard
 
@@ -2108,9 +2109,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/bundler-plugin-core@npm:2.8.0":
-  version: 2.8.0
-  resolution: "@sentry/bundler-plugin-core@npm:2.8.0"
+"@sentry/bundler-plugin-core@npm:2.9.0":
+  version: 2.9.0
+  resolution: "@sentry/bundler-plugin-core@npm:2.9.0"
   dependencies:
     "@sentry/cli": ^2.21.2
     "@sentry/node": ^7.60.0
@@ -2120,7 +2121,7 @@ __metadata:
     glob: 9.3.2
     magic-string: 0.27.0
     unplugin: 1.0.1
-  checksum: 9434aa89179423481ef941c3bf340a5f3251ca8bdff81ea81631258ccadfea9c6c81193857f1767829fd66643c6dcaab39e9b2a31b0e614f0f12fc9e769afda3
+  checksum: ef565c6722c5d786bbe8a1226fd18d5aeb8ff3434739956408fdb134c194fafc4578a02340aa48ff8033164a15487874dfa689150cbd9b5f671f9b88447bd27b
   languageName: node
   linkType: hard
 
@@ -2204,14 +2205,14 @@ __metadata:
   linkType: hard
 
 "@sentry/rollup-plugin@npm:^2.7.1":
-  version: 2.8.0
-  resolution: "@sentry/rollup-plugin@npm:2.8.0"
+  version: 2.9.0
+  resolution: "@sentry/rollup-plugin@npm:2.9.0"
   dependencies:
-    "@sentry/bundler-plugin-core": 2.8.0
+    "@sentry/bundler-plugin-core": 2.9.0
     unplugin: 1.0.1
   peerDependencies:
     rollup: ">=3.2.0"
-  checksum: 35812973ed227c0cd83d7747ed89c2f0490b6eb39152d89a60e8e36a249ad8690b46d5a712a73650c293ca13c77d05da1faf7a6f47668124b1a97b30770d8107
+  checksum: 68178f301d12eb2197cea59748f779a65619a3ed8cb1a27d358630f2fd33c060bb7dc929c726edabb63c38cedbca430ec9c88a7c0ae21346b845e97fa7777388
   languageName: node
   linkType: hard
 
@@ -10582,7 +10583,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": 0.7.2
+    "@rarimo/rarime-connector": 0.8.0
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
