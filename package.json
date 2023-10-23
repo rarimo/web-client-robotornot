@@ -32,7 +32,7 @@
     "@rarimo/auth-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/client": "^2.0.0-rc.24",
     "@rarimo/identity-gen-iden3": "^2.0.0-rc.24",
-    "@rarimo/rarime-connector": "0.6.0",
+    "@rarimo/rarime-connector": "0.7.1",
     "@rarimo/shared-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/zkp-gen-iden3": "^2.0.0-rc.24",
     "@sentry/react": "7.63.0",
