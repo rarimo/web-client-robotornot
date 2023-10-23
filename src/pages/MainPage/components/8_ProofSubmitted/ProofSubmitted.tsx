@@ -100,6 +100,27 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
                   {KYC_PROVIDERS_DETAILS_MAP[selectedKycProvider].name}
                 </span>
               </div>
+
+              {config.COMMUNITY_LINK && (
+                <>
+                  <div className='proof-submitted__metadata-divider' />
+
+                  <div className='proof-submitted__metadata-row'>
+                    <AppButton
+                      className={[
+                        'proof-submitted__request-btn',
+                        'proof-submitted__request-btn--primary',
+                      ].join(' ')}
+                      href={config.COMMUNITY_LINK}
+                      target='_blank'
+                      modification='border-circle'
+                      iconLeft={ICON_NAMES.discord}
+                    >
+                      {`Join the “Humanity station” channel`}
+                    </AppButton>
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <>

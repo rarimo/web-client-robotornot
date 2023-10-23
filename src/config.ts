@@ -159,6 +159,7 @@ export const config = {
   EXTERNAL_LANDING_URL: 'https://rarimo.com/',
 
   SUPPORT_LINK: import.meta.env.VITE_SUPPORT_LINK,
+  COMMUNITY_LINK: import.meta.env.VITE_COMMUNITY_LINK,
 } as {
   ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
 
@@ -209,6 +210,7 @@ export const config = {
   EXTERNAL_LANDING_URL: string
 
   SUPPORT_LINK: string
+  COMMUNITY_LINK: string
 } & Partial<ContractAddresses>
 
 Object.assign(config, {

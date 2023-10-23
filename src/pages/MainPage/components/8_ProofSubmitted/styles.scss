@@ -77,11 +77,25 @@
 
 .proof-submitted__request-btn {
   width: 100%;
-  background: #F5F6FF;
+  background: #F5FCF7;
   color: var(--success-main);
 
   .proof-submitted &:hover, .proof-submitted &:focus {
     background: #F5F6FF;
     color: var(--success-main);
+  }
+
+  &--primary {
+    width: 100%;
+    background: #F5F6FF;
+    color: var(--primary-main);
+    font-size: toRem(14);
+    font-weight: 600;
+    line-height: 1.3;
+
+    .proof-submitted &:hover, .proof-submitted &:focus {
+      background: #F5F6FF;
+      color: var(--primary-main);
+    }
   }
 }
