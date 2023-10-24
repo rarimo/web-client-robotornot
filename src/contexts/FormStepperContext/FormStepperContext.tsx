@@ -165,7 +165,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     getIsIdentityProvedMsg,
     parseDIDToIdentityBigIntString,
   } = useZkpContext()
-  const { isVCRequestPending } = useKycContext()
+  const { isVCRequestPending, isUserHasClaimHandled } = useKycContext()
 
   const [isSidebarAnimationCompleted, setIsSidebarAnimationCompleted] =
     useState(false)
@@ -186,7 +186,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!identityIdString) return Steps.IdentityCreationStep
 
-    if (!verifiableCredentials) return Steps.KycProvidersStep
+    // if (!verifiableCredentials) return Steps.KycProvidersStep
+
+    if (!verifiableCredentials) return Steps.IdentityCreationStep
 
     if (!zkProof) return Steps.ProofGeneratingStep
 
@@ -279,33 +281,45 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [])
 
   const handleIdentityCreationStepFinish = useCallback(async () => {
-    if (isSnapInstalled && provider?.isConnected) {
-      /**
-       * As createIdentity() method is return existing identity or create new,
-       * we can detect created one by checking verifiable credentials
-       */
-      const identityIdString = await createIdentity()
+    if (!isSnapInstalled || !provider?.isConnected)
+      throw new TypeError('snap is not installed or wallet is not connected')
 
-      const identityBigIntString = identityIdString
-        ? parseDIDToIdentityBigIntString(identityIdString)
-        : ''
+    /**
+     * As createIdentity() method is return existing identity or create new,
+     * we can detect created one by checking verifiable credentials
+     */
+    const identityIdString = await createIdentity()
 
-      const isIdentityProvedMsg = await getIsIdentityProvedMsg(
-        identityBigIntString,
-      )
+    const identityBigIntString = identityIdString
+      ? parseDIDToIdentityBigIntString(identityIdString)
+      : ''
 
-      if (isIdentityProvedMsg) {
-        setCurrentStep(Steps.ProofSubmittedStep)
+    const isIdentityProvedMsg = await getIsIdentityProvedMsg(
+      identityBigIntString,
+    )
 
-        return
-      }
+    if (isIdentityProvedMsg) {
+      setCurrentStep(Steps.ProofSubmittedStep)
+
+      return
     }
 
-    setCurrentStep(Steps.KycProvidersStep)
+    try {
+      const _isUserHasClaimHandled = await isUserHasClaimHandled?.(() => {
+        setCurrentStep(Steps.ProofGeneratingStep)
+      })
+
+      if (_isUserHasClaimHandled) return
+
+      setCurrentStep(Steps.KycProvidersStep)
+    } catch (error) {
+      /* empty */
+    }
   }, [
     createIdentity,
     getIsIdentityProvedMsg,
     isSnapInstalled,
+    isUserHasClaimHandled,
     parseDIDToIdentityBigIntString,
     provider?.isConnected,
   ])

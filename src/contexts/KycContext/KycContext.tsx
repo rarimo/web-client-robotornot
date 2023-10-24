@@ -33,6 +33,8 @@ import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
   abbrCenter,
+  bus,
+  BUS_EVENTS,
   ErrorHandler,
   gaSendCustomEvent,
   localizeUnauthorizedError,
@@ -189,6 +191,10 @@ interface KycContextValue {
   setIsVCRequestPending: (isPending: boolean) => void
   setIsVCRequestFailed: (isFailed: boolean) => void
   detectProviderFromVC: (vc?: W3CCredential) => void
+
+  isUserHasClaimHandled?: (
+    VCCreatedOrKycFinishedCb?: () => void,
+  ) => Promise<boolean>
 
   questPlatformDetails?: QuestPlatform
 }
@@ -472,6 +478,43 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [verifiableCredentials],
   )
 
+  const isUserHasClaimHandled = useCallback(
+    async (_VCCreatedOrKycFinishedCb?: () => void) => {
+      const currentIdentityIdString =
+        identityIdString || (await createIdentity())
+
+      if (!currentIdentityIdString) throw new TypeError('identityId is empty')
+
+      const claim = await _getClaimIfExists(currentIdentityIdString)
+
+      if (!claim) return false
+
+      setIsKycFinished(true)
+      setIsVCRequestFailed(false)
+      setIsVCRequestPending(false)
+
+      _VCCreatedOrKycFinishedCb?.()
+
+      bus.emit(
+        BUS_EVENTS.info,
+        "You already have a verifiable credentials, let's check it out!",
+      )
+
+      const vc = await getVerifiableCredentials(identityIdString, claim)
+
+      detectProviderFromVC(vc)
+
+      return true
+    },
+    [
+      _getClaimIfExists,
+      createIdentity,
+      detectProviderFromVC,
+      getVerifiableCredentials,
+      identityIdString,
+    ],
+  )
+
   const login = useCallback(
     async (
       supportedKycProvider: SUPPORTED_KYC_PROVIDERS,
@@ -481,54 +524,25 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       setVCCreatedOrKycFinishedCb(() => _VCCreatedOrKycFinishedCb)
 
-      const currentIdentityIdString =
-        identityIdString || (await createIdentity())
+      try {
+        if (await isUserHasClaimHandled(_VCCreatedOrKycFinishedCb)) return
 
-      if (!currentIdentityIdString) return
+        setIsShowKycProvider(true)
 
-      const claim = await _getClaimIfExists(currentIdentityIdString)
-
-      if (claim) {
-        setIsKycFinished(true)
-        setIsVCRequestFailed(false)
-        setIsVCRequestPending(false)
-
-        _VCCreatedOrKycFinishedCb?.()
-
-        try {
-          const vc = await getVerifiableCredentials(identityIdString, claim)
-
-          detectProviderFromVC(vc)
-        } catch (error) {
-          ErrorHandler.processWithoutFeedback(error)
-
-          setKycError(error as JsonApiError)
-
-          setIsVCRequestFailed(true)
+        if (supportedKycProvider === selectedKycProvider) {
+          retryKyc()
 
           return
         }
+      } catch (error) {
+        ErrorHandler.processWithoutFeedback(error)
 
-        return
-      }
+        setKycError(error as JsonApiError)
 
-      setIsShowKycProvider(true)
-
-      if (supportedKycProvider === selectedKycProvider) {
-        retryKyc()
-
-        return
+        setIsVCRequestFailed(true)
       }
     },
-    [
-      _getClaimIfExists,
-      createIdentity,
-      detectProviderFromVC,
-      getVerifiableCredentials,
-      identityIdString,
-      retryKyc,
-      selectedKycProvider,
-    ],
+    [isUserHasClaimHandled, retryKyc, selectedKycProvider],
   )
 
   const verifyKyc = useCallback(
@@ -710,6 +724,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycDetails,
           kycError,
           verificationErrorMessages,
+
+          isUserHasClaimHandled,
 
           KYC_PROVIDERS_DETAILS_MAP,
 
