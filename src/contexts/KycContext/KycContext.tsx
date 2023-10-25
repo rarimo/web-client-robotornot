@@ -504,6 +504,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       detectProviderFromVC(vc)
 
+      setIsVCRequestPending(false)
+
       return true
     },
     [
