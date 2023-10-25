@@ -19,7 +19,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   const [isAppInitialized, setIsAppInitialized] = useState(false)
 
   const { showToast } = useNotification()
-  const { provider, init: initWeb3 } = useWeb3Context()
+  const { provider, isValidChain, init: initWeb3 } = useWeb3Context()
   const { checkMetamaskExists, checkSnapExists, connectOrInstallSnap } =
     useMetamaskZkpSnapContext()
 
@@ -84,7 +84,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   return (
     <>
       <AppNavbar />
-      <div className='app__main'>
+      <div className='app__main' key={Number(isValidChain)}>
         {isAppInitialized ? children : <Loader />}
       </div>
 
