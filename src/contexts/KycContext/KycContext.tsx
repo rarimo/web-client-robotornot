@@ -491,7 +491,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
       setIsKycFinished(true)
       setIsVCRequestFailed(false)
-      setIsVCRequestPending(false)
+      setIsVCRequestPending(true)
 
       _VCCreatedOrKycFinishedCb?.()
 
