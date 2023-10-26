@@ -191,6 +191,7 @@ interface KycContextValue {
   setIsVCRequestPending: (isPending: boolean) => void
   setIsVCRequestFailed: (isFailed: boolean) => void
   detectProviderFromVC: (vc?: W3CCredential) => void
+  handleWorldcoinRedirect: (worldcoinProviderCb: () => void) => Promise<void>
 
   isUserHasClaimHandled?: (
     VCCreatedOrKycFinishedCb?: () => void,
@@ -227,6 +228,9 @@ export const kycContext = createContext<KycContextValue>({
   },
   detectProviderFromVC: () => {
     throw new TypeError(`detectProviderFromVC not implemented`)
+  },
+  handleWorldcoinRedirect: () => {
+    throw new TypeError(`handleWorldcoinRedirect not implemented`)
   },
 
   questPlatformDetails: {} as QuestPlatform,
@@ -695,21 +699,25 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     setQuestPlatformDetails,
   ])
 
-  // TODO: check worldcoin
+  const handleWorldcoinRedirect = useCallback(
+    async (worldcoinProviderCb: () => void) => {
+      // FIXME: hotfix due to worldcoin redirect link response
+      if (window.location.href.includes('#id_token')) {
+        window.open(
+          window.location.href.replace('#id_token', '?id_token'),
+          '_self',
+          'noopener,noreferrer',
+        )
+      }
+
+      if (searchParams.get('id_token')) {
+        login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN, worldcoinProviderCb)
+      }
+    },
+    [login, searchParams],
+  )
+
   useEffectOnce(() => {
-    // FIXME: hotfix due to worldcoin redirect link respond
-    if (window.location.href.includes('#id_token')) {
-      window.open(
-        window.location.href.replace('#id_token', '?id_token'),
-        '_self',
-        'noopener,noreferrer',
-      )
-    }
-
-    if (searchParams.get('id_token')) {
-      login(SUPPORTED_KYC_PROVIDERS.WORLDCOIN)
-    }
-
     detectProviderFromVC()
 
     parseQuestPlatform()
@@ -742,6 +750,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           setIsVCRequestPending,
           setIsVCRequestFailed,
           detectProviderFromVC,
+          handleWorldcoinRedirect,
         }}
       >
         {children}

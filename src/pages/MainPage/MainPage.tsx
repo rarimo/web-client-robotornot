@@ -115,7 +115,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
               {`Mobile version is not yet available.`}
             </h4>
             <span className='main-page__mobile-warning-subtitle'>
-              {`Please use desktop device`}
+              {`Please use a desktop device`}
             </span>
           </div>
         ) : (

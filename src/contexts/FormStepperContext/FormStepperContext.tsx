@@ -17,7 +17,7 @@ import {
   useWeb3Context,
   useZkpContext,
 } from '@/contexts'
-import { ErrorHandler, GaCategories, gaSendCustomEvent, sleep } from '@/helpers'
+import { ErrorHandler, GaCategories, gaSendCustomEvent } from '@/helpers'
 import WalletConnectionStep from '@/pages/MainPage/components/1_WalletConnection'
 import WalletConnectionSidebarContent from '@/pages/MainPage/components/1_WalletConnection/components/SidebarContent'
 import SnapConnectionStep from '@/pages/MainPage/components/2_SnapConnection'
@@ -165,7 +165,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     getIsIdentityProvedMsg,
     parseDIDToIdentityBigIntString,
   } = useZkpContext()
-  const { isVCRequestPending, isUserHasClaimHandled } = useKycContext()
+  const { isVCRequestPending, isUserHasClaimHandled, handleWorldcoinRedirect } =
+    useKycContext()
 
   const [isSidebarAnimationCompleted, setIsSidebarAnimationCompleted] =
     useState(false)
@@ -231,7 +232,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         }
       }
 
-      await sleep(1_000)
+      await handleWorldcoinRedirect(() => {
+        setCurrentStep(Steps.ProofGeneratingStep)
+      })
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
       setIsLoadFailed(true)
@@ -241,6 +244,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [
     isSnapInstalled,
     provider?.isConnected,
+    handleWorldcoinRedirect,
     createIdentity,
     parseDIDToIdentityBigIntString,
     getIsIdentityProvedMsg,
