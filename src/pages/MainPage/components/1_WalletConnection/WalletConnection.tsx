@@ -14,7 +14,13 @@ import {
   useWeb3Context,
 } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
-import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import {
+  bus,
+  BUS_EVENTS,
+  ErrorHandler,
+  GaCategories,
+  gaSendCustomEvent,
+} from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
 const WalletConnection: FC<StepProps> = ({
@@ -33,6 +39,8 @@ const WalletConnection: FC<StepProps> = ({
 
     try {
       await init(PROVIDERS.Metamask)
+
+      gaSendCustomEvent(GaCategories.WalletConnection)
     } catch (error) {
       ErrorHandler.process(error)
     }

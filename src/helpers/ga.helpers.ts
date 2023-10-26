@@ -5,12 +5,9 @@ import { ErrorHandler } from '@/helpers'
 export enum GaCategories {
   PageView = 'page-view',
   WalletConnection = 'wallet-connection',
-  ChainSelection = 'chain-selection',
-  TransitState = 'transit-state',
   SubmitZkp = 'submit-zkp',
   GenerateProof = 'generate-proof',
   ProviderSelection = 'provider-selection',
-  RetryKyc = 'retry-kyc',
   GettingVerifiableCredentials = 'getting-verifiable-credentials',
 }
 
