@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
 import {
@@ -179,7 +180,16 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     )
   }, [currentStep])
 
+  const [searchParams] = useSearchParams()
+
   const detectStartStep = useCallback(() => {
+    if (
+      searchParams.get('id_token') &&
+      provider?.isConnected &&
+      isSnapInstalled
+    )
+      return
+
     if (!provider?.isConnected || !isValidChain)
       return Steps.WalletConnectionStep
 
@@ -202,6 +212,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     isUserSubmittedZkp,
     isValidChain,
     provider?.isConnected,
+    searchParams,
     verifiableCredentials,
     zkProof,
   ])
