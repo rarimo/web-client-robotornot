@@ -28,6 +28,25 @@ jobs:
           echo $GITHUB_REPOSITORY
           echo $GITHUB_REF_NAME
       - name: Run Build
+        env: # Or as an environment variable
+          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
         run: |
           . $(werf ci-env github --as-file) 
           werf export web --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
+
+  deploy:
+      name: Deploy
+      needs: converge
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+        - name: ConfigCreate
+          run: |
+            mkdir ~/.kube/
+            echo "${{ secrets.K8SCONFIG_MAIN }}" | base64 -d > config
+            mv config ~/.kube/
+            kubectl set image deployment rarimo-web template=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME -n robotornot

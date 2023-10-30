@@ -26,6 +26,9 @@ jobs:
           echo $GITHUB_REPOSITORY
           echo $GITHUB_SHA
       - name: Run Build
+        env: # Or as an environment variable
+          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
         run: |
           . $(werf ci-env github --as-file) 
           werf export web --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
