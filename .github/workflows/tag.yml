@@ -31,6 +31,8 @@ jobs:
         env: # Or as an environment variable
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_ENVIRONMENT: production
+          VITE_APP_DOMAIN: ""
         run: |
           . $(werf ci-env github --as-file) 
           werf export web --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
