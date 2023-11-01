@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty'
 import {
   createContext,
   FC,
@@ -199,9 +200,10 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     // if (!verifiableCredentials) return Steps.KycProvidersStep
 
-    if (!verifiableCredentials) return Steps.IdentityCreationStep
+    if (!verifiableCredentials || isEmpty(verifiableCredentials))
+      return Steps.IdentityCreationStep
 
-    if (!zkProof) return Steps.ProofGeneratingStep
+    if (!zkProof || isEmpty(zkProof)) return Steps.ProofGeneratingStep
 
     if (!isUserSubmittedZkp) return Steps.ProofSubmittingStep
 
@@ -239,6 +241,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
         )
 
         if (isIdentityProvedMsg) {
+          ErrorHandler.processWithoutFeedback(isIdentityProvedMsg)
           setCurrentStep(Steps.ProofSubmittedStep)
         }
       }

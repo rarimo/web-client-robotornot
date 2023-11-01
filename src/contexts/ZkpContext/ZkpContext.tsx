@@ -363,14 +363,14 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       let provedMsg = ''
 
+      if (!isDIDProved && !isAddressProved) return ''
+
       if (isDIDProved && isAddressProved) {
-        provedMsg =
-          'Your identity has been verified as human, and the wallet address is already linked to it.'
+        provedMsg = `Your identity ${currentIdentityBigIntString} has been verified as human, and the wallet address ${provider?.address} is already linked to it.`
       } else if (isDIDProved && !isAddressProved) {
-        provedMsg = 'Identity verification already completed'
+        provedMsg = `Identity verification already completed for ${currentIdentityBigIntString}`
       } else if (!isDIDProved && isAddressProved) {
-        provedMsg =
-          'The wallet address you entered is associated with another identity. Please use a different wallet address.'
+        provedMsg = `The wallet address ${provider?.address} you entered is associated with another identity. Please use a different wallet address.`
       }
 
       return provedMsg
