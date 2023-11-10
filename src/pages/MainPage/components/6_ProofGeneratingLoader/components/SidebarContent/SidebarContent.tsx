@@ -1,11 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { FC, useEffect, useState } from 'react'
+import { FC, lazy, useEffect, useState } from 'react'
 
 import { AppButton, TypingAnimatedText } from '@/common'
 import { useFormStepperContext } from '@/contexts'
 import { useSidebarAnimation } from '@/hooks'
-import SidebarGame from '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarGame'
 import { SidebarProps } from '@/pages/MainPage/components/types'
+
+const SidebarGame = lazy(
+  () =>
+    import(
+      '@/pages/MainPage/components/6_ProofGeneratingLoader/components/SidebarGame'
+    ),
+)
 
 const IMAGE_DURATION_MS = 1_000
 const TEXT_DURATION_MS = 10_000

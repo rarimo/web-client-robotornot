@@ -183,7 +183,40 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
   const [searchParams] = useSearchParams()
 
-  const detectStartStep = useCallback(() => {
+  const handleIfUserClaimExist = useCallback(async (): Promise<Steps> => {
+    const identityIdString = await createIdentity()
+
+    const identityBigIntString = identityIdString
+      ? parseDIDToIdentityBigIntString(identityIdString)
+      : ''
+
+    const isIdentityProvedMsg = await getIsIdentityProvedMsg(
+      identityBigIntString,
+    )
+
+    if (isIdentityProvedMsg) {
+      return Steps.ProofSubmittedStep
+    }
+
+    try {
+      const _isUserHasClaimHandled = await isUserHasClaimHandled?.(() => {
+        setCurrentStep(Steps.ProofGeneratingStep)
+      })
+
+      if (_isUserHasClaimHandled) return Steps.ProofGeneratingStep
+    } catch (error) {
+      /* empty */
+    }
+
+    return Steps.KycProvidersStep
+  }, [
+    createIdentity,
+    getIsIdentityProvedMsg,
+    isUserHasClaimHandled,
+    parseDIDToIdentityBigIntString,
+  ])
+
+  const detectStartStep = useCallback(async () => {
     if (
       searchParams.get('id_token') &&
       provider?.isConnected &&
@@ -198,10 +231,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!identityIdString) return Steps.IdentityCreationStep
 
-    // if (!verifiableCredentials) return Steps.KycProvidersStep
-
     if (!verifiableCredentials || isEmpty(verifiableCredentials))
-      return Steps.IdentityCreationStep
+      return await handleIfUserClaimExist()
 
     if (!zkProof || isEmpty(zkProof)) return Steps.ProofGeneratingStep
 
@@ -209,6 +240,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     return Steps.ProofSubmittedStep
   }, [
+    handleIfUserClaimExist,
     identityIdString,
     isSnapInstalled,
     isUserSubmittedZkp,
@@ -306,41 +338,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
      * As createIdentity() method is return existing identity or create new,
      * we can detect created one by checking verifiable credentials
      */
-    const identityIdString = await createIdentity()
-
-    const identityBigIntString = identityIdString
-      ? parseDIDToIdentityBigIntString(identityIdString)
-      : ''
-
-    const isIdentityProvedMsg = await getIsIdentityProvedMsg(
-      identityBigIntString,
-    )
-
-    if (isIdentityProvedMsg) {
-      setCurrentStep(Steps.ProofSubmittedStep)
-
-      return
-    }
-
-    try {
-      const _isUserHasClaimHandled = await isUserHasClaimHandled?.(() => {
-        setCurrentStep(Steps.ProofGeneratingStep)
-      })
-
-      if (_isUserHasClaimHandled) return
-
-      setCurrentStep(Steps.KycProvidersStep)
-    } catch (error) {
-      /* empty */
-    }
-  }, [
-    createIdentity,
-    getIsIdentityProvedMsg,
-    isSnapInstalled,
-    isUserHasClaimHandled,
-    parseDIDToIdentityBigIntString,
-    provider?.isConnected,
-  ])
+    setCurrentStep(await handleIfUserClaimExist())
+  }, [handleIfUserClaimExist, isSnapInstalled, provider?.isConnected])
 
   const handleKycProvidersStepFinish = useCallback(() => {
     setCurrentStep(Steps.ProofGeneratingStep)
@@ -539,9 +538,13 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    if (!currentStep) setCurrentStep(detectStartStep())
+    const h = async () => {
+      if (!currentStep) setCurrentStep(await detectStartStep())
 
-    setIsInitialized(true)
+      setIsInitialized(true)
+    }
+
+    h()
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
 
   useEffect(() => {
