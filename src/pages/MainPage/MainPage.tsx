@@ -76,6 +76,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
     (type: 'expand' | 'collapse') => (
       <motion.button
         className='main-page__content-sidebar-toggler-wrp'
+        aria-label={type === 'expand' ? 'Expand sidebar' : 'Collapse sidebar'}
         onClick={() => setIsSidebarOpen(prev => !prev)}
         initial='hidden'
         animate='shown'

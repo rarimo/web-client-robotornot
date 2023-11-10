@@ -25,7 +25,12 @@ body {
 }
 
 #root {
-  background: url("/images/app-bg.png") no-repeat center right / contain;
+  background-image: image-set(
+      url("/images/app-bg.webp") 1x,
+      url("/images/app-bg.webp") 2x);
+  background-repeat: no-repeat;
+  background-position: center right;
+  background-size: contain;
 
   &:before {
     content: "";
