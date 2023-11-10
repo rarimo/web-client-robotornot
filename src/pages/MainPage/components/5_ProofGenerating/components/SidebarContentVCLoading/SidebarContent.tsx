@@ -1,11 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { FC, useEffect, useState } from 'react'
+import { FC, lazy, useEffect, useState } from 'react'
 
 import { AppButton, TypingAnimatedText } from '@/common'
 import { useFormStepperContext } from '@/contexts'
 import { useSidebarAnimation } from '@/hooks'
-import SidebarGame from '@/pages/MainPage/components/5_ProofGenerating/components/SidebarGame'
 import { SidebarProps } from '@/pages/MainPage/components/types'
+
+const SidebarGame = lazy(
+  () =>
+    import(
+      '@/pages/MainPage/components/5_ProofGenerating/components/SidebarGame'
+    ),
+)
 
 const DESCRIPTION = [
   `Identity credential is a piece of evidence or an attestation that verifies the identity or attributes of you.`,
