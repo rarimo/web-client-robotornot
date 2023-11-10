@@ -166,6 +166,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb, errorCb }) => {
         <button
           className='kyc-provider-civic__modal-body-btn'
           onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.uniqness)}
+          aria-label={`Unique Verification`}
         >
           <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
             <Icon
@@ -179,6 +180,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb, errorCb }) => {
         <button
           className='kyc-provider-civic__modal-body-btn'
           onClick={() => setGatekeeperNetwork(GATEKEEPER_NETWORK_MAP.captcha)}
+          aria-label={`CAPTCHA Verification`}
         >
           <span className='kyc-provider-civic__modal-body-btn-icon-wrp'>
             <Icon

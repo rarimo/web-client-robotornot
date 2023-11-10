@@ -10,7 +10,7 @@ import { ToastContainer } from 'react-toastify'
 
 import { AppFooter, AppNavbar, InvalidChainModal, Loader } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
-import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler, isWebpSupported } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
 
 const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
@@ -36,6 +36,12 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
 
         if (await checkSnapExists()) {
           await connectOrInstallSnap()
+        }
+
+        if (!isWebpSupported()) {
+          const rootEl = document.getElementById('#root')
+
+          if (rootEl) rootEl.className += ' no-webp'
         }
       }
     } catch (error) {

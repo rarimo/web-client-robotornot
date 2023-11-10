@@ -205,6 +205,7 @@ function SelectField<T>({
                         ? ['select-field__select-dropdown-item--active']
                         : []),
                     ].join(' ')}
+                    aria-label={String(el)}
                     key={idx}
                     onClick={() => select(el)}
                   >

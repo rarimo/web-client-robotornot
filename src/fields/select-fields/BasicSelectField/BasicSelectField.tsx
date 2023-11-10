@@ -80,6 +80,7 @@ const BasicSelectField: FC<Props> = ({
               ? ['basic-select-field__option--active']
               : []),
           ].join(' ')}
+          aria-label={option.title}
           key={idx}
           onClick={() => updateValue(option.value)}
         >

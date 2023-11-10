@@ -49,6 +49,7 @@ const KycProvidersItem: FC<Props> = ({
 
       <button
         className='kyc-providers-item__button'
+        aria-label={`Login with ${name}`}
         onClick={() => handleLogin(supportedKycProvider)}
         disabled={isDisabled}
       />

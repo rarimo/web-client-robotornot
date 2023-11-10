@@ -183,6 +183,7 @@ export default function SapperGame({ size, className }: Props) {
                 ? 'sapper-game__top-bar-smile-win'
                 : 'sapper-game__top-bar-smile-default',
             ].join(' ')}
+            aria-label={death ? 'You lose' : win ? 'You win' : 'Start game'}
             onClick={refresh}
           />
           <div className='sapper-game__top-bar-counter timer'>
@@ -200,6 +201,7 @@ export default function SapperGame({ size, className }: Props) {
                         'sapper-game__row-cell',
                         getClassSquare(x, y),
                       ].join(' ')}
+                      aria-label={`Cell ${x} ${y}`}
                       key={x}
                       onClick={() => clickSquare(x, y)}
                       onContextMenu={e => rightClickSquare(e, x, y)}
