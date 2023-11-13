@@ -28,6 +28,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce, useLocalStorage } from 'react-use'
 
 import { api } from '@/api'
+import { AppButton, Icon } from '@/common'
 import { useZkpContext } from '@/contexts'
 import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
@@ -63,7 +64,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   {
     name: string
     iconName: ICON_NAMES
-    link: string
+    link?: string
     isWalletRequired: boolean
 
     completeKycCb?: () => void
@@ -75,7 +76,6 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   [SUPPORTED_KYC_PROVIDERS.CIVIC]: {
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
-    link: 'https://getpass.civic.com/',
     isWalletRequired: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
@@ -108,7 +108,6 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
-    link: 'https://unstoppabledomains.com/auth',
     isWalletRequired: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
@@ -122,7 +121,6 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
   [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: {
     name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
-    link: 'https://worldcoin.org/download-app',
     isWalletRequired: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
@@ -174,6 +172,7 @@ interface KycContextValue {
   selectedKycDetails: [string, string][]
   kycError?: JsonApiError
   verificationErrorMessages: string
+  getVerificationErrorComponent?: (confirmCb: () => void) => ReactElement
 
   KYC_PROVIDERS_DETAILS_MAP: typeof KYC_PROVIDERS_DETAILS_MAP
 
@@ -390,6 +389,65 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
     return 'Failed to verify KYC, please contact support'
   }, [kycError, t])
+
+  const getVerificationErrorComponent = useCallback(
+    (confirmCb: () => void) => {
+      const title =
+        kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+          ? `This KYC provider / Address was already claimed by another identity`
+          : verificationErrorMessages
+
+      const message =
+        kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
+          ? 'Seem like you are trying to use a provider that you used already. Please choose another one'
+          : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`
+
+      const actionHandlerText =
+        (selectedKycProvider &&
+          KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]
+            ?.completeKycMessage) ||
+        `Return to provider list`
+
+      const actionHandler = () => {
+        if (
+          selectedKycProvider &&
+          KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]?.link
+        ) {
+          window.open(
+            KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]?.link,
+            '_blank',
+          )
+        }
+
+        confirmCb()
+      }
+
+      return (
+        <div className='kyc-providers__card'>
+          <div className='kyc-providers__card-error'>
+            <div className='kyc-providers__card-error-icon-wrp'>
+              <Icon
+                className='kyc-providers__card-error-icon'
+                name={ICON_NAMES.x}
+              />
+            </div>
+
+            <span className='kyc-providers__card-error-title'>{title}</span>
+            <span className='kyc-providers__card-error-message'>{message}</span>
+          </div>
+
+          <AppButton
+            className='kyc-providers__card-button'
+            text={actionHandlerText}
+            modification='border-circle'
+            iconRight={ICON_NAMES.arrowRight}
+            onClick={actionHandler}
+          />
+        </div>
+      )
+    },
+    [kycError?.httpStatus, selectedKycProvider, verificationErrorMessages],
+  )
 
   const retryKyc = useCallback(() => {
     setRefreshKey(prev => prev + 1)
@@ -734,6 +792,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycDetails,
           kycError,
           verificationErrorMessages,
+
+          getVerificationErrorComponent,
 
           isUserHasClaimHandled,
 

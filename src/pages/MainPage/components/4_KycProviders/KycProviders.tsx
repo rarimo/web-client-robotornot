@@ -1,12 +1,11 @@
 import './styles.scss'
 
-import { HTTP_STATUS_CODES } from '@distributedlab/jac'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect, useState } from 'react'
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { AppButton, BasicModal, Icon } from '@/common'
+import { BasicModal } from '@/common'
 import { useFormStepperContext, useKycContext } from '@/contexts'
-import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
+import { SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import { ErrorHandler, GaCategories, gaSendCustomEvent } from '@/helpers'
 import { StepProps } from '@/pages/MainPage/components/types'
 
@@ -26,7 +25,7 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     setIsVCRequestPending,
   } = useKycContext()
 
-  const { selectedKycProvider, kycError } = useKycContext()
+  const { getVerificationErrorComponent } = useKycContext()
   const { nextStep } = useFormStepperContext()
 
   const handleLogin = useCallback(
@@ -71,6 +70,11 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     setIsErrorMsgModalShown(true)
   }, [verificationErrorMessages])
 
+  const verificationErrorComponent = useMemo(
+    () => getVerificationErrorComponent?.(hideErrorMsgModal),
+    [getVerificationErrorComponent, hideErrorMsgModal],
+  )
+
   return (
     <motion.div className={['kyc-providers', className].join(' ')} {...rest}>
       <div className='kyc-providers__content'>
@@ -94,45 +98,14 @@ const KycProviders: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         </div>
       </div>
 
-      <BasicModal
-        isShown={isErrorMsgModalShown}
-        updateIsShown={setIsErrorMsgModalShown}
-      >
-        <div className='kyc-providers__card'>
-          <div className='kyc-providers__card-error'>
-            <div className='kyc-providers__card-error-icon-wrp'>
-              <Icon
-                className='kyc-providers__card-error-icon'
-                name={ICON_NAMES.x}
-              />
-            </div>
-
-            <span className='kyc-providers__card-error-title'>
-              {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-                ? `This KYC provider / Address was already claimed by another identity`
-                : verificationErrorMessages}
-            </span>
-            <span className='kyc-providers__card-error-message'>
-              {kycError?.httpStatus === HTTP_STATUS_CODES.CONFLICT
-                ? 'Seem like you are trying to use a provider that you used already. Please choose another one'
-                : `Unable to Generate Proof of Human Identity. Please Complete Your Profile with an Identity Provider.`}
-            </span>
-          </div>
-
-          <AppButton
-            className='kyc-providers__card-button'
-            text={
-              (selectedKycProvider &&
-                KYC_PROVIDERS_DETAILS_MAP?.[selectedKycProvider]
-                  ?.completeKycMessage) ||
-              `Return to provider list`
-            }
-            modification='border-circle'
-            iconRight={ICON_NAMES.arrowRight}
-            onClick={hideErrorMsgModal}
-          />
-        </div>
-      </BasicModal>
+      {verificationErrorComponent && (
+        <BasicModal
+          isShown={isErrorMsgModalShown}
+          updateIsShown={setIsErrorMsgModalShown}
+        >
+          {verificationErrorComponent}
+        </BasicModal>
+      )}
     </motion.div>
   )
 }
