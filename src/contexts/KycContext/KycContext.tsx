@@ -531,8 +531,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       setSelectedKycProvider(
         {
           Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
-          'Gitcoin Passport': SUPPORTED_KYC_PROVIDERS.GITCOIN,
-          'Unstoppable Domains': SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+          GitcoinPassport: SUPPORTED_KYC_PROVIDERS.GITCOIN,
+          UnstoppableDomains: SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
           Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
         }[provider],
       )
