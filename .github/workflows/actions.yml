@@ -31,5 +31,6 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_APP_DOMAIN: https://robotornot.mainnet-beta.rarimo.com
         run: |
+          cp .env-development .env
           . $(werf ci-env github --as-file)
           werf export web --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
