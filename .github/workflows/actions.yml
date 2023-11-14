@@ -29,8 +29,7 @@ jobs:
         env: # Or as an environment variable
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-          VITE_ENVIRONMENT: staging
           VITE_APP_DOMAIN: https://robotornot.mainnet-beta.rarimo.com
         run: |
-          . $(werf ci-env github --as-file) 
+          . $(werf ci-env github --as-file)
           werf export web --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA

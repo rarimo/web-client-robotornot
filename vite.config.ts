@@ -20,11 +20,9 @@ const root = path.resolve(__dirname, resolveApp('src'))
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  // const isProduction = env.VITE_ENVIRONMENT === 'production'
-  const isStaging = env.VITE_ENVIRONMENT === 'staging'
-  const isDevelopment =
-    env.VITE_ENVIRONMENT === 'development' || env.VITE_ENVIRONMENT === 'dev'
-  const isAnalyze = env.VITE_ENVIRONMENT === 'analyze'
+  const isProduction = env.VITE_MODE === 'production'
+  const isDevelopment = env.VITE_MODE === 'development'
+  const isAnalyze = env.VITE_MODE === 'analyze'
   // const buildVersion = env.VITE_APP_BUILD_VERSION
 
   const APP_DOMAIN = env.VITE_APP_DOMAIN || `http://localhost:${env.VITE_PORT}`
@@ -148,7 +146,7 @@ export default defineConfig(({ mode }) => {
               },
             },
 
-            ...(isStaging
+            ...(isDevelopment
               ? [
                   {
                     tag: 'meta',
@@ -253,7 +251,7 @@ export default defineConfig(({ mode }) => {
           // used during production bundling
           nodePolyfills(),
 
-          ...(env.VITE_SENTRY_AUTH_TOKEN
+          ...(env.VITE_SENTRY_AUTH_TOKEN && isProduction
             ? [
                 sentryRollupPlugin({
                   authToken: env.VITE_SENTRY_AUTH_TOKEN,

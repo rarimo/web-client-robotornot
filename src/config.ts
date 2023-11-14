@@ -55,7 +55,7 @@ export const META_CIRCUIT_URLS = {
 Object.assign(META_CIRCUIT_URLS, _mapEnvCfg(window.document.ENV))
 
 export const config = {
-  ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT,
+  MODE: import.meta.env.MODE,
 
   API_URL: import.meta.env.VITE_API_URL,
   ISSUER_API_URL: import.meta.env.VITE_ISSUER_API_URL,
@@ -161,7 +161,7 @@ export const config = {
   SUPPORT_LINK: import.meta.env.VITE_SUPPORT_LINK,
   COMMUNITY_LINK: import.meta.env.VITE_COMMUNITY_LINK,
 } as {
-  ENVIRONMENT: 'staging' | 'production' | 'dev' | 'analyze'
+  MODE: 'production' | 'development'
 
   API_URL: string
   ISSUER_API_URL: string

@@ -7,11 +7,10 @@
     "pre-push": "yarn rsc"
   },
   "scripts": {
-    "vite-dev-server": "vite",
-    "vite-build": "vite build",
-    "start": "dotenv -e .env.local yarn vite-dev-server",
-    "build": "dotenv -e .env.production yarn vite-build",
-    "analyze": "dotenv -e .env.analyze yarn vite-build",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "start": "vite",
+    "analyze": "vite build --mode analyze",
     "lint": "yarn lint:styles && yarn lint:scripts",
     "lint:styles": "stylelint \"src/**/*.{css,sass,scss}\" --max-warnings=0",
     "lint:scripts": "eslint \"{src,config}/**/*.{js,ts,jsx,tsx}\" --cache --fix --max-warnings=0 && tsc --noEmit",
