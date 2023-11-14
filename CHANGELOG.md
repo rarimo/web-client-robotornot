@@ -6,8 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.3.0] - 2023-11-14
 #### Changed
-- fonts display type
-- bg image type
+- env files interaction, now .env files are able to bundle in ci
 
 ## [2.2.1] - 2023-11-10
 #### Changed
