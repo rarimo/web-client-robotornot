@@ -121,7 +121,7 @@ const KycProviderCivic: FC<Props> = ({ loginCb, errorCb }) => {
     return null
   }, [provider?.rawProvider])
 
-  const isProduction = useMemo(() => config.ENVIRONMENT === 'production', [])
+  const isProduction = useMemo(() => config.MODE === 'production', [])
 
   const [gatekeeperNetwork, setGatekeeperNetwork] = useState<string>()
 

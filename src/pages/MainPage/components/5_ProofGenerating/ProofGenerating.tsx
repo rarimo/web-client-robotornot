@@ -52,7 +52,10 @@ const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     nextStepCb()
 
     try {
-      if (config.ENVIRONMENT !== 'dev') {
+      /**
+       * Disable this check in development mode to test proof generating
+       */
+      if (config.MODE !== 'development') {
         if (await checkIsIdentityProved())
           throw new TypeError(`Identity already proved`)
       }

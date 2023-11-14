@@ -27,7 +27,6 @@ stats.html
 .yarnrc.yml
 
 .env
-.env.production
 .env.analyze
 tsconfig.tsbuildinfo
 

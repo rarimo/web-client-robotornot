@@ -37,12 +37,12 @@ try {
   /* empty */
 }
 
-root.render(
-  config.ENVIRONMENT && config.ENVIRONMENT === 'dev' ? (
-    <AppRoutes />
-  ) : (
+if (config.MODE === 'development') {
+  root.render(
     <StrictMode>
       <AppRoutes />
-    </StrictMode>
-  ),
-)
+    </StrictMode>,
+  )
+} else {
+  root.render(<AppRoutes />)
+}

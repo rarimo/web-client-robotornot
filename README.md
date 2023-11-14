@@ -7,171 +7,25 @@ yarn | yarn install
 
 ## Getting Started
 
-### Setup environment variables
-```dotenv
-# API url of deployed services(issuer, kyc-service, ...etc), https://gitlab.com/rarimo/identity/developer-edition
-VITE_API_URL=http://127.0.0.1:8000
-# APP title name
-VITE_APP_NAME=Identity
-
-# RPC API of rarimo-core https://gitlab.com/rarimo/dev-edition
-VITE_RARIMO_CORE_RPC_API_URL=http://localhost:1317
-# RPC of rarimo-core (evm) https://gitlab.com/rarimo/dev-edition
-VITE_RARIMO_EVM_RPC_URL=http://localhost:8545
-# Contract addres of deployed state contract at the rarimo core chain
-VITE_STATE_V2_CONTRACT_ADDRESS=0x...
-
-# Client Id of created "client" in your Unstoppable Domains account
-# To create client, check this guide https://docs.unstoppabledomains.com/identity/overview/login-with-unstoppable/, especcialy video guide
-VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID=
-
-# App Id of created project in your Worldcoin account (developer portal)
-# To create it, check this guide https://docs.worldcoin.org/quick-start
-VITE_WORLDCOIN_APP_ID=
-
-# https://0xpolygonid.github.io/tutorials/issuer/cred-issue-methods/#verifiable-presentations-leveraging-zk-proofs
-# Get this hash by generate Keccak256(<JSON-LD schema_url>) last 16 bytes
-VITE_AUTH_BJJ_CREDENTIAL_HASH=cca3371a6cb1b715004407e325bd993c
-
-# 0x + hex(issuerID.BigInt.Bytes)
-# issuerID.BigInt.Bytes - can be found in issuer-svc logs at startup
-# setup this env and add it to te IdentityVerifier contract issuers whitelist
-VITE_ISSUER_ID=0x0c761d5a56cf03b6ef6a6180f24531bb70962609c2970fdec52c22a3920001
-
-# Amount of blocks to wait after state transition
-VITE_FINALITY_BLOCK_AMOUNT=10
-
-# redirect link for success page
-VITE_EXTERNAL_PLATFORM_REDIRECT_URL=https://galxe.com/
-
-# delay for offer requesting
-VITE_CLAIM_OFFER_DELAY=1000
-# max tries count for offer requesting
-VITE_CLAIM_OFFER_MAX_TRIES_COUNT=10
-# delay for kyc verification details requesting
-VITE_KYC_VERIFICATION_DELAY=1000
-
-# Google Analytics measurement id
-VITE_GA_ID=
-```
+### Setup environment variables from [here](./.env.example)
 
 Go to https://gitlab.com/rarimo/identity/contracts to get more info about contracts or deploy them by yourself
 
 To setup contract addresses follow this format:
 ```dotenv
-VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
-VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_[CHAIN_NAME]=0x000000000
+VITE_DEFAULT_CHAIN=VITE_DEFAULT_CHAIN_VALUE
+VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_[VITE_DEFAULT_CHAIN_VALUE]=0x000000000
+VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_[VITE_DEFAULT_CHAIN_VALUE]=0x000000000
 ```
-
-currently supported chains is ```[SEPOLIA, POLYGON, POLYGON_TESTNET]```
-
-And set the default chain you'll work with
-
-e. g:
-```dotenv
-VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_SEPOLIA=0x...
-VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_SEPOLIA=0x...
-
-VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_POLYGON=0x...
-VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_POLYGON=0x...
-
-VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_GOERLI=0x...
-VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_GOERLI=0x...
-
-VITE_DEFAULT_CHAIN='SEPOLIA'
-```
-
-Additionally you can setup your custom circuit urls, splitted by type:
-```dotenv
-# for getting credentials
-VITE_AUTH_WASM_URL=https://example.com
-VITE_AUTH_ZKEY_URL=https://example.com
-
-# credentialAtomicQuerySigV2OnChain
-VITE_SIG_V2_ON_CHAIN_WASM_URL=https://example.com
-VITE_SIG_V2_ON_CHAIN_ZKEY_URL=https://example.com
-
-# credentialAtomicQuerySigV2
-VITE_SIG_V2_WASM_URL=https://example.com
-VITE_SIG_V2_ZKEY_URL=https://example.com
-
-# credentialAtomicQueryMTPV2OnChain
-VITE_MTP_V2_ON_CHAIN_WASM_URL=https://example.com
-VITE_MTP_V2_ON_CHAIN_ZKEY_URL=https://example.com
-
-# credentialAtomicQueryMTPV2
-VITE_MTP_V2_WASM_URL=https://example.com
-VITE_MTP_V2_ZKEY_URL=https://example.com
-```
-
-Sometimes loaded file can throw an empty error, so to fix that you can define this env:
-
-.env
-```dotenv
-VITE_CIRCUITS_LOADING_TRIES_LIMIT=3
-```
-
-env.js
-```js
-{
-  VITE_APP_CIRCUITS_LOADING_TRIES_LIMIT: 3
-}
-```
-
-to retry loading circuit file
 
 ### Deploy
 To update variables in deployed app - setup .env variables from .env.example to [env.js](./static/env.js) but in `JSON` format, and change `VITE_` prefix to `VITE_APP`
 ```js
 document.ENV = document.ENV || Object.freeze({
-  VITE_APP_API_URL: "http://127.0.0.1:8000",
-  VITE_APP_APP_NAME: "Identity",
-
-  VITE_APP_RARIMO_CORE_RPC_API_URL: "http://localhost:1317",
-  VITE_APP_RARIMO_EVM_RPC_URL: "http://localhost:8545",
-  VITE_APP_STATE_V2_CONTRACT_ADDRESS: " ",
-
-  VITE_APP_UNSTOPPABLE_DOMAINS_CLIENT_ID: "",
-
-  VITE_APP_WORLDCOIN_APP_ID: "",
-  VITE_APP_AUTH_BJJ_CREDENTIAL_HASH: "cca3371a6cb1b715004407e325bd993c",
-  VITE_APP_ISSUER_ID: " ",
-
-  VITE_APP_FINALITY_BLOCK_AMOUNT: "10",
-
-  VITE_APP_IDENTITY_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: " ",
-  VITE_APP_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_SEPOLIA: " ",
-
-  VITE_APP_IDENTITY_VERIFIER_CONTRACT_ADDRESS_POLYGON: " ",
-  VITE_APP_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_POLYGON: " ",
-
-  VITE_APP_IDENTITY_VERIFIER_CONTRACT_ADDRESS_GOERLI: " ",
-  VITE_APP_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_GOERLI: " ",
-
-  VITE_APP_DEFAULT_CHAIN: "SEPOLIA",
-
-  VITE_APP_EXTERNAL_PLATFORM_REDIRECT_URL: " ",
-
-  VITE_APP_CLAIM_OFFER_DELAY: "1000",
-  VITE_APP_CLAIM_OFFER_MAX_TRIES_COUNT: "10",
-  VITE_APP_KYC_VERIFICATION_DELAY: "1000",
-
-  VITE_APP_AUTH_WASM_URL: '',
-  VITE_APP_AUTH_ZKEY_URL: '',
-
-  VITE_APP_SIG_V2_ON_CHAIN_WASM_URL: '',
-  VITE_APP_SIG_V2_ON_CHAIN_ZKEY_URL: '',
-
-  VITE_APP_SIG_V2_WASM_URL: '',
-  VITE_APP_SIG_V2_ZKEY_URL: '',
-
-  VITE_APP_MTP_V2_ON_CHAIN_WASM_URL: '',
-  VITE_APP_MTP_V2_ON_CHAIN_ZKEY_URL: '',
-
-  VITE_APP_MTP_V2_WASM_URL: '',
-  VITE_APP_MTP_V2_ZKEY_URL: '',
-
-  VITE_APP_GA_ID: '',
+  VITE_DEFAULT_CHAIN: "GOERLI",
+  VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_GOERLI: "0x...",
+  VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_GOERLI: "0x...",
+  ...,
 })
 ```
 
