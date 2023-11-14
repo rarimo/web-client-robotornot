@@ -1,8 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  VITE_ENVIRONMENT: string
-  VITE_PORT: string
+  VITE_MODE: 'production' | 'development'
   VITE_API_URL: string
   VITE_ISSUER_API_URL: string
   VITE_APP_NAME: string
