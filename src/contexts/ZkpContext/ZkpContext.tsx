@@ -125,9 +125,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     (identityIdString: string) => {
       const parsedDid = DID.parse(`did:iden3:${identityIdString}`)
 
-      const id = DID.idFromUnsupportedDID(parsedDid)
+      if (!parsedDid?.id?.bigInt()?.toString()) throw new Error('Invalid DID')
 
-      return id.bigInt().toString()
+      return parsedDid.id.bigInt().toString()
     },
     [],
   )

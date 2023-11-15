@@ -214,11 +214,11 @@ export default defineConfig(({ mode }) => {
 
         /* prettier-ignore-start */
         /* eslint-disable */
-        '@iden3/js-iden3-core': path.resolve(__dirname, 'node_modules/@iden3/js-iden3-core/dist/browser/esm/index.js'),
+        '@iden3/js-iden3-core': path.resolve(__dirname, 'node_modules/@iden3/js-iden3-core/dist/esm/index.js'),
         'near-api-js': 'near-api-js/dist/near-api-js.js',
         '@civic/ethereum-gateway-react': path.resolve(__dirname, 'node_modules/@civic/ethereum-gateway-react/dist/esm/index.js'),
         '@rarimo/rarime-connector': path.resolve(__dirname, 'node_modules/@rarimo/rarime-connector/dist/index.js'),
-        // '@iden3/js-crypto': path.resolve(__dirname, 'node_modules/@iden3/js-crypto/dist/esm_esbuild/index.js'),
+        '@iden3/js-crypto': path.resolve(__dirname, 'node_modules/@iden3/js-crypto/dist/esm_esbuild/index.js'),
 
         // '@iden3/js-jsonld-merklization': path.resolve(__dirname, 'node_modules/@iden3/js-jsonld-merklization/dist/esm_esbuild/index.js'),
         // '@iden3/js-merkletree': path.resolve(__dirname, 'node_modules/@iden3/js-merkletree/dist/esm_esbuild/index.js'),
