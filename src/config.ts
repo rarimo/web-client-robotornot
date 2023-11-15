@@ -1,7 +1,7 @@
 import { Chain } from '@distributedlab/w3p'
-import mapKeys from 'lodash/mapKeys'
-import pickBy from 'lodash/pickBy'
 
+// import mapKeys from 'lodash/mapKeys'
+// import pickBy from 'lodash/pickBy'
 import FALLBACK_SUPPORTED_CHAINS from '@/assets/fallback-supported-chains.json'
 
 import packageJson from '../package.json'
@@ -15,43 +15,6 @@ type ContractAddresses = {
     // FIXME: remove
     | `LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_${SUPPORTED_CHAINS}`]: string
 }
-
-export const FALLBACK_CIRCUIT_URLS = {
-  auth: {
-    wasm: `${window.location.origin}/circuits/auth/circuit.wasm`,
-    zkey: `${window.location.origin}/circuits/auth/circuit_final.zkey`,
-  },
-  sigV2OnChain: {
-    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit.wasm`,
-    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit_final.zkey`,
-  },
-  sigV2: {
-    wasm: `${window.location.origin}/circuits/credentialAtomicQuerySigV2/circuit.wasm`,
-    zkey: `${window.location.origin}/circuits/credentialAtomicQuerySigV2/circuit_final.zkey`,
-  },
-  mtpV2OnChain: {
-    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit.wasm`,
-    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2OnChain/circuit_final.zkey`,
-  },
-  mtpV2: {
-    wasm: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2/circuit.wasm`,
-    zkey: `${window.location.origin}/circuits/credentialAtomicQueryMTPV2/circuit_final.zkey`,
-  },
-}
-
-export const META_CIRCUIT_URLS = {
-  AUTH_WASM_URL: import.meta.env.VITE_AUTH_WASM_URL,
-  AUTH_ZKEY_URL: import.meta.env.VITE_AUTH_ZKEY_URL,
-  SIG_V2_ON_CHAIN_WASM_URL: import.meta.env.VITE_SIG_V2_ON_CHAIN_WASM_URL,
-  SIG_V2_ON_CHAIN_ZKEY_URL: import.meta.env.VITE_SIG_V2_ON_CHAIN_ZKEY_URL,
-  SIG_V2_WASM_URL: import.meta.env.VITE_SIG_V2_WASM_URL,
-  SIG_V2_ZKEY_URL: import.meta.env.VITE_SIG_V2_ZKEY_URL,
-  MTP_V2_ON_CHAIN_WASM_URL: import.meta.env.VITE_MTP_V2_ON_CHAIN_WASM_URL,
-  MTP_V2_ON_CHAIN_ZKEY_URL: import.meta.env.VITE_MTP_V2_ON_CHAIN_ZKEY_URL,
-  MTP_V2_WASM_URL: import.meta.env.VITE_MTP_V2_WASM_URL,
-  MTP_V2_ZKEY_URL: import.meta.env.VITE_MTP_V2_ZKEY_URL,
-}
-Object.assign(META_CIRCUIT_URLS, _mapEnvCfg(window.document.ENV))
 
 export type AppConfig = {
   MODE: 'production' | 'development'
@@ -150,8 +113,8 @@ Object.assign(config, {
   ) as ContractAddresses),
 })
 
-Object.assign(config, _mapEnvCfg(import.meta.env))
-Object.assign(config, _mapEnvCfg(window.document.ENV))
+// Object.assign(config, _mapEnvCfg(import.meta.env))
+// Object.assign(config, _mapEnvCfg(window.document.ENV))
 
 if (typeof config.SUPPORTED_CHAINS_DETAILS === 'string') {
   config.SUPPORTED_CHAINS_DETAILS = {
@@ -163,11 +126,11 @@ if (typeof config.SUPPORTED_CHAINS_DETAILS === 'string') {
   }
 }
 
-function _mapEnvCfg(env: ImportMetaEnv | typeof window.document.ENV): {
-  [k: string]: string | boolean | undefined
-} {
-  return mapKeys(
-    pickBy(env, (v, k) => k.startsWith('VITE_APP_')),
-    (v, k) => k.replace(/^VITE_APP_/, ''),
-  )
-}
+// function _mapEnvCfg(env: ImportMetaEnv | typeof window.document.ENV): {
+//   [k: string]: string | boolean | undefined
+// } {
+//   return mapKeys(
+//     pickBy(env, (v, k) => k.startsWith('VITE_APP_')),
+//     (v, k) => k.replace(/^VITE_APP_/, ''),
+//   )
+// }

@@ -27,6 +27,8 @@ stats.html
 .yarnrc.yml
 
 .env.analyze
+.env.development
+.env.production
 tsconfig.tsbuildinfo
 
 # Sentry Auth Token
