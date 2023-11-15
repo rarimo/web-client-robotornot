@@ -36,7 +36,8 @@ import ProofGeneratingLoaderSidebarContent from '@/pages/MainPage/components/6_P
 import ProofSubmittingStep from '@/pages/MainPage/components/7_ProofSubmitting'
 import ProofSubmittingSidebarContent from '@/pages/MainPage/components/7_ProofSubmitting/components/SidebarContent'
 import ProofSubmittedStep from '@/pages/MainPage/components/8_ProofSubmitted'
-import ProofSubmittedSidebarContent from '@/pages/MainPage/components/8_ProofSubmitted/components/SidebarContent'
+// eslint-disable-next-line max-len
+// import ProofSubmittedSidebarContent from '@/pages/MainPage/components/8_ProofSubmitted/components/SidebarContent'
 
 export enum Steps {
   WalletConnectionStep = 'WALLET_CONNECTION_STEP',
@@ -56,7 +57,7 @@ interface FormStepperContextValue {
   stepsProgress: number
 
   StepComponent: ReactElement
-  SidebarComponent: ReactElement
+  SidebarComponent?: ReactElement
 
   handleError: (error: Error) => void
   nextStep: () => void
@@ -447,79 +448,74 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     handleWalletConnectionStepFinish,
   ])
 
-  const STEPS_SIDEBAR_CONTENT: Record<Steps, ReactElement> = useMemo(() => {
-    return {
-      [Steps.WalletConnectionStep]: (
-        <WalletConnectionSidebarContent
-          key={Steps.WalletConnectionStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.SnapConnectionStep]: (
-        <SnapConnectionSidebarContent
-          key={Steps.SnapConnectionStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.IdentityCreationStep]: (
-        <IdentityCreationSidebarContent
-          key={Steps.IdentityCreationStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.KycProvidersStep]: (
-        <KycProvidersSidebarContent
-          key={Steps.KycProvidersStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofGeneratingStep]: isVCRequestPending ? (
-        <ProofGeneratingVCLoaderSidebarContent
-          key={`${Steps.KycProvidersStep}-loader`}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ) : (
-        <ProofGeneratingSidebarContent
-          key={Steps.ProofGeneratingStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofGeneratingLoaderStep]: (
-        <ProofGeneratingLoaderSidebarContent
-          key={Steps.ProofGeneratingLoaderStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofSubmittingStep]: (
-        <ProofSubmittingSidebarContent
-          key={Steps.ProofSubmittingStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-      [Steps.ProofSubmittedStep]: (
-        <ProofSubmittedSidebarContent
-          key={Steps.ProofSubmittedStep}
-          className='main-page__sidebar-content'
-          {...sidebarContentAnimationProps}
-        />
-      ),
-    }
-  }, [isVCRequestPending])
+  const STEPS_SIDEBAR_CONTENT: Record<Steps, ReactElement | undefined> =
+    useMemo(() => {
+      return {
+        [Steps.WalletConnectionStep]: (
+          <WalletConnectionSidebarContent
+            key={Steps.WalletConnectionStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.SnapConnectionStep]: (
+          <SnapConnectionSidebarContent
+            key={Steps.SnapConnectionStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.IdentityCreationStep]: (
+          <IdentityCreationSidebarContent
+            key={Steps.IdentityCreationStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.KycProvidersStep]: (
+          <KycProvidersSidebarContent
+            key={Steps.KycProvidersStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.ProofGeneratingStep]: isVCRequestPending ? (
+          <ProofGeneratingVCLoaderSidebarContent
+            key={`${Steps.KycProvidersStep}-loader`}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ) : (
+          <ProofGeneratingSidebarContent
+            key={Steps.ProofGeneratingStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.ProofGeneratingLoaderStep]: (
+          <ProofGeneratingLoaderSidebarContent
+            key={Steps.ProofGeneratingLoaderStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.ProofSubmittingStep]: (
+          <ProofSubmittingSidebarContent
+            key={Steps.ProofSubmittingStep}
+            className='main-page__sidebar-content'
+            {...sidebarContentAnimationProps}
+          />
+        ),
+        [Steps.ProofSubmittedStep]: undefined,
+      }
+    }, [isVCRequestPending])
 
   const StepComponent: ReactElement = useMemo(() => {
     return currentStep ? STEPS_COMPONENTS[currentStep] : <></>
   }, [STEPS_COMPONENTS, currentStep])
 
-  const SidebarComponent: ReactElement = useMemo(() => {
-    return currentStep ? STEPS_SIDEBAR_CONTENT[currentStep] : <></>
+  const SidebarComponent: ReactElement | undefined = useMemo(() => {
+    return currentStep ? STEPS_SIDEBAR_CONTENT[currentStep] : undefined
   }, [STEPS_SIDEBAR_CONTENT, currentStep])
 
   const handleError = useCallback(

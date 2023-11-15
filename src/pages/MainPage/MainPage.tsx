@@ -154,7 +154,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
             </motion.div>
 
             <AnimatePresence>
-              {isSidebarOpen && (
+              {isSidebarOpen && SidebarComponent && (
                 <motion.div
                   className='main-page__sidebar'
                   key={sidebarUuid}
