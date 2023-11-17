@@ -719,8 +719,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   }, [])
 
   const parseQuestPlatform = useCallback(() => {
-    if (questPlatformDetails?.questCreatorDetails?.iconLink) return
-
     try {
       const questPlatformStr = searchParams.get('quest_platform') as string
 
@@ -751,11 +749,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     } catch (error) {
       ErrorHandler.processWithoutFeedback(error)
     }
-  }, [
-    questPlatformDetails?.questCreatorDetails?.iconLink,
-    searchParams,
-    setQuestPlatformDetails,
-  ])
+  }, [searchParams, setQuestPlatformDetails])
 
   const handleWorldcoinRedirect = useCallback(
     async (worldcoinProviderCb: () => void) => {
