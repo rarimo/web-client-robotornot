@@ -166,7 +166,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     createIdentity,
     getIsIdentityProvedMsg,
-    parseDIDToIdentityBigIntString,
   } = useZkpContext()
   const { isVCRequestPending, isUserHasClaimHandled, handleWorldcoinRedirect } =
     useKycContext()
@@ -185,14 +184,20 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const [searchParams] = useSearchParams()
 
   const handleIfUserClaimExist = useCallback(async (): Promise<Steps> => {
-    const identityIdString = await createIdentity()
+    let identity
 
-    const identityBigIntString = identityIdString
-      ? parseDIDToIdentityBigIntString(identityIdString)
-      : ''
+    try {
+      identity = await createIdentity()
+    } catch (e) {
+      identity = undefined
+    }
+
+    if (!identity) return Steps.IdentityCreationStep
+
+    const { identityIdBigIntString } = identity
 
     const isIdentityProvedMsg = await getIsIdentityProvedMsg(
-      identityBigIntString,
+      identityIdBigIntString,
     )
 
     if (isIdentityProvedMsg) {
@@ -210,12 +215,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     }
 
     return Steps.KycProvidersStep
-  }, [
-    createIdentity,
-    getIsIdentityProvedMsg,
-    isUserHasClaimHandled,
-    parseDIDToIdentityBigIntString,
-  ])
+  }, [createIdentity, getIsIdentityProvedMsg, isUserHasClaimHandled])
 
   const detectStartStep = useCallback(async () => {
     if (
@@ -261,11 +261,13 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
          * As createIdentity() method is return existing identity or create new,
          * we can detect created one by checking verifiable credentials
          */
-        const identityIdString = await createIdentity()
+        try {
+          const identity = await createIdentity()
 
-        identityBigIntString = identityIdString
-          ? parseDIDToIdentityBigIntString(identityIdString)
-          : ''
+          identityBigIntString = identity?.identityIdBigIntString ?? ''
+        } catch (error) {
+          identityBigIntString = ''
+        }
       }
 
       if (identityBigIntString) {
@@ -293,7 +295,6 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     provider?.isConnected,
     handleWorldcoinRedirect,
     createIdentity,
-    parseDIDToIdentityBigIntString,
     getIsIdentityProvedMsg,
   ])
 
@@ -534,13 +535,19 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!isLoaded || isInitialized) return
 
-    const h = async () => {
+    let defineStep = async () => {
       if (!currentStep) setCurrentStep(await detectStartStep())
 
       setIsInitialized(true)
     }
 
-    h()
+    defineStep()
+
+    return () => {
+      defineStep = async () => {
+        /* empty */
+      }
+    }
   }, [currentStep, detectStartStep, isInitialized, isLoaded])
 
   useEffect(() => {

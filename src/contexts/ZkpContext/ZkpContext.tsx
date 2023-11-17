@@ -1,7 +1,6 @@
 import { config, SUPPORTED_CHAINS } from '@config'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
-import { DID } from '@iden3/js-iden3-core'
 import type {
   SaveCredentialsRequestParams,
   StateInfo,
@@ -37,7 +36,7 @@ export type StatesMerkleProof = {
 
 interface ZkpContextValue {
   identityIdString: string
-  identityBigIntString: string
+  identityIdBigIntString: string
   isZKPRequestPending: boolean
   isProveRequestPending: boolean
   verifiableCredentials?: W3CCredential
@@ -49,7 +48,13 @@ interface ZkpContextValue {
   getClaimOffer: (
     _identityIdString?: string,
   ) => Promise<SaveCredentialsRequestParams | undefined>
-  createIdentity: () => Promise<string | undefined>
+  createIdentity: () => Promise<
+    | {
+        identityIdString: string
+        identityIdBigIntString: string
+      }
+    | undefined
+  >
   getVerifiableCredentials: (
     _identityIdString?: string,
     claimOffer?: SaveCredentialsRequestParams,
@@ -57,12 +62,11 @@ interface ZkpContextValue {
   getZkProof: () => Promise<ZKPProofResponse | undefined>
   submitZkp: (selectedChain: SUPPORTED_CHAINS) => Promise<void>
   getIsIdentityProvedMsg: (_identityBigIntString?: string) => Promise<string>
-  parseDIDToIdentityBigIntString: (identityIdString: string) => string
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
   identityIdString: '',
-  identityBigIntString: '',
+  identityIdBigIntString: '',
 
   txSubmitExplorerLink: '',
 
@@ -91,9 +95,6 @@ export const zkpContext = createContext<ZkpContextValue>({
   getIsIdentityProvedMsg: () => {
     throw new TypeError(`getIsIdentityProvedString() not implemented`)
   },
-  parseDIDToIdentityBigIntString: () => {
-    throw new TypeError(`parseDIDToIdentityBigIntString() not implemented`)
-  },
 })
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -111,6 +112,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [updateStateDetails, setUpdateStateDetails] = useState<UpdateStateDetails>()
   const [verifiableCredentials, setVerifiableCredentials] = useLocalStorage<W3CCredential>('vc', undefined)
   const [identityIdString, setIdentityIdString] = useState('')
+  const [identityIdBigIntString, setIdentityIdBigIntString] = useState('')
   const [txSubmitHash, setTxSubmitHash] = useState('')
   /* eslint-enable */
   /* prettier-ignore-end */
@@ -120,23 +122,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const { isIdentityProved, isSenderAddressProved, getProveIdentityTxBody } =
     useSbtIdentityVerifier()
-
-  const parseDIDToIdentityBigIntString = useCallback(
-    (identityIdString: string) => {
-      const parsedDid = DID.parse(`did:iden3:${identityIdString}`)
-
-      if (!parsedDid?.id?.bigInt()?.toString()) throw new Error('Invalid DID')
-
-      return parsedDid.id.bigInt().toString()
-    },
-    [],
-  )
-
-  const identityBigIntString = useMemo(() => {
-    if (!identityIdString) return ''
-
-    return parseDIDToIdentityBigIntString(identityIdString)
-  }, [identityIdString, parseDIDToIdentityBigIntString])
 
   const txSubmitExplorerLink = useMemo(() => {
     if (!txSubmitHash || !provider?.getTxUrl) return ''
@@ -150,16 +135,24 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   }, [provider, txSubmitHash])
 
   const createIdentity = useCallback(async () => {
-    if (identityIdString) return identityIdString
+    if (identityIdString && identityIdBigIntString)
+      return { identityIdString, identityIdBigIntString }
 
-    const _identityIdString = await zkpSnap.createIdentity()
+    const _identityId = await zkpSnap.createIdentity()
 
-    if (!_identityIdString) throw new Error('Identity has not created')
+    if (!_identityId) throw new Error('Identity has not created')
 
-    setIdentityIdString(_identityIdString)
+    const { identityIdString: did, identityIdBigIntString: didBigInt } =
+      _identityId
 
-    return _identityIdString
-  }, [identityIdString, setIdentityIdString, zkpSnap])
+    setIdentityIdString(did)
+    setIdentityIdBigIntString(didBigInt)
+
+    return {
+      identityIdString: did,
+      identityIdBigIntString: didBigInt,
+    }
+  }, [identityIdBigIntString, identityIdString, zkpSnap])
 
   /**
    * GETTING VERIFIABLE CREDENTIALS
@@ -171,7 +164,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       // FIXME: remove
       const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
-        `/v1/credentials/did:iden3:${currIdentityIdString}/${config.CLAIM_TYPE}`,
+        `/v1/credentials/${currIdentityIdString}/${config.CLAIM_TYPE}`,
       )
 
       return data
@@ -352,7 +345,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const getIsIdentityProvedMsg = useCallback(
     async (_identityBigIntString?: string) => {
       const currentIdentityBigIntString =
-        _identityBigIntString ?? identityBigIntString
+        _identityBigIntString ?? identityIdBigIntString
 
       if (!currentIdentityBigIntString || !provider?.address)
         throw new TypeError(`Identity or provider is not defined`)
@@ -376,7 +369,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       return provedMsg
     },
     [
-      identityBigIntString,
+      identityIdBigIntString,
       isIdentityProved,
       isSenderAddressProved,
       provider?.address,
@@ -387,7 +380,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     <zkpContext.Provider
       value={{
         identityIdString,
-        identityBigIntString,
+        identityIdBigIntString,
         verifiableCredentials,
         isZKPRequestPending,
         isProveRequestPending,
@@ -402,7 +395,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         getZkProof,
         submitZkp,
         getIsIdentityProvedMsg,
-        parseDIDToIdentityBigIntString,
       }}
       {...rest}
     >

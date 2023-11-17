@@ -24,6 +24,17 @@ const mainContentAnimationVariants: Variants = {
   },
 }
 
+const mainContentFillAnimationVariants: Variants = {
+  open: {
+    width: '100%',
+    overflowX: 'hidden',
+  },
+  collapsed: {
+    width: '100%',
+    overflowX: 'hidden',
+  },
+}
+
 const sidebarAnimationVariants: Variants = {
   open: {
     width: '33.3%',
@@ -124,7 +135,11 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
             <motion.div
               className='main-page__content'
               key={mainContentUuid}
-              variants={mainContentAnimationVariants}
+              variants={
+                isSidebarOpen && SidebarComponent
+                  ? mainContentAnimationVariants
+                  : mainContentFillAnimationVariants
+              }
               initial='open'
               animate='collapsed'
               exit='open'

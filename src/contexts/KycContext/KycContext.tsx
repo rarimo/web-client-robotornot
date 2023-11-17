@@ -494,7 +494,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       const socketEndpoint = `${String(config.ISSUER_API_URL).replace(
         'http',
         'ws',
-      )}/v1/credentials/did:iden3:${identityIdString}/${claimType}/subscribe`
+      )}/v1/credentials/${identityIdString}/${claimType}/subscribe`
 
       const socket = new WebSocket(socketEndpoint)
 
@@ -543,7 +543,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const isUserHasClaimHandled = useCallback(
     async (_VCCreatedOrKycFinishedCb?: () => void) => {
       const currentIdentityIdString =
-        identityIdString || (await createIdentity())
+        identityIdString || (await createIdentity())?.identityIdString
 
       if (!currentIdentityIdString) throw new TypeError('identityId is empty')
 
@@ -562,7 +562,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         "You already have a verifiable credentials, let's check it out!",
       )
 
-      const vc = await getVerifiableCredentials(identityIdString, claim)
+      const vc = await getVerifiableCredentials(currentIdentityIdString, claim)
 
       detectProviderFromVC(vc)
 

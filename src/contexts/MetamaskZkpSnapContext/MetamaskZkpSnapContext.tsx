@@ -21,7 +21,13 @@ interface MetamaskZkpSnapContextValue {
 
   isLocalSnap: (snapId: string) => boolean
 
-  createIdentity: () => Promise<string | undefined>
+  createIdentity: () => Promise<
+    | {
+        identityIdString: string
+        identityIdBigIntString: string
+      }
+    | undefined
+  >
   getVerifiableCredentials: (
     params: SaveCredentialsRequestParams,
   ) => Promise<W3CCredential[] | undefined>
@@ -91,7 +97,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   const createIdentity = useCallback(async () => {
     if (!connector) throw new TypeError('Connector is not defined')
 
-    return (await connector.createIdentity())?.split(':')?.[2]
+    return connector.createIdentity()
   }, [connector])
 
   /**
