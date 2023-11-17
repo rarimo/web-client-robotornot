@@ -106,105 +106,102 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
 
   return (
     <div className={['main-page', className].join(' ')} {...rest}>
-      {isLoaded ? (
-        isLoadFailed ? (
-          <motion.div className='main-page__content'>
-            <motion.div className='main-page__step'>
-              <ErrorMessage
-                message={`Ooops... something went wrong, please reload page`}
-              />
-            </motion.div>
-          </motion.div>
-        ) : isDeviceMobile ? (
-          <div className='main-page__mobile-warning'>
-            <div className='main-page__mobile-warninh-icon-wrp'>
-              <Icon
-                className='main-page__mobile-warninh-icon'
-                name={ICON_NAMES.deviceMobile}
-              />
-            </div>
-            <h4 className='main-page__mobile-warning-title'>
-              {`Mobile version is not yet available.`}
-            </h4>
-            <span className='main-page__mobile-warning-subtitle'>
-              {`Please use a desktop device`}
-            </span>
-          </div>
-        ) : (
-          <LayoutGroup>
+      <LayoutGroup>
+        <motion.div
+          className='main-page__content'
+          key={mainContentUuid}
+          variants={
+            SidebarComponent
+              ? mainContentAnimationVariants
+              : mainContentFillAnimationVariants
+          }
+          initial='collapsed'
+          animate='collapsed'
+          exit='open'
+          transition={{
+            duration: '0.75',
+            ease: 'backInOut',
+          }}
+        >
+          <motion.div
+            className='main-page__steps-indicator'
+            animate={{
+              width: `${stepsProgress}%`,
+            }}
+            transition={{
+              duration: '0.5',
+              ease: 'backInOut',
+            }}
+          />
+
+          <AnimatePresence mode='wait' initial={false}>
+            {isLoaded ? (
+              isLoadFailed ? (
+                <motion.div className='main-page__content'>
+                  <motion.div className='main-page__step'>
+                    <ErrorMessage
+                      message={`Ooops... something went wrong, please reload page`}
+                    />
+                  </motion.div>
+                </motion.div>
+              ) : isDeviceMobile ? (
+                <div className='main-page__mobile-warning'>
+                  <div className='main-page__mobile-warninh-icon-wrp'>
+                    <Icon
+                      className='main-page__mobile-warninh-icon'
+                      name={ICON_NAMES.deviceMobile}
+                    />
+                  </div>
+                  <h4 className='main-page__mobile-warning-title'>
+                    {`Mobile version is not yet available.`}
+                  </h4>
+                  <span className='main-page__mobile-warning-subtitle'>
+                    {`Please use a desktop device`}
+                  </span>
+                </div>
+              ) : (
+                StepComponent
+              )
+            ) : (
+              <Loader className='main-page__loader' />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isSidebarOpen && SidebarToggler('expand')}
+          </AnimatePresence>
+        </motion.div>
+
+        <AnimatePresence>
+          {((isSidebarOpen && SidebarComponent) || !isLoaded) && (
             <motion.div
-              className='main-page__content'
-              key={mainContentUuid}
-              variants={
-                isSidebarOpen && SidebarComponent
-                  ? mainContentAnimationVariants
-                  : mainContentFillAnimationVariants
-              }
+              className='main-page__sidebar'
+              key={sidebarUuid}
+              variants={sidebarAnimationVariants}
               initial='open'
-              animate='collapsed'
-              exit='open'
+              animate='open'
+              exit='collapsed'
               transition={{
                 duration: '0.75',
                 ease: 'backInOut',
               }}
+              onAnimationComplete={() => {
+                setIsSidebarAnimationCompleted(true)
+              }}
             >
-              <motion.div
-                className='main-page__steps-indicator'
-                animate={{
-                  width: `${stepsProgress}%`,
-                }}
-                transition={{
-                  duration: '0.5',
-                  ease: 'backInOut',
-                }}
-              />
+              <div className='main-page__sidebar-content'>
+                <AnimatePresence mode='wait' initial={false}>
+                  {SidebarComponent}
+                </AnimatePresence>
 
-              <AnimatePresence mode='wait' initial={false}>
-                {StepComponent}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {!isSidebarOpen && SidebarToggler('expand')}
-              </AnimatePresence>
+                <AnimatePresence>
+                  {!isSidebarClosingDisabled && SidebarToggler('collapse')}
+                </AnimatePresence>
+              </div>
             </motion.div>
-
-            <AnimatePresence>
-              {isSidebarOpen && SidebarComponent && (
-                <motion.div
-                  className='main-page__sidebar'
-                  key={sidebarUuid}
-                  variants={sidebarAnimationVariants}
-                  initial='collapsed'
-                  animate='open'
-                  exit='collapsed'
-                  transition={{
-                    duration: '0.75',
-                    delay: 0.5,
-                    ease: 'backInOut',
-                  }}
-                  onAnimationComplete={() => {
-                    setIsSidebarAnimationCompleted(true)
-                  }}
-                >
-                  <div className='main-page__sidebar-content'>
-                    <AnimatePresence mode='wait' initial={false}>
-                      {SidebarComponent}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                      {!isSidebarClosingDisabled && SidebarToggler('collapse')}
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </LayoutGroup>
-        )
-      ) : (
-        <div className='main-page__loader-wrp main-page__content'>
-          <Loader className='main-page__loader' />
-        </div>
-      )}
+          )}
+        </AnimatePresence>
+      </LayoutGroup>
     </div>
   )
 }

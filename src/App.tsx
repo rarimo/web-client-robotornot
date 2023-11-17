@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { ToastContainer } from 'react-toastify'
 
-import { AppFooter, AppNavbar, InvalidChainModal, Loader } from '@/common'
+import { AppFooter, AppNavbar, InvalidChainModal } from '@/common'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { bus, BUS_EVENTS, ErrorHandler, isWebpSupported } from '@/helpers'
 import { useNotification, useViewportSizes } from '@/hooks'
@@ -91,7 +91,7 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
     <>
       <AppNavbar />
       <div className='app__main' key={Number(isValidChain)}>
-        {isAppInitialized ? children : <Loader />}
+        {isAppInitialized && children}
       </div>
 
       <AppFooter />
