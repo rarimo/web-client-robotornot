@@ -651,7 +651,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           data: {
             type: 'verify',
             attributes: {
-              identity_id: identityIdString,
+              identity_id: identityIdString.replace('did:iden3:', ''),
               provider_data: {
                 ...VERIFY_KYC_DATA_MAP[selectedKycProvider],
               },
