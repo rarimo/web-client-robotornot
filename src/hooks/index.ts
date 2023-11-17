@@ -1,3 +1,4 @@
+export * from './contracts'
 export * from './useForm'
 export * from './useFormValidation'
 export * from './useNotification'

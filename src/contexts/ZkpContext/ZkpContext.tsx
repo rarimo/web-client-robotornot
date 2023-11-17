@@ -24,7 +24,7 @@ import { useLocalStorage } from 'react-use'
 import { issuerApi } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
 import { GaCategories, gaSendCustomEvent, increaseGasLimit } from '@/helpers'
-import { useSbtIdentityVerifier } from '@/hooks/contracts'
+import { useTimeWindowSbtIdentityVerifier } from '@/hooks'
 
 export type QueryVariableName = { isNatural: number }
 
@@ -121,7 +121,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const zkpSnap = useMetamaskZkpSnapContext()
 
   const { isIdentityProved, isSenderAddressProved, getProveIdentityTxBody } =
-    useSbtIdentityVerifier()
+    useTimeWindowSbtIdentityVerifier()
 
   const txSubmitExplorerLink = useMemo(() => {
     if (!txSubmitHash || !provider?.getTxUrl) return ''
