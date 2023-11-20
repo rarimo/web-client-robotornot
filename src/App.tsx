@@ -90,7 +90,10 @@ const App: FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
   return (
     <>
       <AppNavbar />
-      <div className='app__main' key={Number(isValidChain)}>
+      <div
+        className='app__main'
+        key={provider?.isConnected ? Number(isValidChain) : 'app_main'}
+      >
         {isAppInitialized && children}
       </div>
 
