@@ -137,7 +137,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
               }}
             />
 
-            <AnimatePresence>
+            <AnimatePresence mode={'wait'}>
               {isLoadFailed ? (
                 <motion.div
                   key={'main-page__error-component'}

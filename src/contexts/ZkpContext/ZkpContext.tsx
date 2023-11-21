@@ -39,6 +39,10 @@ interface ZkpContextValue {
   identityIdBigIntString: string
   isZKPRequestPending: boolean
   isProveRequestPending: boolean
+
+  isEthAddressProved: boolean
+  isDidProved: boolean
+
   verifiableCredentials?: W3CCredential
   isUserSubmittedZkp: boolean
   zkProof?: ZKProof
@@ -75,6 +79,9 @@ export const zkpContext = createContext<ZkpContextValue>({
   isZKPRequestPending: false,
   isProveRequestPending: false,
   isUserSubmittedZkp: false,
+
+  isEthAddressProved: false,
+  isDidProved: false,
 
   getClaimOffer: async () => {
     throw new TypeError(`getClaimOffer() not implemented`)
@@ -119,6 +126,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const { provider } = useWeb3Context()
   const zkpSnap = useMetamaskZkpSnapContext()
+
+  const [isEthAddressProved, setIsEthAddressProved] = useState(false)
+  const [isDidProved, setIsDidProved] = useState(false)
 
   const { isIdentityProved, isSenderAddressProved, getProveIdentityTxBody } =
     useSbtIdentityVerifier()
@@ -358,6 +368,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       if (!isDIDProved && !isAddressProved) return ''
 
+      setIsEthAddressProved(!!isAddressProved)
+      setIsDidProved(!!isDIDProved)
+
       if (isDIDProved && isAddressProved) {
         provedMsg = `Your identity ${currentIdentityBigIntString} has been verified as human, and the wallet address ${provider?.address} is already linked to it.`
       } else if (isDIDProved && !isAddressProved) {
@@ -385,6 +398,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         isZKPRequestPending,
         isProveRequestPending,
         isUserSubmittedZkp,
+
+        isEthAddressProved,
+        isDidProved,
+
         zkProof,
 
         txSubmitExplorerLink,

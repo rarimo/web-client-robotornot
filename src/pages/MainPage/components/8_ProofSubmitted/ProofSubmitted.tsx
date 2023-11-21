@@ -2,7 +2,7 @@ import './styles.scss'
 
 import { config } from '@config'
 import { motion } from 'framer-motion'
-import { type FC, useCallback, useEffect, useState } from 'react'
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 import { useCountdown } from 'usehooks-ts'
 
@@ -26,12 +26,42 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     KYC_PROVIDERS_DETAILS_MAP,
     detectProviderFromVC,
   } = useKycContext()
-  const { txSubmitExplorerLink, getVerifiableCredentials } = useZkpContext()
+  const {
+    isEthAddressProved,
+    isDidProved,
+    txSubmitExplorerLink,
+    getVerifiableCredentials,
+  } = useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
     intervalMs: SECOND,
   })
+
+  const CommunityLink = useMemo(
+    () =>
+      config.COMMUNITY_LINK && (
+        <>
+          <div className='proof-submitted__metadata-divider' />
+
+          <div className='proof-submitted__metadata-row'>
+            <AppButton
+              className={[
+                'proof-submitted__request-btn',
+                'proof-submitted__request-btn--primary',
+              ].join(' ')}
+              href={config.COMMUNITY_LINK}
+              target='_blank'
+              modification='border-circle'
+              iconLeft={ICON_NAMES.discord}
+            >
+              {`Join the “Humanity station” channel`}
+            </AppButton>
+          </div>
+        </>
+      ),
+    [],
+  )
 
   const requestProveDetails = useCallback(async () => {
     setIsPending(true)
@@ -46,6 +76,29 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
     setIsPending(false)
   }, [detectProviderFromVC, getVerifiableCredentials])
+
+  const RetrievingDataBtn = useMemo(
+    () =>
+      isPending ? (
+        <Skeleton />
+      ) : (
+        <>
+          <div className='proof-submitted__metadata-divider' />
+
+          <div className='proof-submitted__metadata-row'>
+            <AppButton
+              className='proof-submitted__request-btn'
+              onClick={requestProveDetails}
+              modification='border-circle'
+              iconLeft={ICON_NAMES.rarimeSnapFilled}
+            >
+              {`Retrieve data`}
+            </AppButton>
+          </div>
+        </>
+      ),
+    [isPending, requestProveDetails],
+  )
 
   useEffectOnce(() => {
     startCountdown()
@@ -85,7 +138,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             <span className='proof-submitted__metadata-value'>{`Proof of Humanity`}</span>
           </div>
 
-          {selectedKycProvider ? (
+          {selectedKycProvider && (
             <>
               <div className='proof-submitted__metadata-divider' />
               <div className='proof-submitted__metadata-row'>
@@ -101,47 +154,35 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
                 </span>
               </div>
 
-              {config.COMMUNITY_LINK && (
-                <>
-                  <div className='proof-submitted__metadata-divider' />
-
-                  <div className='proof-submitted__metadata-row'>
-                    <AppButton
-                      className={[
-                        'proof-submitted__request-btn',
-                        'proof-submitted__request-btn--primary',
-                      ].join(' ')}
-                      href={config.COMMUNITY_LINK}
-                      target='_blank'
-                      modification='border-circle'
-                      iconLeft={ICON_NAMES.discord}
-                    >
-                      {`Join the “Humanity station” channel`}
-                    </AppButton>
-                  </div>
-                </>
-              )}
+              {CommunityLink}
             </>
-          ) : (
-            <>
-              {isPending ? (
-                <Skeleton />
-              ) : (
-                <>
-                  <div className='proof-submitted__metadata-divider' />
+          )}
 
-                  <div className='proof-submitted__metadata-row'>
-                    <AppButton
-                      className='proof-submitted__request-btn'
-                      onClick={requestProveDetails}
-                      modification='border-circle'
-                      iconLeft={ICON_NAMES.rarimeSnapFilled}
-                    >
-                      {`Retrieve data`}
-                    </AppButton>
-                  </div>
-                </>
-              )}
+          {isDidProved && !selectedKycProvider && RetrievingDataBtn}
+
+          {isEthAddressProved && !isDidProved && (
+            <>
+              <div className='proof-submitted__metadata-divider' />
+              <div className='proof-submitted__metadata-row'>
+                <span className='proof-submitted__metadata-label'>{`SBT`}</span>
+                <span
+                  className={[
+                    'proof-submitted__metadata-value',
+                    'proof-submitted__metadata-value--flex-center',
+                  ].join(' ')}
+                >
+                  <Icon
+                    className={[
+                      'proof-submitted__metadata-icon',
+                      'proof-submitted__metadata-icon--success',
+                    ].join(' ')}
+                    name={ICON_NAMES.check}
+                  />
+                  {`Minted`}
+                </span>
+              </div>
+
+              {CommunityLink}
             </>
           )}
         </div>
