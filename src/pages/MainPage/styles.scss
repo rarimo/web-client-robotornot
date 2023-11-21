@@ -113,11 +113,11 @@
   @include static-icon-size(20);
 }
 
-.main-page__loader-wrp {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+.main-page__loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .main-page__steps-indicator {

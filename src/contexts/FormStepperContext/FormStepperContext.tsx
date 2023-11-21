@@ -59,6 +59,8 @@ interface FormStepperContextValue {
   StepComponent: ReactElement
   SidebarComponent?: ReactElement
 
+  isSidebarExist: boolean
+
   handleError: (error: Error) => void
   nextStep: () => void
   prevStep: () => void
@@ -79,6 +81,8 @@ export const formStepperContext = createContext<FormStepperContextValue>({
 
   StepComponent: <></>,
   SidebarComponent: <></>,
+
+  isSidebarExist: true,
 
   handleError: () => {
     throw new TypeError('handleError method is not defined')
@@ -253,6 +257,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   ])
 
   const init = useCallback(async () => {
+    if (provider?.isConnected && !isValidChain) return
+
     try {
       let identityBigIntString = ''
 
@@ -291,6 +297,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     setIsLoaded(true)
   }, [
+    isValidChain,
     isSnapInstalled,
     provider?.isConnected,
     handleWorldcoinRedirect,
@@ -519,6 +526,11 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     return currentStep ? STEPS_SIDEBAR_CONTENT[currentStep] : undefined
   }, [STEPS_SIDEBAR_CONTENT, currentStep])
 
+  const isSidebarExist = useMemo(
+    () => currentStep !== Steps.ProofSubmittedStep,
+    [currentStep],
+  )
+
   const handleError = useCallback(
     (error: Error) => {
       ErrorHandler.processWithoutFeedback(error)
@@ -564,6 +576,8 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
         StepComponent,
         SidebarComponent,
+
+        isSidebarExist,
 
         nextStep,
         prevStep,

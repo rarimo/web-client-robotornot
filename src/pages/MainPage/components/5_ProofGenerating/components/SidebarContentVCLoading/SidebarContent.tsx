@@ -48,7 +48,7 @@ const SidebarContent: FC<SidebarProps> = ({ className, ...rest }) => {
         <img
           ref={imageSeq}
           className='app__step-sidebar-content-img'
-          src='/images/sidebar-img-5.svg'
+          src='/images/sequences/sidebar-5/5_0000.png'
           alt='sidebar-content'
         />
       </div>
