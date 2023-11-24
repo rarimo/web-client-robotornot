@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { type FC, useCallback, useEffect, useState } from 'react'
 import { useKey } from 'react-use'
 
-import { AppButton, Icon } from '@/common'
+import { AppButton, CautionTip, Icon } from '@/common'
 import { useMetamaskZkpSnapContext } from '@/contexts'
 import { ICON_NAMES } from '@/enums'
 import { ErrorHandler } from '@/helpers'
@@ -58,6 +58,11 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       <h2 className='snap-connection__title'>
         {`Add identity management to your wallet`}
       </h2>
+
+      <CautionTip
+        className='snap-connection__subtitle'
+        message={`Installing the snap could take a few minutes, depending on your internet bandwidth. Please ignore the "Page Unresponsive" errors and wait until the installation is complete.`}
+      />
 
       <div className='app__step-actions'>
         <AppButton

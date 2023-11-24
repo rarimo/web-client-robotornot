@@ -16,5 +16,11 @@
 }
 
 .snap-connection__title {
-  margin: toRem(32) 0 toRem(40);
+  font-size: toRem(32);
+  margin: toRem(32) 0 toRem(16);
+}
+
+.snap-connection__subtitle {
+  font-size: toRem(18);
+  margin-bottom: toRem(40);
 }
