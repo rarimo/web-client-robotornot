@@ -11,6 +11,9 @@ $media-breakpoints: (
   xlarge2k: 2048px,
   xlarge4k: 4096px,
 );
+$media-breakpoints-height: (
+  xmedium: 768px,
+);
 
 @mixin respond-to ($media) {
   $breakpoint: map.get($media-breakpoints, $media);
@@ -23,6 +26,22 @@ $media-breakpoints: (
 
   @else {
     @media (max-width: ($media - 1)) {
+      @content;
+    }
+  }
+}
+
+@mixin respond-to-height ($media) {
+  $breakpoint: map.get($media-breakpoints-height, $media);
+
+  @if $breakpoint {
+    @media (max-height: ($breakpoint - 1)) {
+      @content;
+    }
+  }
+
+  @else {
+    @media (max-height: ($media - 1)) {
       @content;
     }
   }
