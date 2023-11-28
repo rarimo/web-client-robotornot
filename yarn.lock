@@ -2134,13 +2134,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:1.0.0-rc.7":
-  version: 1.0.0-rc.7
-  resolution: "@rarimo/rarime-connector@npm:1.0.0-rc.7"
+"@rarimo/rarime-connector@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@rarimo/rarime-connector@npm:1.0.0"
   dependencies:
     "@ethersproject/providers": 5.7.2
     ethers: 5.7.2
-  checksum: 60704d4f0028261d1998784f40989a0839cb9663c6b4a923b4e3c1d0aaf8546fddc1cd6f28048de51084bd4f216bf9c3237699989982a15bdf76bb0ede4b6c4e
+  checksum: f6afe274cff0e4867b3da2287b8286a41aab6e950f525a9b26966288f4b4bc5e630d52b970b89b41f6971d207d9f31f3daa39bfb52c4d89cdbdb852491d635f0
   languageName: node
   linkType: hard
 
@@ -2289,18 +2289,89 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/cli-darwin@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-darwin@npm:2.22.2"
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-arm64@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-linux-arm64@npm:2.22.2"
+  conditions: (os=linux | os=freebsd) & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-arm@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-linux-arm@npm:2.22.2"
+  conditions: (os=linux | os=freebsd) & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-i686@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-linux-i686@npm:2.22.2"
+  conditions: (os=linux | os=freebsd) & (cpu=x86 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-x64@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-linux-x64@npm:2.22.2"
+  conditions: (os=linux | os=freebsd) & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-win32-i686@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-win32-i686@npm:2.22.2"
+  conditions: os=win32 & (cpu=x86 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-win32-x64@npm:2.22.2":
+  version: 2.22.2
+  resolution: "@sentry/cli-win32-x64@npm:2.22.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@sentry/cli@npm:^2.21.4":
-  version: 2.21.5
-  resolution: "@sentry/cli@npm:2.21.5"
+  version: 2.22.2
+  resolution: "@sentry/cli@npm:2.22.2"
   dependencies:
+    "@sentry/cli-darwin": 2.22.2
+    "@sentry/cli-linux-arm": 2.22.2
+    "@sentry/cli-linux-arm64": 2.22.2
+    "@sentry/cli-linux-i686": 2.22.2
+    "@sentry/cli-linux-x64": 2.22.2
+    "@sentry/cli-win32-i686": 2.22.2
+    "@sentry/cli-win32-x64": 2.22.2
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
     progress: ^2.0.3
     proxy-from-env: ^1.1.0
     which: ^2.0.2
+  dependenciesMeta:
+    "@sentry/cli-darwin":
+      optional: true
+    "@sentry/cli-linux-arm":
+      optional: true
+    "@sentry/cli-linux-arm64":
+      optional: true
+    "@sentry/cli-linux-i686":
+      optional: true
+    "@sentry/cli-linux-x64":
+      optional: true
+    "@sentry/cli-win32-i686":
+      optional: true
+    "@sentry/cli-win32-x64":
+      optional: true
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: a91387f730e0ba34783ad1331edfff32c305d3c615c35f70564028a455f6567c4c648cc537191238bff4c2696b6f314cefdaee1459ea4c1f7cab6f3040978007
+  checksum: 8de24c56e954ec952e2cd587838b60ae872c87b8f5751cf2d84f1a1a15aa1c8611dfac4c721d2cbcfb91cc6987fe1e660ec2b293789a5c98045d71dae7be1258
   languageName: node
   linkType: hard
 
@@ -4452,9 +4523,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001564
-  resolution: "caniuse-lite@npm:1.0.30001564"
-  checksum: 5b53749a2e9057e74c5a129fc214fa4434d3f0c3faadbec176efa03b44e40f9c1ef8ceec979f0dd186f7a142476713129df9263e012a178351ba7807217f157a
+  version: 1.0.30001565
+  resolution: "caniuse-lite@npm:1.0.30001565"
+  checksum: 7621f358d0e1158557430a111ca5506008ae0b2c796039ef53aeebf4e2ba15e5241cb89def21ea3a633b6a609273085835b44a522165d871fa44067cdf29cccd
   languageName: node
   linkType: hard
 
@@ -5668,9 +5739,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.535":
-  version: 1.4.593
-  resolution: "electron-to-chromium@npm:1.4.593"
-  checksum: 8b53c78a77501338635576bccda6852c74d388b6f547f3c0c63c19abdc8cfc0b3dae3b8a4ab438a37c0c53972ba673a5578438f880a8ed45a345e81eae016a1e
+  version: 1.4.594
+  resolution: "electron-to-chromium@npm:1.4.594"
+  checksum: 7bda826be726f789489538d2e5b0355d84ceeb7f5e600d43edfae25ecca13e10b9cd566e4accfa2eb9919bdc410ba6c0a772174f1cbbc4b31b1f5cbb99e01eaf
   languageName: node
   linkType: hard
 
@@ -9585,8 +9656,8 @@ __metadata:
   linkType: hard
 
 "nano-css@npm:^5.3.1":
-  version: 5.6.0
-  resolution: "nano-css@npm:5.6.0"
+  version: 5.6.1
+  resolution: "nano-css@npm:5.6.1"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.15
     css-tree: ^1.1.2
@@ -9599,7 +9670,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 84af4a22b0bcf0ed36806b368d89624e9aab86347b679d7de964efa8834d54ac3680b6667a787f36efe6649cce6c7d4988c394800ee3746be0b5b0b1151bde1b
+  checksum: 735f02c030a9416bb6060503d24f18f2b2c9f43e4893c2d8714508d00f9d114b8a134df3623e94e376b0b1d794b0cacac6a48f8e5fb2b7fa8996071bcad590b8
   languageName: node
   linkType: hard
 
@@ -10991,7 +11062,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": 1.0.0-rc.7
+    "@rarimo/rarime-connector": ^1.0.0
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
@@ -11498,21 +11569,21 @@ __metadata:
   linkType: hard
 
 "rollup-plugin-visualizer@npm:^5.9.2":
-  version: 5.9.2
-  resolution: "rollup-plugin-visualizer@npm:5.9.2"
+  version: 5.9.3
+  resolution: "rollup-plugin-visualizer@npm:5.9.3"
   dependencies:
     open: ^8.4.0
     picomatch: ^2.3.1
     source-map: ^0.7.4
     yargs: ^17.5.1
   peerDependencies:
-    rollup: 2.x || 3.x
+    rollup: 2.x || 3.x || 4.x
   peerDependenciesMeta:
     rollup:
       optional: true
   bin:
     rollup-plugin-visualizer: dist/bin/cli.js
-  checksum: ab2adf322e3b20bffc94a8dc804f46be8840a9fcbab4f872dcc2dec205cdd7752e4d2d90cfcf00783bfb5209c5a8bb4e591984e8b61bca41fd048fb7deb0ed4e
+  checksum: 86cc311424b31dc23757e884675df4c44bf30625f888213441139ae8dba03f5296a8b8a1f38b19959286c737d3b4fdbe10715e263bb469c5440053e4a951fb1b
   languageName: node
   linkType: hard
 
@@ -13272,11 +13343,11 @@ __metadata:
   linkType: hard
 
 "undici@npm:^5.21.2":
-  version: 5.28.0
-  resolution: "undici@npm:5.28.0"
+  version: 5.28.1
+  resolution: "undici@npm:5.28.1"
   dependencies:
     "@fastify/busboy": ^2.0.0
-  checksum: 208859e43827f3b1a32f52dbb62b01f66363d84e797016c3143c0c52fb41729670aec74ab2f88f0cf4c69c1f9a69486220cac72695fd25c126d7eb07ccb7c216
+  checksum: dd34d0a0242757ac5673efbaa5e0ae2346a5855d1718ce2bb2dfa891a01fcf72c0b286fdcca602814e4894b154e7eeec015021f27a7751e6eaeb1b4c3a12387a
   languageName: node
   linkType: hard
 
