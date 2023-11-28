@@ -1,3 +1,5 @@
+import {Directions} from '@/common/WordsScrambleGame/enums'
+
 type Cell = {
   row: number
   col: number
@@ -109,19 +111,21 @@ export const checkExistsCord = (
 }
 
 export const mouseMoveAlign = (prevState: Cell, state: Cell) => {
-  if (prevState.col === -1 && prevState.row === -1) return 'default'
+  if (prevState.col === -1 && prevState.row === -1) return Directions.Default
+  if (prevState.col !== state.col && prevState.row !== state.row)
+    return Directions.Diagonal
   if (prevState.row !== state.row) {
     if (prevState.row > state.row) {
-      return 'left'
+      return Directions.Left
     } else {
-      return 'right'
+      return Directions.Right
     }
   } else if (prevState.col !== state.col) {
     if (prevState.col > state.col) {
-      return 'up'
+      return Directions.Up
     } else {
-      return 'down'
+      return Directions.Down
     }
   }
-  return 'default'
+  return Directions.Default
 }
