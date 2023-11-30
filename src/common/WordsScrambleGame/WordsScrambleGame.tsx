@@ -8,6 +8,8 @@ import {
   useState,
 } from 'react'
 
+import { Directions } from '@/common/WordsScrambleGame/enums'
+
 import { checkExistsCord, createWordMatrix, mouseMoveAlign } from './helpers'
 import { useStateRef } from './hooks'
 
@@ -23,7 +25,7 @@ type Cell = {
   row: number
   col: number
   color?: number
-  align?: string
+  align?: Directions
 }
 
 interface ICanvasRenderingContext2D extends CanvasRenderingContext2D {
@@ -56,8 +58,8 @@ const successColors: string[] = [
   'rgba(250,217,2,0.65)',
   'rgba(91, 241, 205, 0.6)',
 ]
-const isHorizontalValue = ['left', 'right']
-const isVerticalValue = ['up', 'down']
+const isHorizontalValue = [Directions.Left, Directions.Right]
+const isVerticalValue = [Directions.Up, Directions.Down]
 
 const WordsScrambleGame = ({
   words,
@@ -76,6 +78,7 @@ const WordsScrambleGame = ({
   const [blockHeight, setBlockHeight] = useState(0)
   const [ctx, setCtx] = useState({} as ICanvasRenderingContext2D)
 
+  const [, setDirectionGame, directionGame] = useStateRef<string>('')
   const [, setArrResult, arrResultRef] = useStateRef<string[]>([])
   const [, setArrResultCords, arrResultCordsRef] = useStateRef<Cell[]>([])
   const [, setSuccessfulCords, successfulCordsRef] = useStateRef<Cell[]>([])
@@ -167,14 +170,26 @@ const WordsScrambleGame = ({
       const row = Math.trunc(
         (event.offsetY - defaultPaddingVertical / 2) / ((squareSize + gap) / 2),
       )
-      let direction = 'default'
+      let align = Directions.Default
 
       if (col === cols || row === rows) return
       const cordsState = { col, row }
+      align = mouseMoveAlign(cordsPrevStateRef.current, cordsState)
+      if (align === Directions.Diagonal) return
+      const direction = isVerticalValue.includes(align)
+        ? Directions.Vertical
+        : Directions.Horizontal
       if (
         cordsState.row === cordsPrevStateRef.current.row &&
         cordsState.col === cordsPrevStateRef.current.col
       )
+        return
+
+      if (!directionGame.current && align !== Directions.Default) {
+        setDirectionGame(direction)
+      }
+
+      if (align !== Directions.Default && directionGame.current !== direction)
         return
 
       if (
@@ -269,20 +284,19 @@ const WordsScrambleGame = ({
           )
           .fill()
         ctx.fillStyle = greenColor
-        direction = mouseMoveAlign(cordsPrevStateRef.current, cordsState)
         ctx.fillRect(
-          isVerticalValue.includes(direction)
+          isVerticalValue.includes(align)
             ? defaultPadding +
                 col * squareSize +
-                (col + (direction === 'down' ? -1 : 0)) * gap
+                (col + (align === Directions.Down ? -1 : 0)) * gap
             : defaultPadding + col * squareSize + col * gap,
-          isHorizontalValue.includes(direction)
+          isHorizontalValue.includes(align)
             ? defaultPaddingVertical +
                 row * squareSize +
-                (row + (direction === 'right' ? -1 : 0)) * gap
+                (row + (align === Directions.Right ? -1 : 0)) * gap
             : defaultPaddingVertical + row * squareSize + row * gap,
-          isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
-          isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
+          isVerticalValue.includes(align) ? squareSize + gap : squareSize,
+          isHorizontalValue.includes(align) ? squareSize + gap : squareSize,
         )
       }
       _printLetter(col, row)
@@ -294,7 +308,7 @@ const WordsScrambleGame = ({
           col,
           row,
           color: successfulWordsColorNumberIndexRef.current,
-          align: direction,
+          align: align,
         },
       ])
     },
@@ -306,11 +320,13 @@ const WordsScrambleGame = ({
       cols,
       rows,
       cordsPrevStateRef,
+      directionGame,
       arrResultCordsRef,
       _printLetter,
       setCordsPrevState,
       setArrResult,
       setArrResultCords,
+      setDirectionGame,
       successfulCordsRef,
       ctx,
       matrix,
@@ -349,19 +365,19 @@ const WordsScrambleGame = ({
           const square = successfulCordsRef.current.find(
             obj => obj.row === item.row && obj.col === item.col,
           )
-          const direction = square?.align ?? 'default'
+          const direction = square?.align ?? Directions.Default
 
           ctx.fillStyle = successColors[square?.color ?? 0]
           ctx.fillRect(
             isVerticalValue.includes(direction)
               ? defaultPadding +
                   item.col * squareSize +
-                  (item.col + (direction === 'down' ? -1 : 0)) * gap
+                  (item.col + (direction === Directions.Down ? -1 : 0)) * gap
               : defaultPadding + item.col * squareSize + item.col * gap,
             isHorizontalValue.includes(direction)
               ? defaultPaddingVertical +
                   item.row * squareSize +
-                  (item.row + (direction === 'right' ? -1 : 0)) * gap
+                  (item.row + (direction === Directions.Right ? -1 : 0)) * gap
               : defaultPaddingVertical + item.row * squareSize + item.row * gap,
             isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
             isHorizontalValue.includes(direction)
@@ -405,12 +421,12 @@ const WordsScrambleGame = ({
           isVerticalValue.includes(direction)
             ? defaultPadding +
                 col * squareSize +
-                (col + (direction === 'down' ? -1 : 0)) * gap
+                (col + (direction === Directions.Down ? -1 : 0)) * gap
             : defaultPadding + col * squareSize + col * gap,
           isHorizontalValue.includes(direction)
             ? defaultPaddingVertical +
                 row * squareSize +
-                (row + (direction === 'right' ? -1 : 0)) * gap
+                (row + (direction === Directions.Right ? -1 : 0)) * gap
             : defaultPaddingVertical + row * squareSize + row * gap,
           isVerticalValue.includes(direction) ? squareSize + gap : squareSize,
           isHorizontalValue.includes(direction) ? squareSize + gap : squareSize,
@@ -422,12 +438,14 @@ const WordsScrambleGame = ({
         prevState + 1 >= successColors.length ? 0 : prevState + 1,
       )
     }
+    setDirectionGame('')
     setArrResult([])
     setArrResultCords([])
     setCordsPrevState({ col: -1, row: -1 })
   }, [
     fillActiveSquare,
     checkResult,
+    setDirectionGame,
     setArrResult,
     setArrResultCords,
     setCordsPrevState,

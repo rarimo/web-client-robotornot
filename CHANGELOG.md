@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@rarimo/rarime-connector` - bump version to 1.0.0-rc.0
 - Getting identity id's
 
+#### Fixed
+- Sapper game size
+- Words scramble games logic
+
 ## [2.3.0] - 2023-11-17
 #### Changed
 - env files interaction, now .env files are able to bundle in ci

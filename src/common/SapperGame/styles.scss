@@ -30,6 +30,11 @@
   height: toRem(32);
   cursor: pointer;
   background-size: 100%;
+
+  @include respond-to-height(xmedium) {
+    width: toRem(24);
+    height: toRem(24);
+  }
 }
 
 .sapper-game__top-bar {
@@ -49,12 +54,21 @@
   padding: toRem(4) toRem(6);
   font-size: 2.25em;
   flex: 1;
+
+  @include respond-to-height(xmedium) {
+    font-size: 2em;
+  }
 }
 
 .sapper-game__top-bar-smile {
   width: toRem(52);
   height: toRem(52);
   background-size: 100%;
+
+  @include respond-to-height(xmedium) {
+    width: toRem(48);
+    height: toRem(48);
+  }
 
   &:active {
     background-image: url("/static/images/games/face_pressed.svg");
