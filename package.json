@@ -1,7 +1,7 @@
 {
   "name": "react-template",
   "private": true,
-  "version": "2.4.0",
+  "version": "2.4.1",
   "gitHooks": {
     "pre-commit": "tsc && yarn lint",
     "pre-push": "yarn rsc"
@@ -30,7 +30,7 @@
     "@rarimo/auth-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/client": "^2.0.0-rc.24",
     "@rarimo/identity-gen-iden3": "^2.0.0-rc.24",
-    "@rarimo/rarime-connector": "^1.0.0",
+    "@rarimo/rarime-connector": "^1.0.1",
     "@rarimo/shared-zkp-iden3": "^2.0.0-rc.24",
     "@rarimo/zkp-gen-iden3": "^2.0.0-rc.24",
     "@sentry/react": "7.63.0",
