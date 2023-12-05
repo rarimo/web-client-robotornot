@@ -10,8 +10,6 @@ import {
   SaveCredentialsRequestParams,
   W3CCredential,
 } from '@rarimo/rarime-connector'
-import type { UserInfo } from '@uauth/js'
-import { AnimatePresence } from 'framer-motion'
 import {
   createContext,
   FC,
@@ -30,10 +28,8 @@ import { useEffectOnce, useLocalStorage } from 'react-use'
 import { api } from '@/api'
 import { AppButton, Icon } from '@/common'
 import { useZkpContext } from '@/contexts'
-import type { QueryVariableName } from '@/contexts/ZkpContext/ZkpContext'
 import { ICON_NAMES, SUPPORTED_KYC_PROVIDERS } from '@/enums'
 import {
-  abbrCenter,
   bus,
   BUS_EVENTS,
   ErrorHandler,
@@ -57,6 +53,10 @@ const KycProviderCivic = lazy(
 
 const KycProviderGitCoin = lazy(
   () => import('@/contexts/KycContext/components/KycProviderGitCoin'),
+)
+
+const KycProviderKleros = lazy(
+  () => import('@/contexts/KycContext/components/KycProviderKleros'),
 )
 
 const KYC_PROVIDERS_DETAILS_MAP: Record<
@@ -131,27 +131,25 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
       </span>
     ),
   },
-}
+  [SUPPORTED_KYC_PROVIDERS.KLEROS]: {
+    name: 'Kleros',
+    iconName: ICON_NAMES.providerKleros,
+    link: 'https://app.proofofhumanity.id/',
+    isWalletRequired: true,
 
-type GitCoinPassportUserInfo = {
-  address: string
-  score: string
-  stamps: {
-    version: string
-    metadata: {
-      group: string
-      platform: {
-        id: string
-        icon: string
-        name: string
-        description: string
-        connectMessage: string
-      }
-      name: string
-      description: string
-      hash: string
-    }
-  }[]
+    completeKycCb: () => {
+      window.open('https://app.proofofhumanity.id/', '_blank')
+    },
+    completeKycMessage: 'Complete your Kleros Passport',
+    tooltipElement: (
+      <span className='app__kyc-provider-item-tooltip'>
+        <b>{`Kleros Passport: `}</b>
+        <span>
+          {`decentralized arbitration service for the disputes of the new economy.`}
+        </span>
+      </span>
+    ),
+  },
 }
 
 type QuestPlatform = {
@@ -169,7 +167,6 @@ type QuestPlatform = {
 interface KycContextValue {
   selectedKycProvider?: SUPPORTED_KYC_PROVIDERS
 
-  selectedKycDetails: [string, string][]
   kycError?: JsonApiError
   verificationErrorMessages: string
   getVerificationErrorComponent?: (confirmCb: () => void) => ReactElement
@@ -200,7 +197,6 @@ interface KycContextValue {
 }
 
 export const kycContext = createContext<KycContextValue>({
-  selectedKycDetails: [],
   verificationErrorMessages: '',
 
   KYC_PROVIDERS_DETAILS_MAP,
@@ -260,111 +256,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     getClaimOffer,
     getVerifiableCredentials,
   } = useZkpContext()
-
-  const kycDetails = useMemo<Partial<
-    | {
-        address: string
-        civicGatekeeperNetworkId: number
-        gitcoinPassportScore: string
-        id: string
-        kycAdditionalData: string
-        provider: string
-        type: string
-        unstoppableDomain: string
-        worldcoinScore: string
-      } & QueryVariableName
-  > | null>(
-    () => verifiableCredentials?.credentialSubject || null,
-    [verifiableCredentials?.credentialSubject],
-  )
-
-  const selectedKycDetails = useMemo((): [string, string][] => {
-    if (!selectedKycProvider) return []
-
-    const unstoppablePartialDetails = kycDetails as unknown as UserInfo
-
-    const gitCoinPassportPartialDetails = (kycDetails?.kycAdditionalData &&
-    kycDetails?.kycAdditionalData !== 'none'
-      ? JSON.parse(kycDetails?.kycAdditionalData as string)
-      : {}) as unknown as GitCoinPassportUserInfo
-
-    const civicPartialDetails = kycDetails as unknown as {
-      address?: string
-    }
-
-    const worldcoinPartialDetails = (kycDetails?.kycAdditionalData &&
-    kycDetails?.kycAdditionalData !== 'none'
-      ? JSON.parse(kycDetails?.kycAdditionalData as string)
-      : {}) as unknown as { sub: string }
-
-    const kycDetailsMap: Record<SUPPORTED_KYC_PROVIDERS, [string, string][]> = {
-      [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: [
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS}.domain-lbl`,
-          ),
-          kycDetails?.unstoppableDomain || unstoppablePartialDetails?.sub,
-        ],
-      ],
-      [SUPPORTED_KYC_PROVIDERS.WORLDCOIN]: [
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.score-lbl`,
-          ),
-          kycDetails?.worldcoinScore ?? '',
-        ],
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.WORLDCOIN}.sub-lbl`,
-          ),
-          worldcoinPartialDetails?.sub
-            ? abbrCenter(worldcoinPartialDetails?.sub)
-            : '',
-        ],
-      ],
-      [SUPPORTED_KYC_PROVIDERS.CIVIC]: [
-        ...(civicPartialDetails?.address &&
-        civicPartialDetails?.address !== 'none'
-          ? [
-              [
-                t(
-                  `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.CIVIC}.address-lbl`,
-                ),
-                abbrCenter(civicPartialDetails?.address),
-              ] as [string, string],
-            ]
-          : []),
-      ],
-      [SUPPORTED_KYC_PROVIDERS.GITCOIN]: [
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.address-lbl`,
-          ),
-          gitCoinPassportPartialDetails?.address
-            ? abbrCenter(gitCoinPassportPartialDetails?.address)
-            : '',
-        ],
-        [
-          t(
-            `kyc-providers-metadata.${SUPPORTED_KYC_PROVIDERS.GITCOIN}.score-lbl`,
-          ),
-          gitCoinPassportPartialDetails?.score,
-        ],
-        ...(gitCoinPassportPartialDetails?.stamps?.map<[string, string]>(
-          ({ metadata }) => [
-            metadata?.platform?.id,
-            ['Encrypted', metadata?.platform?.id].includes(
-              metadata?.description,
-            )
-              ? 'Confirmed'
-              : metadata?.description,
-          ],
-        ) ?? []),
-      ],
-    }
-
-    return kycDetailsMap[selectedKycProvider]
-  }, [kycDetails, selectedKycProvider, t])
 
   const [isVCRequestPending, setIsVCRequestPending] = useState(false)
   const [isVCRequestFailed, setIsVCRequestFailed] = useState(false)
@@ -637,6 +528,14 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           // @ts-ignore
           signature: authKycResponse.signature,
         },
+        [SUPPORTED_KYC_PROVIDERS.KLEROS]: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          address: authKycResponse.address,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          signature: authKycResponse.signature,
+        },
         [SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS]: {
           access_token: (authKycResponse as { accessToken: string })
             .accessToken,
@@ -783,7 +682,6 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           selectedKycProvider,
           questPlatformDetails,
 
-          selectedKycDetails,
           kycError,
           verificationErrorMessages,
 
@@ -810,39 +708,43 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         {children}
       </kycContext.Provider>
 
-      <AnimatePresence initial={false} mode='wait'>
-        {!verifiableCredentials && isShowKycProvider && (
-          <>
-            {selectedKycProvider ===
-            SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
-              <KycProviderUnstoppableDomains
-                key={refreshKey}
-                loginCb={handleKycProviderComponentLogin}
-                errorCb={handleKycComponentError}
-              />
-            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
-              <KycProviderWorldCoin
-                key={refreshKey}
-                loginCb={handleKycProviderComponentLogin}
-              />
-            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
-              <KycProviderCivic
-                key={refreshKey}
-                loginCb={handleKycProviderComponentLogin}
-                errorCb={handleKycComponentError}
-              />
-            ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
-              <KycProviderGitCoin
-                key={refreshKey}
-                loginCb={handleKycProviderComponentLogin}
-                errorCb={handleKycComponentError}
-              />
-            ) : (
-              <></>
-            )}
-          </>
-        )}
-      </AnimatePresence>
+      {!verifiableCredentials && isShowKycProvider && (
+        <>
+          {selectedKycProvider ===
+          SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
+            <KycProviderUnstoppableDomains
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              errorCb={handleKycComponentError}
+            />
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.WORLDCOIN ? (
+            <KycProviderWorldCoin
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+            />
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.CIVIC ? (
+            <KycProviderCivic
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              errorCb={handleKycComponentError}
+            />
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.GITCOIN ? (
+            <KycProviderGitCoin
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              errorCb={handleKycComponentError}
+            />
+          ) : selectedKycProvider === SUPPORTED_KYC_PROVIDERS.KLEROS ? (
+            <KycProviderKleros
+              key={refreshKey}
+              loginCb={handleKycProviderComponentLogin}
+              errorCb={handleKycComponentError}
+            />
+          ) : (
+            <></>
+          )}
+        </>
+      )}
     </>
   )
 }
