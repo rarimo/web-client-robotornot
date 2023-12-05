@@ -425,6 +425,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           GitcoinPassport: SUPPORTED_KYC_PROVIDERS.GITCOIN,
           UnstoppableDomains: SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
           Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+          Kleros: SUPPORTED_KYC_PROVIDERS.KLEROS,
         }[provider],
       )
     },
@@ -581,6 +582,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
         await sleep(1000)
 
+        /**
+         * Keep using CLAIM_TYPE for new claims
+         */
         subscribeToClaimWaiting(
           config.CLAIM_TYPE,
           identityIdString,
