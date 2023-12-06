@@ -1,4 +1,5 @@
-import { FC, HTMLAttributes, useEffect } from 'react'
+import { FC, HTMLAttributes } from 'react'
+import { useEffectOnce } from 'react-use'
 
 import { api } from '@/api'
 import { useWeb3Context } from '@/contexts'
@@ -12,8 +13,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 const KycProviderKleros: FC<Props> = ({ loginCb, errorCb }) => {
   const { provider } = useWeb3Context()
 
-  useEffect(() => {
-    let getSignedNonce = async () => {
+  useEffectOnce(() => {
+    const getSignedNonce = async () => {
       try {
         const { data } = await api.post<{
           message: string
@@ -40,15 +41,7 @@ const KycProviderKleros: FC<Props> = ({ loginCb, errorCb }) => {
     }
 
     getSignedNonce()
-
-    return () => {
-      getSignedNonce = async () => {
-        /* empty */
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  })
 
   return <></>
 }
