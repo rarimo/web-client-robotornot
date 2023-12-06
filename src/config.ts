@@ -32,7 +32,6 @@ export type AppConfig = {
 
   EXTERNAL_PLATFORM_REDIRECT_URL: string
 
-  LEGACY_CLAIM_TYPE: string
   CLAIM_TYPE: string
   CLAIM_OFFER_DELAY: number
   PROOF_GEN_DELAY: number
@@ -72,7 +71,6 @@ export const config: AppConfig = {
   EXTERNAL_PLATFORM_REDIRECT_URL: import.meta.env
     .VITE_EXTERNAL_PLATFORM_REDIRECT_URL,
 
-  LEGACY_CLAIM_TYPE: import.meta.env.VITE_LEGACY_CLAIM_TYPE,
   CLAIM_TYPE: import.meta.env.VITE_CLAIM_TYPE,
   CLAIM_OFFER_DELAY: import.meta.env.VITE_CLAIM_OFFER_DELAY || 1000,
   PROOF_GEN_DELAY: import.meta.env.VITE_PROOF_GEN_DELAY || 4000,

@@ -172,26 +172,11 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     async (_identityIdString?: string) => {
       const currIdentityIdString = _identityIdString ?? identityIdString
 
-      /**
-       * Check for actual claim offer
-       */
-      try {
-        const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
-          `/v1/credentials/${currIdentityIdString}/${config.CLAIM_TYPE}`,
-        )
+      const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
+        `/v1/credentials/${currIdentityIdString}/${config.CLAIM_TYPE}`,
+      )
 
-        return data
-      } catch (error) {
-        /**
-         * If it isn't exist check for legacy claim offer
-         * to keep backward compatibility
-         */
-        const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
-          `/v1/credentials/${currIdentityIdString}/${config.LEGACY_CLAIM_TYPE}`,
-        )
-
-        return data
-      }
+      return data
     },
     [identityIdString],
   )
