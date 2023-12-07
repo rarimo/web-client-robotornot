@@ -1,7 +1,7 @@
 {
   "name": "react-template",
   "private": true,
-  "version": "2.4.2",
+  "version": "2.4.3",
   "gitHooks": {
     "pre-commit": "tsc && yarn lint",
     "pre-push": "yarn rsc"
