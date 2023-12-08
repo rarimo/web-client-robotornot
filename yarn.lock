@@ -2134,13 +2134,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@rarimo/rarime-connector@npm:1.0.1"
+"@rarimo/rarime-connector@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@rarimo/rarime-connector@npm:1.0.2"
   dependencies:
     "@ethersproject/providers": 5.7.2
     ethers: 5.7.2
-  checksum: e14694c22004e450b78ab48b7ad06b34ea9504bad7c67c74f1895199c8a98316cb5058f3ac44ec98328688607105c6d257dd73a85b5c2f49d9068add06ac6bfa
+  checksum: c6967c5c2d8ab70cede3d9c3e037e6dde7862dd07b1079973613a103e71564d10d1aade7a679f286d0b299a1858dde444c2291ee18e79414d8e92389cf096c02
   languageName: node
   linkType: hard
 
@@ -5739,9 +5739,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.601":
-  version: 1.4.607
-  resolution: "electron-to-chromium@npm:1.4.607"
-  checksum: cc31233eaf2a6bb6268f97365861a4411db6823bec59126658245d4aec742cfeacb09135ada6321d27cfe74f1b72f04ff53cf2f5ac675c1b81deab035f97ab28
+  version: 1.4.608
+  resolution: "electron-to-chromium@npm:1.4.608"
+  checksum: 1c937468d7c637131100e24888768333cee690c6a5b54d2044a2ff3363a7c6aeeed581923e57242a0fc812c3bd6df896834fe9817bbee4ca2eb97e17334bbf4a
   languageName: node
   linkType: hard
 
@@ -11062,7 +11062,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": ^1.0.1
+    "@rarimo/rarime-connector": ^1.0.2
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
@@ -12859,8 +12859,8 @@ __metadata:
   linkType: hard
 
 "terser@npm:^5.10.0":
-  version: 5.25.0
-  resolution: "terser@npm:5.25.0"
+  version: 5.26.0
+  resolution: "terser@npm:5.26.0"
   dependencies:
     "@jridgewell/source-map": ^0.3.3
     acorn: ^8.8.2
@@ -12868,7 +12868,7 @@ __metadata:
     source-map-support: ~0.5.20
   bin:
     terser: bin/terser
-  checksum: ddc5ba020060cea976105ea83f5832385297f5091198f10143c1224e35bbb4ad9dfc40ee95d51a8f1290d0a4c7910d66e0ecc4b596402e94ba829bfc58022151
+  checksum: 02a9bb896f04df828025af8f0eced36c315d25d310b6c2418e7dad2bed19ddeb34a9cea9b34e7c24789830fa51e1b6a9be26679980987a9c817a7e6d9cd4154b
   languageName: node
   linkType: hard
 
@@ -13791,8 +13791,8 @@ __metadata:
   linkType: hard
 
 "vite-tsconfig-paths@npm:^4.0.3":
-  version: 4.2.1
-  resolution: "vite-tsconfig-paths@npm:4.2.1"
+  version: 4.2.2
+  resolution: "vite-tsconfig-paths@npm:4.2.2"
   dependencies:
     debug: ^4.1.1
     globrex: ^0.1.2
@@ -13802,7 +13802,7 @@ __metadata:
   peerDependenciesMeta:
     vite:
       optional: true
-  checksum: 8cfbd314eb82a9db97e193aef826e72a112ca8b98e68ef0f9cd8f8538fd5163afe67652507bae41d4aab967ab9a8b24dcf95bd0a8900d388cd6c500c5a82d3b1
+  checksum: c28d7941e4280facf12ee06c684957ed2854c6bfbce4675359af43182dc135726a72a4f3d034e0a78afed58debfd38b1600f92fb301b7b267708f17d96484119
   languageName: node
   linkType: hard
 

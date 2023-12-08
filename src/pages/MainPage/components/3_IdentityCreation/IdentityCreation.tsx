@@ -26,9 +26,9 @@ const IdentityCreation: FC<StepProps> = ({
       await createIdentity()
     } catch (error) {
       ErrorHandler.process(error)
-    }
 
-    setIsPending(false)
+      setIsPending(false)
+    }
   }, [createIdentity])
 
   useKey('Enter', requestCreateIdentity)
