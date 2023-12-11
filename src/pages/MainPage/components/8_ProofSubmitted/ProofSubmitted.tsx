@@ -53,6 +53,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               href={config.COMMUNITY_LINK}
               target='_blank'
               modification='border-circle'
+              size='small'
               iconLeft={ICON_NAMES.discord}
             >
               {`Join the “Humanity station” channel`}
@@ -67,6 +68,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               ].join(' ')}
               href={config.DASHBOARD_LINK}
               target='_blank'
+              size='small'
               modification='border-circle'
             >
               {`See Credentials on Dashboard`}
