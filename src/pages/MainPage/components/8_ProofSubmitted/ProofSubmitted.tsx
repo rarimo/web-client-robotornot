@@ -58,6 +58,20 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               {`Join the “Humanity station” channel`}
             </AppButton>
           </div>
+
+          <div className='proof-submitted__metadata-row'>
+            <AppButton
+              className={[
+                'proof-submitted__request-btn',
+                'proof-submitted__request-btn--primary',
+              ].join(' ')}
+              href={config.DASHBOARD_LINK}
+              target='_blank'
+              modification='border-circle'
+            >
+              {`See Credentials on Dashboard`}
+            </AppButton>
+          </div>
         </>
       ),
     [],

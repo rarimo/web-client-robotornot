@@ -54,6 +54,7 @@ interface ImportMetaEnv {
 
   VITE_SUPPORT_LINK: string
   VITE_COMMUNITY_LINK: string
+  VITE_DASHBOARD_LINK: string
 }
 
 interface Document {

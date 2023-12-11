@@ -51,6 +51,7 @@ export type AppConfig = {
 
   SUPPORT_LINK: string
   COMMUNITY_LINK: string
+  DASHBOARD_LINK: string
 } & Partial<ContractAddresses>
 
 export const config: AppConfig = {
@@ -94,6 +95,7 @@ export const config: AppConfig = {
 
   SUPPORT_LINK: import.meta.env.VITE_SUPPORT_LINK,
   COMMUNITY_LINK: import.meta.env.VITE_COMMUNITY_LINK,
+  DASHBOARD_LINK: import.meta.env.VITE_DASHBOARD_LINK,
 }
 
 Object.assign(config, {
