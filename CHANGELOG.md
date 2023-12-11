@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2023-12-11
+#### Added
+- Link to Rarime dashboard
+
 ## [2.4.5] - 2023-12-08
 #### Changed
 - snap connector version update to `1.0.2`
@@ -139,7 +143,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Under the hood changes
 - Initiated and setup project
 
-[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.5...main
+[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.0...main
+[2.5.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.5...2.5.0
 [2.4.5]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.4...2.4.5
 [2.4.4]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.3...2.4.4
 [2.4.3]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.2...2.4.3
