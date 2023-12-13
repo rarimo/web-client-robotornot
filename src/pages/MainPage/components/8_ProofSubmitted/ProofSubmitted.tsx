@@ -188,13 +188,13 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         href={config.DASHBOARD_LINK}
         className='proof-submitted__link'
         target='_blank'
-        title='View in RariMe app'
+        title='View in rariMe app'
         rel='noreferrer'
         onClick={() => setIsManualRedirect(true)}
       >
         {isManualRedirect
-          ? `View in RariMe app`
-          : `Redirecting to RariMe app in ${count} seconds`}
+          ? `View in rariMe app`
+          : `Redirecting to rariMe app in ${count} seconds`}
       </a>
     </motion.div>
   )
