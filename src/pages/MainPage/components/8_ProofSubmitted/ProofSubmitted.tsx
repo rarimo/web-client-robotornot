@@ -15,11 +15,11 @@ import { StepProps } from '@/pages/MainPage/components/types'
 
 const SECOND = 1000
 
-const REDIRECT_TIMEOUT = 30
+const REDIRECT_TIMEOUT = 10
 
 const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
-  const [isManualRedirected] = useState(false)
+  const [isManualRedirect, setIsManualRedirect] = useState(false)
 
   const {
     selectedKycProvider,
@@ -59,21 +59,6 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
               {`Join the “Humanity station” channel`}
             </AppButton>
           </div>
-
-          <div className='proof-submitted__metadata-row'>
-            <AppButton
-              className={[
-                'proof-submitted__request-btn',
-                'proof-submitted__request-btn--primary',
-              ].join(' ')}
-              href={config.DASHBOARD_LINK}
-              target='_blank'
-              size='small'
-              modification='border-circle'
-            >
-              {`See Credentials on Dashboard`}
-            </AppButton>
-          </div>
         </>
       ),
     [],
@@ -81,6 +66,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
   const requestProveDetails = useCallback(async () => {
     setIsPending(true)
+    setIsManualRedirect(true)
 
     try {
       const vc = await getVerifiableCredentials()
@@ -123,10 +109,10 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   useEffect(() => {
     if (count > 0) return
 
-    if (!config.EXTERNAL_PLATFORM_REDIRECT_URL || isManualRedirected) return
+    if (!config.DASHBOARD_LINK || isManualRedirect) return
 
     nextStepCb()
-  }, [count, isManualRedirected, nextStepCb])
+  }, [count, isManualRedirect, nextStepCb])
 
   return (
     <motion.div className={['proof-submitted', className].join(' ')} {...rest}>
@@ -140,12 +126,6 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
           ? `Enjoy the web as a true human!`
           : `You're already on the human side of the web `}
       </h2>
-
-      {!txSubmitExplorerLink && (
-        <span className='proof-submitted__subtitle'>
-          {`You don't need to go through the verification process again`}
-        </span>
-      )}
 
       <div className='proof-submitted__card'>
         <div className='proof-submitted__metadata'>
@@ -204,18 +184,18 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         </div>
       </div>
 
-      {txSubmitExplorerLink ? (
-        <a
-          href={txSubmitExplorerLink}
-          className='proof-submitted__link'
-          target='_blank'
-          rel='noreferrer'
-        >
-          {`View on block explorer`}
-        </a>
-      ) : (
-        <span className='proof-submitted__tip'>{`Enjoy the web as a true human!`}</span>
-      )}
+      <a
+        href={config.DASHBOARD_LINK}
+        className='proof-submitted__link'
+        target='_blank'
+        title='View in RariMe app'
+        rel='noreferrer'
+        onClick={() => setIsManualRedirect(true)}
+      >
+        {isManualRedirect
+          ? `View in RariMe app`
+          : `Redirecting to RariMe app in ${count} seconds`}
+      </a>
     </motion.div>
   )
 }

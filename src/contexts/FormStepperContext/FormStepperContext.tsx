@@ -13,6 +13,7 @@ import {
 import { useSearchParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
+import { config } from '@/config'
 import {
   useKycContext,
   useMetamaskZkpSnapContext,
@@ -373,7 +374,9 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   }, [])
 
   const handleProofSubmittedStepFinish = useCallback(() => {
-    /* empty */
+    if (!config.DASHBOARD_LINK) return
+
+    window.location.assign(config.DASHBOARD_LINK)
   }, [])
 
   const STEPS_COMPONENTS: Record<Steps, ReactElement> = useMemo(() => {
