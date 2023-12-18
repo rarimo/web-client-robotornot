@@ -38,11 +38,11 @@ try {
 }
 
 if (config.MODE === 'development') {
+  root.render(<AppRoutes />)
+} else {
   root.render(
     <StrictMode>
       <AppRoutes />
     </StrictMode>,
   )
-} else {
-  root.render(<AppRoutes />)
 }
