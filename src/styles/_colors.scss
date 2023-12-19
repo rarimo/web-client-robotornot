@@ -32,18 +32,22 @@ $background-tertiary-dark-rgb: hexToRGB($background-tertiary-dark);
 $success-light: #d6f4de;
 $success-main: #2ca74b;
 $success-dark: #2ca74b;
+$success-bg: rgba(#2ca74b, 0.2);
 
 $error-light: #fff2f2;
 $error-main: #dd2e2e;
 $error-dark: #b3261e;
+$error-bg: rgba(#dd2e2e, 0.2);
 
 $warning-light: rgba(#e18e2d, 0.1);
 $warning-main: #f6851b;
 $warning-dark: #e18e2d;
+$warning-bg: rgba(#e18e2d, 0.1);
 
 $info-light: #eff2ff;
 $info-main: #40c4ff;
 $info-dark: #0094cc;
+$info-bg: rgba(#0094cc, 0.2);
 
 /* brand colors */
 
@@ -68,7 +72,7 @@ $text-primary-dark: #687281;
 
 $text-primary-invert-light: #ffffff;
 $text-primary-invert-main: #ffffff;
-$text-primary-invert-dark: #ffffff;
+$text-primary-invert-dark: #dee0e4;
 
 /* mostly for second text in this app */
 $text-secondary-light: #1f2124;
