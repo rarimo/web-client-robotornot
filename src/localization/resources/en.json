@@ -6,7 +6,7 @@
   },
   "errors": {
     "default": "Something went wrong",
-    "slow-connection": "Operation timed out. Contact support at {{supportLink}}."
+    "slow-connection": "ZK-Circuit download failed. That can use a lot of power, for the best results:\n\n- Close any tabs you have open\n- Make sure you’re using high speed Internet."
   },
   "notifications": {
     "default-title-success": "Success",

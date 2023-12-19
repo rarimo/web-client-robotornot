@@ -3,7 +3,6 @@ import { RuntimeError } from '@distributedlab/tools'
 import * as Sentry from '@sentry/react'
 import log from 'loglevel'
 
-import { config } from '@/config'
 import { errors } from '@/errors'
 import { bus, BUS_EVENTS, localizeUnauthorizedError } from '@/helpers'
 import i18n from '@/localization'
@@ -49,10 +48,8 @@ export class ErrorHandler {
           break
         case errors.ProviderInternalError:
           if (error.message.toLowerCase().includes('timed out')) {
-            errorMessage = i18n.t('errors.slow-connection', {
-              supportLink: config.SUPPORT_LINK,
-            })
-            msgType = 'warning'
+            errorMessage = i18n.t('errors.slow-connection')
+            msgType = 'error'
           }
           break
         default: {
