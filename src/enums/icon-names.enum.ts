@@ -236,6 +236,7 @@ export enum ICON_NAMES {
   providerGitCoin = 'gitcoin',
   providerUnstoppable = 'unstoppable',
   providerWorldCoin = 'worldcoin',
+  providerKleros = 'kleros',
 
   metamask = 'metamask',
 
