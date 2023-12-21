@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - KYC providers. Fix title font size
 
+## [2.5.2] - 2023-12-21
+#### Changed
+- OG image
+
 ## [2.5.1] - 2023-12-11
 #### Fixed
 - `Link to Rarime dashboard` design
@@ -159,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Under the hood changes
 - Initiated and setup project
 
-[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.1...main
+[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.2...main
+[2.5.2]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.1...2.5.2
 [2.5.1]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.0...2.5.1
 [2.5.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.5...2.5.0
 [2.4.5]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.4...2.4.5
