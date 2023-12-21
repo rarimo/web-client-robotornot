@@ -91,7 +91,7 @@ export default defineConfig(({ mode }) => {
               tag: 'meta',
               attrs: {
                 property: 'og:image',
-                content: `${APP_DOMAIN}/branding/og-image.jpg`,
+                content: `${APP_DOMAIN}/branding/og-image.png`,
               },
             },
             {
@@ -142,7 +142,7 @@ export default defineConfig(({ mode }) => {
               tag: 'meta',
               attrs: {
                 name: 'twitter:image',
-                content: `${APP_DOMAIN}/branding/og-image.jpg`,
+                content: `${APP_DOMAIN}/branding/og-image.png`,
               },
             },
 
