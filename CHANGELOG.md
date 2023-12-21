@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 - Notification toast styles
 - Redirect to rariMe app on submitted proof view
+- Update `large` media breakpoint to `1600px`
+
+#### Fixed
+- KYC providers. Fix title font size
 
 ## [2.5.1] - 2023-12-11
 #### Fixed
