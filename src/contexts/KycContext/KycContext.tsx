@@ -643,6 +643,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         },
       }
 
+      const splittedDid = identityIdString.split(':')
+      const clearedDid = splittedDid[splittedDid.length - 1]
+
       const { data } = await api.post<{
         type: 'verification_id'
         id: 'string'
@@ -651,7 +654,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           data: {
             type: 'verify',
             attributes: {
-              identity_id: identityIdString.replace('did:iden3:', ''),
+              identity_id: clearedDid,
               provider_data: {
                 ...VERIFY_KYC_DATA_MAP[selectedKycProvider],
               },
