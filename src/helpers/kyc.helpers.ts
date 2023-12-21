@@ -9,6 +9,7 @@ enum KycUnauthorizedErrorCodes {
   NotLikelyHuman = '4',
   ScoreTooLow = '5',
   InvalidGatewayToken = '6',
+  IsNotRegistered = '7',
 }
 
 export const localizeUnauthorizedError = (error: UnauthorizedError): string => {
@@ -33,6 +34,9 @@ export const localizeUnauthorizedError = (error: UnauthorizedError): string => {
     ),
     [KycUnauthorizedErrorCodes.InvalidGatewayToken]: i18n.t(
       'kyc-unauthorized-errors.invalid-gateway-token',
+    ),
+    [KycUnauthorizedErrorCodes.IsNotRegistered]: i18n.t(
+      'kyc-unauthorized-errors.is-not-registered',
     ),
   }[errorCode]
 }

@@ -58,6 +58,7 @@
     "nonce-not-found": "Nonce not found",
     "not-likely-human": "Not likely human",
     "score-too-low": "Your Gitcoin Passport Score is below the required threshold. It needs to be at least 15.",
-    "invalid-gateway-token": "Invalid gateway token"
+    "invalid-gateway-token": "Invalid gateway token",
+    "is-not-registered": "You are not registered in the KYC provider"
   }
 }
