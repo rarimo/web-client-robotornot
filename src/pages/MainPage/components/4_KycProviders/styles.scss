@@ -15,6 +15,10 @@
 .kyc-providers__title {
   margin-bottom: toRem(40);
 
+  @include respond-to(large) {
+    font-size: toRem(40);
+  }
+
   @include respond-to(xmedium) {
     position: relative;
     font-size: toRem(32);
