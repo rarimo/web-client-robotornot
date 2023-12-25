@@ -11,6 +11,7 @@
   padding: toRem(12);
   border-radius: toRem(12);
   min-width: toRem(380);
+  max-width: toRem(600);
   width: max-content;
 
   @include respond-to(tablet) {
