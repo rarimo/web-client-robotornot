@@ -38,18 +38,22 @@
   --success-light: #{$success-light};
   --success-main: #{$success-main};
   --success-dark: #{$success-dark};
+  --success-bg: #{$success-bg};
 
   --error-light: #{$error-light};
   --error-main: #{$error-main};
   --error-dark: #{$error-dark};
+  --error-bg: #{$error-bg};
 
   --warning-light: #{$warning-light};
   --warning-main: #{$warning-main};
   --warning-dark: #{$warning-dark};
+  --warning-bg: #{$warning-bg};
 
   --info-light: #{$info-light};
   --info-main: #{$info-main};
   --info-dark: #{$info-dark};
+  --info-bg: #{$info-bg};
 
   /* brand colors */
   --primary-light: #{$primary-light};

@@ -6,7 +6,7 @@
   },
   "errors": {
     "default": "Something went wrong",
-    "slow-connection": "Operation timed out. Contact support at {{supportLink}}."
+    "slow-connection": "Time out: Zero-Knowledge proof generation took too long. That can use a lot of power, for the best results:\n\n- Close any tabs you have open\n- Connect the device to power"
   },
   "notifications": {
     "default-title-success": "Success",
@@ -58,6 +58,7 @@
     "nonce-not-found": "Nonce not found",
     "not-likely-human": "Not likely human",
     "score-too-low": "Your Gitcoin Passport Score is below the required threshold. It needs to be at least 15.",
-    "invalid-gateway-token": "Invalid gateway token"
+    "invalid-gateway-token": "Invalid gateway token",
+    "is-not-registered": "You are not registered in the KYC provider"
   }
 }

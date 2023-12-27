@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+#### Changed
+- Zero-Knowledge proof generation error message
+
+## [2.6.0] - 2023-12-22
+#### Added
+- `IsNotRegistered` KYC unauthorized error
+
+#### Changed
+- Notification toast styles
+- Redirect to rariMe app on submitted proof view
+- Update `large` media breakpoint to `1600px`
+
+#### Fixed
+- KYC providers. Fix title font size
+
+## [2.5.2] - 2023-12-21
+#### Changed
+- OG image
+
 ## [2.5.1] - 2023-12-11
 #### Fixed
 - `Link to Rarime dashboard` design
@@ -147,7 +167,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Under the hood changes
 - Initiated and setup project
 
-[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.1...main
+[Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.6.0...main
+[2.6.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.2...2.6.0
+[2.5.2]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.1...2.5.2
 [2.5.1]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.5.0...2.5.1
 [2.5.0]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.5...2.5.0
 [2.4.5]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.4.4...2.4.5

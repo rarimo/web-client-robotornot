@@ -9,13 +9,7 @@
 .proof-submitted__title {
   text-align: center;
   font-size: toRem(32);
-  margin-bottom: toRem(24);
-}
-
-.proof-submitted__subtitle {
-  text-align: center;
-  font-size: toRem(16);
-  margin-bottom: toRem(24);
+  margin-bottom: toRem(32);
 }
 
 .proof-submitted__card {
@@ -92,6 +86,7 @@
 
 .proof-submitted__link {
   margin-top: toRem(24);
+  font-size: toRem(14);
 }
 
 .proof-submitted__tip {

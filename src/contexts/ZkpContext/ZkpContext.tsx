@@ -172,7 +172,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     async (_identityIdString?: string) => {
       const currIdentityIdString = _identityIdString ?? identityIdString
 
-      // FIXME: remove
       const { data } = await issuerApi.get<SaveCredentialsRequestParams>(
         `/v1/credentials/${currIdentityIdString}/${config.CLAIM_TYPE}`,
       )
