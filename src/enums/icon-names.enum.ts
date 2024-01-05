@@ -121,6 +121,7 @@ export enum ICON_NAMES {
   inbox = 'inbox',
   informationCircle = 'information-circle',
   key = 'key',
+  keyboardReturn = 'keyboard-return',
   library = 'library',
   lightBulb = 'light-bulb',
   lightningBolt = 'lightning-bolt',

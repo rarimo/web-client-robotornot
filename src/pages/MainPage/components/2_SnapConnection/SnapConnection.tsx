@@ -68,7 +68,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         <AppButton
           iconLeft={ICON_NAMES.rarimeSnap}
           onClick={installSnap}
-          text={`Connect RariMe, a MetaMask Snap`}
+          text={`Connect “MetaMask” Snap`}
           modification='border-circle'
           isDisabled={isPending}
         />
@@ -83,7 +83,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
           </span>
           <Icon
             className='app__step-actions-tip-icon'
-            name={ICON_NAMES.arrowNarrowLeft}
+            name={ICON_NAMES.keyboardReturn}
           />
         </div>
       </div>
