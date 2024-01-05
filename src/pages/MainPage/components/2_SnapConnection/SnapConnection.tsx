@@ -68,7 +68,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         <AppButton
           iconLeft={ICON_NAMES.rarimeSnap}
           onClick={installSnap}
-          text={`Connect Snap`}
+          text={`Connect RariMe, a MetaMask Snap`}
           modification='border-circle'
           isDisabled={isPending}
         />
@@ -85,6 +85,28 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             className='app__step-actions-tip-icon'
             name={ICON_NAMES.arrowNarrowLeft}
           />
+        </div>
+      </div>
+
+      <div className='snap-connection__description'>
+        <p className='snap-connection__description-title'>
+          {
+            'RariMe is a MetaMask Extension “Snap” that stores identity credentials'
+          }
+        </p>
+        <div className='snap-connection__description-item'>
+          <Icon
+            className='snap-connection__description-item-icon'
+            name={ICON_NAMES.metamask}
+          />
+          <span>{'It has been audited and approved by MetaMask'}</span>
+        </div>
+        <div className='snap-connection__description-item'>
+          <Icon
+            className='snap-connection__description-item-icon'
+            name={ICON_NAMES.key}
+          />
+          <span>{'It cannot access your private keys or your crypto'}</span>
         </div>
       </div>
     </motion.div>
