@@ -24,3 +24,29 @@
   font-size: toRem(18);
   margin-bottom: toRem(40);
 }
+
+.snap-connection__description {
+  margin-top: toRem(32);
+}
+
+.snap-connection__description-title {
+  color: var(--text-secondary-dark);
+  font-size: toRem(14);
+  font-weight: 500;
+}
+
+.snap-connection__description-item {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  font-size: toRem(14);
+  color: var(--text-secondary-dark);
+  font-weight: 400;
+  margin-top: toRem(12);
+}
+
+.snap-connection__description-item-icon{
+  width: toRem(20);
+  height: toRem(20);
+  margin-right: toRem(12);
+}
