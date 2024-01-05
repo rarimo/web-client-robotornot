@@ -59,11 +59,6 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         {`Add identity management to your wallet`}
       </h2>
 
-      <CautionTip
-        className='snap-connection__subtitle'
-        message={`Installing the snap could take a few minutes, depending on your internet bandwidth. Please ignore the "Page Unresponsive" errors and wait until the installation is complete.`}
-      />
-
       <div className='app__step-actions snap-connection__button'>
         <AppButton
           iconLeft={ICON_NAMES.rarimeSnap}
@@ -109,6 +104,11 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
           <span>{'It cannot access your private keys or your crypto'}</span>
         </div>
       </div>
+
+      <CautionTip
+        className='snap-connection__subtitle'
+        message={`Installing the snap could take a few minutes, depending on your internet bandwidth. Please ignore the "Page Unresponsive" errors and wait until the installation is complete.`}
+      />
     </motion.div>
   )
 }
