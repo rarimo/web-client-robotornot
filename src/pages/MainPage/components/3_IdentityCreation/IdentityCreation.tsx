@@ -68,7 +68,7 @@ const IdentityCreation: FC<StepProps> = ({
           </span>
           <Icon
             className='app__step-actions-tip-icon'
-            name={ICON_NAMES.arrowNarrowLeft}
+            name={ICON_NAMES.keyboardReturn}
           />
         </div>
       </div>
