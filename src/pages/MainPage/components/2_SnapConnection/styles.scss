@@ -22,11 +22,11 @@
 
 .snap-connection__subtitle {
   font-size: toRem(18);
-  margin-bottom: toRem(40);
+  margin-top: toRem(40);
 }
 
 .snap-connection__description {
-  margin-top: toRem(32);
+  margin: toRem(32) 0;
 }
 
 .snap-connection__description-title {
@@ -49,4 +49,13 @@
   width: toRem(20);
   height: toRem(20);
   margin-right: toRem(12);
+}
+
+.snap-connection__button .app-button__icon-left {
+  width: toRem(24);
+  height: toRem(24);
+}
+
+.snap-connection__button{
+  margin: toRem(16) 0;
 }
