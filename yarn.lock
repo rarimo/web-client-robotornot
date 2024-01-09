@@ -2134,13 +2134,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:2.0.0-rc.0":
-  version: 2.0.0-rc.0
-  resolution: "@rarimo/rarime-connector@npm:2.0.0-rc.0"
+"@rarimo/rarime-connector@npm:2.0.0-rc.1":
+  version: 2.0.0-rc.1
+  resolution: "@rarimo/rarime-connector@npm:2.0.0-rc.1"
   dependencies:
     "@ethersproject/providers": 5.7.2
     ethers: 5.7.2
-  checksum: d21b20228d8165a5028219b969facdd3e109246871e187c629e31dd1c1575ce624435d7a6ed96eeb7828e1cca6f778deb529ba245bb25ad6c7e464415e603631
+  checksum: e04639f026019ad8e4ab1a4e5a54b09045bd376dc3fd688e4a0febbe5f72eb291dc8d1b1a9c044d340c6d957ba5492914aeabcc5786893eef9c9c5275ad1c825
   languageName: node
   linkType: hard
 
@@ -11073,7 +11073,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": 2.0.0-rc.0
+    "@rarimo/rarime-connector": 2.0.0-rc.1
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
