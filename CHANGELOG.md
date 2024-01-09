@@ -5,8 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [2.6.1] - 2024-01-09
+#### Added
+- Text about snap in connect snap step
+
 #### Changed
 - Zero-Knowledge proof generation error message
+- Icon key
+- `Press enter` fixed styles and icon
+- `@stylelint-declaration-strict-value` fixed version
 
 ## [2.6.0] - 2023-12-22
 #### Added
