@@ -19,7 +19,7 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
-import { ErrorHandler } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
@@ -33,6 +33,8 @@ interface Web3ProviderContextValue {
   disconnect: () => Promise<void>
   requestSwitchChain: (chain: Chain) => Promise<void>
 }
+
+const METAMASK_SNAPS_MAJOR_VERSION = 11
 
 export const web3ProviderContext = createContext<Web3ProviderContextValue>({
   provider: undefined,
@@ -114,6 +116,32 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         })
 
         await providerDetector.init()
+
+        const isOkx = !!window?.okxwallet
+        const isMetamask = window?.ethereum?.isMetaMask && !isOkx
+
+        if (!isMetamask) {
+          return bus.emit(
+            BUS_EVENTS.warning,
+            `Unsupported cryptocurrency wallet. Please try again with MetaMask`,
+          )
+        }
+
+        const version = await window?.ethereum?.request?.({
+          method: 'web3_clientVersion',
+        })
+
+        const majorVersion = Number(version.match(/.+v([0-9]+).+/)?.[1] ?? 0)
+        const isMobile = version.endsWith('Mobile')
+        const isSnapsSupported =
+          majorVersion >= METAMASK_SNAPS_MAJOR_VERSION && !isMobile
+
+        if (!isSnapsSupported) {
+          return bus.emit(
+            BUS_EVENTS.warning,
+            `Unsupported version of MetaMask. Please update MetaMask and try again`,
+          )
+        }
 
         Provider.setChainsDetails(
           Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
