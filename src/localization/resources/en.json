@@ -6,7 +6,8 @@
   },
   "errors": {
     "default": "Something went wrong",
-    "slow-connection": "Time out: Zero-Knowledge proof generation took too long. That can use a lot of power, for the best results:\n\n- Close any tabs you have open\n- Connect the device to power"
+    "slow-connection": "Time out: Zero-Knowledge proof generation took too long. That can use a lot of power, for the best results:\n\n- Close any tabs you have open\n- Connect the device to power",
+    "user-reject": "You canceled the signature request, please try again"
   },
   "notifications": {
     "default-title-success": "Success",
