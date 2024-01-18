@@ -242,7 +242,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
             $eq: 1,
           },
         },
-        type: 'IdentityProviders',
+        type: verifiableCredentials.type,
       },
     })
 
@@ -257,7 +257,12 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setIsZKPRequestPending(false)
 
     return zkProofResponse
-  }, [verifiableCredentials?.issuer, zkpSnap, provider?.address])
+  }, [
+    verifiableCredentials?.issuer,
+    verifiableCredentials?.type,
+    zkpSnap,
+    provider?.address,
+  ])
 
   /**
    * SUBMITTING PROOF
