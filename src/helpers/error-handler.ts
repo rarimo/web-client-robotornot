@@ -44,7 +44,7 @@ export class ErrorHandler {
           break
         }
         case errors.ProviderUserRejectedRequest:
-          errorMessage = ''
+          errorMessage = i18n.t('errors.user-reject')
           break
         case errors.ProviderInternalError:
           if (error.message.toLowerCase().includes('timed out')) {

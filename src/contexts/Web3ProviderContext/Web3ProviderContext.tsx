@@ -19,7 +19,7 @@ import {
 import { useLocalStorage } from 'react-use'
 
 import { config } from '@/config'
-import { ErrorHandler } from '@/helpers'
+import { bus, BUS_EVENTS, ErrorHandler } from '@/helpers'
 import { useProvider } from '@/hooks'
 
 interface Web3ProviderContextValue {
@@ -114,6 +114,16 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         })
 
         await providerDetector.init()
+
+        const isOkx = !!window?.okxwallet
+        const isMetamask = providerDetector.providers.metamask && !isOkx
+
+        if (!isMetamask) {
+          return bus.emit(
+            BUS_EVENTS.warning,
+            `Unsupported cryptocurrency wallet. Please try again with MetaMask`,
+          )
+        }
 
         Provider.setChainsDetails(
           Object.entries(config.SUPPORTED_CHAINS_DETAILS).reduce(
