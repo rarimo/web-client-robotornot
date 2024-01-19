@@ -26,12 +26,8 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     KYC_PROVIDERS_DETAILS_MAP,
     detectProviderFromVC,
   } = useKycContext()
-  const {
-    isEthAddressProved,
-    isDidProved,
-    txSubmitExplorerLink,
-    getVerifiableCredentials,
-  } = useZkpContext()
+  const { isEthAddressProved, isDidProved, txSubmitExplorerLink } =
+    useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
     countStart: REDIRECT_TIMEOUT,
@@ -69,15 +65,13 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     setIsManualRedirect(true)
 
     try {
-      const vc = await getVerifiableCredentials()
-
-      await detectProviderFromVC(vc)
+      await detectProviderFromVC()
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     setIsPending(false)
-  }, [detectProviderFromVC, getVerifiableCredentials])
+  }, [detectProviderFromVC])
 
   const RetrievingDataBtn = useMemo(
     () =>

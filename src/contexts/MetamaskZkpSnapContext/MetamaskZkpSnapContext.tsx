@@ -1,14 +1,17 @@
 import {
+  CheckCredentialExistenceRequestParams,
   type CreateProofRequestParams,
   enableSnap,
   isMetamaskInstalled as detectMetamaskInstalled,
   isSnapInstalled as detectSnapInstalled,
   type SaveCredentialsRequestParams,
+  SaveCredentialsResponse,
   type SnapConnector,
-  type W3CCredential,
   type ZKPProofResponse,
 } from '@rarimo/rarime-connector'
 import { createContext, FC, HTMLAttributes, useCallback, useState } from 'react'
+
+import { saveVCResponse } from '@/contexts/ZkpContext/ZkpContext'
 
 /**
  * The snap origin to use.
@@ -28,9 +31,9 @@ interface MetamaskZkpSnapContextValue {
       }
     | undefined
   >
-  getVerifiableCredentials: (
+  saveVerifiableCredentials: (
     params: SaveCredentialsRequestParams,
-  ) => Promise<W3CCredential[] | undefined>
+  ) => Promise<saveVCResponse[] | undefined>
   createProof: (
     params: CreateProofRequestParams,
   ) => Promise<ZKPProofResponse | undefined>
@@ -40,6 +43,9 @@ interface MetamaskZkpSnapContextValue {
     isMetamaskInstalled: boolean
     isSnapInstalled: boolean
   }>
+  checkCredentialExistence: (
+    params: CheckCredentialExistenceRequestParams,
+  ) => Promise<SaveCredentialsResponse[] | undefined>
 
   connectOrInstallSnap: () => Promise<void>
 }
@@ -56,7 +62,7 @@ export const MetamaskZkpSnapContext =
     createIdentity: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
-    getVerifiableCredentials: () => {
+    saveVerifiableCredentials: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
     createProof: () => {
@@ -69,6 +75,9 @@ export const MetamaskZkpSnapContext =
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
     checkSnapStatus: () => {
+      throw new Error('MetamaskZkpSnapContext not initialized')
+    },
+    checkCredentialExistence: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
 
@@ -103,7 +112,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
   /**
    * Get the verifiable credentials from the snap.
    */
-  const getVerifiableCredentials = useCallback(
+  const saveVerifiableCredentials = useCallback(
     async (params: SaveCredentialsRequestParams) => {
       if (!connector) throw new TypeError('Connector is not defined')
 
@@ -156,6 +165,15 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
   }, [checkMetamaskExists, checkSnapExists])
 
+  const checkCredentialExistence = useCallback(
+    async (
+      params: CheckCredentialExistenceRequestParams,
+    ): Promise<SaveCredentialsResponse[] | undefined> => {
+      return connector?.checkCredentialExistence?.(params)
+    },
+    [connector],
+  )
+
   return (
     <MetamaskZkpSnapContext.Provider
       value={{
@@ -165,8 +183,9 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         isLocalSnap,
 
         createIdentity,
-        getVerifiableCredentials,
+        saveVerifiableCredentials,
         createProof,
+        checkCredentialExistence,
 
         checkMetamaskExists,
         checkSnapExists,

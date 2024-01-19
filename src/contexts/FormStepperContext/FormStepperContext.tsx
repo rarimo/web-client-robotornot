@@ -165,7 +165,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
   const { isSnapInstalled } = useMetamaskZkpSnapContext()
   const {
     identityIdString,
-    verifiableCredentials,
+    savedVC,
     isUserSubmittedZkp,
     zkProof,
 
@@ -237,8 +237,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
     if (!identityIdString) return Steps.IdentityCreationStep
 
-    if (!verifiableCredentials || isEmpty(verifiableCredentials))
-      return await handleIfUserClaimExist()
+    if (!savedVC || isEmpty(savedVC)) return await handleIfUserClaimExist()
 
     if (!zkProof || isEmpty(zkProof)) return Steps.ProofGeneratingStep
 
@@ -253,7 +252,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
     isValidChain,
     provider?.isConnected,
     searchParams,
-    verifiableCredentials,
+    savedVC,
     zkProof,
   ])
 

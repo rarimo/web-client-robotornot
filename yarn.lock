@@ -2134,14 +2134,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:2.0.0-rc.5":
-  version: 2.0.0-rc.5
-  resolution: "@rarimo/rarime-connector@npm:2.0.0-rc.5"
+"@rarimo/rarime-connector@npm:2.0.0-rc.8":
+  version: 2.0.0-rc.8
+  resolution: "@rarimo/rarime-connector@npm:2.0.0-rc.8"
   dependencies:
     "@ethersproject/providers": 5.7.2
     compare-versions: ^6.1.0
     ethers: 5.7.2
-  checksum: d3fda7fae83352b6bca44211cbe6b9b0180f91a775880d1e9822c12cc54ba15b19553932c830aead964fc324299bb6a0092bfec199e9179ccc23558dd7d62730
+  checksum: 9fa896d5a8512c772db4ae9192c14d3aefa69e8b224139b49d6e7fea278d4701855f48f881bb022e5419674a767b0996c249b0b695ec1672396b1845c1cb0e9d
   languageName: node
   linkType: hard
 
@@ -2249,14 +2249,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry-internal/tracing@npm:7.93.0":
-  version: 7.93.0
-  resolution: "@sentry-internal/tracing@npm:7.93.0"
+"@sentry-internal/tracing@npm:7.94.1":
+  version: 7.94.1
+  resolution: "@sentry-internal/tracing@npm:7.94.1"
   dependencies:
-    "@sentry/core": 7.93.0
-    "@sentry/types": 7.93.0
-    "@sentry/utils": 7.93.0
-  checksum: d3e3536c2be747f6e02b844932ae251d52086a7c40bdcb4ddf32de5d9cee7d120f08cf494de887bda4228e9a43f9fccfc3610cba831a79eab147d607981e1388
+    "@sentry/core": 7.94.1
+    "@sentry/types": 7.94.1
+    "@sentry/utils": 7.94.1
+  checksum: ef0ad4409e0e1968e941c237bf8d498785642895f62a505b3709c70b86b47c789d3522e577b19f658f312423b11a35a7dc463d7e8e795c82e49d26b8f5bef070
   languageName: node
   linkType: hard
 
@@ -2290,66 +2290,66 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli-darwin@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-darwin@npm:2.25.2"
+"@sentry/cli-darwin@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-darwin@npm:2.25.3"
   conditions: os=darwin
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm64@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-linux-arm64@npm:2.25.2"
+"@sentry/cli-linux-arm64@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-linux-arm64@npm:2.25.3"
   conditions: (os=linux | os=freebsd) & cpu=arm64
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-linux-arm@npm:2.25.2"
+"@sentry/cli-linux-arm@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-linux-arm@npm:2.25.3"
   conditions: (os=linux | os=freebsd) & cpu=arm
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-i686@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-linux-i686@npm:2.25.2"
+"@sentry/cli-linux-i686@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-linux-i686@npm:2.25.3"
   conditions: (os=linux | os=freebsd) & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-x64@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-linux-x64@npm:2.25.2"
+"@sentry/cli-linux-x64@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-linux-x64@npm:2.25.3"
   conditions: (os=linux | os=freebsd) & cpu=x64
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-i686@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-win32-i686@npm:2.25.2"
+"@sentry/cli-win32-i686@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-win32-i686@npm:2.25.3"
   conditions: os=win32 & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-x64@npm:2.25.2":
-  version: 2.25.2
-  resolution: "@sentry/cli-win32-x64@npm:2.25.2"
+"@sentry/cli-win32-x64@npm:2.25.3":
+  version: 2.25.3
+  resolution: "@sentry/cli-win32-x64@npm:2.25.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@sentry/cli@npm:^2.22.3":
-  version: 2.25.2
-  resolution: "@sentry/cli@npm:2.25.2"
+  version: 2.25.3
+  resolution: "@sentry/cli@npm:2.25.3"
   dependencies:
-    "@sentry/cli-darwin": 2.25.2
-    "@sentry/cli-linux-arm": 2.25.2
-    "@sentry/cli-linux-arm64": 2.25.2
-    "@sentry/cli-linux-i686": 2.25.2
-    "@sentry/cli-linux-x64": 2.25.2
-    "@sentry/cli-win32-i686": 2.25.2
-    "@sentry/cli-win32-x64": 2.25.2
+    "@sentry/cli-darwin": 2.25.3
+    "@sentry/cli-linux-arm": 2.25.3
+    "@sentry/cli-linux-arm64": 2.25.3
+    "@sentry/cli-linux-i686": 2.25.3
+    "@sentry/cli-linux-x64": 2.25.3
+    "@sentry/cli-win32-i686": 2.25.3
+    "@sentry/cli-win32-x64": 2.25.3
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
     progress: ^2.0.3
@@ -2372,7 +2372,7 @@ __metadata:
       optional: true
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: ee3955ae03aeae0efcae9babc5d10cb130f5748865e5d24e51ffd91739287710654017a62326fe2ff1df880d0cc8842af9c1f7e584f0c99a427e893a3311ab48
+  checksum: 4ddac70b6b9b21a0005d2ca7013b8cb62b348b9099b4269740a37e86307f54fcd3ecd0b989033faeb813580ed761818d1e0e209b1b24e8b9d3b9b82584b4d7a6
   languageName: node
   linkType: hard
 
@@ -2387,26 +2387,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:7.93.0":
-  version: 7.93.0
-  resolution: "@sentry/core@npm:7.93.0"
+"@sentry/core@npm:7.94.1":
+  version: 7.94.1
+  resolution: "@sentry/core@npm:7.94.1"
   dependencies:
-    "@sentry/types": 7.93.0
-    "@sentry/utils": 7.93.0
-  checksum: cbf9e944d985605bc38cc0d6b7ebeee10fa6d0f9ff9443d27c18a022e7ddcc1a70974c7ed9aafb2be094398f360c705e3464bf7359c3bdefd03724eac23048f4
+    "@sentry/types": 7.94.1
+    "@sentry/utils": 7.94.1
+  checksum: 7ef246b69bb667005028e46e9b8a21d8cdc5b6a3cf6fb260e69caa93b8f1b48d73572c10eff077e008a32be75d19a44105b3e844475efcb3acbbfec2f272f300
   languageName: node
   linkType: hard
 
 "@sentry/node@npm:^7.60.0":
-  version: 7.93.0
-  resolution: "@sentry/node@npm:7.93.0"
+  version: 7.94.1
+  resolution: "@sentry/node@npm:7.94.1"
   dependencies:
-    "@sentry-internal/tracing": 7.93.0
-    "@sentry/core": 7.93.0
-    "@sentry/types": 7.93.0
-    "@sentry/utils": 7.93.0
-    https-proxy-agent: ^5.0.0
-  checksum: 15ba62b650f21e6cdaf464a1107079a06851f0de3da8b4fb94e98a74a488e9ce509ea6e3608bce587bb034a9704fbdbaff71e3a3e3dbaffe01c352f29f575a4e
+    "@sentry-internal/tracing": 7.94.1
+    "@sentry/core": 7.94.1
+    "@sentry/types": 7.94.1
+    "@sentry/utils": 7.94.1
+  checksum: b8550d1b44167a079fd271ba728462719ba3a25bb9d3d5e009c4b47b6d028370529bf3755faa3e9bc4862d0e2e0b6b0c337f4b7c52c173f2ae21e98abaecf4a8
   languageName: node
   linkType: hard
 
@@ -2455,10 +2454,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:7.93.0":
-  version: 7.93.0
-  resolution: "@sentry/types@npm:7.93.0"
-  checksum: 43d4bc3215f7bf916404608907d51c0c1bb22b28065a4633e5fc7d244a3f66965857f9ea8464a71040dd752b93035b0fdcd61880f14908f75c6bbdc9d55b882f
+"@sentry/types@npm:7.94.1":
+  version: 7.94.1
+  resolution: "@sentry/types@npm:7.94.1"
+  checksum: 7a175a62bc07ecb5360b46a35f25084f10fb613eafc222955eef6468459fc82c6241a77742504514497d916d04e665f5d09b5fac7ef1c1703b12779393cef4db
   languageName: node
   linkType: hard
 
@@ -2472,12 +2471,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:7.93.0, @sentry/utils@npm:^7.60.0":
-  version: 7.93.0
-  resolution: "@sentry/utils@npm:7.93.0"
+"@sentry/utils@npm:7.94.1, @sentry/utils@npm:^7.60.0":
+  version: 7.94.1
+  resolution: "@sentry/utils@npm:7.94.1"
   dependencies:
-    "@sentry/types": 7.93.0
-  checksum: d668bfce46b9ea58778a4c2cbc8df5d16c781187dde10459c61acc57cc1e86028e08fb7dd49506137ce71f5b5280c03e0c3bb94a32b215a713bf422f3d880f7d
+    "@sentry/types": 7.94.1
+  checksum: 69721446aaac6f971f4c6f3523abccc8d5ee88d054069975aad394d09d857a93acb475c093c71b7daf07f2030d419ea09ee67bd49e77f8b940412d727c584f64
   languageName: node
   linkType: hard
 
@@ -5741,9 +5740,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.601":
-  version: 1.4.637
-  resolution: "electron-to-chromium@npm:1.4.637"
-  checksum: 5b0eee32322d6c0d5b8627b6d733d6bc2f144b34d7e25e0dc513fd1d77e95fac093aec5acf7c47464f9da23559a3176dfe0fdd4d5efc1f40428413c29622e1d3
+  version: 1.4.639
+  resolution: "electron-to-chromium@npm:1.4.639"
+  checksum: f16293e69c5c31d836d1a3fdafb07f7a19a0f9a1137893aea879758f6de7d212480f4204e14f0669e653a5a3a1c35f6d1cbd54d4dd9e6ace7e22638270c9984e
   languageName: node
   linkType: hard
 
@@ -9835,11 +9834,11 @@ __metadata:
   linkType: hard
 
 "node-addon-api@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "node-addon-api@npm:7.0.0"
+  version: 7.1.0
+  resolution: "node-addon-api@npm:7.1.0"
   dependencies:
     node-gyp: latest
-  checksum: 4349465d737e284b280fc0e5fd2384f9379bca6b7f2a5a1460bea676ba5b90bf563e7d02a9254c35b9ed808641c81d9b4ca9e1da17d2849cd07727660b00b332
+  checksum: 26640c8d2ed7e2059e2ed65ee79e2a195306b3f1fc27ad11448943ba91d37767bd717a9a0453cc97e83a1109194dced8336a55f8650000458ef625c0b8b5e3df
   languageName: node
   linkType: hard
 
@@ -11087,26 +11086,26 @@ __metadata:
   linkType: hard
 
 "react-router-dom@npm:^6.6.2":
-  version: 6.21.2
-  resolution: "react-router-dom@npm:6.21.2"
+  version: 6.21.3
+  resolution: "react-router-dom@npm:6.21.3"
   dependencies:
     "@remix-run/router": 1.14.2
-    react-router: 6.21.2
+    react-router: 6.21.3
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 3fc17fd6693ba8fd710937a5d694172eac4b14dddfe3df61f5339718fa36caaa894135807e0d704bddd5f277db6950117bb312d76da90921dd014e225b2cf575
+  checksum: bcf668aa1428ca3048d7675f1ae3fe983c8792357a0ed59a1414cb1d682227727aad7c44c4222c6774b8d01bf352478845f7f3f668ebfcaa177208ef64e10bdc
   languageName: node
   linkType: hard
 
-"react-router@npm:6.21.2":
-  version: 6.21.2
-  resolution: "react-router@npm:6.21.2"
+"react-router@npm:6.21.3":
+  version: 6.21.3
+  resolution: "react-router@npm:6.21.3"
   dependencies:
     "@remix-run/router": 1.14.2
   peerDependencies:
     react: ">=16.8"
-  checksum: 8c38a4914892d5b8052bc5c244af95109affd8b74bffa16f9ea7856dc0e992dd8539b19d2618721cd7ef091a585f394fac9d05ab7a98cf3ca6aeb7519b7bce0e
+  checksum: 7e6297d5b67ae07d2e8564e036dbb15ebd706b41c22238940f47eee9b21ffb76d41336803c3b33435f1ebe210226577e32df3838bcbf2cd7c813fa357c0a4fac
   languageName: node
   linkType: hard
 
@@ -11128,7 +11127,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": 2.0.0-rc.5
+    "@rarimo/rarime-connector": 2.0.0-rc.8
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
@@ -13656,12 +13655,12 @@ __metadata:
   linkType: hard
 
 "usehooks-ts@npm:^2.9.1":
-  version: 2.9.4
-  resolution: "usehooks-ts@npm:2.9.4"
+  version: 2.9.5
+  resolution: "usehooks-ts@npm:2.9.5"
   peerDependencies:
     react: ^16.8.0  || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
-  checksum: f3a7a0c1c385c87035e20b1c2cf6a19b709326a0e69ecab22d64df12e3157dcd459e0e866dc806b2847fdb4408b7ba54dfb33ae80068923ef20be5c9c9cbf9a0
+  checksum: fb78e5bdf076fca0f76e61d39ddbc34e45f00a417057a0622eb8e67cc26d516c33006ce81b4640f204a6191d5e816b461fd7aaf790ccaa97b7c279db17200b45
   languageName: node
   linkType: hard
 
@@ -13888,8 +13887,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^4.3.9":
-  version: 4.5.1
-  resolution: "vite@npm:4.5.1"
+  version: 4.5.2
+  resolution: "vite@npm:4.5.2"
   dependencies:
     esbuild: ^0.18.10
     fsevents: ~2.3.2
@@ -13923,7 +13922,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 72b3584b3d3b8d14e8a37f0248e47fb8b4d02ab35de5b5a8e5ca8ae55c3be2aab73760dc36edac4fa722de182f78cc492eb44888fcb4a9a0712c4605dad644f9
+  checksum: 9d1f84f703c2660aced34deee7f309278ed368880f66e9570ac115c793d91f7fffb80ab19c602b3c8bc1341fe23437d86a3fcca2a9ef82f7ef0cdac5a40d0c86
   languageName: node
   linkType: hard
 

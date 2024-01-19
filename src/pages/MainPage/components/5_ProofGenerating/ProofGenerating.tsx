@@ -24,8 +24,7 @@ const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
   const [isPending, setIsPending] = useState(false)
 
   const { setStep, prevStep } = useFormStepperContext()
-  const { verifiableCredentials, getZkProof, getIsIdentityProvedMsg } =
-    useZkpContext()
+  const { savedVC, getZkProof, getIsIdentityProvedMsg } = useZkpContext()
   const {
     isVCRequestPending,
     isKycFinished,
@@ -83,9 +82,7 @@ const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
         <ProgressLoader
           className='proof-generating__progress'
           checkpoints={[50, 100]}
-          checkpointIndex={
-            verifiableCredentials ? 1 : isKycFinished ? 0 : undefined
-          }
+          checkpointIndex={savedVC ? 1 : isKycFinished ? 0 : undefined}
           delay={Number(config.CLAIM_OFFER_DELAY)}
           variant='skeleton'
           iconNameOrImgUrl={
@@ -109,9 +106,7 @@ const ProofGenerating: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             text={`Generate ZK-Proof`}
             modification='border-circle'
             onClick={handleGenerateProof}
-            isDisabled={
-              isPending || isVCRequestPending || !verifiableCredentials
-            }
+            isDisabled={isPending || isVCRequestPending || !savedVC}
           />
         </div>
       </div>
