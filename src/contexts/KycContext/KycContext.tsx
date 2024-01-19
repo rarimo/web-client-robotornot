@@ -6,10 +6,7 @@ import {
   type JsonApiError,
   UnauthorizedError,
 } from '@distributedlab/jac'
-import {
-  SaveCredentialsRequestParams,
-  W3CCredential,
-} from '@rarimo/rarime-connector'
+import { SaveCredentialsRequestParams } from '@rarimo/rarime-connector'
 import {
   createContext,
   FC,
@@ -186,7 +183,7 @@ interface KycContextValue {
   clearKycError: () => void
   setIsVCRequestPending: (isPending: boolean) => void
   setIsVCRequestFailed: (isFailed: boolean) => void
-  detectProviderFromVC: (vc?: W3CCredential) => void
+  detectProviderFromVC: () => void
   handleWorldcoinRedirect: (worldcoinProviderCb: () => void) => Promise<void>
 
   isUserHasClaimHandled?: (
@@ -250,11 +247,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const {
     identityIdString,
-    verifiableCredentials,
+    savedVC,
 
     createIdentity,
     getClaimOffer,
-    getVerifiableCredentials,
+    saveVC,
   } = useZkpContext()
 
   const [isVCRequestPending, setIsVCRequestPending] = useState(false)
@@ -411,13 +408,11 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     [],
   )
 
-  const detectProviderFromVC = useCallback(
-    (VC?: W3CCredential) => {
-      const currentVC = VC ?? verifiableCredentials
-
-      if (!currentVC?.credentialSubject?.provider) return
-
-      const provider = currentVC.credentialSubject.provider as string
+  const detectProviderFromVC = useCallback(async () => {
+    try {
+      const { data } = await api.get<{
+        provider: string
+      }>(`/integrations/kyc-service/v1/public/${identityIdString}/provider`)
 
       setSelectedKycProvider(
         {
@@ -426,11 +421,19 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           UnstoppableDomains: SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
           Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
           Kleros: SUPPORTED_KYC_PROVIDERS.KLEROS,
-        }[provider],
+        }[data.provider],
       )
-    },
-    [verifiableCredentials],
-  )
+    } catch (error) {
+      if (
+        error instanceof FetcherError &&
+        error.response.status === HTTP_STATUS_CODES.NOT_FOUND
+      ) {
+        setSelectedKycProvider(undefined)
+
+        return
+      }
+    }
+  }, [identityIdString])
 
   const isUserHasClaimHandled = useCallback(
     async (_VCCreatedOrKycFinishedCb?: () => void) => {
@@ -454,9 +457,9 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         "You already have a verifiable credentials, let's check it out!",
       )
 
-      const vc = await getVerifiableCredentials(currentIdentityIdString, claim)
+      await saveVC(currentIdentityIdString, claim)
 
-      detectProviderFromVC(vc)
+      await detectProviderFromVC()
 
       setIsVCRequestPending(false)
 
@@ -466,7 +469,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
       _getClaimIfExists,
       createIdentity,
       detectProviderFromVC,
-      getVerifiableCredentials,
+      saveVC,
       identityIdString,
     ],
   )
@@ -592,7 +595,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           config.CLAIM_TYPE,
           identityIdString,
           async (claimOffer: SaveCredentialsRequestParams) => {
-            await getVerifiableCredentials(identityIdString, claimOffer)
+            await saveVC(identityIdString, claimOffer)
 
             setIsVCRequestPending(false)
           },
@@ -609,7 +612,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     },
     [
       VCCreatedOrKycFinishedCb,
-      getVerifiableCredentials,
+      saveVC,
       identityIdString,
       subscribeToClaimWaiting,
       verifyKyc,
@@ -715,7 +718,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         {children}
       </kycContext.Provider>
 
-      {!verifiableCredentials && isShowKycProvider && (
+      {!savedVC && isShowKycProvider && (
         <>
           {selectedKycProvider ===
           SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS ? (
