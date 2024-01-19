@@ -2,6 +2,7 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import type {
+  CreateProofRequestParams,
   SaveCredentialsRequestParams,
   StateInfo,
   UpdateStateDetails,
@@ -18,7 +19,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useLocalStorage } from 'react-use'
 
 import { issuerApi } from '@/api'
 import { useMetamaskZkpSnapContext, useWeb3Context } from '@/contexts'
@@ -67,6 +67,10 @@ interface ZkpContextValue {
   getZkProof: () => Promise<ZKPProofResponse | undefined>
   submitZkp: (selectedChain: SUPPORTED_CHAINS) => Promise<void>
   getIsIdentityProvedMsg: (_identityBigIntString?: string) => Promise<string>
+  buildProofRequest: (
+    issuerDid: string,
+    vcType: string[],
+  ) => CreateProofRequestParams
 }
 
 export const zkpContext = createContext<ZkpContextValue>({
@@ -103,6 +107,9 @@ export const zkpContext = createContext<ZkpContextValue>({
   getIsIdentityProvedMsg: () => {
     throw new TypeError(`getIsIdentityProvedString() not implemented`)
   },
+  buildProofRequest: () => {
+    throw new TypeError(`buildProofRequest() not implemented`)
+  },
 })
 
 type Props = HTMLAttributes<HTMLDivElement>
@@ -118,7 +125,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
   const [statesMerkleProof, setStatesMerkleProof] = useState<StatesMerkleProof>()
   const [, setTransitStateTx] = useState<TransactionRequest>()
   const [updateStateDetails, setUpdateStateDetails] = useState<UpdateStateDetails>()
-  const [savedVC, setSavedVC] = useLocalStorage<saveVCResponse>('vc', undefined)
+  const [savedVC, setSavedVC] = useState<saveVCResponse>()
   const [identityIdString, setIdentityIdString] = useState('')
   const [identityIdBigIntString, setIdentityIdBigIntString] = useState('')
   const [txSubmitHash, setTxSubmitHash] = useState('')
@@ -182,18 +189,56 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     [identityIdString],
   )
 
+  const buildProofRequest = useCallback(
+    (issuerDid: string, vcType: string[]): CreateProofRequestParams => ({
+      circuitId: 'credentialAtomicQueryMTPV2OnChain',
+      accountAddress: provider?.address,
+      issuerDid: issuerDid,
+
+      query: {
+        allowedIssuers: ['*'],
+        credentialSubject: {
+          isNatural: {
+            $eq: 1,
+          },
+        },
+        type: vcType,
+      },
+    }),
+    [provider?.address],
+  )
+
   const saveVC = useCallback(
     async (
       _identityIdString?: string,
       _claimOffer?: SaveCredentialsRequestParams,
     ): Promise<saveVCResponse | undefined> => {
-      if (savedVC) return savedVC
-
       const currentIdentityIdString = _identityIdString ?? identityIdString
       const claimOffer =
         _claimOffer ?? (await getClaimOffer(currentIdentityIdString))
 
       if (!claimOffer) throw new TypeError('Claim offer is not defined')
+
+      const savedVCsByOffer = await zkpSnap.checkCredentialExistence({
+        claimOffer: claimOffer,
+      })
+
+      // double check if there any migrations had been implemented
+      if (savedVCsByOffer?.length) {
+        const savedVCsByOfferAndQuery = await zkpSnap.checkCredentialExistence({
+          claimOffer: claimOffer,
+          proofRequest: buildProofRequest(
+            savedVCsByOffer[0].issuer,
+            savedVCsByOffer[0].type,
+          ),
+        })
+
+        if (savedVCsByOfferAndQuery?.length) {
+          setSavedVC(savedVCsByOfferAndQuery[0])
+
+          return savedVCsByOfferAndQuery[0]
+        }
+      }
 
       const vcResponse = (
         await zkpSnap.saveVerifiableCredentials(claimOffer)
@@ -205,7 +250,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
       return vcResponse
     },
-    [getClaimOffer, identityIdString, setSavedVC, savedVC, zkpSnap],
+    [identityIdString, getClaimOffer, zkpSnap, setSavedVC, buildProofRequest],
   )
 
   /**
@@ -219,21 +264,9 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     setIsZKPRequestPending(true)
 
-    const zkProofResponse = await zkpSnap.createProof({
-      circuitId: 'credentialAtomicQueryMTPV2OnChain',
-      accountAddress: provider?.address,
-      issuerDid: savedVC?.issuer,
-
-      query: {
-        allowedIssuers: ['*'],
-        credentialSubject: {
-          isNatural: {
-            $eq: 1,
-          },
-        },
-        type: savedVC.type,
-      },
-    })
+    const zkProofResponse = await zkpSnap.createProof(
+      buildProofRequest(savedVC.issuer, savedVC.type),
+    )
 
     setZkProof(zkProofResponse?.zkpProof)
 
@@ -246,7 +279,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
     setIsZKPRequestPending(false)
 
     return zkProofResponse
-  }, [savedVC?.issuer, savedVC?.type, zkpSnap, provider?.address])
+  }, [savedVC?.issuer, savedVC?.type, zkpSnap, buildProofRequest])
 
   /**
    * SUBMITTING PROOF
@@ -400,6 +433,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
         getZkProof,
         submitZkp,
         getIsIdentityProvedMsg,
+        buildProofRequest,
       }}
       {...rest}
     >

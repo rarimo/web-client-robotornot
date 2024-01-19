@@ -410,17 +410,19 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
 
   const detectProviderFromVC = useCallback(async () => {
     try {
+      const identityId = identityIdString?.split(':').pop()
+
       const { data } = await api.get<{
         provider: string
-      }>(`/integrations/kyc-service/v1/public/${identityIdString}/provider`)
+      }>(`/integrations/kyc-service/v1/public/${identityId}/provider`)
 
       setSelectedKycProvider(
         {
-          Civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
-          GitcoinPassport: SUPPORTED_KYC_PROVIDERS.GITCOIN,
-          UnstoppableDomains: SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
-          Worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
-          Kleros: SUPPORTED_KYC_PROVIDERS.KLEROS,
+          civic: SUPPORTED_KYC_PROVIDERS.CIVIC,
+          gitcoin_passport: SUPPORTED_KYC_PROVIDERS.GITCOIN,
+          unstoppable_domains: SUPPORTED_KYC_PROVIDERS.UNSTOPPABLEDOMAINS,
+          worldcoin: SUPPORTED_KYC_PROVIDERS.WORLDCOIN,
+          kleros: SUPPORTED_KYC_PROVIDERS.KLEROS,
         }[data.provider],
       )
     } catch (error) {
@@ -457,20 +459,20 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         "You already have a verifiable credentials, let's check it out!",
       )
 
-      await saveVC(currentIdentityIdString, claim)
-
       await detectProviderFromVC()
+
+      await saveVC(currentIdentityIdString, claim)
 
       setIsVCRequestPending(false)
 
       return true
     },
     [
-      _getClaimIfExists,
+      identityIdString,
       createIdentity,
+      _getClaimIfExists,
       detectProviderFromVC,
       saveVC,
-      identityIdString,
     ],
   )
 

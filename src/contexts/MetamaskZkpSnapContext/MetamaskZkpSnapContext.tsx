@@ -1,9 +1,11 @@
 import {
+  CheckCredentialExistenceRequestParams,
   type CreateProofRequestParams,
   enableSnap,
   isMetamaskInstalled as detectMetamaskInstalled,
   isSnapInstalled as detectSnapInstalled,
   type SaveCredentialsRequestParams,
+  SaveCredentialsResponse,
   type SnapConnector,
   type ZKPProofResponse,
 } from '@rarimo/rarime-connector'
@@ -41,6 +43,9 @@ interface MetamaskZkpSnapContextValue {
     isMetamaskInstalled: boolean
     isSnapInstalled: boolean
   }>
+  checkCredentialExistence: (
+    params: CheckCredentialExistenceRequestParams,
+  ) => Promise<SaveCredentialsResponse[] | undefined>
 
   connectOrInstallSnap: () => Promise<void>
 }
@@ -70,6 +75,9 @@ export const MetamaskZkpSnapContext =
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
     checkSnapStatus: () => {
+      throw new Error('MetamaskZkpSnapContext not initialized')
+    },
+    checkCredentialExistence: () => {
       throw new Error('MetamaskZkpSnapContext not initialized')
     },
 
@@ -157,6 +165,15 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     }
   }, [checkMetamaskExists, checkSnapExists])
 
+  const checkCredentialExistence = useCallback(
+    async (
+      params: CheckCredentialExistenceRequestParams,
+    ): Promise<SaveCredentialsResponse[] | undefined> => {
+      return connector?.checkCredentialExistence?.(params)
+    },
+    [connector],
+  )
+
   return (
     <MetamaskZkpSnapContext.Provider
       value={{
@@ -168,6 +185,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
         createIdentity,
         saveVerifiableCredentials,
         createProof,
+        checkCredentialExistence,
 
         checkMetamaskExists,
         checkSnapExists,
