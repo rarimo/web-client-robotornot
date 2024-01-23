@@ -56,14 +56,34 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       </div>
 
       <h2 className='snap-connection__title'>
-        {`Add identity management to your wallet`}
+        {`Enable identity storage to your wallet`}
       </h2>
+
+      <div className='snap-connection__description'>
+        <div className='snap-connection__description-item'>
+          <Icon
+            className='snap-connection__description-item-icon'
+            name={ICON_NAMES.metamask}
+          />
+          <span>
+            {'It has been audited and '}
+            <u>{'approved by MetaMask'}</u>
+          </span>
+        </div>
+        <div className='snap-connection__description-item'>
+          <Icon
+            className='snap-connection__description-item-icon'
+            name={ICON_NAMES.key}
+          />
+          <span>{'It cannot access your private keys or your crypto'}</span>
+        </div>
+      </div>
 
       <div className='app__step-actions snap-connection__button'>
         <AppButton
           iconLeft={ICON_NAMES.rarimeSnap}
           onClick={installSnap}
-          text={`Connect “MetaMask” Snap`}
+          text={`Enable RariMe`}
           modification='border-circle'
           isDisabled={isPending}
         />
@@ -80,28 +100,6 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             className='app__step-actions-tip-icon'
             name={ICON_NAMES.keyboardReturn}
           />
-        </div>
-      </div>
-
-      <div className='snap-connection__description'>
-        <p className='snap-connection__description-title'>
-          {
-            'RariMe is a MetaMask Extension “Snap” that stores identity credentials'
-          }
-        </p>
-        <div className='snap-connection__description-item'>
-          <Icon
-            className='snap-connection__description-item-icon'
-            name={ICON_NAMES.metamask}
-          />
-          <span>{'It has been audited and approved by MetaMask'}</span>
-        </div>
-        <div className='snap-connection__description-item'>
-          <Icon
-            className='snap-connection__description-item-icon'
-            name={ICON_NAMES.key}
-          />
-          <span>{'It cannot access your private keys or your crypto'}</span>
         </div>
       </div>
 
