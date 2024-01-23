@@ -126,16 +126,18 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
               ease: 'backInOut',
             }}
           >
-            <motion.div
-              className='main-page__steps-indicator'
-              animate={{
-                width: `${stepsProgress}%`,
-              }}
-              transition={{
-                duration: '0.5',
-                ease: 'backInOut',
-              }}
-            />
+            {!isDeviceMobile && (
+              <motion.div
+                className='main-page__steps-indicator'
+                animate={{
+                  width: `${stepsProgress}%`,
+                }}
+                transition={{
+                  duration: '0.5',
+                  ease: 'backInOut',
+                }}
+              />
+            )}
 
             <AnimatePresence mode={'wait'}>
               {isLoadFailed ? (
@@ -175,7 +177,7 @@ const MainPage: FC<Props> = ({ className, ...rest }) => {
             </AnimatePresence>
           </motion.div>
 
-          {isSidebarExist && (
+          {isSidebarExist && !isDeviceMobile && (
             <AnimatePresence initial={false} mode={'wait'}>
               {isSidebarOpen && (
                 <motion.div
