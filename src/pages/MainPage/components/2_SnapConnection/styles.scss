@@ -11,8 +11,13 @@
 
 .snap-connection__badge-item {
   &:not(.snap-connection__badge-item-snap) {
-    margin-left: -#{toRem(18)};
+    margin-left: -#{toRem(16)};
   }
+}
+
+.snap-connection__badge-item-metamask {
+  padding: toRem(6);
+  background: var(--error-light);
 }
 
 .snap-connection__title {

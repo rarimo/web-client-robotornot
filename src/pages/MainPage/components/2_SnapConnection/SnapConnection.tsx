@@ -50,7 +50,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
             name={ICON_NAMES.rarimeSnap}
           />
         </div>
-        <div className='app__badge-item snap-connection__badge-item'>
+        <div className='app__badge-item snap-connection__badge-item snap-connection__badge-item-metamask'>
           <Icon className='app__badge-item-icon' name={ICON_NAMES.metamask} />
         </div>
       </div>
