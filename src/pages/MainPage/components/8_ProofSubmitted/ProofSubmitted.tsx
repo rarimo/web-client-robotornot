@@ -144,37 +144,35 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
                 </span>
               </div>
 
+              {isEthAddressProved && (
+                <>
+                  <div className='proof-submitted__metadata-divider' />
+                  <div className='proof-submitted__metadata-row'>
+                    <span className='proof-submitted__metadata-label'>{`SBT`}</span>
+                    <span
+                      className={[
+                        'proof-submitted__metadata-value',
+                        'proof-submitted__metadata-value--flex-center',
+                      ].join(' ')}
+                    >
+                      <Icon
+                        className={[
+                          'proof-submitted__metadata-icon',
+                          'proof-submitted__metadata-icon--success',
+                        ].join(' ')}
+                        name={ICON_NAMES.check}
+                      />
+                      {`Minted`}
+                    </span>
+                  </div>
+                </>
+              )}
+
               {CommunityLink}
             </>
           )}
 
           {isDidProved && !selectedKycProvider && RetrievingDataBtn}
-
-          {isEthAddressProved && !isDidProved && (
-            <>
-              <div className='proof-submitted__metadata-divider' />
-              <div className='proof-submitted__metadata-row'>
-                <span className='proof-submitted__metadata-label'>{`SBT`}</span>
-                <span
-                  className={[
-                    'proof-submitted__metadata-value',
-                    'proof-submitted__metadata-value--flex-center',
-                  ].join(' ')}
-                >
-                  <Icon
-                    className={[
-                      'proof-submitted__metadata-icon',
-                      'proof-submitted__metadata-icon--success',
-                    ].join(' ')}
-                    name={ICON_NAMES.check}
-                  />
-                  {`Minted`}
-                </span>
-              </div>
-
-              {CommunityLink}
-            </>
-          )}
         </div>
       </div>
 
