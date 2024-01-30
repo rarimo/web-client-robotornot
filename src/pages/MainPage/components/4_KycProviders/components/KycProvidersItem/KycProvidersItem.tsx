@@ -12,6 +12,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   handleLogin: (kycProvider: SUPPORTED_KYC_PROVIDERS) => void
   isDisabled?: boolean
+  isAvailable?: boolean
   tooltipMsg?: string | ReactElement
 }
 
@@ -22,12 +23,14 @@ const KycProvidersItem: FC<Props> = ({
   supportedKycProvider,
   handleLogin,
   isDisabled = false,
+  isAvailable = true,
 }) => {
   return (
     <div
       className={[
         'kyc-providers-item',
         ...(isDisabled ? ['kyc-providers-item--disabled'] : []),
+        ...(isAvailable ? [] : ['kyc-providers-item--unavailable']),
       ].join(' ')}
     >
       <Icon className='kyc-providers-item__icon' name={iconName} />
@@ -51,7 +54,7 @@ const KycProvidersItem: FC<Props> = ({
         className='kyc-providers-item__button'
         aria-label={`Login with ${name}`}
         onClick={() => handleLogin(supportedKycProvider)}
-        disabled={isDisabled}
+        disabled={isDisabled || !isAvailable}
       />
     </div>
   )

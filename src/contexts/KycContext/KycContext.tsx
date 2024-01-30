@@ -63,6 +63,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     iconName: ICON_NAMES
     link?: string
     isWalletRequired: boolean
+    isAvailable: boolean
 
     completeKycCb?: () => void
     completeKycMessage?: string
@@ -74,6 +75,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
     isWalletRequired: true,
+    isAvailable: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
         <b>{`Civic: `}</b>
@@ -88,6 +90,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     iconName: ICON_NAMES.providerGitCoin,
     link: 'https://passport.gitcoin.co/',
     isWalletRequired: true,
+    isAvailable: false,
 
     completeKycCb: () => {
       window.open('https://passport.gitcoin.co/', '_blank')
@@ -96,9 +99,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
         <b>{`Gitcoin Passport: `}</b>
-        <span>
-          {`An identity system based on Stamps. Users need to achieve a profile score beyond a 15% threshold.`}
-        </span>
+        <span>{`Not available at the moment. Please, try again later.`}</span>
       </span>
     ),
   },
@@ -106,6 +107,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     name: 'Unstoppable domains',
     iconName: ICON_NAMES.providerUnstoppable,
     isWalletRequired: true,
+    isAvailable: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
         <b>{`Unstoppable Domains: `}</b>
@@ -119,6 +121,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     name: 'Worldcoin',
     iconName: ICON_NAMES.providerWorldCoin,
     isWalletRequired: true,
+    isAvailable: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
         <b>{`WordCoin: `}</b>
@@ -133,6 +136,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     iconName: ICON_NAMES.providerKleros,
     link: 'https://app.proofofhumanity.id/',
     isWalletRequired: true,
+    isAvailable: true,
 
     completeKycCb: () => {
       window.open('https://app.proofofhumanity.id/', '_blank')
