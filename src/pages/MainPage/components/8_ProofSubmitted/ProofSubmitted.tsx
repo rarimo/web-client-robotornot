@@ -26,7 +26,7 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
     KYC_PROVIDERS_DETAILS_MAP,
     detectProviderFromVC,
   } = useKycContext()
-  const { isEthAddressProved, isDidProved, txSubmitExplorerLink } =
+  const { isEthAddressProved, isDidProved, txSubmitExplorerLink, saveVC } =
     useZkpContext()
 
   const [count, { startCountdown }] = useCountdown({
@@ -66,12 +66,13 @@ const ProofSubmitted: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
 
     try {
       await detectProviderFromVC()
+      await saveVC()
     } catch (error) {
       ErrorHandler.process(error)
     }
 
     setIsPending(false)
-  }, [detectProviderFromVC])
+  }, [detectProviderFromVC, saveVC])
 
   const RetrievingDataBtn = useMemo(
     () =>
