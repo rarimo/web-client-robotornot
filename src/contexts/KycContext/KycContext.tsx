@@ -412,6 +412,8 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
     try {
       const identityId = identityIdString?.split(':').pop()
 
+      if (!identityId) return
+
       const { data } = await api.get<{
         provider: string
       }>(`/integrations/kyc-service/v1/public/${identityId}/provider`)
