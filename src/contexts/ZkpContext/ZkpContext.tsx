@@ -160,8 +160,13 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
     if (!_identityId) throw new Error('Identity has not created')
 
-    const { identityIdString: did, identityIdBigIntString: didBigInt } =
+    const { identityIdString: _did, identityIdBigIntString: didBigInt } =
       _identityId
+
+    // FIXME: fix parsing DID in snap and remove this
+    const did = _did.startsWith('did:iden3:readonly:')
+      ? _did
+      : _did.replace('did:iden3:', 'did:iden3:readonly:')
 
     setIdentityIdString(did)
     setIdentityIdBigIntString(didBigInt)
