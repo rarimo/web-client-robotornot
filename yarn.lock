@@ -2157,14 +2157,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:2.1.0-rc.2":
-  version: 2.1.0-rc.2
-  resolution: "@rarimo/rarime-connector@npm:2.1.0-rc.2"
+"@rarimo/rarime-connector@npm:2.1.0-rc.3":
+  version: 2.1.0-rc.3
+  resolution: "@rarimo/rarime-connector@npm:2.1.0-rc.3"
   dependencies:
     "@ethersproject/providers": 5.7.2
     compare-versions: ^6.1.0
     ethers: 5.7.2
-  checksum: 108630d969cc283300e1fafc0a849ac0a08fb2b65426063294d5bcdafd81866117069efcbfedb0cfff721b6874b48fb82ef6ec63b4100b5e7722ce79b661eddf
+  checksum: 8c2b141f480bf86ea1fae0d5693fe1e4736deb000b8c44082d080f273bad5e7bc519ec3048c83b9eeb93ba11e6aeca9b41b4c35e1d6d59eecd3524249147894d
   languageName: node
   linkType: hard
 
@@ -2322,66 +2322,66 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli-darwin@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-darwin@npm:2.28.5"
+"@sentry/cli-darwin@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-darwin@npm:2.28.6"
   conditions: os=darwin
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm64@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-linux-arm64@npm:2.28.5"
+"@sentry/cli-linux-arm64@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-linux-arm64@npm:2.28.6"
   conditions: (os=linux | os=freebsd) & cpu=arm64
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-linux-arm@npm:2.28.5"
+"@sentry/cli-linux-arm@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-linux-arm@npm:2.28.6"
   conditions: (os=linux | os=freebsd) & cpu=arm
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-i686@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-linux-i686@npm:2.28.5"
+"@sentry/cli-linux-i686@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-linux-i686@npm:2.28.6"
   conditions: (os=linux | os=freebsd) & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-x64@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-linux-x64@npm:2.28.5"
+"@sentry/cli-linux-x64@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-linux-x64@npm:2.28.6"
   conditions: (os=linux | os=freebsd) & cpu=x64
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-i686@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-win32-i686@npm:2.28.5"
+"@sentry/cli-win32-i686@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-win32-i686@npm:2.28.6"
   conditions: os=win32 & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-x64@npm:2.28.5":
-  version: 2.28.5
-  resolution: "@sentry/cli-win32-x64@npm:2.28.5"
+"@sentry/cli-win32-x64@npm:2.28.6":
+  version: 2.28.6
+  resolution: "@sentry/cli-win32-x64@npm:2.28.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@sentry/cli@npm:^2.22.3":
-  version: 2.28.5
-  resolution: "@sentry/cli@npm:2.28.5"
+  version: 2.28.6
+  resolution: "@sentry/cli@npm:2.28.6"
   dependencies:
-    "@sentry/cli-darwin": 2.28.5
-    "@sentry/cli-linux-arm": 2.28.5
-    "@sentry/cli-linux-arm64": 2.28.5
-    "@sentry/cli-linux-i686": 2.28.5
-    "@sentry/cli-linux-x64": 2.28.5
-    "@sentry/cli-win32-i686": 2.28.5
-    "@sentry/cli-win32-x64": 2.28.5
+    "@sentry/cli-darwin": 2.28.6
+    "@sentry/cli-linux-arm": 2.28.6
+    "@sentry/cli-linux-arm64": 2.28.6
+    "@sentry/cli-linux-i686": 2.28.6
+    "@sentry/cli-linux-x64": 2.28.6
+    "@sentry/cli-win32-i686": 2.28.6
+    "@sentry/cli-win32-x64": 2.28.6
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
     progress: ^2.0.3
@@ -2404,7 +2404,7 @@ __metadata:
       optional: true
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: 645e2c33d468dbdb774d10382b1226d7ed802b7e0239f80a6312599f575481e37d351d8696d1462b9d509e445b0cca60b63141476dda7480d684c95d418f5066
+  checksum: a7b46f216e079eb47eae9baaff3c1d070cbbaa82fb8fc6496821dd557bef3c4ab92363be71bdc5ac0c0eea8f6e76f93817a62461cf43a2d6fbd30e1255ab0c73
   languageName: node
   linkType: hard
 
@@ -11235,7 +11235,7 @@ __metadata:
     "@rarimo/auth-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/client": ^2.0.0-rc.24
     "@rarimo/identity-gen-iden3": ^2.0.0-rc.24
-    "@rarimo/rarime-connector": 2.1.0-rc.2
+    "@rarimo/rarime-connector": 2.1.0-rc.3
     "@rarimo/shared-zkp-iden3": ^2.0.0-rc.24
     "@rarimo/zkp-gen-iden3": ^2.0.0-rc.24
     "@sentry/react": 7.63.0
