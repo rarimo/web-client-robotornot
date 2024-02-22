@@ -22,9 +22,9 @@ VITE_LIGHTWEIGHT_STATE_V2_CONTRACT_ADDRESS_[VITE_DEFAULT_CHAIN_VALUE]=0x00000000
 To update variables in deployed app - setup .env variables from .env.example to [env.js](./static/env.js) but in `JSON` format, and change `VITE_` prefix to `VITE_APP`
 ```js
 document.ENV = document.ENV || Object.freeze({
-  VITE_DEFAULT_CHAIN: "GOERLI",
-  VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_GOERLI: "0x...",
-  VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_GOERLI: "0x...",
+  VITE_DEFAULT_CHAIN: "SEPOLIA",
+  VITE_IDENTITY_SBT_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: "0x...",
+  VITE_IDENTITY_VERIFIER_CONTRACT_ADDRESS_SEPOLIA: "0x...",
   ...,
 })
 ```
