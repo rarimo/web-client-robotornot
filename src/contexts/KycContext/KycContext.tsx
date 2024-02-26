@@ -75,7 +75,7 @@ const KYC_PROVIDERS_DETAILS_MAP: Record<
     name: 'Civic',
     iconName: ICON_NAMES.providerCivic,
     isWalletRequired: true,
-    isAvailable: false,
+    isAvailable: true,
     tooltipElement: (
       <span className='app__kyc-provider-item-tooltip'>
         <b>{`Civic: `}</b>
