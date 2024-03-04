@@ -119,10 +119,11 @@ const Web3ProviderContextProvider: FC<Props> = ({ children }) => {
         const isMetamask = providerDetector.providers.metamask && !isOkx
 
         if (!isMetamask) {
-          return bus.emit(
-            BUS_EVENTS.warning,
-            `Unsupported cryptocurrency wallet. Please try again with MetaMask`,
-          )
+          return bus.emit(BUS_EVENTS.warning, {
+            title: 'Unsupported cryptocurrency wallet',
+            message:
+              'Please, disable all wallets except MetaMask and try again.',
+          })
         }
 
         Provider.setChainsDetails(

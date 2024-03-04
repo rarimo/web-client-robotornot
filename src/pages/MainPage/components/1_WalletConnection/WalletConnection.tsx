@@ -86,7 +86,7 @@ const WalletConnection: FC<StepProps> = ({
 
   const openInstallMetamaskLink = useCallback(() => {
     if (!installMMLink) {
-      bus.emit(BUS_EVENTS.warning, `Your browser is not support Metamask`)
+      bus.emit(BUS_EVENTS.warning, `Your browser does not support MetaMask`)
 
       return
     }
@@ -144,7 +144,7 @@ const WalletConnection: FC<StepProps> = ({
         {isMetamaskInstalled ? (
           <AppButton
             iconLeft={ICON_NAMES.metamask}
-            text={`Connect metamask`}
+            text={`Connect MetaMask`}
             modification='border-circle'
             onClick={connectProvider}
             isDisabled={isPending}
@@ -152,7 +152,7 @@ const WalletConnection: FC<StepProps> = ({
         ) : (
           <AppButton
             iconLeft={ICON_NAMES.metamask}
-            text={isPending ? `Please, reload page` : `Install metamask`}
+            text={isPending ? `Please, reload page` : `Install MetaMask`}
             modification='border-circle'
             onClick={openInstallMetamaskLink}
             target='_blank'
