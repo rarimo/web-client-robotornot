@@ -7,7 +7,7 @@
   "errors": {
     "default": "Something went wrong",
     "slow-connection": "Time out: Getting Verifaible Credential took too long. That can use a lot of power, for the best results:\n\n- Close any tabs you have open\n- Connect the device to power",
-    "user-reject": "You canceled the signature request, please try again"
+    "user-reject": "You rejected the MetaMask request"
   },
   "notifications": {
     "default-title-success": "Success",
