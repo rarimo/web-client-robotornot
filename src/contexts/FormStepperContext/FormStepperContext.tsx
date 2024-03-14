@@ -216,7 +216,7 @@ const FormStepperContextProvider: FC<Props> = ({ children }) => {
 
       if (_isUserHasClaimHandled) return Steps.ProofGeneratingStep
     } catch (error) {
-      /* empty */
+      ErrorHandler.process(error)
     }
 
     return Steps.KycProvidersStep
