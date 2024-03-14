@@ -235,7 +235,6 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
           claimOffer: claimOffer,
           proofRequest: buildProofRequest(savedVCsByOffer[0].issuer, [
             ...savedVCsByOffer[0].type,
-            'yopta',
           ]),
         })
 
