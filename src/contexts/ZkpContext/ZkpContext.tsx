@@ -1,7 +1,8 @@
 import { config, SUPPORTED_CHAINS } from '@config'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
-import type {
+import {
+  CircuitId,
   CreateProofRequestParams,
   SaveCredentialsRequestParams,
   StateInfo,
@@ -196,7 +197,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const buildProofRequest = useCallback(
     (issuerDid: string, vcType: string[]): CreateProofRequestParams => ({
-      circuitId: 'credentialAtomicQueryMTPV2OnChain',
+      circuitId: CircuitId.AtomicQueryMTPV2OnChain,
       accountAddress: provider?.address,
       issuerDid: issuerDid,
 
@@ -232,10 +233,10 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
       if (savedVCsByOffer?.length) {
         const savedVCsByOfferAndQuery = await zkpSnap.checkCredentialExistence({
           claimOffer: claimOffer,
-          proofRequest: buildProofRequest(
-            savedVCsByOffer[0].issuer,
-            savedVCsByOffer[0].type,
-          ),
+          proofRequest: buildProofRequest(savedVCsByOffer[0].issuer, [
+            ...savedVCsByOffer[0].type,
+            'yopta',
+          ]),
         })
 
         if (savedVCsByOfferAndQuery?.length) {
