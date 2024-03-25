@@ -1812,9 +1812,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarimo/rarime-connector@npm:^2.1.0-rc.12":
-  version: 2.1.0-rc.12
-  resolution: "@rarimo/rarime-connector@npm:2.1.0-rc.12"
+"@rarimo/rarime-connector@npm:2.1.0-rc.13":
+  version: 2.1.0-rc.13
+  resolution: "@rarimo/rarime-connector@npm:2.1.0-rc.13"
   dependencies:
     "@cosmjs/amino": ^0.32.2
     "@cosmjs/proto-signing": ^0.32.2
@@ -1822,7 +1822,7 @@ __metadata:
     compare-versions: ^6.1.0
     ethers: 5.7.2
     long: ^5.2.3
-  checksum: 50bc0e2081dbd944c8cdc02ba5935b97716127d38c05bf3b3e488c51736f9436c53b3b0b11101afcb0aa015625d689be96d5ef46c6ee2aca5f47d7e6fb89833f
+  checksum: 382e7b895781a6ac4ff0a027d90ecd112a22a575ebdde17a772f688172a11cf36f0f73dd91767bec7ae4a321cfb2a38788f22814c9019172aafdf2ef391c2716
   languageName: node
   linkType: hard
 
@@ -10814,7 +10814,7 @@ __metadata:
     "@iden3/js-jsonld-merklization": 1.0.0-beta.14
     "@iden3/js-jwz": 1.0.0-beta.2
     "@iden3/js-merkletree": 1.0.0-beta.4
-    "@rarimo/rarime-connector": ^2.1.0-rc.12
+    "@rarimo/rarime-connector": 2.1.0-rc.13
     "@sentry/react": 7.63.0
     "@sentry/rollup-plugin": ^2.7.1
     "@typechain/ethers-v5": ^11.0.0
