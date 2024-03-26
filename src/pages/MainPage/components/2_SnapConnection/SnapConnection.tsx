@@ -23,7 +23,7 @@ const SnapConnection: FC<StepProps> = ({ nextStepCb, className, ...rest }) => {
       await connectOrInstallSnap()
       await checkSnapStatus()
     } catch (error) {
-      ErrorHandler.processWithoutFeedback(error)
+      ErrorHandler.process(error)
     }
 
     setIsPending(false)

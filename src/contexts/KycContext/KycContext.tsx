@@ -498,7 +498,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           return
         }
       } catch (error) {
-        ErrorHandler.processWithoutFeedback(error)
+        ErrorHandler.process(error)
 
         setKycError(error as JsonApiError)
 
@@ -605,7 +605,7 @@ const KycContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
           },
         )
       } catch (error) {
-        ErrorHandler.processWithoutFeedback(error)
+        ErrorHandler.process(error)
 
         setKycError(error as JsonApiError)
 

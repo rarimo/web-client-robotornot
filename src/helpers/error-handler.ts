@@ -51,6 +51,10 @@ export class ErrorHandler {
             errorMessage = i18n.t('errors.slow-connection')
             msgType = 'error'
           }
+          if (error.message.toLowerCase().includes('user rejected request')) {
+            errorMessage = i18n.t('errors.user-reject')
+            msgType = 'error'
+          }
           break
         default: {
           if ('error' in error) {
