@@ -2,7 +2,6 @@ import { config, SUPPORTED_CHAINS } from '@config'
 import { type EthTransactionResponse } from '@distributedlab/w3p'
 import { type TransactionRequest } from '@ethersproject/providers'
 import {
-  CircuitId,
   CreateProofRequestParams,
   SaveCredentialsRequestParams,
   StateInfo,
@@ -197,7 +196,7 @@ const ZkpContextProvider: FC<Props> = ({ children, ...rest }) => {
 
   const buildProofRequest = useCallback(
     (issuerDid: string, vcType: string[]): CreateProofRequestParams => ({
-      circuitId: CircuitId.AtomicQueryMTPV2OnChain,
+      circuitId: 'credentialAtomicQueryMTPV2OnChain',
       accountAddress: provider?.address,
       issuerDid: issuerDid,
 

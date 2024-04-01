@@ -260,14 +260,9 @@ export default defineConfig(({ mode }) => {
           sourcemap: true,
 
           manualChunks: {
-            'js-merkletree': ['@iden3/js-merkletree'],
-            'js-jsonld-merklization': ['@iden3/js-jsonld-merklization'],
-            'js-crypto': ['@iden3/js-crypto'],
-            'js-jwz': ['@iden3/js-jwz'],
-            'js-iden3-core': ['@iden3/js-iden3-core'],
             'near-api-js': ['near-api-js'],
             'ethereum-gateway-react': ['@civic/ethereum-gateway-react'],
-            'rarime-connector': ['@rarimo/rarime-connector'],
+            // 'rarime-connector': ['@rarimo/rarime-connector'],
             snarkjs: ['snarkjs'],
             uauth: ['@uauth/js'],
           },
