@@ -260,7 +260,6 @@ export default defineConfig(({ mode }) => {
           sourcemap: true,
 
           manualChunks: {
-            'near-api-js': ['near-api-js'],
             'ethereum-gateway-react': ['@civic/ethereum-gateway-react'],
             // 'rarime-connector': ['@rarimo/rarime-connector'],
             snarkjs: ['snarkjs'],
