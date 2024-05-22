@@ -23,8 +23,8 @@ deprecated
 *.sln
 *.local
 stats.html
-.yarn
-.yarnrc.yml
+.yarn/*
+!.yarn/releases
 
 .env.analyze
 .env.development

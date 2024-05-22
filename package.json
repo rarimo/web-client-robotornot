@@ -101,5 +101,5 @@
     "vite-tsconfig-paths": "^4.0.3",
     "yorkie": "^2.0.0"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@4.2.2"
 }
