@@ -14,7 +14,8 @@
     "lint:styles": "stylelint \"src/**/*.{css,sass,scss}\" --max-warnings=0",
     "lint:scripts": "eslint \"{src,config}/**/*.{js,ts,jsx,tsx}\" --cache --fix --max-warnings=0 && tsc --noEmit",
     "preview": "vite preview",
-    "generate-ether-types": "typechain --target=ethers-v5 'abis/**/*.json' --out-dir src/types/contracts"
+    "generate-ether-types": "typechain --target=ethers-v5 'abis/**/*.json' --out-dir src/types/contracts",
+    "version": "rlx changelog release && git add ."
   },
   "dependencies": {
     "@civic/ethereum-gateway-react": "0.13.4",
