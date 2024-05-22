@@ -4,7 +4,7 @@
   "version": "2.9.0",
   "gitHooks": {
     "pre-commit": "tsc && yarn lint",
-    "pre-push": "yarn rsc"
+    "pre-push": "npx rlx rsc"
   },
   "scripts": {
     "build": "dotenv -e .env vite build",
@@ -14,7 +14,6 @@
     "lint:styles": "stylelint \"src/**/*.{css,sass,scss}\" --max-warnings=0",
     "lint:scripts": "eslint \"{src,config}/**/*.{js,ts,jsx,tsx}\" --cache --fix --max-warnings=0 && tsc --noEmit",
     "preview": "vite preview",
-    "rsc": "node scripts/release-sanity-check.mjs",
     "generate-ether-types": "typechain --target=ethers-v5 'abis/**/*.json' --out-dir src/types/contracts"
   },
   "dependencies": {
@@ -61,6 +60,7 @@
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@napalmpapalam/rlx": "^0.4.1",
     "@typechain/ethers-v5": "^11.0.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.3.1",

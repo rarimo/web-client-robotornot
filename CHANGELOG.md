@@ -4,110 +4,111 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.9.0] - 2024-04-10
-#### Changed
+### Changed
 - Update `@rarimo/rarime-connector` with increased timeout per operation
 
 ## [2.8.0] - 2024-02-02
-#### Added
+### Added
 - resave VC in success page ([ProofSubmitted.tsx](src/pages/MainPage/components/8_ProofSubmitted/ProofSubmitted.tsx))
 
-#### Changed
+### Changed
 - Update `@rarimo/rarime-connector` to `2.0.2`
 
-#### Fixed
+### Fixed
 - kyc provider detecting method calls, when did is not defined
 
 ## [2.7.0] - 2024-01-25
-#### Added
+### Added
 - Maintenance page
 - Check MetaMask version
 - Iden3 Core v2 compatible snap
 
-#### Fixed
+### Fixed
 - Remove the option to connect any other wallets except Metamask
 
 ## [2.6.1] - 2024-01-09
-#### Added
+### Added
 - Text about snap in connect snap step
 
-#### Changed
+### Changed
 - Zero-Knowledge proof generation error message
 - Icon key
 - `Press enter` fixed styles and icon
 - `@stylelint-declaration-strict-value` fixed version
 - `@rarimo/rarime-connector` - bump version to`2.0.0-rc.1`
 
-
 ## [2.6.0] - 2023-12-22
-#### Added
+### Added
 - `IsNotRegistered` KYC unauthorized error
 
-#### Changed
+### Changed
 - Notification toast styles
 - Redirect to rariMe app on submitted proof view
 - Update `large` media breakpoint to `1600px`
 
-#### Fixed
+### Fixed
 - KYC providers. Fix title font size
 
 ## [2.5.2] - 2023-12-21
-#### Changed
+### Changed
 - OG image
 
 ## [2.5.1] - 2023-12-11
-#### Fixed
+### Fixed
 - `Link to Rarime dashboard` design
 
 ## [2.5.0] - 2023-12-11
-#### Added
+### Added
 - Link to Rarime dashboard
 
 ## [2.4.5] - 2023-12-08
-#### Changed
+### Changed
 - snap connector version update to `1.0.2`
 
 ## [2.4.4] - 2023-12-07
-#### Changed
+### Changed
 - errors time out notification
 
 ## [2.4.3] - 2023-12-07
-#### Changed
+### Changed
 - Community link
 
 ## [2.4.2] - 2023-12-07
-#### Fixed
+### Fixed
 - github workflow `tag` action
 
 ## [2.4.1] - 2023-11-30
-#### Fixed
+### Fixed
 - identity creation
 
 ## [2.4.0] - 2023-11-28
-#### Changed
+### Changed
 - `@rarimo/rarime-connector` - bump version to 1.0.0-rc.0
 - Getting identity id's
 
 ## [2.3.0] - 2023-11-17
-#### Changed
+### Changed
 - env files interaction, now .env files are able to bundle in ci
 
 ## [2.2.1] - 2023-11-10
-#### Changed
+### Changed
 - fonts display type
 - bg image type
 
 ## [2.2.0] - 2023-11-01
-#### Added
+### Added
 - sentry tracking for proved identities
 - extra conditions for detecting start step
 
 ## [2.1.0] - 2023-10-30
-#### Changed
+### Changed
 - Update CI/CD
 
 ## [2.0.0] - 2023-09-13
-#### Added
+### Added
 - Auth Providers page:
   - Civic kyc provider
   - Gitcoin kyc provider
@@ -133,14 +134,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - working with wallets (metamask)
 
 ## [1.0.0] - 2023-06-25
-#### Added
+### Added
 - Fields
   - Checkbox
   - Basic Select with icon
   - Switch
   - Textarea
 
-#### Changed
+### Changed
 - Bump Eslint & Stylelint versions and fix deprecations
 - Notification toasts usage
 - Event bus usage
@@ -149,7 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Vite config
 
 ## [1.0.0-rc.1] - 2022-09-26
-#### Added
+### Added
 - Eslint
 - Stylelint
 - prettier
@@ -195,7 +196,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests
 
 ## [1.0.0-rc.0] - 2022-06-30
-#### Under the hood changes
+### Added
 - Initiated and setup project
 
 [Unreleased]: https://gitlab.com/distributed_lab/frontend/react-template/compare/2.9.0...main
