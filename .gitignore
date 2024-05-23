@@ -23,8 +23,6 @@ deprecated
 *.sln
 *.local
 stats.html
-.yarn
-.yarnrc.yml
 
 .env.analyze
 .env.development
@@ -33,3 +31,12 @@ tsconfig.tsbuildinfo
 
 # Sentry Auth Token
 .env.sentry-build-plugin
+
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
