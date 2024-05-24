@@ -102,10 +102,7 @@ const MetamaskZkpSnapContextProvider: FC<HTMLAttributes<HTMLDivElement>> = ({
    * or return the existing one
    */
   const createIdentity = useCallback(async () => {
-    return zkpSnap.createIdentity({
-      privateKeyHex:
-        '9a5305fa4c55cbf517c99693a7ec6766203c88feab50c944c00feec051d5dab7',
-    })
+    return zkpSnap.createIdentity()
   }, [])
 
   /**
