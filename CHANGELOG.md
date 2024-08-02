@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.9.1] - 2024-06-21
 ### Added
 - `@napalmpapalam/rlx` package for changelog automation
 
@@ -12,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Format changelog to match `Keep a Changelog` format
 - Replace custom RSC script with `@napalmpapalam/rlx` package
 - Update `yarn` to `4.2.2`
+
+### Fixed
+- `@rarimo/rarime-connector` - request params
 
 ## [2.9.0] - 2024-04-10
 ### Changed
@@ -207,7 +212,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initiated and setup project
 
 
-[Unreleased]: https://github.com/rarimo/web-client-robotornot/compare/2.9.0...HEAD
+[Unreleased]: https://github.com/rarimo/web-client-robotornot/compare/2.9.1...HEAD
+[2.9.1]: https://github.com/rarimo/web-client-robotornot/compare/2.9.0...2.9.1
 [2.9.0]: https://github.com/rarimo/web-client-robotornot/compare/2.8.0...2.9.0
 [2.8.0]: https://github.com/rarimo/web-client-robotornot/compare/2.7.0...2.8.0
 [2.7.0]: https://github.com/rarimo/web-client-robotornot/compare/2.6.1...2.7.0
